@@ -1,5 +1,4 @@
-Clipping and Keeping Information Trimmer
-====         =       =           =
+**Clip**ping and **K**eeping **I**nformation **T**rimmer
 
 Brief description of algorithm and concept
 
