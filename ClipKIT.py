@@ -330,13 +330,12 @@ def main(
     
     optional arguments
     ------------------
-    [-g gap_threshold] [-if input file format] [-m mode kpi or gappy]
+    [-g gap_threshold] [-if input file format] [-m kpi, gappy, or kpi-gappy]
     [-of output file format] [-l log file] [-c complementary sequence]""",
     description="""Citation: Steenwyk et al. Journal, journal info, link
 
-Fast trimming of multiple sequence alignments to maintain phylogenetically informative sites. KPItrimmer 
-will keep sites that are parsimony informative and remove sites that are greater than 90 percent gaps
-unless specified otherwise""")
+Fast trimming of multiple sequence alignments to maintain phylogenetically informative sites. ClipKIT 
+will...""")
 
     ## required arguments
     # create a required group of arguments
