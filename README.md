@@ -10,9 +10,9 @@ Add journal and citation information
 
 
 ### Guide
-[Installation](Installation)
-[Quick Start](Quick-Start)
-[Detailed Usage](Detailed-Usage)
+[Installation](#installation)<br />
+[Quick Start](#quick-start)<br />
+[Detailed Usage](#detailed-usage)
 
 
 ---
@@ -39,10 +39,10 @@ where $input is your input alignment file and $output is the name of your output
 
 ## Detailed Usage
 This section described the various features and options of ClipKIT.
-* [Modes](Modes)
-* [Log](Log)
-* [Complementary](Complementary)
-* [Miscellaneous options](Miscellaneous-options)
+[Modes](#modes)<br />
+[Log](#log)<br />
+[Complementary](#complementary)<br />
+[Miscellaneous options](#miscellaneous-options)
 
 <br />
 
@@ -51,7 +51,6 @@ ClipKIT can run with three different modes (kpi, gappy, kpi-gappy), which are sp
 *Default: 'gappy'*<br />
 * kpi will trim all sites that are not parsimony informative<br />
 * gappy will remove all sites that are above a threshold of gappyness (default: 0.9)<br />
-⋅⋅⋅gappyness is calculated by dividing the number of gaps '-' by the number of sequences<br />
 * kpi-gappy is the combination of kpi- and gappy-based trimming<br />
 ```
 # kpi-based trimming
