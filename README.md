@@ -12,7 +12,7 @@ Add journal and citation information
 ## Guide
 [Installation](#installation)<br />
 [Quick Start](#quick-start)<br />
-[Detailed Usage](#detailed-usage)
+[Advanced Usage](#advanced-usage)
 
 
 ---
@@ -44,8 +44,8 @@ where $input is your input alignment file and $output is the name of your output
 ---
 
 
-### Detailed Usage
-This section described the various features and options of ClipKIT.<br />
+### Advanced Usage
+This section describes the various features and options of ClipKIT.<br />
 [Modes](#modes)<br />
 [Log](#log)<br />
 [Complementary](#complementary)<br />
