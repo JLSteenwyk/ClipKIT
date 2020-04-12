@@ -1,8 +1,14 @@
-**Clip**ping and **K**eeping **I**nformation **T**rimmer
+# **Clip**ping and **K**eeping **I**nformation **T**rimmer
 
-Brief description of algorithm and concept
+ClipKIT is a fast and flexible alignment trimming tool. ClipKIT keeps phylogenetically informative sites while removing others
+that display characteristics of poor phylogenetic signal.
+<br /><br />
 
-## Info
+### Guide
+[Installation](Installation)
+Simple Use
+
+## Installation
 
 Info
 
