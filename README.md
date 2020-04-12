@@ -9,7 +9,7 @@ Add journal and citation information
 ---
 
 
-### Guide
+## Guide
 [Installation](#installation)<br />
 [Quick Start](#quick-start)<br />
 [Detailed Usage](#detailed-usage)
@@ -18,7 +18,7 @@ Add journal and citation information
 ---
 
 
-## Installation
+### Installation
 To install, use the following commands:
 ```
 ```
@@ -28,7 +28,7 @@ To install from source, use the following commands:
 ```
 <br />
 
-## Quick Start
+### Quick Start
 ClipKIT requires only two arguments, the input and output. To use ClipKIT in its simpliest form, use the following command:
 ```
 clipkit -i $input -o $output
@@ -37,7 +37,7 @@ where $input is your input alignment file and $output is the name of your output
 
 <br />
 
-## Detailed Usage
+### Detailed Usage
 This section described the various features and options of ClipKIT.
 [Modes](#modes)<br />
 [Log](#log)<br />
@@ -46,7 +46,7 @@ This section described the various features and options of ClipKIT.
 
 <br />
 
-### Modes
+#### Modes
 ClipKIT can run with three different modes (kpi, gappy, kpi-gappy), which are specified with the -m/--mode argument.<br /> 
 *Default: 'gappy'*<br />
 * kpi will trim all sites that are not parsimony informative<br />
@@ -65,7 +65,7 @@ clipkit -i $input -o $output -m kpi-gappy
 
 <br />
 
-### Log
+#### Log
 It can be very useful to have information about the each position in an alignment. For example, this information could be used in alignment diagnostics, fine-tuning of trimming parameters, etc. To create the log file, use the -l/--log option. Using the -l/--log option will create a four column file with the suffix '.log'. 
 * col1: position in the alignment (starting at 1)
 * col2: reports if site was trimmed or kept (trim or keep, respectively)
@@ -90,7 +90,7 @@ This will result in an additional output file named $output.complement
 
 <br />
 
-### Miscellaneous options
+#### Miscellaneous options
 | Option        | Usage and meaning |
 | ------------- | ------------------ |
 | -h/--help     | Print help message |
@@ -101,7 +101,7 @@ This will result in an additional output file named $output.complement
 
 <br />
 
-#### Accepted file formats formats
+##### Accepted file formats formats
 [fasta](https://en.wikipedia.org/wiki/FASTA_format), [clustal](http://meme-suite.org/doc/clustalw-format.html), [maf](http://www.bx.psu.edu/~dcking/man/maf.xhtml), [mauve](http://darlinglab.org/mauve/user-guide/files.html), [phylip](http://scikit-bio.org/docs/0.2.3/generated/skbio.io.phylip.html), [phylip-sequential](http://rosalind.info/glossary/phylip-format/), [phylip-relaxed](https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html), [stockholm](https://en.wikipedia.org/wiki/Stockholm_format)
 
 <br />
