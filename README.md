@@ -22,11 +22,11 @@ Add journal and citation information
 To install, use the following commands:
 ```
 ```
-
+<br />
 To install from source, use the following commands:
 ```
 ```
-
+<br /><br />
 
 ## Quick Start
 ClipKIT requires only two arguments, the input and output. To use ClipKIT in its simpliest form, use the following command:
@@ -34,7 +34,7 @@ ClipKIT requires only two arguments, the input and output. To use ClipKIT in its
 clipkit -i $input -o $output
 ```
 where $input is your input alignment file and $output is the name of your output file
-
+<br /><br />
 
 ## Detailed Usage
 This section described the various features and options of ClipKIT.
@@ -42,15 +42,15 @@ This section described the various features and options of ClipKIT.
 * [Log](Log)
 * [Complementary](Complementary)
 * [Miscellaneous options](Miscellaneous-options)
-
+<br /><br />
 
 ### Modes
 ClipKIT can run with three different modes (kpi, gappy, kpi-gappy), which are specified with the -m/--mode argument.<br /> 
 *Default: 'gappy'*<br />
-* kpi will trim all sites that are not parsimony informative
-* gappy will remove all sites that are above a threshold of gappyness (default: 0.9)
-⋅⋅⋅gappyness is calculated by dividing the number of gaps '-' by the number of sequences
-* kpi-gappy is the combination of kpi- and gappy-based trimming
+* kpi will trim all sites that are not parsimony informative<br />
+* gappy will remove all sites that are above a threshold of gappyness (default: 0.9)<br />
+⋅⋅⋅gappyness is calculated by dividing the number of gaps '-' by the number of sequences<br />
+* kpi-gappy is the combination of kpi- and gappy-based trimming<br />
 ```
 # kpi-based trimming
 clipkit -i $input -o $output -m kpi
@@ -61,7 +61,7 @@ clipkit -i $input -o $output -m gappy
 # kpi- and gappy-based trimming
 clipkit -i $input -o $output -m kpi-gappy 
 ```
-
+<br /><br />
 
 ### Log
 It can be very useful to have information about the each position in an alignment. For example, this information could be used in alignment diagnostics, fine-tuning of trimming parameters, etc. To create the log file, use the -l/--log option. Using the -l/--log option will create a four column file with the suffix '.log'. 
@@ -70,11 +70,11 @@ It can be very useful to have information about the each position in an alignmen
 * col3: reports if the site is parsimony informative or not (PI or nPI, respectively)
 * col4: reports the gappyness of the position (number of gaps / entries in alignment)
 *Default: off*<br />
-
 ```
 clipkit -i $input -o $output -l
 ```
 This will result in an additional output file named $output.log
+<br /><br />
 
 ### Complementary
 Having an alignment of the sequences that were trimmed can be useful for other analyses. To obtain an alignment of the sequences that were trimmed, use the -c/--complementary option. Using the -c/--complementary option will create a file with the suffix '.complement'.
@@ -84,7 +84,7 @@ Having an alignment of the sequences that were trimmed can be useful for other a
 clipkit -i $input -o $output -c
 ```
 This will result in an additional output file named $output.complement
-
+<br /><br />
 
 ### Miscellaneous options
 | Option        | Usage and meaning |
@@ -94,28 +94,21 @@ This will result in an additional output file named $output.complement
 | -g/--gaps     | Specify gappyness threshold (between 0 and 1). *Default: 0.9* |
 | -if/--input_file_format | Specify input file format. Accepted file formats are: fasta, clustal, maf, mauve, phylip, phylip-sequential, phylip-relaxed, stockholm. *Default: auto-detect* |
 | -of/--input_file_format | Specify output file format. Accepted file formats are: fasta, clustal, maf, mauve, phylip, phylip-sequential, phylip-relaxed, stockholm. *Default: input file type* |
+<br /><br />
 
 #### Accepted file formats formats
-Click each file format for explanations about accepted file formats:<br />
-'[fasta](https://en.wikipedia.org/wiki/FASTA_format)',<br />
-'[clustal](http://meme-suite.org/doc/clustalw-format.html)',<br />
-'[maf](http://www.bx.psu.edu/~dcking/man/maf.xhtml)',<br />
-'[mauve](http://darlinglab.org/mauve/user-guide/files.html)',<br />
-'[phylip](http://scikit-bio.org/docs/0.2.3/generated/skbio.io.phylip.html)',<br />
-'[phylip-sequential](http://rosalind.info/glossary/phylip-format/)',<br />
-'[phylip-relaxed](https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html)',<br />
-'[stockholm](https://en.wikipedia.org/wiki/Stockholm_format)'<br />
+[fasta](https://en.wikipedia.org/wiki/FASTA_format), [clustal](http://meme-suite.org/doc/clustalw-format.html), [maf](http://www.bx.psu.edu/~dcking/man/maf.xhtml), [mauve](http://darlinglab.org/mauve/user-guide/files.html), [phylip](http://scikit-bio.org/docs/0.2.3/generated/skbio.io.phylip.html), [phylip-sequential](http://rosalind.info/glossary/phylip-format/), [phylip-relaxed](https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html), and [stockholm](https://en.wikipedia.org/wiki/Stockholm_format).
+<br /><br />
 
 ## Authors
-
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
 * [Thomas Buida](www.tjbiii.com)<br />
 * Others
+<br /><br />
 
 ## Developers
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
 * [Thomas Buida](www.tjbiii.com)<br />
-
-
+<br /><br />
 
 
