@@ -113,6 +113,10 @@ This will result in an additional output file named $output.complement
 
 <br />
 
+
+---
+
+
 ## Authors
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
 * [Thomas Buida](www.tjbiii.com)<br />
