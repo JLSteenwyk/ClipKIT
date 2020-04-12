@@ -26,8 +26,7 @@ To install, use the following commands:
 To install from source, use the following commands:
 ```
 ```
-
-<br /><br />
+<br />
 
 ## Quick Start
 ClipKIT requires only two arguments, the input and output. To use ClipKIT in its simpliest form, use the following command:
@@ -36,7 +35,7 @@ clipkit -i $input -o $output
 ```
 where $input is your input alignment file and $output is the name of your output file
 
-<br /><br />
+<br />
 
 ## Detailed Usage
 This section described the various features and options of ClipKIT.
@@ -45,7 +44,7 @@ This section described the various features and options of ClipKIT.
 * [Complementary](Complementary)
 * [Miscellaneous options](Miscellaneous-options)
 
-<br /><br />
+<br />
 
 ### Modes
 ClipKIT can run with three different modes (kpi, gappy, kpi-gappy), which are specified with the -m/--mode argument.<br /> 
@@ -65,7 +64,7 @@ clipkit -i $input -o $output -m gappy
 clipkit -i $input -o $output -m kpi-gappy 
 ```
 
-<br /><br />
+<br />
 
 ### Log
 It can be very useful to have information about the each position in an alignment. For example, this information could be used in alignment diagnostics, fine-tuning of trimming parameters, etc. To create the log file, use the -l/--log option. Using the -l/--log option will create a four column file with the suffix '.log'. 
@@ -79,7 +78,7 @@ clipkit -i $input -o $output -l
 ```
 This will result in an additional output file named $output.log
 
-<br /><br />
+<br />
 
 ### Complementary
 Having an alignment of the sequences that were trimmed can be useful for other analyses. To obtain an alignment of the sequences that were trimmed, use the -c/--complementary option. Using the -c/--complementary option will create a file with the suffix '.complement'.
@@ -90,7 +89,7 @@ clipkit -i $input -o $output -c
 ```
 This will result in an additional output file named $output.complement
 
-<br /><br />
+<br />
 
 ### Miscellaneous options
 | Option        | Usage and meaning |
@@ -101,22 +100,22 @@ This will result in an additional output file named $output.complement
 | -if/--input_file_format | Specify input file format. Accepted file formats are: fasta, clustal, maf, mauve, phylip, phylip-sequential, phylip-relaxed, stockholm. *Default: auto-detect* |
 | -of/--input_file_format | Specify output file format. Accepted file formats are: fasta, clustal, maf, mauve, phylip, phylip-sequential, phylip-relaxed, stockholm. *Default: input file type* |
 
-<br /><br />
+<br />
 
 #### Accepted file formats formats
 [fasta](https://en.wikipedia.org/wiki/FASTA_format), [clustal](http://meme-suite.org/doc/clustalw-format.html), [maf](http://www.bx.psu.edu/~dcking/man/maf.xhtml), [mauve](http://darlinglab.org/mauve/user-guide/files.html), [phylip](http://scikit-bio.org/docs/0.2.3/generated/skbio.io.phylip.html), [phylip-sequential](http://rosalind.info/glossary/phylip-format/), [phylip-relaxed](https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html), [stockholm](https://en.wikipedia.org/wiki/Stockholm_format)
 
-<br /><br />
+<br />
 
 ## Authors
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
 * [Thomas Buida](www.tjbiii.com)<br />
 * Others
-<br /><br />
+<br />
 
 ## Developers
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
 * [Thomas Buida](www.tjbiii.com)<br />
-<br /><br />
+<br />
 
 
