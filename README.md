@@ -1,4 +1,4 @@
-# ClipKIT: The **Clip**ping and **K**eeping **I**nformation **T**rimmer
+# ClipKIT: The Clipping and Keeping Information Trimmer
 
 ClipKIT is a fast and flexible alignment trimming tool. ClipKIT keeps phylogenetically informative sites while removing others
 that display characteristics of poor phylogenetic signal.<br />
@@ -21,10 +21,13 @@ Add journal and citation information
 ### Installation
 To install, use the following commands:
 ```
+# insert commands here
 ```
 <br />
+
 To install from source, use the following commands:
 ```
+# insert commands here
 ```
 <br />
 
