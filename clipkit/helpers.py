@@ -1,42 +1,12 @@
-from Bio import AlignIO
+from .modes import kpi_gappy_mode
+from .modes import gappy_mode
+from .modes import kpi_mode
 
 ####################################################################
 ### Supporting Functions 	                                     ###
 ### This block of code contains all supporting functions that    ###
 ### read the input files, calculate gappyness, etc  			 ###
 ####################################################################
-## Function to automatically determine the format of the alignment file
-## and read in the alignment. Returns alignment object and fileFormat
-def automatic_file_type_determination(
-    inFile
-    ):
-    """
-    Automatically determines what type of input file was used
-    and reads in the alignment file
-
-    Arguments
-    ---------
-    argv: inFile
-        input file specified with -i, --input
-    """
-
-    # save list of different file formats
-    fileFormats = ['fasta', 'clustal', 'maf', 'mauve',
-        'phylip', 'phylip-sequential', 'phylip-relaxed', 'stockholm']
-
-    # loop through file formats and attempt to read in file in that format
-    for fileFormat in fileFormats:
-        try:
-            alignment = AlignIO.read(open(inFile), fileFormat)
-            return alignment, fileFormat
-            break
-        # the following exceptions refer to skipping over errors 
-        # associated with reading the wrong input file
-        except ValueError:
-            continue
-        except AssertionError:
-            continue
-   
 
 ## Function to get the sequence at a given column. Function
 ## will also determine features of the position including 
@@ -84,14 +54,91 @@ def count_characters_at_position(
     Arguments
     ---------
     argv: seqAtPosition
-        string that contains the sequence at a given column 
+        string that contains the sequence at a given column
     """
 
     numOccurences = {}
     for char in set(seqAtPosition.replace('-','')): 
         numOccurences[char] = seqAtPosition.count(char)
     return numOccurences
-    
+
+
+## Function determine if a site is parsimony informative or not
+## Support function for keep_trim_and_log()
+def determine_if_parsimony_informative(
+    numOccurences
+    ):
+    """
+    Determines if a site is parsimony informative.
+    A site is parsimony-informative if it contains at least two types of nucleotides 
+    (or amino acids), and at least two of them occur with a minimum frequency of two."
+    https://www.megasoftware.net/web_help_7/rh_parsimony_informative_site.htm
+
+    Arguments
+    ---------
+    argv: numOccurences
+        dictionary with sequence characters (keys) and their counts (values)
+    """
+
+    d = dict((k, v) for k, v in numOccurences.items() if v >= 2)
+    if len(d) >= 2:
+        parsimony_informative = True
+    else:
+        parsimony_informative = False
+
+    return parsimony_informative
+
+## Function to initialize and populate keepD and trimD with entry ids  
+## and empty list elements. This will eventually contain the 
+## sequences that are trimmed or kept by clipkit. Lastly, initialize
+## an array to keep log information
+def populate_empty_keepD_and_trimD(
+    alignment
+    ):
+    """
+    Creates barebones dictionaries for sites kept and trimmed. Creates
+    an array for keeping log information.
+
+    Arguments
+    ---------
+    argv: alignment
+        biopython multiple sequence alignment object
+    """
+    keepD = {}
+    for entry in alignment:
+        keepD[entry.id] = []
+    trimD = {}
+    for entry in alignment:
+        trimD[entry.id] = []
+    logArr = []
+
+    return keepD, trimD, logArr
+
+## Function to join the elements of keepD and trimD into a nicer
+## arrangement of key value pairs
+def join_keepD_and_trimD(
+    keepD, trimD
+    ):
+    """
+    Currently, each position is its own element. This function
+    will join those elements into one string.
+
+    Arguments
+    ---------
+    argv: keepD
+        dictionary of sequences to be kept after trimmed
+    argv: trimD
+        dictionary of sequences to be trimmed off
+    """
+
+    # join elements in value lists in keepD and trimD 
+    for k, v in keepD.items():
+        keepD[k] = ''.join(v)
+    for k, v in trimD.items():
+        trimD[k] = ''.join(v)
+
+    return keepD, trimD
+
 
 ## Function to determine which positions of an alignment should be 
 ## kept or trimmed 
@@ -110,19 +157,15 @@ def keep_trim_and_log(
         biopython multiple sequence alignment object
     argv: gaps
         gaps threshold to determine if a position is too gappy or not
+    argv: mode
+        mode of how to trim alignment
     """
 
     # initialize dictionaries that will eventually be populated with
     # alignment positions to keep or trim (keys) and the sequence at
     # that position (values). Also, initialize a list of log information
     # that will be kept in an array format
-    keepD = {}
-    for entry in alignment:
-        keepD[entry.id] = []
-    trimD = {}
-    for entry in alignment:
-        trimD[entry.id] = []
-    logArr = []
+    keepD, trimD, logArr = populate_empty_keepD_and_trimD(alignment)
 
     # loop through alignment
     for i in range(0, alignment.get_alignment_length(), int(1)):
@@ -130,11 +173,7 @@ def keep_trim_and_log(
         # save the sequence at the position to a string and calculate the gappyness of the site
         seqAtPosition, gappyness = get_sequence_at_position_and_report_features(alignment, i)
 
-        ## determine if the site is parsimony informative 
-        ## "A site is parsimony-informative if it contains at least two types of nucleotides 
-        ## (or amino acids), and at least two of them occur with a minimum frequency of two."
-        ## https://www.megasoftware.net/web_help_7/rh_parsimony_informative_site.htm
-
+        ## determine if the site is parsimony informative and trim accordingly
         # Create a dictionary that tracks the number of occurences of each character 
         # excluding gaps or '-'
         numOccurences = count_characters_at_position(seqAtPosition)
@@ -142,117 +181,26 @@ def keep_trim_and_log(
         # if the number of values that are greater than two 
         # in the numOccurences dictionary is greater than two, 
         # the site is parsimony informative
-        d = dict((k, v) for k, v in numOccurences.items() if v >= 2)
-        if len(d) >= 2:
-            parsimony_informative = True
-        else:
-            parsimony_informative = False
+        parsimony_informative = determine_if_parsimony_informative(numOccurences)
 
+        # depending on the mode, trim the alignment
         if mode == 'kpi-gappy':
-            # if gappyness is lower than gaps threshold and the site is
-            # parismony informative, save to keepD. Otherwise, save to trimD.
-            # All the while, save information to logD
-            if gappyness <= gaps and parsimony_informative:
-                # save to keepD
-                for entry in alignment:
-                    keepD[entry.id].append(entry.seq._data[i])
-                # save to logL - structure is site, parsimony informative (PI) or not (nPI)
-                # gappyness, kept or trimmed
-                temp = []
-                temp.append(str(i+1))
-                temp.append('keep')
-                temp.append("PI")
-                temp.append(str(gappyness))
-                logArr.append(temp)
-            else:
-                # save to trimD 
-                for entry in alignment:
-                    trimD[entry.id].append(entry.seq._data[i])
-                # save to logL - structure is site, parsimony informative (PI) or not (nPI)
-                # gappyness, kept or trimmed
-                temp = []
-                temp.append(str(i+1))
-                temp.append('trim')
-                temp.append("nPI")
-                temp.append(str(gappyness))
-                logArr.append(temp)
+            keepD, trimD, logArr = kpi_gappy_mode(
+                gappyness, parsimony_informative, 
+                keepD, trimD, logArr, i, gaps, alignment
+                )
         elif mode == 'gappy':
-            # if gappyness is lower than gaps threshold and the site is
-            # parismony informative, save to keepD. Otherwise, save to trimD.
-            # All the while, save information to logD
-            if gappyness <= gaps:
-                # save to keepD
-                for entry in alignment:
-                    keepD[entry.id].append(entry.seq._data[i])
-                # save to logL - structure is site, parsimony informative (PI) or not (nPI)
-                # gappyness, kept or trimmed
-                if parsimony_informative:
-                    temp = []
-                    temp.append(str(i+1))
-                    temp.append('keep')
-                    temp.append("PI")
-                    temp.append(str(gappyness))
-                    logArr.append(temp)
-                else: 
-                    temp = []
-                    temp.append(str(i+1))
-                    temp.append('keep')
-                    temp.append("nPI")
-                    temp.append(str(gappyness))
-                    logArr.append(temp)
-            else:
-                # save to trimD 
-                for entry in alignment:
-                    trimD[entry.id].append(entry.seq._data[i])
-                # save to logL - structure is site, parsimony informative (PI) or not (nPI)
-                # gappyness, kept or trimmed
-                if parsimony_informative:
-                    temp = []
-                    temp.append(str(i+1))
-                    temp.append('trim')
-                    temp.append("PI")
-                    temp.append(str(gappyness))
-                    logArr.append(temp)
-                else: 
-                    temp = []
-                    temp.append(str(i+1))
-                    temp.append('trim')
-                    temp.append("nPI")
-                    temp.append(str(gappyness))
-                    logArr.append(temp)
-        
+            keepD, trimD, logArr = gappy_mode(
+                gappyness, parsimony_informative, 
+                keepD, trimD, logArr, i, gaps, alignment
+                )
         elif mode == 'kpi':
-            # if site is parismony informative, save to keepD. 
-            # Otherwise, save to trimD.
-            # All the while, save information to logD
-            if parsimony_informative:
-                # save to keepD
-                for entry in alignment:
-                    keepD[entry.id].append(entry.seq._data[i])
- 
-                temp = []
-                temp.append(str(i+1))
-                temp.append('keep')
-                temp.append("PI")
-                temp.append(str(gappyness))
-                logArr.append(temp)
+            keepD, trimD, logArr = kpi_mode(
+                gappyness, parsimony_informative,
+                keepD, trimD, logArr, i, gaps, alignment
+                )
 
-            else:
-                # save to trimD 
-                for entry in alignment:
-                    trimD[entry.id].append(entry.seq._data[i])
-
-                temp = []
-                temp.append(str(i+1))
-                temp.append('trim')
-                temp.append("nPI")
-                temp.append(str(gappyness))
-                logArr.append(temp)
-            
     # join elements in value lists in keepD and trimD 
-    for k, v in keepD.items():
-        keepD[k] = ''.join(v)
-    for k, v in trimD.items():
-        trimD[k] = ''.join(v)
+    keepD, trimD = join_keepD_and_trimD(keepD, trimD)
 
-    return(keepD, trimD, logArr)
+    return keepD, trimD, logArr

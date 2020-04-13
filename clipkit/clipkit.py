@@ -10,7 +10,9 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from .helpers import automatic_file_type_determination, keep_trim_and_log
+from .helpers import keep_trim_and_log
+from .files import automatic_file_type_determination
+from .files import help_wrong_file_format
 
 ####################################################################
 ### Master execute Function                                      ###
@@ -73,30 +75,8 @@ def execute(
 ### END Master execute Function 					             ###
 ####################################################################
 
-
-## Print help message if an invalid string was used to specify
-## the input or output file format
-def help_wrong_file_format(
-	fileFormat
-    ):
-    """
-    Prints a message that the wrong file format was specified
-    and then prints out a list of acceptable file formats
-
-    Arguments
-    ---------
-    argv: fileFormat
-        user specified input or output file format  
-    """
-
-    print("\n")
-    print(fileFormat, "is not an accepted alignment format. Accepted alignment formats are:")
-    print("'fasta', 'clustal', 'maf', 'mauve', 'phylip', 'phylip-sequential', 'phylip-relaxed', 'stockholm'\n")
-    print("For more help, use the -h/--help argument\n")
-    
-
 ####################################################################
-### Functions that read the input files and create output        ###
+### Function that read the input files and create output         ###
 ### Input files include gene trees and species tree              ###
 ### Output is printed to stdout                                  ###
 ####################################################################
@@ -215,14 +195,14 @@ will...""")
     else:
         complement = False
     
-    fileFormats = ['fasta', 'clustal', 'maf', 'mauve', 'phylip', 'phylip-sequential', 'phylip-relaxed', 'stockholm']
+    fileFormats = ['fasta', 'clustal', 'maf', 'mauve', 'phylip',
+        'phylip-sequential', 'phylip-relaxed', 'stockholm']
     if args.input_file_format:
         inFileFormat = args.input_file_format
         
         if inFileFormat not in fileFormats:
             help_wrong_file_format(inFileFormat)
             sys.exit()
-
     else:
         inFileFormat = 'NA'
 
