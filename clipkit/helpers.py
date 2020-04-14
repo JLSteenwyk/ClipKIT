@@ -1,6 +1,12 @@
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.Align import MultipleSeqAlignment
+
 from .modes import kpi_gappy_mode
 from .modes import gappy_mode
 from .modes import kpi_mode
+from .files import FileFormat
 
 ####################################################################
 ### Supporting Functions 	                                     ###
@@ -139,6 +145,58 @@ def join_keepD_and_trimD(
 
     return keepD, trimD
 
+## Function to write out keepD to output file
+# TODO: write unit test
+def write_keepD(
+    keepD,
+    outFile,
+    outFileFormat: FileFormat
+    ):
+    """
+    This creates a biopython multisequence alignment object. Object
+    is populated with sites that are kept after trimming is finished
+
+    Arguments
+    ---------
+    argv: keepD
+        dictionary of sites that are kept in resulting alignment
+    argv: outFile
+        name of the output file
+    argv: outFileFormat
+        output file format
+    """
+
+    seqList = []
+    for indiv, seq in keepD.items():
+        seqList.append(SeqRecord(Seq(str(keepD[indiv])), id=str(indiv), description=''))
+    keepMSA = MultipleSeqAlignment(seqList)
+    SeqIO.write(keepMSA, outFile, outFileFormat.value)
+
+## Function to write out trimD to output file
+# TODO: write unit test
+def write_trimD(
+    trimD, completmentOut, outFileFormat
+    ):
+    """
+    This creates a biopython multisequence alignment object. Object
+    is populated with sites that are trimmed after trimming is finished
+
+    Arguments
+    ---------
+    argv: trimD
+        dictionary of sites that are trimmed in final alignment
+    argv: complementOut
+        name of complementary output file
+    argv: outFileFormat
+        file format of complementary output file
+    """
+
+    seqList = []
+    for indiv, seq in keepD.items():
+        seqList.append(SeqRecord(Seq(str(trimD[indiv])), id=str(indiv), description=''))
+    trimMSA = MultipleSeqAlignment(seqList)
+    completmentOut = str(outFile) + ".complement"
+    SeqIO.write(trimMSA, completmentOut, outFileFormat)
 
 ## Function to determine which positions of an alignment should be 
 ## kept or trimmed 

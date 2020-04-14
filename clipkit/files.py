@@ -1,4 +1,21 @@
+import logging
+from enum import Enum
+
 from Bio import AlignIO
+
+log = logging.getLogger(__name__)
+
+
+class FileFormat(Enum):
+    fasta = 'fasta'
+    clustal = 'clustal'
+    maf = 'maf'
+    mauve = 'mauve'
+    phylip = 'phylip'
+    phylip_seq = 'phylip-sequential'
+    phylip_rel = 'phylip-relaxed'
+    stockholm = 'stockholm'
+
 
 ## Function to automatically determine the format of the alignment file
 ## and read in the alignment. Returns alignment object and fileFormat
@@ -16,8 +33,7 @@ def automatic_file_type_determination(
     """
 
     # save list of different file formats
-    fileFormats = ['fasta', 'clustal', 'maf', 'mauve',
-        'phylip', 'phylip-sequential', 'phylip-relaxed', 'stockholm']
+    fileFormats = [file_format.value for file_format in FileFormat]
 
     # loop through file formats and attempt to read in file in that format
     for fileFormat in fileFormats:
@@ -47,7 +63,7 @@ def help_wrong_file_format(
         user specified input or output file format  
     """
 
-    print("\n")
-    print(fileFormat, "is not an accepted alignment format. Accepted alignment formats are:")
-    print("'fasta', 'clustal', 'maf', 'mauve', 'phylip', 'phylip-sequential', 'phylip-relaxed', 'stockholm'\n")
-    print("For more help, use the -h/--help argument\n")
+    log.info("\n")
+    log.info(fileFormat, "is not an accepted alignment format. Accepted alignment formats are:")
+    log.info("'fasta', 'clustal', 'maf', 'mauve', 'phylip', 'phylip-sequential', 'phylip-relaxed', 'stockholm'\n")
+    log.info("For more help, use the -h/--help argument\n")
