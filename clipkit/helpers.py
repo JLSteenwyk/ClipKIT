@@ -192,7 +192,7 @@ def write_trimD(
     """
 
     seqList = []
-    for indiv, seq in keepD.items():
+    for indiv, seq in trimD.items():
         seqList.append(SeqRecord(Seq(str(trimD[indiv])), id=str(indiv), description=''))
     trimMSA = MultipleSeqAlignment(seqList)
     completmentOut = str(outFile) + ".complement"

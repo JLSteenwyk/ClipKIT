@@ -1,14 +1,25 @@
 import pytest
+
 from Bio import AlignIO
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.Align import MultipleSeqAlignment
 from pathlib import Path
 
-here = Path(__file__)
+from clipkit.helpers import (
+    count_characters_at_position,
+    get_sequence_at_position_and_report_features,
+    determine_if_parsimony_informative,
+    populate_empty_keepD_and_trimD,
+    join_keepD_and_trimD,
+    write_trimD,
+    write_keepD
+    )
+from .files import FileFormat
 
-from clipkit.helpers import count_characters_at_position
-from clipkit.helpers import get_sequence_at_position_and_report_features
-from clipkit.helpers import determine_if_parsimony_informative
-from clipkit.helpers import populate_empty_keepD_and_trimD
-from clipkit.helpers import join_keepD_and_trimD
+
+here = Path(__file__)
 
 class TestCountCharactersAtPosition(object):
 
@@ -114,3 +125,25 @@ class TestJoinKeepDAndTrimD(object):
 
         assert expected_keepD == keepD
         assert expected_trimD == trimD
+
+## TODO: finish writing
+class TestWriteTrimD(object):
+
+    def test_write_trimD(self):
+        ## set up
+        keepD = {'1': 'A-GTAT',
+            '2': 'A-G-AT',
+            '3': 'A-G-TA',
+            '4': 'AGA-TA',
+            '5': 'ACa-T-'
+            }
+        outFile = 'output_file_name.fa'
+        outFileFormat = 'fasta'
+
+        ## execution
+        write_trimD(trimD, outFile, outFileFormat)
+
+        ## check results
+        assert len(seqList) == len
+
+        
