@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import logging
+
 import sys
 import getopt
 import os.path
@@ -9,10 +11,11 @@ from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 from argparse import ArgumentParser, RawTextHelpFormatter
+from .helpers import keep_trim_and_log, write_keepD, write_trimD
+from .files import automatic_file_type_determination, help_wrong_file_format, FileFormat
+from .modes import Mode
 
-from .helpers import keep_trim_and_log
-from .files import automatic_file_type_determination
-from .files import help_wrong_file_format
+log = logging.getLogger(__name__)
 
 ####################################################################
 ### Master execute Function                                      ###
@@ -25,21 +28,21 @@ def execute(
     log,
     gaps,
     complement,
-    inFileFormat,
-    outFileFormat,
-    mode
+    inFileFormat: FileFormat,
+    outFileFormat: FileFormat,
+    mode: Mode
     ):
     """
     """
 
     # read in alignment and save the format of the alignment
-    if inFileFormat != 'NA':
+    if inFileFormat:
         alignment = AlignIO.read(open(inFile), inFileFormat)
-    elif inFileFormat == 'NA':
+    else:
         alignment, inFileFormat = automatic_file_type_determination(inFile)
     
     # set output file format if not specified
-    if outFileFormat == 'NA':
+    if outFileFormat:
         outFileFormat = inFileFormat
 
     # create dictionaries of sequences to keep or trim from the alignment
@@ -47,29 +50,21 @@ def execute(
 
     # convert keepD and trimD to multiple sequence alignment objects
     # and write out file
-    seqList = []
-    for indiv, seq in keepD.items():
-        seqList.append(SeqRecord(Seq(str(keepD[indiv])), id=str(indiv), description=''))
-    keepMSA = MultipleSeqAlignment(seqList)
-    SeqIO.write(keepMSA, outFile, outFileFormat)
+    write_keepD(keepD, outFile, outFileFormat)
     
     # if the -c/--complementary argument was used, 
     # create an alignment of the trimmed sequences
     if complement:
-        seqList = []
-        for indiv, seq in keepD.items():
-            seqList.append(SeqRecord(Seq(str(trimD[indiv])), id=str(indiv), description=''))
-        trimMSA = MultipleSeqAlignment(seqList)
-        completmentOut = str(outFile) + ".complement"
-        SeqIO.write(trimMSA, completmentOut, outFileFormat)
+        write_trimD(trimD, completmentOut, outFileFormat)
 
     # if the -l/--log argument was used,
     # create a log file with information about each
     # position in the alignment
-    if log:
-        outFileLog = outFile + ".log"
-        with open(outFileLog, 'w+') as f:
-            f.writelines('\t'.join(entry)+'\n' for entry in logArr)
+    # TODO: handle log output with Python logger
+    # if log:
+    #     outFileLog = outFile + ".log"
+    #     with open(outFileLog, 'w+') as f:
+    #         f.writelines('\t'.join(entry)+'\n' for entry in logArr)
 
 ####################################################################
 ### END Master execute Function 					             ###
@@ -172,7 +167,7 @@ will...""")
     outFile = args.output
 
     if inFile == outFile:
-        print("Input and output files can't have the same name.")
+        log.info("Input and output files can't have the same name.")
         sys.exit()
 
     ## assign optional arguments
@@ -195,8 +190,7 @@ will...""")
     else:
         complement = False
     
-    fileFormats = ['fasta', 'clustal', 'maf', 'mauve', 'phylip',
-        'phylip-sequential', 'phylip-relaxed', 'stockholm']
+    fileFormats = [file_format.value for file_format in FileFormat]
     if args.input_file_format:
         inFileFormat = args.input_file_format
         
@@ -204,7 +198,7 @@ will...""")
             help_wrong_file_format(inFileFormat)
             sys.exit()
     else:
-        inFileFormat = 'NA'
+        inFileFormat = None
 
     if args.output_file_format:
         outFileFormat = args.output_file_format
@@ -213,7 +207,7 @@ will...""")
             help_wrong_file_format(outFileFormat)
             sys.exit()
     else:
-        outFileFormat = 'NA'
+        outFileFormat = None
 
     # pass to master execute function
     execute(
@@ -229,3 +223,11 @@ will...""")
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+
+
+
+# clipkit input_path
+# clipkit input_path output_path
+# cliplit input_path -o output_path
+# cliplit -i input_path -o output_path
+# cliplit ... -m mode , ..., 

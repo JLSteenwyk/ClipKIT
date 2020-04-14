@@ -1,3 +1,5 @@
+from enum import Enum
+
 ####################################################################
 ### Mode Functions 	                                             ###
 ### This block of code contains all functions that populate      ###
@@ -5,6 +7,12 @@
 ### set mode                                           			 ###
 ####################################################################
 
+class Mode(Enum):
+    kpi_gappy = 'kpi-gappy'
+    kpi = 'kpi'
+    gappy = 'gappy'
+
+#TODO: fix to work with Mode Enum
 def kpi_gappy_mode(
     gappyness, parsimony_informative, 
     keepD, trimD, logArr, i, gaps, alignment
