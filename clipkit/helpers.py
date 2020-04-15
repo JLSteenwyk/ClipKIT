@@ -3,9 +3,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
-from .modes import kpi_gappy_mode
-from .modes import gappy_mode
-from .modes import kpi_mode
+from .modes import TrimmingMode
 from .files import FileFormat
 
 ####################################################################
@@ -146,7 +144,7 @@ def join_keepD_and_trimD(
     return keepD, trimD
 
 ## Function to write out keepD to output file
-# TODO: write unit test
+# TODO: Thomas - write unit test
 def write_keepD(
     keepD,
     outFile,
@@ -173,7 +171,7 @@ def write_keepD(
     SeqIO.write(keepMSA, outFile, outFileFormat.value)
 
 ## Function to write out trimD to output file
-# TODO: write unit test
+# TODO: Jacob - write unit test -- Done
 def write_trimD(
     trimD, outFileFormat, outFile
     ):
@@ -241,17 +239,19 @@ def keep_trim_and_log(
         parsimony_informative = determine_if_parsimony_informative(numOccurences)
 
         # depending on the mode, trim the alignment
-        if mode == 'kpi-gappy':
+        # Thomas - I am double checking if I have referred to 
+        # the TrimmingMode Enum correctly
+        if mode == TrimmingMode.kpi_gappy.value:
             keepD, trimD, logArr = kpi_gappy_mode(
                 gappyness, parsimony_informative, 
                 keepD, trimD, logArr, i, gaps, alignment
                 )
-        elif mode == 'gappy':
+        elif mode == TrimmingMode.gappy.value:
             keepD, trimD, logArr = gappy_mode(
                 gappyness, parsimony_informative, 
                 keepD, trimD, logArr, i, gaps, alignment
                 )
-        elif mode == 'kpi':
+        elif mode == TrimmingMode.kpi.value:
             keepD, trimD, logArr = kpi_mode(
                 gappyness, parsimony_informative,
                 keepD, trimD, logArr, i, gaps, alignment

@@ -125,10 +125,9 @@ class TestJoinKeepDAndTrimD(object):
         assert expected_keepD == keepD
         assert expected_trimD == trimD
 
-## TODO: finish writing
 class TestWriteTrimD(object):
-
-    def test_write_trimD(self, mocker):
+    
+    def test_write_trimD_calls_seqio_write(self, mocker):
         ## set up
         trimD = {
             '1':['A'],
@@ -165,16 +164,16 @@ class TestWriteTrimD(object):
                 name='<unknown name>',
                 description='',
                 dbxrefs=[])]
-                )
-        fake_msa.__repr__ = 'a3c184c'
-        mock_msa = mocker.patch('Bio.Align.MultipleSeqAlignment')
-        mock_msa.return_value = (f"{here.parent}/examples/simple.fa", "fasta")
+        )
+        mock_msa = mocker.patch('clipkit.helpers.MultipleSeqAlignment')
+        mock_msa.return_value = fake_msa
         mock_write = mocker.patch("Bio.SeqIO.write")
 
         ## execution
         write_trimD(trimD, outFileFormat, outFile)
 
         ## check results
-        mock_write.assert_called_once_with(fake_msa, f"${outFile}.complement", outFileFormat)
+        expected_completmentOut = f"{outFile}.complement"
+        mock_write.assert_called_once_with(fake_msa, expected_completmentOut, outFileFormat)
 
         
