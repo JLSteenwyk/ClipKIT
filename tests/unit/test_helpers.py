@@ -1,4 +1,5 @@
 import pytest
+import pytest_mock
 
 from Bio import AlignIO
 from Bio import SeqIO
@@ -7,16 +8,14 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 from pathlib import Path
 
-from clipkit.helpers import (
-    count_characters_at_position,
-    get_sequence_at_position_and_report_features,
-    determine_if_parsimony_informative,
-    populate_empty_keepD_and_trimD,
-    join_keepD_and_trimD,
-    write_trimD,
-    write_keepD
-    )
-from .files import FileFormat
+from clipkit.helpers import count_characters_at_position
+from clipkit.helpers import get_sequence_at_position_and_report_features
+from clipkit.helpers import determine_if_parsimony_informative
+from clipkit.helpers import populate_empty_keepD_and_trimD
+from clipkit.helpers import join_keepD_and_trimD
+from clipkit.helpers import write_trimD
+from clipkit.helpers import write_keepD
+from clipkit.files import FileFormat
 
 
 here = Path(__file__)
@@ -129,21 +128,53 @@ class TestJoinKeepDAndTrimD(object):
 ## TODO: finish writing
 class TestWriteTrimD(object):
 
-    def test_write_trimD(self):
+    def test_write_trimD(self, mocker):
         ## set up
-        keepD = {'1': 'A-GTAT',
-            '2': 'A-G-AT',
-            '3': 'A-G-TA',
-            '4': 'AGA-TA',
-            '5': 'ACa-T-'
+        trimD = {
+            '1':['A'],
+            '2':['A'],
+            '3':['A'],
+            '4':['A'],
+            '5':['A']
             }
         outFile = 'output_file_name.fa'
         outFileFormat = 'fasta'
+        fake_msa = MultipleSeqAlignment(
+            [SeqRecord(seq=Seq("['A']"),
+                id='1',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[]), 
+            SeqRecord(seq=Seq("['A']"),
+                id='2',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[]),
+                SeqRecord(seq=Seq("['A']"),
+                id='3',
+                name='<unknown name>',
+                description='', 
+                dbxrefs=[]),
+            SeqRecord(seq=Seq("['A']"),
+                id='4',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[]),
+            SeqRecord(seq=Seq("['A']"),
+                id='5',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[])]
+                )
+        fake_msa.__repr__ = 'a3c184c'
+        mock_msa = mocker.patch('Bio.Align.MultipleSeqAlignment')
+        mock_msa.return_value = (f"{here.parent}/examples/simple.fa", "fasta")
+        mock_write = mocker.patch("Bio.SeqIO.write")
 
         ## execution
-        write_trimD(trimD, outFile, outFileFormat)
+        write_trimD(trimD, outFileFormat, outFile)
 
         ## check results
-        assert len(seqList) == len
+        mock_write.assert_called_once_with(fake_msa, f"${outFile}.complement", outFileFormat)
 
         

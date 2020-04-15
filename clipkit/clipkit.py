@@ -55,7 +55,7 @@ def execute(
     # if the -c/--complementary argument was used, 
     # create an alignment of the trimmed sequences
     if complement:
-        write_trimD(trimD, completmentOut, outFileFormat)
+        write_trimD(trimD, outFileFormat, outFile)
 
     # if the -l/--log argument was used,
     # create a log file with information about each

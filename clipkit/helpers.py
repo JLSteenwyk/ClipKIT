@@ -175,7 +175,7 @@ def write_keepD(
 ## Function to write out trimD to output file
 # TODO: write unit test
 def write_trimD(
-    trimD, completmentOut, outFileFormat
+    trimD, outFileFormat, outFile
     ):
     """
     This creates a biopython multisequence alignment object. Object
@@ -185,10 +185,9 @@ def write_trimD(
     ---------
     argv: trimD
         dictionary of sites that are trimmed in final alignment
-    argv: complementOut
-        name of complementary output file
     argv: outFileFormat
         file format of complementary output file
+    argv: name of output file
     """
 
     seqList = []

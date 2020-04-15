@@ -5,7 +5,7 @@ from Bio import AlignIO
 
 log = logging.getLogger(__name__)
 
-
+## Class to hold all file formats
 class FileFormat(Enum):
     fasta = 'fasta'
     clustal = 'clustal'
@@ -47,6 +47,7 @@ def automatic_file_type_determination(
             continue
         except AssertionError:
             continue
+
 
 ## Print help message if an invalid string was used to specify
 ## the input or output file format
