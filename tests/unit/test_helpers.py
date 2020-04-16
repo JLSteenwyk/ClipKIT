@@ -20,6 +20,39 @@ from clipkit.files import FileFormat
 
 here = Path(__file__)
 
+
+@pytest.fixture
+def sample_msa():
+    return MultipleSeqAlignment(
+        [SeqRecord(seq=Seq("['A']"),
+            id='1',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+        SeqRecord(seq=Seq("['A']"),
+            id='2',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+            SeqRecord(seq=Seq("['A']"),
+            id='3',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+        SeqRecord(seq=Seq("['A']"),
+            id='4',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+        SeqRecord(seq=Seq("['A']"),
+            id='5',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[])]
+    )
+
+
+
 class TestCountCharactersAtPosition(object):
 
     def test_gives_count_for_each_char(self):
@@ -124,6 +157,31 @@ class TestJoinKeepDAndTrimD(object):
 
         assert expected_keepD == keepD
         assert expected_trimD == trimD
+
+
+class TestWriteKeepD(object):
+
+    def test_write_keepD_writes_file(self, mocker, sample_msa):
+        ## set up
+        keepD = {
+            '1':['A'],
+            '2':['A'],
+            '3':['A'],
+            '4':['A'],
+            '5':['A']
+            }
+        out_file = 'output_file_name.fa'
+        out_file_format = FileFormat.fasta
+        mock_msa = mocker.patch('clipkit.helpers.MultipleSeqAlignment')
+        mock_msa.return_value = sample_msa
+        mock_write = mocker.patch("clipkit.helpers.SeqIO.write")
+
+        ## execution
+        write_keepD(keepD, out_file, out_file_format)
+
+        ## check results
+        mock_write.assert_called_once_with(sample_msa, out_file, out_file_format.value)
+
 
 class TestWriteTrimD(object):
     
