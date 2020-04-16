@@ -8,6 +8,11 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 from pathlib import Path
 
+from Bio import AlignIO
+from pathlib import Path
+
+here = Path(__file__)
+
 from clipkit.helpers import count_characters_at_position
 from clipkit.helpers import get_sequence_at_position_and_report_features
 from clipkit.helpers import determine_if_parsimony_informative
@@ -50,7 +55,6 @@ def sample_msa():
             description='',
             dbxrefs=[])]
     )
-
 
 
 class TestCountCharactersAtPosition(object):
@@ -233,5 +237,3 @@ class TestWriteTrimD(object):
         ## check results
         expected_completmentOut = f"{outFile}.complement"
         mock_write.assert_called_once_with(fake_msa, expected_completmentOut, outFileFormat)
-
-        

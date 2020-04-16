@@ -3,6 +3,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
+
 from .modes import TrimmingMode
 from .files import FileFormat
 
@@ -145,6 +146,7 @@ def join_keepD_and_trimD(
 
 ## Function to write out keepD to output file
 # TODO: Thomas - write unit test
+
 def write_keepD(
     keepD,
     outFile,
@@ -171,9 +173,11 @@ def write_keepD(
     SeqIO.write(keepMSA, outFile, outFileFormat.value)
 
 ## Function to write out trimD to output file
+
 # TODO: Jacob - write unit test -- Done
 def write_trimD(
     trimD, outFileFormat, outFile
+
     ):
     """
     This creates a biopython multisequence alignment object. Object
@@ -228,10 +232,13 @@ def keep_trim_and_log(
         # save the sequence at the position to a string and calculate the gappyness of the site
         seqAtPosition, gappyness = get_sequence_at_position_and_report_features(alignment, i)
 
+
         ## determine if the site is parsimony informative and trim accordingly
         # Create a dictionary that tracks the number of occurences of each character 
         # excluding gaps or '-'
+
         numOccurences = count_characters_at_position(seqAtPosition)
+
 
         # if the number of values that are greater than two 
         # in the numOccurences dictionary is greater than two, 
@@ -242,16 +249,20 @@ def keep_trim_and_log(
         # Thomas - I am double checking if I have referred to 
         # the TrimmingMode Enum correctly
         if mode == TrimmingMode.kpi_gappy.value:
+
             keepD, trimD, logArr = kpi_gappy_mode(
                 gappyness, parsimony_informative, 
                 keepD, trimD, logArr, i, gaps, alignment
                 )
+
         elif mode == TrimmingMode.gappy.value:
             keepD, trimD, logArr = gappy_mode(
                 gappyness, parsimony_informative, 
                 keepD, trimD, logArr, i, gaps, alignment
                 )
+
         elif mode == TrimmingMode.kpi.value:
+
             keepD, trimD, logArr = kpi_mode(
                 gappyness, parsimony_informative,
                 keepD, trimD, logArr, i, gaps, alignment

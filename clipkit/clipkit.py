@@ -13,7 +13,9 @@ from Bio.Align import MultipleSeqAlignment
 from argparse import ArgumentParser, RawTextHelpFormatter
 from .helpers import keep_trim_and_log, write_keepD, write_trimD
 from .files import automatic_file_type_determination, help_wrong_file_format, FileFormat
+
 from .modes import TrimmingMode
+
 
 log = logging.getLogger(__name__)
 
@@ -57,6 +59,7 @@ def execute(
     if complement:
         write_trimD(trimD, outFileFormat, outFile)
 
+
     # if the -l/--log argument was used,
     # create a log file with information about each
     # position in the alignment
@@ -81,6 +84,7 @@ def main(
     """
     Parses arguments 
     """
+    
     # TODO: refactor arg parsing
     if not argv:
         argv = sys.argv[1:]
@@ -177,6 +181,7 @@ will...""")
         # Thomas -- I double checking that this 
         # is the right way to refer to an enum
         mode = TrimmingMode.gappy.value
+
     if args.log:
         log = args.log
     else:

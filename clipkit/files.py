@@ -48,7 +48,6 @@ def automatic_file_type_determination(
         except AssertionError:
             continue
 
-
 ## Print help message if an invalid string was used to specify
 ## the input or output file format
 def help_wrong_file_format(
