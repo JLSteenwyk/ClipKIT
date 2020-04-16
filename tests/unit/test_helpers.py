@@ -1,4 +1,13 @@
 import pytest
+import pytest_mock
+
+from Bio import AlignIO
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.Align import MultipleSeqAlignment
+from pathlib import Path
+
 from Bio import AlignIO
 from pathlib import Path
 
@@ -9,6 +18,44 @@ from clipkit.helpers import get_sequence_at_position_and_report_features
 from clipkit.helpers import determine_if_parsimony_informative
 from clipkit.helpers import populate_empty_keepD_and_trimD
 from clipkit.helpers import join_keepD_and_trimD
+from clipkit.helpers import write_trimD
+from clipkit.helpers import write_keepD
+from clipkit.files import FileFormat
+
+
+here = Path(__file__)
+
+
+@pytest.fixture
+def sample_msa():
+    return MultipleSeqAlignment(
+        [SeqRecord(seq=Seq("['A']"),
+            id='1',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+        SeqRecord(seq=Seq("['A']"),
+            id='2',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+            SeqRecord(seq=Seq("['A']"),
+            id='3',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+        SeqRecord(seq=Seq("['A']"),
+            id='4',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[]),
+        SeqRecord(seq=Seq("['A']"),
+            id='5',
+            name='<unknown name>',
+            description='',
+            dbxrefs=[])]
+    )
+
 
 class TestCountCharactersAtPosition(object):
 
@@ -114,3 +161,79 @@ class TestJoinKeepDAndTrimD(object):
 
         assert expected_keepD == keepD
         assert expected_trimD == trimD
+
+
+class TestWriteKeepD(object):
+
+    def test_write_keepD_writes_file(self, mocker, sample_msa):
+        ## set up
+        keepD = {
+            '1':['A'],
+            '2':['A'],
+            '3':['A'],
+            '4':['A'],
+            '5':['A']
+            }
+        out_file = 'output_file_name.fa'
+        out_file_format = FileFormat.fasta
+        mock_msa = mocker.patch('clipkit.helpers.MultipleSeqAlignment')
+        mock_msa.return_value = sample_msa
+        mock_write = mocker.patch("clipkit.helpers.SeqIO.write")
+
+        ## execution
+        write_keepD(keepD, out_file, out_file_format)
+
+        ## check results
+        mock_write.assert_called_once_with(sample_msa, out_file, out_file_format.value)
+
+
+class TestWriteTrimD(object):
+    
+    def test_write_trimD_calls_seqio_write(self, mocker):
+        ## set up
+        trimD = {
+            '1':['A'],
+            '2':['A'],
+            '3':['A'],
+            '4':['A'],
+            '5':['A']
+            }
+        outFile = 'output_file_name.fa'
+        outFileFormat = 'fasta'
+        fake_msa = MultipleSeqAlignment(
+            [SeqRecord(seq=Seq("['A']"),
+                id='1',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[]), 
+            SeqRecord(seq=Seq("['A']"),
+                id='2',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[]),
+                SeqRecord(seq=Seq("['A']"),
+                id='3',
+                name='<unknown name>',
+                description='', 
+                dbxrefs=[]),
+            SeqRecord(seq=Seq("['A']"),
+                id='4',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[]),
+            SeqRecord(seq=Seq("['A']"),
+                id='5',
+                name='<unknown name>',
+                description='',
+                dbxrefs=[])]
+        )
+        mock_msa = mocker.patch('clipkit.helpers.MultipleSeqAlignment')
+        mock_msa.return_value = fake_msa
+        mock_write = mocker.patch("Bio.SeqIO.write")
+
+        ## execution
+        write_trimD(trimD, outFileFormat, outFile)
+
+        ## check results
+        expected_completmentOut = f"{outFile}.complement"
+        mock_write.assert_called_once_with(fake_msa, expected_completmentOut, outFileFormat)

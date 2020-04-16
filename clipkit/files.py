@@ -5,7 +5,7 @@ from Bio import AlignIO
 
 log = logging.getLogger(__name__)
 
-
+## Class to hold all file formats
 class FileFormat(Enum):
     fasta = 'fasta'
     clustal = 'clustal'

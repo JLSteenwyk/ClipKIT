@@ -7,12 +7,14 @@ from enum import Enum
 ### set mode                                           			 ###
 ####################################################################
 
-class Mode(Enum):
+
+class TrimmingMode(Enum):
     kpi_gappy = 'kpi-gappy'
     kpi = 'kpi'
     gappy = 'gappy'
 
-#TODO: fix to work with Mode Enum
+
+#TODO: Jacob - fix to work with Mode Enum -- Done
 def kpi_gappy_mode(
     gappyness, parsimony_informative, 
     keepD, trimD, logArr, i, gaps, alignment
