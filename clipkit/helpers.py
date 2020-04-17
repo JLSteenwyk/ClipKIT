@@ -117,9 +117,8 @@ def populate_empty_keepD_and_trimD(
     trimD = {}
     for entry in alignment:
         trimD[entry.id] = []
-    logArr = []
 
-    return keepD, trimD, logArr
+    return keepD, trimD
 
 ## Function to join the elements of keepD and trimD into a nicer
 ## arrangement of key value pairs
@@ -223,7 +222,7 @@ def keep_trim_and_log(
     # alignment positions to keep or trim (keys) and the sequence at
     # that position (values). Also, initialize a list of log information
     # that will be kept in an array format
-    keepD, trimD, logArr = populate_empty_keepD_and_trimD(alignment)
+    keepD, trimD = populate_empty_keepD_and_trimD(alignment)
 
     # loop through alignment
     for i in range(0, alignment.get_alignment_length(), int(1)):
@@ -243,25 +242,25 @@ def keep_trim_and_log(
         # depending on the mode, trim the alignment
         if mode == TrimmingMode.kpi_gappy:
 
-            keepD, trimD, logArr = kpi_gappy_mode(
+            keepD, trimD = kpi_gappy_mode(
                 gappyness, parsimony_informative, 
-                keepD, trimD, logArr, i, gaps, alignment
+                keepD, trimD, i, gaps, alignment
                 )
 
         elif mode == TrimmingMode.gappy:
-            keepD, trimD, logArr = gappy_mode(
+            keepD, trimD = gappy_mode(
                 gappyness, parsimony_informative, 
-                keepD, trimD, logArr, i, gaps, alignment
+                keepD, trimD, i, gaps, alignment
                 )
 
         elif mode == TrimmingMode.kpi:
 
-            keepD, trimD, logArr = kpi_mode(
+            keepD, trimD = kpi_mode(
                 gappyness, parsimony_informative,
-                keepD, trimD, logArr, i, gaps, alignment
+                keepD, trimD, i, gaps, alignment
                 )
 
     # join elements in value lists in keepD and trimD 
     keepD, trimD = join_keepD_and_trimD(keepD, trimD)
 
-    return keepD, trimD, logArr
+    return keepD, trimD
