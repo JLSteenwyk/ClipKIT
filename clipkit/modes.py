@@ -1,5 +1,8 @@
+import logging
+
 from enum import Enum
 
+logger = logging.getLogger('clipkit.clipkit')
 ####################################################################
 ### Mode Functions 	                                             ###
 ### This block of code contains all functions that populate      ###
@@ -17,7 +20,7 @@ class TrimmingMode(Enum):
 #TODO: Jacob - fix to work with Mode Enum -- Done
 def kpi_gappy_mode(
     gappyness, parsimony_informative, 
-    keepD, trimD, logArr, i, gaps, alignment
+    keepD, trimD, i, gaps, alignment
     ):
     """
     Trims according to the mode kpi-gappy wherein only parismony informative
@@ -33,9 +36,6 @@ def kpi_gappy_mode(
         dictionary for sites that will be kept in the resulting alignment
     argv: trimD
         dictionary for sites that will be removed from the final alignment
-    argv: logArr
-        array for keeping track of log information about whether
-        or not a site was trimmed or kept
     argv: i
         i is the position in the alignment that the loop is currently in
     argv: gaps
@@ -58,7 +58,7 @@ def kpi_gappy_mode(
         temp.append('keep')
         temp.append("PI")
         temp.append(str(gappyness))
-        # logArr.append(temp)
+        logger.info(temp)
     else:
         # save to trimD 
         for entry in alignment:
@@ -70,13 +70,13 @@ def kpi_gappy_mode(
         temp.append('trim')
         temp.append("nPI")
         temp.append(str(gappyness))
-        logArr.append(temp)
+        logger.info(temp)
     
-    return keepD, trimD, logArr
+    return keepD, trimD
 
 def gappy_mode(
     gappyness, parsimony_informative, 
-    keepD, trimD, logArr, i, gaps, alignment
+    keepD, trimD, i, gaps, alignment
     ):
     """
     Trims according to the mode gappy wherein sites that are sufficiently gappy 
@@ -92,9 +92,6 @@ def gappy_mode(
         dictionary for sites that will be kept in the resulting alignment
     argv: trimD
         dictionary for sites that will be removed from the final alignment
-    argv: logArr
-        array for keeping track of log information about whether
-        or not a site was trimmed or kept
     argv: i
         i is the position in the alignment that the loop is currently in
     argv: gaps
@@ -118,14 +115,14 @@ def gappy_mode(
             temp.append('keep')
             temp.append("PI")
             temp.append(str(gappyness))
-            logArr.append(temp)
+            logger.info(temp)
         else: 
             temp = []
             temp.append(str(i+1))
             temp.append('keep')
             temp.append("nPI")
             temp.append(str(gappyness))
-            logArr.append(temp)
+            logger.info(temp)
     else:
         # save to trimD 
         for entry in alignment:
@@ -138,20 +135,20 @@ def gappy_mode(
             temp.append('trim')
             temp.append("PI")
             temp.append(str(gappyness))
-            logArr.append(temp)
+            logger.info(temp)
         else: 
             temp = []
             temp.append(str(i+1))
             temp.append('trim')
             temp.append("nPI")
             temp.append(str(gappyness))
-            logArr.append(temp)
+            logger.info(temp)
     
-    return keepD, trimD, logArr
+    return keepD, trimD
 
 def kpi_mode(
     gappyness, parsimony_informative, 
-    keepD, trimD, logArr, i, gaps, alignment
+    keepD, trimD, i, gaps, alignment
     ):
     """
     Trims according to the mode gappy wherein sites that are sufficiently gappy 
@@ -167,9 +164,6 @@ def kpi_mode(
         dictionary for sites that will be kept in the resulting alignment
     argv: trimD
         dictionary for sites that will be removed from the final alignment
-    argv: logArr
-        array for keeping track of log information about whether
-        or not a site was trimmed or kept
     argv: i
         i is the position in the alignment that the loop is currently in
     argv: gaps
@@ -190,8 +184,7 @@ def kpi_mode(
         temp.append('keep')
         temp.append("PI")
         temp.append(str(gappyness))
-        logArr.append(temp)
-
+        logger.info(temp)
     else:
         # save to trimD 
         for entry in alignment:
@@ -202,6 +195,6 @@ def kpi_mode(
         temp.append('trim')
         temp.append("nPI")
         temp.append(str(gappyness))
-        logArr.append(temp)
-    
-    return keepD, trimD, logArr
+        logger.info(temp)
+
+    return keepD, trimD

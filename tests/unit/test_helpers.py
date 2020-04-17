@@ -123,7 +123,7 @@ class TestPopulateEmptyKeepDAndTrimD(object):
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
 
         ## execution
-        keepD, trimD, logArr = populate_empty_keepD_and_trimD(alignment)
+        keepD, trimD = populate_empty_keepD_and_trimD(alignment)
 
         ## check results
         expected_keepD = {"1": [], "2": [], "3": [], "4": [], "5": []}
@@ -131,7 +131,6 @@ class TestPopulateEmptyKeepDAndTrimD(object):
 
         assert expected_keepD == keepD
         assert expected_trimD == trimD
-        assert logArr == []
 
 
 class TestJoinKeepDAndTrimD(object):
