@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Tuple
 
 from Bio import AlignIO
 
@@ -20,7 +21,7 @@ class FileFormat(Enum):
 ## Function to automatically determine the format of the alignment file
 ## and read in the alignment. Returns alignment object and fileFormat
 def automatic_file_type_determination(
-    inFile
+    inFile: str
     ):
     """
     Automatically determines what type of input file was used
@@ -32,15 +33,11 @@ def automatic_file_type_determination(
         input file specified with -i, --input
     """
 
-    # save list of different file formats
-    fileFormats = [file_format.value for file_format in FileFormat]
-
     # loop through file formats and attempt to read in file in that format
-    for fileFormat in fileFormats:
+    for fileFormat in FileFormat:
         try:
-            alignment = AlignIO.read(open(inFile), fileFormat)
+            alignment = AlignIO.read(open(inFile), fileFormat.value)
             return alignment, fileFormat
-            break
         # the following exceptions refer to skipping over errors 
         # associated with reading the wrong input file
         except ValueError:
@@ -48,22 +45,4 @@ def automatic_file_type_determination(
         except AssertionError:
             continue
 
-## Print help message if an invalid string was used to specify
-## the input or output file format
-def help_wrong_file_format(
-	fileFormat
-    ):
-    """
-    Prints a message that the wrong file format was specified
-    and then prints out a list of acceptable file formats
-
-    Arguments
-    ---------
-    argv: fileFormat
-        user specified input or output file format  
-    """
-
-    log.info("\n")
-    log.info(fileFormat, "is not an accepted alignment format. Accepted alignment formats are:")
-    log.info("'fasta', 'clustal', 'maf', 'mauve', 'phylip', 'phylip-sequential', 'phylip-relaxed', 'stockholm'\n")
-    log.info("For more help, use the -h/--help argument\n")
+    raise Exception('Input file could not be read')
