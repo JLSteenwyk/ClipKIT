@@ -20,8 +20,9 @@ class FileFormat(Enum):
 
 ## Function to automatically determine the format of the alignment file
 ## and read in the alignment. Returns alignment object and fileFormat
-def automatic_file_type_determination(
-    inFile: str
+def get_alignment_and_format(
+    inFile: str,
+    file_format: FileFormat
     ):
     """
     Automatically determines what type of input file was used
@@ -33,16 +34,21 @@ def automatic_file_type_determination(
         input file specified with -i, --input
     """
 
-    # loop through file formats and attempt to read in file in that format
-    for fileFormat in FileFormat:
-        try:
-            alignment = AlignIO.read(open(inFile), fileFormat.value)
-            return alignment, fileFormat
-        # the following exceptions refer to skipping over errors 
-        # associated with reading the wrong input file
-        except ValueError:
-            continue
-        except AssertionError:
-            continue
+    # if file format is provided, read the file according to the user's file format
+    if file_format:
+        alignment = AlignIO.read(open(inFile), file_format.value)
+        return alignment, file_format
+    else:
+        # loop through file formats and attempt to read in file in that format
+        for fileFormat in FileFormat:
+            try:
+                alignment = AlignIO.read(open(inFile), fileFormat.value)
+                return alignment, fileFormat
+            # the following exceptions refer to skipping over errors 
+            # associated with reading the wrong input file
+            except ValueError:
+                continue
+            except AssertionError:
+                continue
 
-    raise Exception('Input file could not be read')
+        raise Exception('Input file could not be read')

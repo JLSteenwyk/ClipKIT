@@ -12,7 +12,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 from argparse import ArgumentParser, RawTextHelpFormatter
 from .helpers import keep_trim_and_log, write_keepD, write_trimD
-from .files import automatic_file_type_determination, FileFormat
+from .files import get_alignment_and_format, FileFormat
 
 from .modes import TrimmingMode
 
@@ -38,15 +38,7 @@ def execute(
     """
 
     # read in alignment and save the format of the alignment
-
-    ## TODO: Jacob -- Refactor with new argument to automatic_file_type_determination
-    ## def automatic_file_type_determination(inFile, file_format=None)
-    ## call it here with automatic_file_type_determination(inFile, file_format=inFileFormat)
-    ## rename function to also note that the alignment is read in -- e.g., get_alignment_and_format()
-    if inFileFormat:
-        alignment = AlignIO.read(open(inFile), inFileFormat)
-    else:
-        alignment, inFileFormat = automatic_file_type_determination(inFile)
+    alignment, inFileFormat = get_alignment_and_format(inFile, file_format=inFileFormat)
     
     # set output file format if not specified
     if not outFileFormat:
@@ -162,6 +154,12 @@ def main(
     args = parser.parse_args()
     inFile = args.input
     outFile = args.output or f"{inFile}.clipkit"
+
+    # TODO: add check that input file exists
+    # check that input file exists
+    if not os.path.isfile(inFile):
+        ck_log.info("Input file does not exist")
+        sys.exit()
 
     if inFile == outFile:
         ck_log.info("Input and output files can't have the same name.")

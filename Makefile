@@ -13,7 +13,14 @@ develop:
 	python setup.py develop
 
 test:
+	# update to run unit and then integration tests
 	python -m pytest
+
+test.unit:
+	echo "TODO"
+
+test.integration:
+	echo "TODO"
 
 test_default_params:
 	# test clipkit with default parameters
