@@ -276,17 +276,17 @@ def keep_trim_and_log(
                 logArr.append(temp)
             
     # join elements in value lists in keepD and trimD 
-    print(keepD)
-    print(trimD)
-    print(logArr)
+    # print(keepD)
+    # print(trimD)
+    # print(logArr)
     for k, v in keepD.items():
         keepD[k] = ''.join(v)
     for k, v in trimD.items():
         trimD[k] = ''.join(v)
 
-    print(keepD)
-    print(trimD)
-    print(logArr)
+    # print(keepD)
+    # print(trimD)
+    # print(logArr)
 
     return(keepD, trimD, logArr)
 

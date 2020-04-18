@@ -16,8 +16,6 @@ class TrimmingMode(Enum):
     kpi = 'kpi'
     gappy = 'gappy'
 
-
-#TODO: Jacob - fix to work with Mode Enum -- Done
 def kpi_gappy_mode(
     gappyness, parsimony_informative, 
     keepD, trimD, i, gaps, alignment
