@@ -105,6 +105,7 @@ def gappy_mode(
         # save to keepD
         for entry in alignment:
             keepD[entry.id].append(entry.seq._data[i])
+            
         # save to logL - structure is site, parsimony informative (PI) or not (nPI)
         # gappyness, kept or trimmed
         if parsimony_informative:
