@@ -9,6 +9,7 @@ from .modes import kpi_mode
 from .modes import TrimmingMode
 from .files import FileFormat
 
+
 ####################################################################
 ### Supporting Functions 	                                     ###
 ### This block of code contains all supporting functions that    ###
@@ -224,6 +225,7 @@ def keep_trim_and_log(
     # that will be kept in an array format
     keepD, trimD = populate_empty_keepD_and_trimD(alignment)
 
+    cdef int i = 0
     # loop through alignment
     for i in range(0, alignment.get_alignment_length(), int(1)):
         # save the sequence at the position to a string and calculate the gappyness of the site

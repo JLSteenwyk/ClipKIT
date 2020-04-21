@@ -5,7 +5,9 @@ import sys
 import getopt
 import os.path
 import textwrap
+import time
 
+# import pyximport; pyximport.install()
 from Bio import AlignIO
 from Bio.Seq import Seq
 from Bio import SeqIO
@@ -43,6 +45,10 @@ def execute(
     ):
     """
     """
+
+    # basic timing - wont be as accurate as timeit
+    t0 = time.time()
+
     # read in alignment and save the format of the alignment
     alignment, inFileFormat = get_alignment_and_format(inFile, file_format=inFileFormat)
 
@@ -61,6 +67,10 @@ def execute(
     # create an alignment of the trimmed sequences
     if complement:
         write_trimD(trimD, outFile, outFileFormat)
+
+    t1 = time.time()
+
+    print(f"Took: {t1-t0}")
 
 
 ####################################################################
