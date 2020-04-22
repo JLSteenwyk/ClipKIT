@@ -1,12 +1,10 @@
+import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
-from .modes import kpi_gappy_mode
-from .modes import gappy_mode
-from .modes import kpi_mode
-from .modes import TrimmingMode
+from .modes import TrimmingMode, trim
 from .files import FileFormat
 
 ####################################################################
@@ -16,12 +14,10 @@ from .files import FileFormat
 ####################################################################
 
 ## Function to get the sequence at a given column. Function
-## will also determine features of the position including 
+## will also determine features of the position including
 ## length and number of gaps.
 ## Support function for keep_trim_and_log()
-def get_sequence_at_position_and_report_features(
-    alignment, i
-    ):
+def get_sequence_at_position_and_report_features(alignment, i):
     """
     Count the occurence of each character at a given position
     in an alignment. This information is used to determine
@@ -34,24 +30,22 @@ def get_sequence_at_position_and_report_features(
         string that contains the sequence at a given column 
     """
 
-    # save the sequence at the position to a string 
-    seqAtPosition  = ''
+    # save the sequence at the position to a string
+    seqAtPosition = ""
     seqAtPosition += alignment[:, i]
-    seqAtPosition  = seqAtPosition.upper()
+    seqAtPosition = seqAtPosition.upper()
 
     # determine the length and number of gaps in an alignment position
     lengthOfSeq = len(seqAtPosition)
-    numOfGaps   = seqAtPosition.count('-')
-    gappyness   = numOfGaps/lengthOfSeq
+    numOfGaps = seqAtPosition.count("-")
+    gappyness = numOfGaps / lengthOfSeq
 
     return seqAtPosition, gappyness
 
 
 ## Function to count the number of occurences in each character
 ## Support function for keep_trim_and_log()
-def count_characters_at_position(
-    seqAtPosition
-    ):
+def count_characters_at_position(seqAtPosition):
     """
     Count the occurence of each character at a given position
     in an alignment. This information is used to determine
@@ -65,16 +59,14 @@ def count_characters_at_position(
     """
 
     numOccurences = {}
-    for char in set(seqAtPosition.replace('-','')): 
+    for char in set(seqAtPosition.replace("-", "")):
         numOccurences[char] = seqAtPosition.count(char)
     return numOccurences
 
 
 ## Function determine if a site is parsimony informative or not
 ## Support function for keep_trim_and_log()
-def determine_if_parsimony_informative(
-    numOccurences
-    ):
+def determine_if_parsimony_informative(numOccurences):
     """
     Determines if a site is parsimony informative.
     A site is parsimony-informative if it contains at least two types of nucleotides 
@@ -95,13 +87,12 @@ def determine_if_parsimony_informative(
 
     return parsimony_informative
 
-## Function to initialize and populate keepD and trimD with entry ids  
-## and empty list elements. This will eventually contain the 
+
+## Function to initialize and populate keepD and trimD with entry ids
+## and empty list elements. This will eventually contain the
 ## sequences that are trimmed or kept by clipkit. Lastly, initialize
 ## an array to keep log information
-def populate_empty_keepD_and_trimD(
-    alignment
-    ):
+def populate_empty_keepD_and_trimD(alignment):
     """
     Creates barebones dictionaries for sites kept and trimmed. Creates
     an array for keeping log information.
@@ -112,19 +103,19 @@ def populate_empty_keepD_and_trimD(
         biopython multiple sequence alignment object
     """
     keepD = {}
+    alignment_length = alignment.get_alignment_length()
     for entry in alignment:
-        keepD[entry.id] = []
+        keepD[entry.id] = np.empty([alignment_length], dtype=str)
     trimD = {}
     for entry in alignment:
-        trimD[entry.id] = []
+        trimD[entry.id] = np.empty([alignment_length], dtype=str)
 
     return keepD, trimD
 
+
 ## Function to join the elements of keepD and trimD into a nicer
 ## arrangement of key value pairs
-def join_keepD_and_trimD(
-    keepD, trimD
-    ):
+def join_keepD_and_trimD(keepD, trimD):
     """
     Currently, each position is its own element. This function
     will join those elements into one string.
@@ -137,20 +128,17 @@ def join_keepD_and_trimD(
         dictionary of sequences to be trimmed off
     """
 
-    # join elements in value lists in keepD and trimD 
+    # join elements in value lists in keepD and trimD
     for k, v in keepD.items():
-        keepD[k] = ''.join(v)
+        keepD[k] = "".join(v)
     for k, v in trimD.items():
-        trimD[k] = ''.join(v)
+        trimD[k] = "".join(v)
 
     return keepD, trimD
 
+
 ## Function to write out keepD to output file
-def write_keepD(
-    keepD,
-    outFile,
-    outFileFormat: FileFormat
-    ):
+def write_keepD(keepD, outFile, outFileFormat: FileFormat):
     """
     This creates a biopython multisequence alignment object. Object
     is populated with sites that are kept after trimming is finished
@@ -167,16 +155,13 @@ def write_keepD(
 
     seqList = []
     for indiv in keepD.keys():
-        seqList.append(SeqRecord(Seq(str(keepD[indiv])), id=str(indiv), description=''))
+        seqList.append(SeqRecord(Seq(str(keepD[indiv])), id=str(indiv), description=""))
     keepMSA = MultipleSeqAlignment(seqList)
     SeqIO.write(keepMSA, outFile, outFileFormat.value)
 
+
 ## Function to write out trimD to output file
-def write_trimD(
-    trimD, 
-    outFile: str,
-    outFileFormat: FileFormat
-    ):
+def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
     """
     This creates a biopython multisequence alignment object. Object
     is populated with sites that are trimmed after trimming is finished
@@ -192,16 +177,15 @@ def write_trimD(
 
     seqList = []
     for indiv in trimD.keys():
-        seqList.append(SeqRecord(Seq(str(trimD[indiv])), id=str(indiv), description=''))
+        seqList.append(SeqRecord(Seq(str(trimD[indiv])), id=str(indiv), description=""))
     trimMSA = MultipleSeqAlignment(seqList)
     completmentOut = str(outFile) + ".complement"
     SeqIO.write(trimMSA, completmentOut, outFileFormat.value)
 
-## Function to determine which positions of an alignment should be 
-## kept or trimmed 
-def keep_trim_and_log(
-    alignment, gaps, mode
-    ):
+
+## Function to determine which positions of an alignment should be
+## kept or trimmed
+def keep_trim_and_log(alignment, gaps, mode, use_log: bool):
     """
     Determines positions to keep or trim and saves these positions
     to dictionaries named keepD and trimD. For both dictionaries,
@@ -227,40 +211,26 @@ def keep_trim_and_log(
     # loop through alignment
     for i in range(0, alignment.get_alignment_length(), int(1)):
         # save the sequence at the position to a string and calculate the gappyness of the site
-        seqAtPosition, gappyness = get_sequence_at_position_and_report_features(alignment, i)
+        seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
+            alignment, i
+        )
 
         ## determine if the site is parsimony informative and trim accordingly
-        # Create a dictionary that tracks the number of occurences of each character 
+        # Create a dictionary that tracks the number of occurences of each character
         # excluding gaps or '-'
         numOccurences = count_characters_at_position(seqAtPosition)
 
-        # if the number of values that are greater than two 
-        # in the numOccurences dictionary is greater than two, 
+        # if the number of values that are greater than two
+        # in the numOccurences dictionary is greater than two,
         # the site is parsimony informative
         parsimony_informative = determine_if_parsimony_informative(numOccurences)
 
-        # depending on the mode, trim the alignment
-        if mode == TrimmingMode.kpi_gappy:
+        # trim based on the mode
+        keepD, trimD = trim(
+            gappyness, parsimony_informative, keepD, trimD, i, gaps, alignment, mode, use_log
+        )
 
-            keepD, trimD = kpi_gappy_mode(
-                gappyness, parsimony_informative, 
-                keepD, trimD, i, gaps, alignment
-                )
-
-        elif mode == TrimmingMode.gappy:
-            keepD, trimD = gappy_mode(
-                gappyness, parsimony_informative, 
-                keepD, trimD, i, gaps, alignment
-                )
-
-        elif mode == TrimmingMode.kpi:
-
-            keepD, trimD = kpi_mode(
-                gappyness, parsimony_informative,
-                keepD, trimD, i, gaps, alignment
-                )
-
-    # join elements in value lists in keepD and trimD 
+    # join elements in value lists in keepD and trimD
     keepD, trimD = join_keepD_and_trimD(keepD, trimD)
 
     return keepD, trimD

@@ -26,6 +26,7 @@ class TestComplementOut(object):
             gaps=0.9,
             complement=True,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.fa_gappy.complement", 'r') as expected:
@@ -53,6 +54,7 @@ class TestComplementOut(object):
             gaps=0.9,
             complement=True,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy.complement", 'r') as expected:
@@ -80,6 +82,7 @@ class TestComplementOut(object):
             gaps=0.9,
             complement=True,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/EOG091N44M8_aa.fa_gappy.complement", 'r') as expected:

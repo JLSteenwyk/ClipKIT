@@ -40,6 +40,7 @@ def execute(
     gaps: float,
     complement: bool,
     mode: TrimmingMode,
+    use_log: bool,
     ):
     """
     """
@@ -51,7 +52,7 @@ def execute(
         outFileFormat = inFileFormat
 
     # create dictionaries of sequences to keep or trim from the alignment
-    keepD, trimD = keep_trim_and_log(alignment, gaps, mode)
+    keepD, trimD = keep_trim_and_log(alignment, gaps, mode, use_log)
 
     # convert keepD and trimD to multiple sequence alignment objects
     # and write out file

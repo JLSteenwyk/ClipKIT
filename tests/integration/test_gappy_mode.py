@@ -26,6 +26,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(in_file, 'r') as expected:
@@ -51,6 +52,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_gappy", 'r') as expected:
@@ -77,6 +79,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy", 'r') as expected:
@@ -103,6 +106,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/24_ENSG00000163519_aa_aln.fasta_gappy", 'r') as expected:
@@ -129,6 +133,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_gappy", 'r') as expected:
@@ -155,6 +160,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/EOG091N44M8_aa.fa_gappy", 'r') as expected:
@@ -181,6 +187,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/EOG091N44M8_nt.fa_gappy", 'r') as expected:
@@ -211,6 +218,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_gappy", 'r') as expected:
@@ -241,6 +249,7 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_gappy", 'r') as expected:
@@ -269,6 +278,7 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.2,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.fa_gappy_gaps_set_to_0.2", 'r') as expected:
@@ -295,6 +305,7 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.3,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_gappy_custom_gaps", 'r') as expected:
@@ -321,6 +332,7 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.4,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_gappy_custom_gaps", 'r') as expected:
@@ -347,6 +359,7 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.1,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/EOG091N44M8_nt.fa_gappy_custom_gaps", 'r') as expected:

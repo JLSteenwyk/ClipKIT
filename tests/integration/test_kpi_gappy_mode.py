@@ -23,6 +23,7 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.fa_kpi_gappy", 'r') as expected:

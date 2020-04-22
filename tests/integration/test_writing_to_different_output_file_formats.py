@@ -25,6 +25,7 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.clustal", 'r') as expected:
@@ -51,6 +52,7 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.maf", 'r') as expected:
@@ -77,6 +79,7 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.mauve", 'r') as expected:
@@ -103,6 +106,7 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.phylip", 'r') as expected:
@@ -129,6 +133,7 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.phylip-sequential", 'r') as expected:
@@ -155,6 +160,7 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.phylip-relaxed", 'r') as expected:
@@ -181,6 +187,7 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.stockholm", 'r') as expected:

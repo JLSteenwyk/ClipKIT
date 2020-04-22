@@ -23,6 +23,7 @@ class TestKpiMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi,
+            use_log=False
         )
 
         with open(f"{here.parent}/expected/simple.fa_kpi", 'r') as expected:

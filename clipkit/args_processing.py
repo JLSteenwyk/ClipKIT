@@ -48,7 +48,8 @@ def process_args(args):
         outFileFormat,
         gaps,
         complement,
-        mode
+        mode,
+        use_log
     )
 
 ####################################################################

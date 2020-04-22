@@ -4,10 +4,9 @@ from pathlib import Path
 
 here = Path(__file__)
 
-from clipkit.modes import gappy_mode
-from clipkit.modes import kpi_gappy_mode
-from clipkit.modes import kpi_mode
+from clipkit.modes import TrimmingMode, trim
 
+# TODO: fix unit tests to work with numpy arrays
 class TestModes(object):
 
     def test_gappy_mode(self):
@@ -27,8 +26,8 @@ class TestModes(object):
             trimD[entry.id] = []
 
         ## execution
-        keepD, trimD = gappy_mode(gappyness, parsimony_informative, 
-            keepD, trimD, i, gaps, alignment)
+        keepD, trimD = trim(gappyness, parsimony_informative, 
+            keepD, trimD, i, gaps, alignment, TrimmingMode.gappy)
 
         ## check results
         expected_keepD_keep = {'1': ['G'], '2': ['G'], '3': ['G'], '4': ['A'], '5': ['a']}
@@ -58,8 +57,8 @@ class TestModes(object):
             trimD[entry.id] = []
 
         ## execution
-        keepD, trimD = kpi_gappy_mode(gappyness, parsimony_informative, 
-            keepD, trimD, i, gaps, alignment)
+        keepD, trimD = trim(gappyness, parsimony_informative, 
+            keepD, trimD, i, gaps, alignment, TrimmingMode.kpi_gappy)
 
         ## check results
         expected_keepD = {'1': [], '2': [], '3': [], '4': [], '5': []}
@@ -89,8 +88,8 @@ class TestModes(object):
             trimD[entry.id] = []
 
         ## execution
-        keepD, trimD = kpi_mode(gappyness, parsimony_informative, 
-            keepD, trimD, i, gaps, alignment)
+        keepD, trimD = trim(gappyness, parsimony_informative, 
+            keepD, trimD, i, gaps, alignment, TrimmingMode.kpi)
 
         ## check results
         expected_keepD = {'1': ['T'], '2': ['T'], '3': ['A'], '4': ['A'], '5': ['-']}
