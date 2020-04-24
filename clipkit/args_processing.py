@@ -17,11 +17,11 @@ def process_args(args):
 
     # check that input file exists
     if not os.path.isfile(inFile):
-        logger.info("Input file does not exist")
+        logger.warning("Input file does not exist")
         sys.exit()
 
     if inFile == outFile:
-        logger.info("Input and output files can't have the same name.")
+        logger.warning("Input and output files can't have the same name.")
         sys.exit()
 
     ## assign optional arguments
@@ -32,14 +32,6 @@ def process_args(args):
 
     inFileFormat = args.input_file_format
     outFileFormat = args.output_file_format
-
-    if use_log:
-        # write INFO level logging to file for user
-        logger.setLevel(logging.INFO)
-        log_file_name = f"{outFile}.log"
-        fh = logging.FileHandler(log_file_name, mode="w")
-        fh.setLevel(logging.INFO)
-        logger.addHandler(fh)
 
     return (
         inFile,

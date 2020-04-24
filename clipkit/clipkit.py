@@ -19,6 +19,10 @@ from .modes import TrimmingMode
 from .args_processing import process_args
 
 logger = logging.getLogger(__name__)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+logger.addHandler(ch)
+
 
 ## TODO: Create a warning message if the resulting output
 ## is an sequence alignment with a sequence length of 0.
@@ -44,6 +48,15 @@ def execute(
     ):
     """
     """
+    if use_log:
+        # write INFO level logging to file for user
+        logger.setLevel(logging.DEBUG)
+        fh = logging.FileHandler(f"{outFile}.log", mode="w")
+        fh.setLevel(logging.DEBUG)
+        logger.addHandler(fh)
+
+    print('Starting...')
+
     # read in alignment and save the format of the alignment
     alignment, inFileFormat = get_alignment_and_format(inFile, file_format=inFileFormat)
 
@@ -62,6 +75,8 @@ def execute(
     # create an alignment of the trimmed sequences
     if complement:
         write_trimD(trimD, outFile, outFileFormat)
+
+    print('Done')
 
 
 ####################################################################

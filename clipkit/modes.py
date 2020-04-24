@@ -62,13 +62,12 @@ def trim(
         for entry in alignment:
             keepD[entry.id][alignment_position] = (entry.seq._data[alignment_position])
         if use_log:
-            logger.info(f"{str(alignment_position + 1)} keep PI {gappyness}")
+            logger.debug(f"{str(alignment_position + 1)} keep PI {gappyness}")
     else:
         # save to trimD
         for entry in alignment:
             trimD[entry.id][alignment_position] = (entry.seq._data[alignment_position])
-
         if use_log:
-            logger.info(logger.info(f"{str(alignment_position + 1)} trim nPI {gappyness}"))
+            logger.debug(f"{str(alignment_position + 1)} trim nPI {gappyness}")
 
     return keepD, trimD
