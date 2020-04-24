@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-import logging
-import sys
 import getopt
+import logging
 import os.path
+import sys
 import textwrap
+import time
 
-from Bio import AlignIO
-from Bio.Seq import Seq
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
-from Bio.Align import MultipleSeqAlignment
 from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS, RawDescriptionHelpFormatter
+from Bio import AlignIO, SeqIO
+from Bio.Align import MultipleSeqAlignment
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 
 from .helpers import keep_trim_and_log, write_keepD, write_trimD
 from .files import get_alignment_and_format, FileFormat
@@ -23,11 +23,6 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 logger.addHandler(ch)
 
-
-## TODO: Create a warning message if the resulting output
-## is an sequence alignment with a sequence length of 0.
-## TODO: Create a warning message if an entry in the resulting
-## sequence alignment contains only gap characters '-'
 
 ## TODO: Write integration test for log file
 
@@ -55,7 +50,8 @@ def execute(
         fh.setLevel(logging.DEBUG)
         logger.addHandler(fh)
 
-    print('Starting...')
+    start_time = time.time()
+    print("Starting...")
 
     # read in alignment and save the format of the alignment
     alignment, inFileFormat = get_alignment_and_format(inFile, file_format=inFileFormat)
@@ -64,9 +60,29 @@ def execute(
     if not outFileFormat:
         outFileFormat = inFileFormat
 
+    print(textwrap.dedent(f"""\
+        Input file: {inFile} (format: {inFileFormat.value})
+        Output file: {outFile} (format: {outFileFormat.value})
+        Gaps threshold: {gaps}
+        Trimming mode: {mode.value}
+        Create complementary output: {complement}
+        Create log file: {outFile + '.log' if use_log else False}
+    """))
+
     # create dictionaries of sequences to keep or trim from the alignment
     keepD, trimD = keep_trim_and_log(alignment, gaps, mode, use_log)
 
+    # check if resulting alingment length is 0
+    if not len(next(iter(keepD.values()))):
+        logger.warning("WARNING: All sites trimmed from alignment. Please use different parameters.")
+
+    # checking if any sequence entry contains only gaps
+    for entry, sequence in keepD.items():
+        chars_in_sequence = set(sequence)
+        if len(chars_in_sequence) == 1 and '-' in chars_in_sequence:
+            logger.warning(f"WARNING: header id '{entry}' contains only gaps")
+            break
+    
     # convert keepD and trimD to multiple sequence alignment objects
     # and write out file
     write_keepD(keepD, outFile, outFileFormat)
@@ -76,7 +92,13 @@ def execute(
     if complement:
         write_trimD(trimD, outFile, outFileFormat)
 
-    print('Done')
+
+    print(textwrap.dedent(f"""\
+        Number of sites kept: {len(next(iter(keepD.values())))}
+        Number of sites trimmed: {len(next(iter(trimD.values())))}
+        Execution time: {round(time.time() - start_time, 3)}s
+    """))
+
 
 
 ####################################################################
@@ -114,7 +136,6 @@ def main(argv=None):
             """)
     )
 
-    # TODO: clean up how help prints
     # if no arguments are given, print help and exit
     if len(sys.argv)==1:
         parser.print_help(sys.stderr)

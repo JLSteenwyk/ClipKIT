@@ -24,10 +24,12 @@ def process_args(args):
         logger.warning("Input and output files can't have the same name.")
         sys.exit()
 
+
+    print(args)
     ## assign optional arguments
-    mode = args.mode or TrimmingMode.gappy
+    mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.gappy
     use_log = args.log or False
-    gaps = float(args.gaps) if args.gaps else 0.9
+    gaps = float(args.gaps) if args.gaps is not None else 0.9
     complement = args.complementary or False
 
     inFileFormat = args.input_file_format
