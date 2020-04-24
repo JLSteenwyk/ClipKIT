@@ -18,7 +18,7 @@ class TrimmingMode(Enum):
 
 # TODO: write unit test
 def shouldKeep(mode, parsimony_informative, gappyness, gaps):
-    print(f"mode: {mode}, parsimony_informative: {parsimony_informative}, gappyness: {gappyness}, gaps: {gaps}")
+    # print(f"mode: {mode}, parsimony_informative: {parsimony_informative}, gappyness: {gappyness}, gaps: {gaps}")
     if mode == TrimmingMode.kpi_gappy:
         return gappyness <= gaps and parsimony_informative
     elif mode == TrimmingMode.gappy:

@@ -94,8 +94,12 @@ def execute(
 
 
     print(textwrap.dedent(f"""\
+
         Number of sites kept: {len(next(iter(keepD.values())))}
         Number of sites trimmed: {len(next(iter(trimD.values())))}
+
+        Percentage of alignment trimmed: {round((len(next(iter(trimD.values()))) / len(next(iter(keepD.values())))) * 100, 3)}%
+
         Execution time: {round(time.time() - start_time, 3)}s
     """))
 

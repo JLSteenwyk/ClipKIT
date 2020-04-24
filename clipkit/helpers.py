@@ -1,8 +1,12 @@
+import sys
+import time
 import numpy as np
+from math import floor
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
+from tqdm import tqdm
 
 from .modes import TrimmingMode, trim
 from .files import FileFormat
@@ -208,8 +212,12 @@ def keep_trim_and_log(alignment, gaps, mode, use_log: bool):
     # that will be kept in an array format
     keepD, trimD = populate_empty_keepD_and_trimD(alignment)
 
+    alignment_length = alignment.get_alignment_length()
+
     # loop through alignment
-    for i in range(0, alignment.get_alignment_length(), int(1)):
+    print("Processing alignment...")
+    for i in tqdm(range(0, alignment_length, int(1))):
+
         # save the sequence at the position to a string and calculate the gappyness of the site
         seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
             alignment, i
