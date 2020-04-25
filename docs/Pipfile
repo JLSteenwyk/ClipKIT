@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[scripts]
+serve = "sphinx-autobuild . _build/html"
+
+[dev-packages]
+sphinx-autobuild = "*"
+
+[packages]
+Pygments = "*"
+Sphinx = "*"
+sphinx_rtd_theme = "*"
+
+[requires]
+python_version = "3.7"
