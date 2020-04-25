@@ -1,12 +1,16 @@
 import pytest
 import pytest_mock
 
+from pathlib import Path
+
 from Bio import AlignIO
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
-from pathlib import Path
+import numpy as np
+
+
 
 from clipkit.helpers import count_characters_at_position
 from clipkit.helpers import get_sequence_at_position_and_report_features
@@ -126,11 +130,25 @@ class TestPopulateEmptyKeepDAndTrimD(object):
         keepD, trimD = populate_empty_keepD_and_trimD(alignment)
 
         ## check results
-        expected_keepD = {"1": [], "2": [], "3": [], "4": [], "5": []}
-        expected_trimD = {"1": [], "2": [], "3": [], "4": [], "5": []}
-
-        assert expected_keepD == keepD
-        assert expected_trimD == trimD
+        expected_keepD = {
+            "1": np.empty([6], dtype=str), 
+            "2": np.empty([6], dtype=str),
+            "3": np.empty([6], dtype=str),
+            "4": np.empty([6], dtype=str),
+            "5": np.empty([6], dtype=str)
+        }
+        expected_trimD = {
+            "1": np.empty([6], dtype=str), 
+            "2": np.empty([6], dtype=str),
+            "3": np.empty([6], dtype=str),
+            "4": np.empty([6], dtype=str),
+            "5": np.empty([6], dtype=str)
+        }
+        
+        assert expected_keepD.keys() == keepD.keys()
+        assert all(np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD)
+        assert expected_trimD.keys() == trimD.keys()
+        assert all(np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD)
 
 
 class TestJoinKeepDAndTrimD(object):
