@@ -38,6 +38,7 @@ class TestGappyMode(object):
         assert expected_content == output_content
 
     # test gappy with codon alignment of yeast sequences
+    # usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta
     def test_12_YIL115C_Anc_2_253_codon_aln(self):
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
@@ -200,10 +201,6 @@ class TestGappyMode(object):
 
     # test gappy with amino alignment of fungal sequences
     # usage: clipkit EOG092C0CZK_aa_aln.fasta
-    # TODO: show Thomas these cases that take a long time to process.
-    # Processing time is long because the matrix is 1478 rows.
-    # Currently, this test passes but is commented out because it takes
-    # a long time
     def test_EOG092C0CZK_aa(self):
         in_file = f"{here.parent}/samples/EOG092C0CZK_aa_aln.fasta"
         out_file = "output/EOG092C0CZK_aa_aln.fasta.clipkit"
@@ -231,10 +228,6 @@ class TestGappyMode(object):
 
     # test gappy with amino alignment of fungal sequences
     # usage: clipkit EOG092C4VOX_aa_aln.fasta
-    # TODO: show Thomas these cases that take a long time to process.
-    # Processing time is long because the matrix is 1480 rows
-    # Currently, this test passes but is commented out because it takes
-    # a long time
     def test_EOG092C4VOX_aa(self):
         in_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
         out_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
@@ -370,62 +363,56 @@ class TestGappyModeCustomGapsParameter(object):
 
         assert expected_content == output_content
 
-    # # test gappy with amino alignment of fungal sequences
-    # # usage: clipkit EOG092C0CZK_aa_aln.fasta -g .5
-    # # TODO: show Thomas these cases that take a long time to process.
-    # # Processing time is long because the matrix is 1478 rows.
-    # # Currently, this test passes but is commented out because it takes
-    # # a long time
-    # def test_EOG092C0CZK_aa(self):
-    #     in_file = f"{here.parent}/samples/EOG092C0CZK_aa_aln.fasta"
-    #     out_file = "output/EOG092C0CZK_aa_aln.fasta.clipkit"
-    #     in_file_format = FileFormat.fasta
-    #     out_file_format = FileFormat.fasta
+    # test gappy with amino alignment of fungal sequences
+    # usage: clipkit EOG092C0CZK_aa_aln.fasta -g .5
+    def test_EOG092C0CZK_aa(self):
+        in_file = f"{here.parent}/samples/EOG092C0CZK_aa_aln.fasta"
+        out_file = "output/EOG092C0CZK_aa_aln.fasta.clipkit"
+        in_file_format = FileFormat.fasta
+        out_file_format = FileFormat.fasta
 
-    #     execute(
-    #         in_file,
-    #         out_file,
-    #         in_file_format,
-    #         out_file_format,
-    #         gaps=0.5,
-    #         complement=False,
-    #         mode=TrimmingMode.gappy,
-    #     )
+        execute(
+            in_file,
+            out_file,
+            in_file_format,
+            out_file_format,
+            gaps=0.5,
+            complement=False,
+            mode=TrimmingMode.gappy,
+            use_log=False
+        )
 
-    #     with open(f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_gappy_custom_gaps", 'r') as expected:
-    #         expected_content = expected.read()
+        with open(f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_gappy_custom_gaps", 'r') as expected:
+            expected_content = expected.read()
 
-    #     with open(out_file, 'r') as out_file:
-    #         output_content = out_file.read()
+        with open(out_file, 'r') as out_file:
+            output_content = out_file.read()
 
-    #     assert expected_content == output_content
+        assert expected_content == output_content
 
-    # # test gappy with amino alignment of fungal sequences
-    # # usage: clipkit EOG092C4VOX_aa_aln.fasta -g .25
-    # # TODO: show Thomas these cases that take a long time to process.
-    # # Processing time is long because the matrix is 1480 rows
-    # # Currently, this test passes but is commented out because it takes
-    # # a long time
-    # def test_EOG092C4VOX_aa(self):
-    #     in_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
-    #     out_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
-    #     in_file_format = FileFormat.fasta
-    #     out_file_format = FileFormat.fasta
+    # test gappy with amino alignment of fungal sequences
+    # usage: clipkit EOG092C4VOX_aa_aln.fasta -g .25
+    def test_EOG092C4VOX_aa(self):
+        in_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
+        out_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
+        in_file_format = FileFormat.fasta
+        out_file_format = FileFormat.fasta
 
-    #     execute(
-    #         in_file,
-    #         out_file,
-    #         in_file_format,
-    #         out_file_format,
-    #         gaps=0.25,
-    #         complement=False,
-    #         mode=TrimmingMode.gappy,
-    #     )
+        execute(
+            in_file,
+            out_file,
+            in_file_format,
+            out_file_format,
+            gaps=0.25,
+            complement=False,
+            mode=TrimmingMode.gappy,
+            use_log=False
+        )
 
-    #     with open(f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_gappy_custom_gaps", 'r') as expected:
-    #         expected_content = expected.read()
+        with open(f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_gappy_custom_gaps", 'r') as expected:
+            expected_content = expected.read()
 
-    #     with open(out_file, 'r') as out_file:
-    #         output_content = out_file.read()
+        with open(out_file, 'r') as out_file:
+            output_content = out_file.read()
 
-    #     assert expected_content == output_content
+        assert expected_content == output_content

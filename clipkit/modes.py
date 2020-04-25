@@ -16,7 +16,7 @@ class TrimmingMode(Enum):
     kpi = "kpi"
     gappy = "gappy"
 
-# TODO: write unit test
+# Function to determine if a site should be kept or not
 def shouldKeep(mode, parsimony_informative, gappyness, gaps):
     # print(f"mode: {mode}, parsimony_informative: {parsimony_informative}, gappyness: {gappyness}, gaps: {gaps}")
     if mode == TrimmingMode.kpi_gappy:

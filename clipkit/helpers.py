@@ -1,5 +1,7 @@
 import sys
+import textwrap
 import time
+
 import numpy as np
 from math import floor
 from Bio import SeqIO
@@ -215,7 +217,12 @@ def keep_trim_and_log(alignment, gaps, mode, use_log: bool):
     alignment_length = alignment.get_alignment_length()
 
     # loop through alignment
-    print("Processing alignment...")
+    print(textwrap.dedent(f"""\
+        
+        ------------------------
+        | Processing Alignment |
+        ------------------------
+    """))
     for i in tqdm(range(0, alignment_length, int(1))):
 
         # save the sequence at the position to a string and calculate the gappyness of the site

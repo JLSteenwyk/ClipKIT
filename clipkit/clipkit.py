@@ -43,6 +43,7 @@ def execute(
     ):
     """
     """
+    # logic for whether or not to create a log file
     if use_log:
         # write INFO level logging to file for user
         logger.setLevel(logging.DEBUG)
@@ -50,8 +51,8 @@ def execute(
         fh.setLevel(logging.DEBUG)
         logger.addHandler(fh)
 
+    # create start time logger
     start_time = time.time()
-    print("Starting...")
 
     # read in alignment and save the format of the alignment
     alignment, inFileFormat = get_alignment_and_format(inFile, file_format=inFileFormat)
@@ -61,6 +62,9 @@ def execute(
         outFileFormat = inFileFormat
 
     print(textwrap.dedent(f"""\
+        -------------
+        | Arguments |
+        -------------
         Input file: {inFile} (format: {inFileFormat.value})
         Output file: {outFile} (format: {outFileFormat.value})
         Gaps threshold: {gaps}
@@ -92,13 +96,19 @@ def execute(
     if complement:
         write_trimD(trimD, outFile, outFileFormat)
 
-
+    alignment_length = alignment.get_alignment_length()
+    output_len  = len(next(iter(keepD.values())))
+    trimmed_len = len(next(iter(trimD.values())))
     print(textwrap.dedent(f"""\
 
-        Number of sites kept: {len(next(iter(keepD.values())))}
-        Number of sites trimmed: {len(next(iter(trimD.values())))}
 
-        Percentage of alignment trimmed: {round((len(next(iter(trimD.values()))) / len(next(iter(keepD.values())))) * 100, 3)}%
+        ---------------------
+        | Output Statistics |
+        ---------------------
+        Number of sites kept: {output_len}
+        Number of sites trimmed: {trimmed_len}
+
+        Percentage of alignment trimmed: {round((trimmed_len / alignment_length) * 100, 3)}%
 
         Execution time: {round(time.time() - start_time, 3)}s
     """))
