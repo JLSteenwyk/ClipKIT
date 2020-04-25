@@ -1,3 +1,25 @@
+<p align="center">
+  <a href="https://github.com/jlsteenwyk/clipkit">
+    <img src="docs/_static/img/logo.jpg" alt="Logo" width="400">
+  </a>
+  <p align="center">
+    <a href="https://jlsteenwyk.github.io/clipkit">Docs</a>
+    ·
+    <a href="https://github.com/jlsteenwyk/clipkit/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/jlsteenwyk/clipkit/issues">Request Feature</a>
+  </p>
+    <p align="center">
+        <a href="https://github.com/jlsteenwyk/clipkit/graphs/contributors" alt="Contributors">
+            <img src="https://img.shields.io/github/contributors/jlsteenwyk/clipkit">
+        </a>
+        <a href="https://twitter.com/intent/follow?screen_name=jlsteenwyk">
+            <img src="https://img.shields.io/twitter/follow/jlsteenwyk?style=social&logo=twitter"
+                alt="follow on Twitter">
+        </a>
+    </p>
+</p>
+
 # ClipKIT: The Clipping and Keeping Information Trimmer
 
 ClipKIT is a fast and flexible alignment trimming tool. ClipKIT keeps phylogenetically informative sites while removing others
