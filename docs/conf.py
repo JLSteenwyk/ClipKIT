@@ -75,7 +75,7 @@ pygments_style = None
 
 # -- Options for HTML output -------------------------------------------------
 # Favicon
-html_favicon = '_static/img/favicon.png'
+html_favicon = '_static/img/flavicon.png'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.

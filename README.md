@@ -57,7 +57,7 @@ To use ClipKIT in its simpliest form, execute the following command:
 ```
 clipkit <input>
 ```
-where $input is your input alignment file and $output is the name of your output file
+Output file with the suffix ".clipkit"
 
 <br />
 
@@ -65,10 +65,10 @@ where $input is your input alignment file and $output is the name of your output
 
 ### Advanced Usage
 This section describes the various features and options of ClipKIT.<br />
-[Modes](#modes)<br />
-[Log](#log)<br />
-[Complementary](#complementary)<br />
-[Miscellaneous options](#miscellaneous-options)
+\- [Modes](#modes)<br />
+\- [Log](#log)<br />
+\- [Complementary](#complementary)<br />
+\- [Miscellaneous options](#miscellaneous-options)
 
 <br />
 
@@ -92,12 +92,12 @@ clipkit <input> -m kpi-gappy
 <br />
 
 ### Log
-It can be very useful to have information about the each position in an alignment. For example, this information could be used in alignment diagnostics, fine-tuning of trimming parameters, etc. To create the log file, use the -l/--log option. Using the -l/--log option will create a four column file with the suffix '.log'. 
+It can be very useful to have information about the each position in an alignment. For example, this information could be used in alignment diagnostics, fine-tuning of trimming parameters, etc. To create the log file, use the -l/--log option. Using this option will create a four column file with the suffix '.clipkit.log'. *Default: off*
 * col1: position in the alignment (starting at 1)
 * col2: reports if site was trimmed or kept (trim or keep, respectively)
 * col3: reports if the site is parsimony informative or not (PI or nPI, respectively)
 * col4: reports the gappyness of the position (number of gaps / entries in alignment)
-*Default: off*<br />
+<br />
 ```
 clipkit <input> -l
 ```
@@ -112,7 +112,7 @@ Having an alignment of the sequences that were trimmed can be useful for other a
 ```
 clipkit <input> -c
 ```
-Output file with the suffix ".clipkit.complementary"
+Output file with the suffix '.clipkit.complementary'
 
 <br />
 
@@ -124,6 +124,7 @@ Output file with the suffix ".clipkit.complementary"
 | -g/--gaps     | Specify gappyness threshold (between 0 and 1). *Default: 0.9* |
 | -if/--input_file_format | Specify input file format*. *Default: auto-detect* |
 | -of/--input_file_format | Specify output file format*. *Default: input file type* |
+
 *Acceptable file formats include: [fasta](https://en.wikipedia.org/wiki/FASTA_format), [clustal](http://meme-suite.org/doc/clustalw-format.html), [maf](http://www.bx.psu.edu/~dcking/man/maf.xhtml), [mauve](http://darlinglab.org/mauve/user-guide/files.html), [phylip](http://scikit-bio.org/docs/0.2.3/generated/skbio.io.phylip.html), [phylip-sequential](http://rosalind.info/glossary/phylip-format/), [phylip-relaxed](https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html), [stockholm](https://en.wikipedia.org/wiki/Stockholm_format)
 <br />
 <br />
@@ -138,8 +139,7 @@ In brief, performance assessment and comparison of multiple trimming alignment s
   <!--</a>-->
 </p>
 
-**Summary Figure. Rank-based assessment of ClipKIT's performance compared to other alignment trimming software revealed ClipKIT is a top-performing software.** A dataset of 2,002 amino acid (AA) and nucleotide (NT) alignments across 24 Mammals (A, B) and 2,832 AA and NT alignments across 12 yeasts (C, D) were trimmed using ClipKIT, [trimAl](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2712344/), [BMGE](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3017758/), [Noisy](https://www.ncbi.nlm.nih.gov/pubmed/18577231), and [Gblocks](https://www.ncbi.nlm.nih.gov/pubmed/17654362). The resulting trimmed alignments were then used to infer the evolutionary history of each alignment using [IQ-Tree](https://www.ncbi.nlm.nih.gov/pubmed/32011700). To assess the accuracy and support of each topology, we calculated normalized Robinson-Foulds distances (nRF) and average bootstrap support (ABS). For every gene, we obtained one performance score by taking the average of the desirability transformed nRF and ABS values. Using the resulting desirability values, trimmers were ranked from 1 to 9 where lower ranks indicate better performance. We then determined the best performing algorithm per data set and plotted them in order of best to worst. We found that ClipKIT, trimAl (with the 'gappyout' parameter), and no trimming performed the best across all data matrices.
-<br />Abbreviations of trimmers and parameters are as follows: ClipKIT: kg = kpi-gappy mode; ClipKIT: k = kpi mode; ClipKIT: g = gappy mode; trimAl: go = gappyout; trimAl: s = strictplus.
+**Summary Figure. Rank-based assessment of ClipKIT's performance compared to other alignment trimming software revealed ClipKIT is a top-performing software.** A dataset of 2,002 amino acid (AA) and nucleotide (NT) alignments across 24 Mammals (A, B) and 2,832 AA and NT alignments across 12 yeasts (C, D) were trimmed using ClipKIT, [trimAl](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2712344/), [BMGE](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3017758/), [Noisy](https://www.ncbi.nlm.nih.gov/pubmed/18577231), and [Gblocks](https://www.ncbi.nlm.nih.gov/pubmed/17654362). The resulting trimmed alignments were then used to infer the evolutionary history of each alignment using [IQ-Tree](https://www.ncbi.nlm.nih.gov/pubmed/32011700). To assess the accuracy and support of each topology, we calculated normalized Robinson-Foulds distances (nRF) and average bootstrap support (ABS). For every gene, we obtained one performance score by taking the average of the desirability transformed nRF and ABS values. Using the resulting desirability values, trimmers were ranked from 1 to 9 where lower ranks indicate better performance. We then determined the best performing algorithm per data set and plotted them in order of best to worst. We found that ClipKIT, trimAl (with the 'gappyout' parameter), and no trimming performed the best across all data matrices. Abbreviations of trimmers and parameters are as follows: ClipKIT: kg = kpi-gappy mode; ClipKIT: k = kpi mode; ClipKIT: g = gappy mode; trimAl: go = gappyout; trimAl: s = strictplus.
 <br /><br /><br />
 
 <p align="center">
@@ -148,7 +148,7 @@ In brief, performance assessment and comparison of multiple trimming alignment s
   <!--</a>-->
 </p>
 
-**Figure 1. ClipKIT provides 'light' trimming and 'heavy' trimming options that perform well.** Using the same dataset of sequence alignments for mammals (A, B) and yeast (C, D), comparisons of alignment lengths, we calculated Z-scores of alignment lengths for every gene. ClipKIT's 'gappy' mode conducts the lightest trimming followed by trimAl with the 'gappyout' parameter. Interestingly, ClipKIT's 'kpi-gappy' and 'kpi' modes trim a significant amount of the alignment compared to other trimmers. Despite alignment length being associated with strong phylogenetic signal, ClipKIT's 'kpi-gappy' and 'kpi' modes resulted in alignments that were still rich in phylogenetic information (see Summary Figure.) The red dashed line represents a Z-score of zero. Abbreviations of trimmers and parameters is the same as the summary figure.
+**Figure 1. ClipKIT provides 'light' and 'heavy' trimming options that perform well.** Using the same dataset of sequence alignments for mammals (A, B) and yeast (C, D), comparisons of alignment lengths, we calculated Z-scores of alignment lengths for every gene. ClipKIT's 'gappy' mode conducts the lightest trimming followed by trimAl with the 'gappyout' parameter. Interestingly, ClipKIT's 'kpi-gappy' and 'kpi' modes trim a significant amount of the alignment compared to other trimmers. Despite alignment length being associated with strong phylogenetic signal, ClipKIT's 'kpi-gappy' and 'kpi' modes resulted in alignments that were still rich in phylogenetic information (see Summary Figure.) The red dashed line represents a Z-score of zero. Abbreviations of trimmers and parameters is the same as the summary figure.
 <br /><br /><br />
 
 <p align="center">
