@@ -17,14 +17,13 @@ from .helpers import keep_trim_and_log, write_keepD, write_trimD
 from .files import get_alignment_and_format, FileFormat
 from .modes import TrimmingMode
 from .args_processing import process_args
+from .warnings import checking_if_all_sites_were_trimmed, checking_if_entry_contains_only_gaps
+from .prints import print_user_arguments, print_writing_output_files_message, print_output_stats
 
 logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 logger.addHandler(ch)
-
-
-## TODO: Write integration test for log file
 
 ####################################################################
 ### Master execute Function                                      ###
@@ -61,32 +60,26 @@ def execute(
     if not outFileFormat:
         outFileFormat = inFileFormat
 
-    print(textwrap.dedent(f"""\
-        -------------
-        | Arguments |
-        -------------
-        Input file: {inFile} (format: {inFileFormat.value})
-        Output file: {outFile} (format: {outFileFormat.value})
-        Gaps threshold: {gaps}
-        Trimming mode: {mode.value}
-        Create complementary output: {complement}
-        Create log file: {outFile + '.log' if use_log else False}
-    """))
+    # Print to stdout the user arguments
+    print_user_arguments(
+        inFile, inFileFormat,
+        outFile, outFileFormat,
+        gaps, mode,
+        complement, use_log
+    )
 
     # create dictionaries of sequences to keep or trim from the alignment
     keepD, trimD = keep_trim_and_log(alignment, gaps, mode, use_log)
 
+    # print to stdout that output files are being written
+    print_writing_output_files_message(outFile, complement, use_log)
+
     # check if resulting alingment length is 0
-    if not len(next(iter(keepD.values()))):
-        logger.warning("WARNING: All sites trimmed from alignment. Please use different parameters.")
+    checking_if_all_sites_were_trimmed(keepD)
 
     # checking if any sequence entry contains only gaps
-    for entry, sequence in keepD.items():
-        chars_in_sequence = set(sequence)
-        if len(chars_in_sequence) == 1 and '-' in chars_in_sequence:
-            logger.warning(f"WARNING: header id '{entry}' contains only gaps")
-            break
-    
+    checking_if_entry_contains_only_gaps(keepD)
+
     # convert keepD and trimD to multiple sequence alignment objects
     # and write out file
     write_keepD(keepD, outFile, outFileFormat)
@@ -96,24 +89,8 @@ def execute(
     if complement:
         write_trimD(trimD, outFile, outFileFormat)
 
-    alignment_length = alignment.get_alignment_length()
-    output_len  = len(next(iter(keepD.values())))
-    trimmed_len = len(next(iter(trimD.values())))
-    print(textwrap.dedent(f"""\
-
-
-        ---------------------
-        | Output Statistics |
-        ---------------------
-        Number of sites kept: {output_len}
-        Number of sites trimmed: {trimmed_len}
-
-        Percentage of alignment trimmed: {round((trimmed_len / alignment_length) * 100, 3)}%
-
-        Execution time: {round(time.time() - start_time, 3)}s
-    """))
-
-
+    # print out output statistics
+    print_output_stats(alignment, keepD, trimD, start_time)
 
 ####################################################################
 ### END Master execute Function 					             ###
