@@ -15,9 +15,11 @@ class TrimmingMode(Enum):
     kpi_gappy = "kpi-gappy"
     kpi = "kpi"
     gappy = "gappy"
+    kpic = "kpic"
+    kpic_gappy = "kpic-gappy"
 
 # Function to determine if a site should be kept or not
-def shouldKeep(mode, parsimony_informative, gappyness, gaps):
+def shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps):
     # print(f"mode: {mode}, parsimony_informative: {parsimony_informative}, gappyness: {gappyness}, gaps: {gaps}")
     if mode == TrimmingMode.kpi_gappy:
         return gappyness <= gaps and parsimony_informative
@@ -25,14 +27,19 @@ def shouldKeep(mode, parsimony_informative, gappyness, gaps):
         return gappyness <= gaps
     elif mode == TrimmingMode.kpi:
         return parsimony_informative
+    elif mode == TrimmingMode.kpic:
+        return parsimony_informative or constant_site
+    elif mode == TrimmingMode.kpic_gappy:
+        return gappyness <= gaps and (parsimony_informative or constant_site)
 
 def trim(
-    gappyness,
-    parsimony_informative,
-    keepD,
-    trimD,
+    gappyness: float,
+    parsimony_informative: bool,
+    constant_site: bool,
+    keepD: dict,
+    trimD: dict,
     alignment_position: int,
-    gaps,
+    gaps: float,
     alignment,
     mode: TrimmingMode,
     use_log: bool,
@@ -59,16 +66,26 @@ def trim(
         biopython multiple sequence alignment object
     """
     # save to keepD
-    if shouldKeep(mode, parsimony_informative, gappyness, gaps):
+    if shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps):
         for entry in alignment:
             keepD[entry.id][alignment_position] = (entry.seq._data[alignment_position])
         if use_log:
-            logger.debug(f"{str(alignment_position + 1)} keep PI {gappyness}")
+            if constant_site:
+                logger.debug(f"{str(alignment_position + 1)} keep Const {gappyness}")
+            elif parsimony_informative:
+                logger.debug(f"{str(alignment_position + 1)} keep PI {gappyness}")
+            else:
+                logger.debug(f"{str(alignment_position + 1)} keep nConst,nPI {gappyness}")
+    # save to trimD
     else:
-        # save to trimD
         for entry in alignment:
             trimD[entry.id][alignment_position] = (entry.seq._data[alignment_position])
         if use_log:
-            logger.debug(f"{str(alignment_position + 1)} trim nPI {gappyness}")
+            if constant_site:
+                logger.debug(f"{str(alignment_position + 1)} trim Const {gappyness}")
+            elif parsimony_informative:
+                logger.debug(f"{str(alignment_position + 1)} trim PI {gappyness}")
+            else:
+                logger.debug(f"{str(alignment_position + 1)} trim nConst,nPI {gappyness}")
 
     return keepD, trimD

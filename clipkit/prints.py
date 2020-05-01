@@ -1,6 +1,15 @@
 import textwrap
 import time
 
+## Function to print out processing alignment
+def print_processing_aln():
+    print(textwrap.dedent(f"""\
+        
+        ------------------------
+        | Processing Alignment |
+        ------------------------
+    """))
+
 ## Function to print user arguments to stdout
 def print_user_arguments(inFile, inFileFormat, outFile, outFileFormat,
     gaps, mode, complement, use_log):

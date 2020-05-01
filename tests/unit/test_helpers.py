@@ -14,7 +14,7 @@ import numpy as np
 
 from clipkit.helpers import count_characters_at_position
 from clipkit.helpers import get_sequence_at_position_and_report_features
-from clipkit.helpers import determine_if_parsimony_informative
+from clipkit.helpers import parsimony_informative_or_constant
 from clipkit.helpers import populate_empty_keepD_and_trimD
 from clipkit.helpers import join_keepD_and_trimD
 from clipkit.helpers import write_trimD
@@ -100,25 +100,36 @@ class TestGetSequenceAtPositionAndReportFeatures(object):
         assert isinstance(gappyness, float)
 
 
-class TestDetermineIfParsimonyInformative(object):
-    def test_determine_if_parsimony_informative(self):
+class TestParsimonyInformativeOrConstant(object):
+    def test_parsimony_informative_or_constant(self):
         ## set up
         # pi = parsimony informative
         num_occurences_pi = {"A": 5, "T": 10, "G": 2, "C": 4}
         # npi = not parsimony informative
         num_occurences_npi = {"A": 1, "T": 10, "G": 1}
+        # Const = constant
+        num_occurences_const = {"A": 10}
+        # nConst = not constant
+        num_occurences_nconst = {"A": 1}
+
 
         ## execution
-        # result is True
-        is_parsimony_informative = determine_if_parsimony_informative(num_occurences_pi)
-        # result is False
-        is_not_parsimony_informative = determine_if_parsimony_informative(
-            num_occurences_npi
-        )
+        # result is True and False
+        is_parsimony_informative, constant_site_holder_is_pi = parsimony_informative_or_constant(
+            num_occurences_pi)
+        # result is False and False
+        is_not_parsimony_informative, constant_site_holder_is_npi = parsimony_informative_or_constant(
+            num_occurences_npi)
+        # result is False and True
+        is_not_pi_0, is_constant_site = parsimony_informative_or_constant(num_occurences_const)
+        # result is False and False
+        is_not_pi_1, is_not_constant_site = parsimony_informative_or_constant(num_occurences_nconst)
 
         ## check results
-        assert is_parsimony_informative == True
-        assert is_not_parsimony_informative == False
+        assert is_parsimony_informative == True and constant_site_holder_is_pi == False
+        assert is_not_parsimony_informative == False and constant_site_holder_is_npi == False
+        assert is_not_pi_0 == False and is_constant_site == True
+        assert is_not_pi_1 == False and is_not_constant_site == False
 
 
 class TestPopulateEmptyKeepDAndTrimD(object):

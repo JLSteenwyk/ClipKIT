@@ -25,8 +25,6 @@ test.integration:
 	python -m pytest --basetemp=output -m "integration"
 
 test_default_params:
-	# TODO: finish migrating to tests/integration/test_gappy_mode.py
-	# TODO: Jacob -- write more integration tests for different functions, etc.
 	# test clipkit with default parameters
 	python3 -m clipkit-runner test_files/test.fa -o output/test.fa.test_default_params
 	python3 -m clipkit-runner test_files/12_YIL115C_Anc_2.253_codon_aln.fasta -o output/12_YIL115C_Anc_2.253_codon_aln.fasta.test_default_params

@@ -69,10 +69,7 @@ def execute(
     )
 
     # create dictionaries of sequences to keep or trim from the alignment
-    keepD, trimD = keep_trim_and_log(alignment, gaps, mode, use_log)
-
-    # print to stdout that output files are being written
-    print_writing_output_files_message(outFile, complement, use_log)
+    keepD, trimD = keep_trim_and_log(alignment, gaps, mode, use_log, outFile, complement)
 
     # check if resulting alingment length is 0
     checking_if_all_sites_were_trimmed(keepD)
@@ -150,9 +147,10 @@ def main(argv=None):
         -o, --output <output_file_name>             output file name 
                                                     (default: input file named with '.clipkit' suffix)
 
-        -m, --modes <kpi, gappy, kpi-gappy>         trimming mode 
-                                                    (default: gappy)
-
+        -m, --modes <gappy,                          trimming mode 
+                    kpic, kpic-gappy,                (default: gappy)
+                    kpi, kpi-gappy>                      
+                                                    
         -g, --gaps <threshold of gaps>              specifies gaps threshold
                                                     (default: 0.9)
 
@@ -175,8 +173,10 @@ def main(argv=None):
         | Detailed explanation of arguments | 
         -------------------------------------
         Modes
-            kpi: keep only parsimony informative sites in an alignment
             gappy: trim sites that are greater than the gaps threshold
+            kpic: keeps parismony informative and constant sites
+            kpic-gappy: a combination of kpic- and gappy-based trimming
+            kpi: keep only parsimony informative sites
             kpi-gappy: a combination of kpi- and gappy-based trimming
 
         Gaps
@@ -214,7 +214,7 @@ def main(argv=None):
         "--mode",
         help=SUPPRESS,
         nargs="?",
-        choices=("kpi", "gappy", "kpi-gappy")
+        choices=("kpi", "gappy", "kpi-gappy", "kpic", "kpic-gappy")
     )
 
     optional.add_argument(

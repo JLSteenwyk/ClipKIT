@@ -52,6 +52,16 @@ make install
 ```
 <br />
 
+If you run into permission errors when executing *make install*, create a virtual environment for your installation:
+```shell
+git clone https://github.com/JLSteenwyk/ClipKIT.git
+cd ClipKIT/
+python -m venv env
+source env/bin/activate
+make install
+```
+<br />
+
 ### 2) Usage
 To use ClipKIT in its simpliest form, execute the following command:
 ```
@@ -73,17 +83,26 @@ This section describes the various features and options of ClipKIT.<br />
 <br />
 
 ### Modes
-ClipKIT can be run with three different modes (kpi, gappy, kpi-gappy), which are specified with the -m/--mode argument.<br /> 
+ClipKIT can be run with five different modes (gappy, kpic, kpic-gappy, kpi, and kpi-gappy), which are specified with the -m/--mode argument.<br /> 
 *Default: 'gappy'*<br />
-* kpi will trim all sites that are not parsimony informative<br />
-* gappy will remove all sites that are above a threshold of gappyness (default: 0.9)<br />
-* kpi-gappy is the combination of kpi- and gappy-based trimming<br />
+* gappy: trim all sites that are above a threshold of gappyness (default: 0.9)<br />
+* kpic: keep only parismony informative and constant sites<br />
+* kpic-gappy: a combination of kpic- and gappy-based trimming<br />
+* kpi: keep only parsimony informative sites<br />
+* kpi-gappy: a combination of kpi- and gappy-based trimming<br />
 ```
+# gappy-based trimming
+clipkit <input>
+clipkit <input> -m gappy
+
+# kpic-based trimming
+clipkit <input> -m kpic
+
+# kpic- and gappy-based trimmin
+clipkit <input> -m kpic-gappy
+
 # kpi-based trimming
 clipkit <input> -m kpi
-
-# gappy-based trimming
-clipkit <input> -m gappy
 
 # kpi- and gappy-based trimming
 clipkit <input> -m kpi-gappy 
@@ -95,7 +114,7 @@ clipkit <input> -m kpi-gappy
 It can be very useful to have information about the each position in an alignment. For example, this information could be used in alignment diagnostics, fine-tuning of trimming parameters, etc. To create the log file, use the -l/--log option. Using this option will create a four column file with the suffix '.clipkit.log'. *Default: off*
 * col1: position in the alignment (starting at 1)
 * col2: reports if site was trimmed or kept (trim or keep, respectively)
-* col3: reports if the site is parsimony informative or not (PI or nPI, respectively)
+* col3: reports if the site is constant or not (Const or nConst), parsimony informative or not (PI or nPI), or neither (nConst, nPI)
 * col4: reports the gappyness of the position (number of gaps / entries in alignment)
 <br />
 ```
