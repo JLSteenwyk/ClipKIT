@@ -56,10 +56,11 @@ If you run into permission errors when executing *make install*, create a virtua
 ```shell
 git clone https://github.com/JLSteenwyk/ClipKIT.git
 cd ClipKIT/
-python -m venv env
-source env/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 make install
 ```
+Note, the virtual environment must be activated to use clipkit.
 <br />
 
 ### 2) Usage
