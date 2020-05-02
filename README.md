@@ -10,6 +10,9 @@
     <a href="https://github.com/jlsteenwyk/clipkit/issues">Request Feature</a>
   </p>
     <p align="center">
+        <a href="https://lbesson.mit-license.org/" alt="Contributors">
+            <img src="https://img.shields.io/badge/License-MIT-blue.svg">
+        </a>
         <a href="https://github.com/jlsteenwyk/clipkit/graphs/contributors" alt="Contributors">
             <img src="https://img.shields.io/github/contributors/jlsteenwyk/clipkit">
         </a>
