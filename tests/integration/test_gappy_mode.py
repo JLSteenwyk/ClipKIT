@@ -7,12 +7,15 @@ from clipkit.modes import TrimmingMode
 
 here = Path(__file__)
 
+
 @pytest.mark.integration
 class TestGappyMode(object):
-    # test gappy where no changes are expected in the resulting 
-    # output alignment.
-    # usage: clipkit simple.fa
     def test_simple_no_change(self):
+        """
+        test gappy where no changes are expected in the resulting 
+        output alignment.
+        usage: clipkit simple.fa
+        """
         in_file = f"{here.parent}/samples/simple.fa"
         out_file = "output/simpla.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -26,20 +29,22 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(in_file, 'r') as expected:
+        with open(in_file, "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
 
-    # test gappy with codon alignment of yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta
     def test_12_YIL115C_Anc_2_253_codon_aln(self):
+        """
+        test gappy with codon alignment of yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -53,20 +58,24 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
 
-    # test gappy with amino acid alignment of yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta 
     def test_12_YIL115C_Anc_2_253_aa_aln(self):
+        """
+        test gappy with amino acid alignment of yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta 
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -80,20 +89,24 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
 
-    # test gappy with amino acid alignment of mammalian sequences
-    # usage: clipkit 24_ENSG00000163519_aa_aln.fasta 
     def test_24_ENSG00000163519_aa_aln(self):
+        """
+        test gappy with amino acid alignment of mammalian sequences
+        usage: clipkit 24_ENSG00000163519_aa_aln.fasta 
+        """
         in_file = f"{here.parent}/samples/24_ENSG00000163519_aa_aln.fasta"
         out_file = "output/24_ENSG00000163519_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -107,19 +120,21 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/24_ENSG00000163519_aa_aln.fasta_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/24_ENSG00000163519_aa_aln.fasta_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
 
     # test gappy with codon alignment of mammalian sequences
-    # usage: clipkit 24_ENSG00000163519_codon_aln.fasta 
+    # usage: clipkit 24_ENSG00000163519_codon_aln.fasta
     def test_24_ENSG00000163519_codon_aln(self):
         in_file = f"{here.parent}/samples/24_ENSG00000163519_codon_aln.fasta"
         out_file = "output/24_ENSG00000163519_codon_aln.fasta.clipkit"
@@ -134,13 +149,15 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -161,13 +178,13 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_aa.fa_gappy", 'r') as expected:
+        with open(f"{here.parent}/expected/EOG091N44M8_aa.fa_gappy", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -188,13 +205,13 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_nt.fa_gappy", 'r') as expected:
+        with open(f"{here.parent}/expected/EOG091N44M8_nt.fa_gappy", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -215,13 +232,15 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -242,16 +261,19 @@ class TestGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
+
 
 @pytest.mark.integration
 class TestGappyModeCustomGapsParameter(object):
@@ -271,13 +293,15 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.2,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.fa_gappy_gaps_set_to_0.2", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/simple.fa_gappy_gaps_set_to_0.2", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -298,13 +322,16 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.3,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_gappy_custom_gaps",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -325,13 +352,16 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.4,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_gappy_custom_gaps",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -352,13 +382,15 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.1,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_nt.fa_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG091N44M8_nt.fa_gappy_custom_gaps", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -379,13 +411,15 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.5,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_gappy_custom_gaps", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -406,13 +440,15 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.25,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_gappy_custom_gaps", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content

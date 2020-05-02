@@ -2,12 +2,12 @@ import sys
 import textwrap
 import time
 
-import numpy as np
-from math import floor
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
+import numpy as np
+from math import floor
 from tqdm import tqdm
 
 from .modes import TrimmingMode, trim
@@ -75,7 +75,7 @@ def parsimony_informative_or_constant(numOccurences):
     argv: numOccurences
         dictionary with sequence characters (keys) and their counts (values)
     """
-    
+
     # create a dictionary of characters that occur at least twice
     d = dict((k, v) for k, v in numOccurences.items() if v >= 2)
     # if multiple characters occur at least twice, the site is parsimony
@@ -182,12 +182,8 @@ def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
     SeqIO.write(trimMSA, completmentOut, outFileFormat.value)
 
 
-def keep_trim_and_log(alignment,
-    gaps: float,
-    mode: TrimmingMode,
-    use_log: bool,
-    outFile,
-    complement
+def keep_trim_and_log(
+    alignment, gaps: float, mode: TrimmingMode, use_log: bool, outFile, complement
 ):
     """
     Determines positions to keep or trim and saves these positions
@@ -231,15 +227,26 @@ def keep_trim_and_log(alignment,
         # in the numOccurences dictionary is greater than two,
         # the site is parsimony informative
         #
-        # determine if a site is a constant site or not. A constant site is 
-        # defined as a site that contains the same nucl or amino acid at all 
+        # determine if a site is a constant site or not. A constant site is
+        # defined as a site that contains the same nucl or amino acid at all
         # sequence entries. Additionally, that nucl or amino acid must occur at
         # least twice
-        parsimony_informative, constant_site = parsimony_informative_or_constant(numOccurences)
+        parsimony_informative, constant_site = parsimony_informative_or_constant(
+            numOccurences
+        )
 
         # trim based on the mode
         keepD, trimD = trim(
-            gappyness, parsimony_informative, constant_site, keepD, trimD, i, gaps, alignment, mode, use_log
+            gappyness,
+            parsimony_informative,
+            constant_site,
+            keepD,
+            trimD,
+            i,
+            gaps,
+            alignment,
+            mode,
+            use_log,
         )
 
     # print to stdout that output files are being written

@@ -7,7 +7,12 @@ import sys
 import textwrap
 import time
 
-from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS, RawDescriptionHelpFormatter
+from argparse import (
+    ArgumentParser,
+    RawTextHelpFormatter,
+    SUPPRESS,
+    RawDescriptionHelpFormatter,
+)
 from Bio import AlignIO, SeqIO
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
@@ -17,13 +22,17 @@ from .helpers import keep_trim_and_log, write_keepD, write_trimD
 from .files import get_alignment_and_format, FileFormat
 from .modes import TrimmingMode
 from .args_processing import process_args
-from .warnings import checking_if_all_sites_were_trimmed, checking_if_entry_contains_only_gaps
+from .warnings import (
+    checking_if_all_sites_were_trimmed,
+    checking_if_entry_contains_only_gaps,
+)
 from .write import write_user_args, write_output_stats
 
 logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 logger.addHandler(ch)
+
 
 def execute(
     inFile: str,
@@ -34,7 +43,7 @@ def execute(
     complement: bool,
     mode: TrimmingMode,
     use_log: bool,
-    ):
+):
     """
     Master execute Function                                      
     This function executes the main functions and calls other    
@@ -60,14 +69,13 @@ def execute(
 
     # Print to stdout the user arguments
     write_user_args(
-        inFile, inFileFormat,
-        outFile, outFileFormat,
-        gaps, mode,
-        complement, use_log
+        inFile, inFileFormat, outFile, outFileFormat, gaps, mode, complement, use_log
     )
 
     # create dictionaries of sequences to keep or trim from the alignment
-    keepD, trimD = keep_trim_and_log(alignment, gaps, mode, use_log, outFile, complement)
+    keepD, trimD = keep_trim_and_log(
+        alignment, gaps, mode, use_log, outFile, complement
+    )
 
     # check if resulting alingment length is 0
     checking_if_all_sites_were_trimmed(keepD)
@@ -87,6 +95,7 @@ def execute(
     # print out output statistics
     write_output_stats(alignment, keepD, trimD, start_time)
 
+
 def main(argv=None):
     """
     Function that parses and collects arguments              
@@ -96,7 +105,8 @@ def main(argv=None):
         add_help=False,
         formatter_class=RawDescriptionHelpFormatter,
         usage=SUPPRESS,
-        description=textwrap.dedent("""\
+        description=textwrap.dedent(
+            """\
               _____ _ _       _  _______ _______ 
              / ____| (_)     | |/ /_   _|__   __|
             | |    | |_ _ __ | ' /  | |    | |   
@@ -111,29 +121,33 @@ def main(argv=None):
             ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
 
             Usage: clipkit <input> [optional arguments]
-            """)
+            """
+        ),
     )
 
     # if no arguments are given, print help and exit
-    if len(sys.argv)==1:
+    if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
         sys.exit()
 
     ## required arguments
-    required = parser.add_argument_group("required arguments", description=textwrap.dedent("""\
+    required = parser.add_argument_group(
+        "required arguments",
+        description=textwrap.dedent(
+            """\
         <input>                                     input file
                                                     (must be the first argument)
-        """)
+        """
+        ),
     )
 
-    required.add_argument(
-        "input",
-        type=str,
-        help=SUPPRESS
-    )
+    required.add_argument("input", type=str, help=SUPPRESS)
 
     ## optional arguments
-    optional = parser.add_argument_group("optional arguments", description=textwrap.dedent("""\
+    optional = parser.add_argument_group(
+        "optional arguments",
+        description=textwrap.dedent(
+            """\
         -o, --output <output_file_name>             output file name 
                                                     (default: input file named with '.clipkit' suffix)
 
@@ -190,37 +204,26 @@ def main(argv=None):
 
         Complementary
             Creates an alignment file of only the trimmed sequences
-        """)
+        """
+        ),
     )
 
-    optional.add_argument(
-        "-o",
-        "--output",
-        help=SUPPRESS,
-        metavar="output"
-    )
+    optional.add_argument("-o", "--output", help=SUPPRESS, metavar="output")
 
     optional.add_argument(
         "-m",
         "--mode",
         help=SUPPRESS,
         nargs="?",
-        choices=("kpi", "gappy", "kpi-gappy", "kpic", "kpic-gappy")
+        choices=("kpi", "gappy", "kpi-gappy", "kpic", "kpic-gappy"),
     )
 
     optional.add_argument(
-        "-h",
-        "--help",
-        action="help",
-        help=SUPPRESS,
+        "-h", "--help", action="help", help=SUPPRESS,
     )
 
     optional.add_argument(
-        "-v",
-        "--version",
-        action="version",
-        version="%(prog)s 0.1",
-        help=SUPPRESS,
+        "-v", "--version", action="version", version="%(prog)s 0.1", help=SUPPRESS,
     )
 
     optional.add_argument(
@@ -240,7 +243,7 @@ def main(argv=None):
         required=False,
         choices=file_format_choices,
         help=SUPPRESS,
-        metavar=""
+        metavar="",
     )
 
     optional.add_argument(
@@ -250,23 +253,15 @@ def main(argv=None):
         required=False,
         choices=file_format_choices,
         help=SUPPRESS,
-        metavar=''
+        metavar="",
     )
 
     optional.add_argument(
-        "-l",
-        "--log",
-        action="store_true",
-        required=False,
-        help=SUPPRESS,
+        "-l", "--log", action="store_true", required=False, help=SUPPRESS,
     )
 
     optional.add_argument(
-        "-c",
-        "--complementary",
-        action="store_true",
-        required=False,
-        help=SUPPRESS,
+        "-c", "--complementary", action="store_true", required=False, help=SUPPRESS,
     )
 
     # parse and assign arguments

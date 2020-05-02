@@ -7,6 +7,7 @@ from clipkit.modes import TrimmingMode
 
 here = Path(__file__)
 
+
 @pytest.mark.integration
 class TestComplementOut(object):
     # test complementary output file with a simple case
@@ -26,13 +27,15 @@ class TestComplementOut(object):
             gaps=0.9,
             complement=True,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.fa_gappy.complement", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/simple.fa_gappy.complement", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(complement_out_file, 'r') as out_file:
+        with open(complement_out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -54,13 +57,16 @@ class TestComplementOut(object):
             gaps=0.9,
             complement=True,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy.complement", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy.complement",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(complement_out_file, 'r') as out_file:
+        with open(complement_out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -82,13 +88,15 @@ class TestComplementOut(object):
             gaps=0.9,
             complement=True,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_aa.fa_gappy.complement", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG091N44M8_aa.fa_gappy.complement", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(complement_out_file, 'r') as out_file:
+        with open(complement_out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content

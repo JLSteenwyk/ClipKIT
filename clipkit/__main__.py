@@ -2,4 +2,5 @@
 import sys
 
 from .clipkit import main
+
 main(sys.argv[1:])

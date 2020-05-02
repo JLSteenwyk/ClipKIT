@@ -3,18 +3,26 @@ import time
 
 ## Function to print out processing alignment
 def write_processing_aln():
-    print(textwrap.dedent(f"""\
+    print(
+        textwrap.dedent(
+            f"""\
         
         ------------------------
         | Processing Alignment |
         ------------------------
-    """))
+    """
+        )
+    )
+
 
 ## Function to print user arguments to stdout
-def write_user_args(inFile, inFileFormat, outFile, outFileFormat,
-    gaps, mode, complement, use_log):
+def write_user_args(
+    inFile, inFileFormat, outFile, outFileFormat, gaps, mode, complement, use_log
+):
 
-    print(textwrap.dedent(f"""\
+    print(
+        textwrap.dedent(
+            f"""\
     -------------
     | Arguments |
     -------------
@@ -24,11 +32,16 @@ def write_user_args(inFile, inFileFormat, outFile, outFileFormat,
     Trimming mode: {mode.value}
     Create complementary output: {complement}
     Create log file: {use_log}
-    """))
+    """
+        )
+    )
+
 
 ## Function to print out that the output files are being written
 def write_output_files_message(outFile, complement, use_log):
-    print(textwrap.dedent(f"""\
+    print(
+        textwrap.dedent(
+            f"""\
 
 
         ------------------------
@@ -37,14 +50,19 @@ def write_output_files_message(outFile, complement, use_log):
         trimmed alignment: {outFile}
         complement file: {outFile + '.complement' if complement else False}
         log file: {outFile + '.log' if use_log else False}
-    """))
+    """
+        )
+    )
+
 
 ## Function to print out output statistics
 def write_output_stats(alignment, keepD, trimD, start_time):
     alignment_length = alignment.get_alignment_length()
-    output_len  = len(next(iter(keepD.values())))
+    output_len = len(next(iter(keepD.values())))
     trimmed_len = len(next(iter(trimD.values())))
-    print(textwrap.dedent(f"""\
+    print(
+        textwrap.dedent(
+            f"""\
 
         ---------------------
         | Output Statistics |
@@ -55,5 +73,6 @@ def write_output_stats(alignment, keepD, trimD, start_time):
         Percentage of alignment trimmed: {round((trimmed_len / alignment_length) * 100, 3)}%
 
         Execution time: {round(time.time() - start_time, 3)}s
-    """))
-
+    """
+        )
+    )

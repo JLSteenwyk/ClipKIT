@@ -8,8 +8,8 @@ here = Path(__file__)
 
 from clipkit.modes import TrimmingMode, trim, shouldKeep
 
-class TestModes(object):
 
+class TestModes(object):
     def test_shouldKeep_kpi_gappy_keep(self):
         ## setup
         mode = TrimmingMode.kpi_gappy
@@ -18,7 +18,9 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert True == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert True == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_kpi_gappy_trim(self):
         ## setup
@@ -28,7 +30,9 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = False
 
-        assert False == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert False == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_gappy_keep(self):
         ## setup
@@ -38,7 +42,9 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert True == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert True == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_gappy_trim(self):
         ## setup
@@ -48,7 +54,9 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert False == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert False == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_kpi_keep(self):
         ## setup
@@ -58,7 +66,9 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert True == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert True == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_kpi_trim(self):
         ## setup
@@ -68,7 +78,9 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = False
 
-        assert False == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert False == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_kpic_keep(self):
         ## setup
@@ -78,7 +90,9 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = True
 
-        assert True == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert True == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_kpic_trim(self):
         ## setup
@@ -88,7 +102,9 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = False
 
-        assert False == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert False == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_kpic_gappy_keep(self):
         ## setup
@@ -98,7 +114,9 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = True
 
-        assert True == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert True == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_shouldKeep_kpic_gappy_trim(self):
         ## setup
@@ -108,7 +126,9 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = True
 
-        assert False == shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps)
+        assert False == shouldKeep(
+            mode, parsimony_informative, constant_site, gappyness, gaps
+        )
 
     def test_gappy_mode(self):
         ## setup
@@ -129,29 +149,43 @@ class TestModes(object):
             trimD[entry.id] = np.empty([6], dtype=str)
 
         ## execution
-        keepD, trimD = trim(gappyness, parsimony_informative, constant_site,
-            keepD, trimD, i, gaps, alignment, TrimmingMode.gappy, use_log)
+        keepD, trimD = trim(
+            gappyness,
+            parsimony_informative,
+            constant_site,
+            keepD,
+            trimD,
+            i,
+            gaps,
+            alignment,
+            TrimmingMode.gappy,
+            use_log,
+        )
 
         ## check results
         expected_keepD = {
-            '1': np.array(['', '', 'G', '', '', '']), 
-            '2': np.array(['', '', 'G', '', '', '']),
-            '3': np.array(['', '', 'G', '', '', '']),
-            '4': np.array(['', '', 'A', '', '', '']),
-            '5': np.array(['', '', 'a', '', '', ''])
+            "1": np.array(["", "", "G", "", "", ""]),
+            "2": np.array(["", "", "G", "", "", ""]),
+            "3": np.array(["", "", "G", "", "", ""]),
+            "4": np.array(["", "", "A", "", "", ""]),
+            "5": np.array(["", "", "a", "", "", ""]),
         }
         expected_trimD = {
-            '1': np.array(['', '', '', '', '', '']),
-            '2': np.array(['', '', '', '', '', '']),
-            '3': np.array(['', '', '', '', '', '']),
-            '4': np.array(['', '', '', '', '', '']),
-            '5': np.array(['', '', '', '', '', ''])
+            "1": np.array(["", "", "", "", "", ""]),
+            "2": np.array(["", "", "", "", "", ""]),
+            "3": np.array(["", "", "", "", "", ""]),
+            "4": np.array(["", "", "", "", "", ""]),
+            "5": np.array(["", "", "", "", "", ""]),
         }
 
         assert expected_keepD.keys() == keepD.keys()
-        assert all(np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD)
+        assert all(
+            np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD
+        )
         assert expected_trimD.keys() == trimD.keys()
-        assert all(np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD)
+        assert all(
+            np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
+        )
 
     def test_kpi_gappy_mode(self):
         ## setup
@@ -172,30 +206,43 @@ class TestModes(object):
             trimD[entry.id] = np.empty([6], dtype=str)
 
         ## execution
-        keepD, trimD = trim(gappyness, parsimony_informative, constant_site,
-            keepD, trimD, i, gaps, alignment, TrimmingMode.kpi_gappy, use_log)
+        keepD, trimD = trim(
+            gappyness,
+            parsimony_informative,
+            constant_site,
+            keepD,
+            trimD,
+            i,
+            gaps,
+            alignment,
+            TrimmingMode.kpi_gappy,
+            use_log,
+        )
 
         ## check results
         expected_keepD = {
-            '1': np.array(['', '', '', '', '', '']),
-            '2': np.array(['', '', '', '', '', '']),
-            '3': np.array(['', '', '', '', '', '']),
-            '4': np.array(['', '', '', '', '', '']),
-            '5': np.array(['', '', '', '', '', ''])
+            "1": np.array(["", "", "", "", "", ""]),
+            "2": np.array(["", "", "", "", "", ""]),
+            "3": np.array(["", "", "", "", "", ""]),
+            "4": np.array(["", "", "", "", "", ""]),
+            "5": np.array(["", "", "", "", "", ""]),
         }
         expected_trimD = {
-            '1': np.array(['', '-', '', '', '', '']),
-            '2': np.array(['', '-', '', '', '', '']),
-            '3': np.array(['', '-', '', '', '', '']),
-            '4': np.array(['', 'G', '', '', '', '']),
-            '5': np.array(['', 'C', '', '', '', ''])
+            "1": np.array(["", "-", "", "", "", ""]),
+            "2": np.array(["", "-", "", "", "", ""]),
+            "3": np.array(["", "-", "", "", "", ""]),
+            "4": np.array(["", "G", "", "", "", ""]),
+            "5": np.array(["", "C", "", "", "", ""]),
         }
 
         assert expected_keepD.keys() == keepD.keys()
-        assert all(np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD)
+        assert all(
+            np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD
+        )
         assert expected_trimD.keys() == trimD.keys()
-        assert all(np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD)
-
+        assert all(
+            np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
+        )
 
     def test_kpi_mode(self):
         ## setup
@@ -216,29 +263,43 @@ class TestModes(object):
             trimD[entry.id] = np.empty([6], dtype=str)
 
         ## execution
-        keepD, trimD = trim(gappyness, parsimony_informative, constant_site,
-            keepD, trimD, i, gaps, alignment, TrimmingMode.kpi, use_log)
+        keepD, trimD = trim(
+            gappyness,
+            parsimony_informative,
+            constant_site,
+            keepD,
+            trimD,
+            i,
+            gaps,
+            alignment,
+            TrimmingMode.kpi,
+            use_log,
+        )
 
         ## check results
         expected_keepD = {
-            '1': np.array(['', '', '', '', '', 'T']),
-            '2': np.array(['', '', '', '', '', 'T']),
-            '3': np.array(['', '', '', '', '', 'A']),
-            '4': np.array(['', '', '', '', '', 'A']),
-            '5': np.array(['', '', '', '', '', '-'])
+            "1": np.array(["", "", "", "", "", "T"]),
+            "2": np.array(["", "", "", "", "", "T"]),
+            "3": np.array(["", "", "", "", "", "A"]),
+            "4": np.array(["", "", "", "", "", "A"]),
+            "5": np.array(["", "", "", "", "", "-"]),
         }
         expected_trimD = {
-            '1': np.array(['', '', '', '', '', '']),
-            '2': np.array(['', '', '', '', '', '']),
-            '3': np.array(['', '', '', '', '', '']),
-            '4': np.array(['', '', '', '', '', '']),
-            '5': np.array(['', '', '', '', '', ''])
+            "1": np.array(["", "", "", "", "", ""]),
+            "2": np.array(["", "", "", "", "", ""]),
+            "3": np.array(["", "", "", "", "", ""]),
+            "4": np.array(["", "", "", "", "", ""]),
+            "5": np.array(["", "", "", "", "", ""]),
         }
 
         assert expected_keepD.keys() == keepD.keys()
-        assert all(np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD)
+        assert all(
+            np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD
+        )
         assert expected_trimD.keys() == trimD.keys()
-        assert all(np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD)
+        assert all(
+            np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
+        )
 
     def test_kpic_mode(self):
         ## setup
@@ -259,29 +320,43 @@ class TestModes(object):
             trimD[entry.id] = np.empty([6], dtype=str)
 
         ## execution
-        keepD, trimD = trim(gappyness, parsimony_informative, constant_site,
-            keepD, trimD, i, gaps, alignment, TrimmingMode.kpic, use_log)
+        keepD, trimD = trim(
+            gappyness,
+            parsimony_informative,
+            constant_site,
+            keepD,
+            trimD,
+            i,
+            gaps,
+            alignment,
+            TrimmingMode.kpic,
+            use_log,
+        )
 
         ## check results
         expected_keepD = {
-            '1': np.array(['A', '', '', '', '', '']),
-            '2': np.array(['A', '', '', '', '', '']),
-            '3': np.array(['A', '', '', '', '', '']),
-            '4': np.array(['A', '', '', '', '', '']),
-            '5': np.array(['A', '', '', '', '', ''])
+            "1": np.array(["A", "", "", "", "", ""]),
+            "2": np.array(["A", "", "", "", "", ""]),
+            "3": np.array(["A", "", "", "", "", ""]),
+            "4": np.array(["A", "", "", "", "", ""]),
+            "5": np.array(["A", "", "", "", "", ""]),
         }
         expected_trimD = {
-            '1': np.array(['', '', '', '', '', '']),
-            '2': np.array(['', '', '', '', '', '']),
-            '3': np.array(['', '', '', '', '', '']),
-            '4': np.array(['', '', '', '', '', '']),
-            '5': np.array(['', '', '', '', '', ''])
+            "1": np.array(["", "", "", "", "", ""]),
+            "2": np.array(["", "", "", "", "", ""]),
+            "3": np.array(["", "", "", "", "", ""]),
+            "4": np.array(["", "", "", "", "", ""]),
+            "5": np.array(["", "", "", "", "", ""]),
         }
 
         assert expected_keepD.keys() == keepD.keys()
-        assert all(np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD)
+        assert all(
+            np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD
+        )
         assert expected_trimD.keys() == trimD.keys()
-        assert all(np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD)
+        assert all(
+            np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
+        )
 
     def test_kpic_gappy_mode(self):
         ## setup
@@ -302,26 +377,40 @@ class TestModes(object):
             trimD[entry.id] = np.empty([6], dtype=str)
 
         ## execution
-        keepD, trimD = trim(gappyness, parsimony_informative, constant_site,
-            keepD, trimD, i, gaps, alignment, TrimmingMode.kpic_gappy, use_log)
+        keepD, trimD = trim(
+            gappyness,
+            parsimony_informative,
+            constant_site,
+            keepD,
+            trimD,
+            i,
+            gaps,
+            alignment,
+            TrimmingMode.kpic_gappy,
+            use_log,
+        )
 
         ## check results
         expected_keepD = {
-            '1': np.array(['', '', '', '', '', '']),
-            '2': np.array(['', '', '', '', '', '']),
-            '3': np.array(['', '', '', '', '', '']),
-            '4': np.array(['', '', '', '', '', '']),
-            '5': np.array(['', '', '', '', '', ''])
+            "1": np.array(["", "", "", "", "", ""]),
+            "2": np.array(["", "", "", "", "", ""]),
+            "3": np.array(["", "", "", "", "", ""]),
+            "4": np.array(["", "", "", "", "", ""]),
+            "5": np.array(["", "", "", "", "", ""]),
         }
         expected_trimD = {
-            '1': np.array(['', '', '', 'T', '', '']),
-            '2': np.array(['', '', '', '-', '', '']),
-            '3': np.array(['', '', '', '-', '', '']),
-            '4': np.array(['', '', '', '-', '', '']),
-            '5': np.array(['', '', '', '-', '', ''])
+            "1": np.array(["", "", "", "T", "", ""]),
+            "2": np.array(["", "", "", "-", "", ""]),
+            "3": np.array(["", "", "", "-", "", ""]),
+            "4": np.array(["", "", "", "-", "", ""]),
+            "5": np.array(["", "", "", "-", "", ""]),
         }
 
         assert expected_keepD.keys() == keepD.keys()
-        assert all(np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD)
+        assert all(
+            np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD
+        )
         assert expected_trimD.keys() == trimD.keys()
-        assert all(np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD)
+        assert all(
+            np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
+        )

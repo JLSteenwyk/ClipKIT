@@ -1,10 +1,10 @@
-
 import os.path
 import logging
 import sys
 from .modes import TrimmingMode
 
 logger = logging.getLogger(__name__)
+
 
 def process_args(args):
     """
@@ -41,5 +41,5 @@ def process_args(args):
         gaps,
         complement,
         mode,
-        use_log
+        use_log,
     )

@@ -7,6 +7,7 @@ from clipkit.modes import TrimmingMode
 
 here = Path(__file__)
 
+
 @pytest.mark.integration
 class TestOutLog(object):
     # test output in clustal format
@@ -25,13 +26,13 @@ class TestOutLog(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=True
+            use_log=True,
         )
 
-        with open(f"{here.parent}/expected/simple.fa.clipkit.log", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.fa.clipkit.log", "r") as expected:
             expected_content = expected.read()
 
-        with open(f"{out_file}.log", 'r') as out_file:
+        with open(f"{out_file}.log", "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -52,13 +53,16 @@ class TestOutLog(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=True
+            use_log=True,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit.log", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit.log",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(f"{out_file}.log", 'r') as out_file:
+        with open(f"{out_file}.log", "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -79,13 +83,15 @@ class TestOutLog(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=True
+            use_log=True,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_nt.fa.clipkit.log", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG091N44M8_nt.fa.clipkit.log", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(f"{out_file}.log", 'r') as out_file:
+        with open(f"{out_file}.log", "r") as out_file:
             output_content = out_file.read()
 
-        assert expected_content == output_content        
+        assert expected_content == output_content

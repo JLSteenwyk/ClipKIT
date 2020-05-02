@@ -10,8 +10,6 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 import numpy as np
 
-
-
 from clipkit.helpers import count_characters_at_position
 from clipkit.helpers import get_sequence_at_position_and_report_features
 from clipkit.helpers import parsimony_informative_or_constant
@@ -112,22 +110,32 @@ class TestParsimonyInformativeOrConstant(object):
         # nConst = not constant
         num_occurences_nconst = {"A": 1}
 
-
         ## execution
         # result is True and False
-        is_parsimony_informative, constant_site_holder_is_pi = parsimony_informative_or_constant(
-            num_occurences_pi)
+        (
+            is_parsimony_informative,
+            constant_site_holder_is_pi,
+        ) = parsimony_informative_or_constant(num_occurences_pi)
         # result is False and False
-        is_not_parsimony_informative, constant_site_holder_is_npi = parsimony_informative_or_constant(
-            num_occurences_npi)
+        (
+            is_not_parsimony_informative,
+            constant_site_holder_is_npi,
+        ) = parsimony_informative_or_constant(num_occurences_npi)
         # result is False and True
-        is_not_pi_0, is_constant_site = parsimony_informative_or_constant(num_occurences_const)
+        is_not_pi_0, is_constant_site = parsimony_informative_or_constant(
+            num_occurences_const
+        )
         # result is False and False
-        is_not_pi_1, is_not_constant_site = parsimony_informative_or_constant(num_occurences_nconst)
+        is_not_pi_1, is_not_constant_site = parsimony_informative_or_constant(
+            num_occurences_nconst
+        )
 
         ## check results
         assert is_parsimony_informative == True and constant_site_holder_is_pi == False
-        assert is_not_parsimony_informative == False and constant_site_holder_is_npi == False
+        assert (
+            is_not_parsimony_informative == False
+            and constant_site_holder_is_npi == False
+        )
         assert is_not_pi_0 == False and is_constant_site == True
         assert is_not_pi_1 == False and is_not_constant_site == False
 
@@ -142,24 +150,28 @@ class TestPopulateEmptyKeepDAndTrimD(object):
 
         ## check results
         expected_keepD = {
-            "1": np.empty([6], dtype=str), 
+            "1": np.empty([6], dtype=str),
             "2": np.empty([6], dtype=str),
             "3": np.empty([6], dtype=str),
             "4": np.empty([6], dtype=str),
-            "5": np.empty([6], dtype=str)
+            "5": np.empty([6], dtype=str),
         }
         expected_trimD = {
-            "1": np.empty([6], dtype=str), 
+            "1": np.empty([6], dtype=str),
             "2": np.empty([6], dtype=str),
             "3": np.empty([6], dtype=str),
             "4": np.empty([6], dtype=str),
-            "5": np.empty([6], dtype=str)
+            "5": np.empty([6], dtype=str),
         }
-        
+
         assert expected_keepD.keys() == keepD.keys()
-        assert all(np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD)
+        assert all(
+            np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD
+        )
         assert expected_trimD.keys() == trimD.keys()
-        assert all(np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD)
+        assert all(
+            np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
+        )
 
 
 class TestJoinKeepDAndTrimD(object):
@@ -226,4 +238,3 @@ class TestWriteTrimD(object):
         mock_write.assert_called_once_with(
             sample_msa, expected_completmentOut, out_file_format.value
         )
-

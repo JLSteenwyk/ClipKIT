@@ -6,21 +6,19 @@ from Bio import AlignIO
 
 log = logging.getLogger(__name__)
 
+
 class FileFormat(Enum):
-    fasta = 'fasta'
-    clustal = 'clustal'
-    maf = 'maf'
-    mauve = 'mauve'
-    phylip = 'phylip'
-    phylip_seq = 'phylip-sequential'
-    phylip_rel = 'phylip-relaxed'
-    stockholm = 'stockholm'
+    fasta = "fasta"
+    clustal = "clustal"
+    maf = "maf"
+    mauve = "mauve"
+    phylip = "phylip"
+    phylip_seq = "phylip-sequential"
+    phylip_rel = "phylip-relaxed"
+    stockholm = "stockholm"
 
 
-def get_alignment_and_format(
-    inFile: str,
-    file_format: FileFormat
-    ):
+def get_alignment_and_format(inFile: str, file_format: FileFormat):
     """
     Automatically determines what type of input file was used
     and reads in the alignment file
@@ -41,11 +39,11 @@ def get_alignment_and_format(
             try:
                 alignment = AlignIO.read(open(inFile), fileFormat.value)
                 return alignment, fileFormat
-            # the following exceptions refer to skipping over errors 
+            # the following exceptions refer to skipping over errors
             # associated with reading the wrong input file
             except ValueError:
                 continue
             except AssertionError:
                 continue
 
-        raise Exception('Input file could not be read')
+        raise Exception("Input file could not be read")

@@ -7,6 +7,7 @@ from clipkit.modes import TrimmingMode
 
 here = Path(__file__)
 
+
 @pytest.mark.integration
 class TestOutFormats(object):
     # test output in clustal format
@@ -25,13 +26,13 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.clustal", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.clustal", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -52,13 +53,13 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.maf", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.maf", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -79,13 +80,13 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.mauve", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.mauve", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -106,13 +107,13 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.phylip", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.phylip", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -133,13 +134,13 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.phylip-sequential", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.phylip-sequential", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -160,17 +161,17 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.phylip-relaxed", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.phylip-relaxed", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
-    
+
     # test output in stockholm format
     # usage: clipkit simple.fa -of stockholm
     def test_stockholm(self):
@@ -187,13 +188,13 @@ class TestOutFormats(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.stockholm", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.stockholm", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content

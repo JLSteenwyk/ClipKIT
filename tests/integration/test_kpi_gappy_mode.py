@@ -7,6 +7,7 @@ from clipkit.modes import TrimmingMode
 
 here = Path(__file__)
 
+
 @pytest.mark.integration
 class TestKpiGappyMode(object):
     def test_simple(self):
@@ -23,13 +24,13 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.fa_kpi_gappy", 'r') as expected:
+        with open(f"{here.parent}/expected/simple.fa_kpi_gappy", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -50,13 +51,16 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_kpi_gappy",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -77,13 +81,15 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -104,13 +110,15 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/24_ENSG00000163519_aa_aln.fasta_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/24_ENSG00000163519_aa_aln.fasta_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -131,13 +139,15 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -158,13 +168,15 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_aa.fa_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG091N44M8_aa.fa_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -185,13 +197,15 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_nt.fa_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG091N44M8_nt.fa_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -212,13 +226,15 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -239,16 +255,19 @@ class TestKpiGappyMode(object):
             gaps=0.9,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_kpi_gappy", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
+
 
 @pytest.mark.integration
 class TestKPIGappyModeCustomGapsParameter(object):
@@ -268,13 +287,15 @@ class TestKPIGappyModeCustomGapsParameter(object):
             gaps=0.2,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/simple.fa_kpi_gappy_gaps_set_to_0.2", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/simple.fa_kpi_gappy_gaps_set_to_0.2", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -295,13 +316,16 @@ class TestKPIGappyModeCustomGapsParameter(object):
             gaps=0.3,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_kpi_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta_kpi_gappy_custom_gaps",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -322,13 +346,16 @@ class TestKPIGappyModeCustomGapsParameter(object):
             gaps=0.4,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_kpi_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/24_ENSG00000163519_codon_aln.fasta_kpi_gappy_custom_gaps",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -349,13 +376,15 @@ class TestKPIGappyModeCustomGapsParameter(object):
             gaps=0.1,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log=False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG091N44M8_nt.fa_kpi_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG091N44M8_nt.fa_kpi_gappy_custom_gaps", "r"
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -376,13 +405,16 @@ class TestKPIGappyModeCustomGapsParameter(object):
             gaps=0.5,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log = False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_kpi_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C0CZK_aa_aln.fasta_kpi_gappy_custom_gaps",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -403,13 +435,16 @@ class TestKPIGappyModeCustomGapsParameter(object):
             gaps=0.25,
             complement=False,
             mode=TrimmingMode.kpi_gappy,
-            use_log = False
+            use_log=False,
         )
 
-        with open(f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_kpi_gappy_custom_gaps", 'r') as expected:
+        with open(
+            f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_kpi_gappy_custom_gaps",
+            "r",
+        ) as expected:
             expected_content = expected.read()
 
-        with open(out_file, 'r') as out_file:
+        with open(out_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content

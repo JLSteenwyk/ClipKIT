@@ -1,8 +1,9 @@
 from os import path
 from setuptools import setup
+
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 REQUIRES = ["biopython==1.76", "numpy==1.18.2", "tqdm==4.45.0"]
