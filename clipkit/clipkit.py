@@ -18,18 +18,13 @@ from .files import get_alignment_and_format, FileFormat
 from .modes import TrimmingMode
 from .args_processing import process_args
 from .warnings import checking_if_all_sites_were_trimmed, checking_if_entry_contains_only_gaps
-from .prints import print_user_arguments, print_writing_output_files_message, print_output_stats
+from .write import write_user_args, write_output_stats
 
 logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 logger.addHandler(ch)
 
-####################################################################
-### Master execute Function                                      ###
-### This function executes the main functions and calls other    ###
-### subfunctions to trim the input file  						 ###
-####################################################################
 def execute(
     inFile: str,
     outFile: str,
@@ -41,6 +36,9 @@ def execute(
     use_log: bool,
     ):
     """
+    Master execute Function                                      
+    This function executes the main functions and calls other    
+    subfunctions to trim the input file  
     """
     # logic for whether or not to create a log file
     if use_log:
@@ -61,7 +59,7 @@ def execute(
         outFileFormat = inFileFormat
 
     # Print to stdout the user arguments
-    print_user_arguments(
+    write_user_args(
         inFile, inFileFormat,
         outFile, outFileFormat,
         gaps, mode,
@@ -87,19 +85,11 @@ def execute(
         write_trimD(trimD, outFile, outFileFormat)
 
     # print out output statistics
-    print_output_stats(alignment, keepD, trimD, start_time)
+    write_output_stats(alignment, keepD, trimD, start_time)
 
-####################################################################
-### END Master execute Function 					             ###
-####################################################################
-
-####################################################################
-### Function that saves arguments and passes them to a           ###
-### processing function                                          ###
-####################################################################
 def main(argv=None):
     """
-    Parses arguments 
+    Function that parses and collects arguments              
     """
 
     parser = ArgumentParser(
@@ -194,7 +184,8 @@ def main(argv=None):
             The log file has four columns.
             - Column 1 is the position in the alignment (starting at 1), 
             - Column 2 reports if the site was trimmed or kept (trim and keep, respectively),
-            - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), and
+            - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), or
+              a constant site or not (Const, nConst), or neither (nConst, nPI)
             - Column 4 reports the gappyness of the the position (number of gaps / entries in alignment)
 
         Complementary

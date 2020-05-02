@@ -6,12 +6,12 @@ from .modes import TrimmingMode
 
 logger = logging.getLogger(__name__)
 
-####################################################################
-### Function to process arguments                                ###
-### This function processes arguments                            ###
-### subfunctions to trim the input file  						 ###
-####################################################################
 def process_args(args):
+    """
+    Function to process arguments
+    This function processes arguments
+    subfunctions to trim the input file
+    """
     inFile = args.input
     outFile = args.output or f"{inFile}.clipkit"
 
@@ -24,9 +24,7 @@ def process_args(args):
         logger.warning("Input and output files can't have the same name.")
         sys.exit()
 
-
-    print(args)
-    ## assign optional arguments
+    # assign optional arguments
     mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.gappy
     use_log = args.log or False
     gaps = float(args.gaps) if args.gaps is not None else 0.9
@@ -45,7 +43,3 @@ def process_args(args):
         mode,
         use_log
     )
-
-####################################################################
-### END process_args Function    					             ###
-####################################################################

@@ -6,7 +6,6 @@ from Bio import AlignIO
 
 log = logging.getLogger(__name__)
 
-## Class to hold all file formats
 class FileFormat(Enum):
     fasta = 'fasta'
     clustal = 'clustal'
@@ -18,8 +17,6 @@ class FileFormat(Enum):
     stockholm = 'stockholm'
 
 
-## Function to automatically determine the format of the alignment file
-## and read in the alignment. Returns alignment object and fileFormat
 def get_alignment_and_format(
     inFile: str,
     file_format: FileFormat

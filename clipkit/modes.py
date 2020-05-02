@@ -3,12 +3,6 @@ import logging
 from enum import Enum
 
 logger = logging.getLogger("clipkit.clipkit")
-####################################################################
-### Mode Functions 	                                             ###
-### This block of code contains all functions that populate      ###
-### dictionaries with sites to trim and keep according to user   ###
-### set mode                                           			 ###
-####################################################################
 
 
 class TrimmingMode(Enum):
@@ -18,9 +12,11 @@ class TrimmingMode(Enum):
     kpic = "kpic"
     kpic_gappy = "kpic-gappy"
 
-# Function to determine if a site should be kept or not
+
 def shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps):
-    # print(f"mode: {mode}, parsimony_informative: {parsimony_informative}, gappyness: {gappyness}, gaps: {gaps}")
+    """
+    Determine if a site should be kept or not
+    """
     if mode == TrimmingMode.kpi_gappy:
         return gappyness <= gaps and parsimony_informative
     elif mode == TrimmingMode.gappy:

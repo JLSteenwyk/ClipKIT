@@ -99,7 +99,7 @@ clipkit <input> -m gappy
 # kpic-based trimming
 clipkit <input> -m kpic
 
-# kpic- and gappy-based trimmin
+# kpic- and gappy-based trimming
 clipkit <input> -m kpic-gappy
 
 # kpi-based trimming
@@ -183,7 +183,7 @@ In brief, performance assessment and comparison of multiple trimming alignment s
 
 ## Authors
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
-* [Thomas Buida](www.tjbiii.com)<br />
+* [Thomas Buida](https://tjbiii.com)<br />
 * [Yuanning Li](https://scholar.google.com/citations?user=65ygCIsAAAAJ&hl=en&oi=ao)
 * [Xing-Xing Shen](https://xingxingshen.github.io/)
 * [Antonis Rokas](https://as.vanderbilt.edu/rokaslab/)
@@ -191,5 +191,5 @@ In brief, performance assessment and comparison of multiple trimming alignment s
 
 ## Developers
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
-* [Thomas Buida](www.tjbiii.com)<br />
+* [Thomas Buida](https://tjbiii.com)<br />
 <br />

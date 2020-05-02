@@ -12,18 +12,9 @@ from tqdm import tqdm
 
 from .modes import TrimmingMode, trim
 from .files import FileFormat
-from .prints import print_processing_aln, print_writing_output_files_message
+from .write import write_processing_aln, write_output_files_message
 
-####################################################################
-### Supporting Functions 	                                     ###
-### This block of code contains all supporting functions that    ###
-### read the input files, calculate gappyness, etc  			 ###
-####################################################################
 
-## Function to get the sequence at a given column. Function
-## will also determine features of the position including
-## length and number of gaps.
-## Support function for keep_trim_and_log()
 def get_sequence_at_position_and_report_features(alignment, i):
     """
     Count the occurence of each character at a given position
@@ -50,8 +41,6 @@ def get_sequence_at_position_and_report_features(alignment, i):
     return seqAtPosition, gappyness
 
 
-## Function to count the number of occurences in each character
-## Support function for keep_trim_and_log()
 def count_characters_at_position(seqAtPosition):
     """
     Count the occurence of each character at a given position
@@ -71,8 +60,6 @@ def count_characters_at_position(seqAtPosition):
     return numOccurences
 
 
-## Function determine if a site is parsimony informative or not
-## Support function for keep_trim_and_log()
 def parsimony_informative_or_constant(numOccurences):
     """
     Determines if a site is parsimony informative or constant.
@@ -108,10 +95,6 @@ def parsimony_informative_or_constant(numOccurences):
     return parsimony_informative, constant_site
 
 
-## Function to initialize and populate keepD and trimD with entry ids
-## and empty list elements. This will eventually contain the
-## sequences that are trimmed or kept by clipkit. Lastly, initialize
-## an array to keep log information
 def populate_empty_keepD_and_trimD(alignment):
     """
     Creates barebones dictionaries for sites kept and trimmed. Creates
@@ -133,8 +116,6 @@ def populate_empty_keepD_and_trimD(alignment):
     return keepD, trimD
 
 
-## Function to join the elements of keepD and trimD into a nicer
-## arrangement of key value pairs
 def join_keepD_and_trimD(keepD, trimD):
     """
     Currently, each position is its own element. This function
@@ -157,7 +138,6 @@ def join_keepD_and_trimD(keepD, trimD):
     return keepD, trimD
 
 
-## Function to write out keepD to output file
 def write_keepD(keepD, outFile, outFileFormat: FileFormat):
     """
     This creates a biopython multisequence alignment object. Object
@@ -180,7 +160,6 @@ def write_keepD(keepD, outFile, outFileFormat: FileFormat):
     SeqIO.write(keepMSA, outFile, outFileFormat.value)
 
 
-## Function to write out trimD to output file
 def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
     """
     This creates a biopython multisequence alignment object. Object
@@ -203,8 +182,6 @@ def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
     SeqIO.write(trimMSA, completmentOut, outFileFormat.value)
 
 
-## Function to determine which positions of an alignment should be
-## kept or trimmed
 def keep_trim_and_log(alignment,
     gaps: float,
     mode: TrimmingMode,
@@ -237,7 +214,7 @@ def keep_trim_and_log(alignment,
     alignment_length = alignment.get_alignment_length()
 
     # loop through alignment
-    print_processing_aln()
+    write_processing_aln()
     for i in tqdm(range(0, alignment_length, int(1))):
 
         # save the sequence at the position to a string and calculate the gappyness of the site
@@ -266,7 +243,7 @@ def keep_trim_and_log(alignment,
         )
 
     # print to stdout that output files are being written
-    print_writing_output_files_message(outFile, complement, use_log)
+    write_output_files_message(outFile, complement, use_log)
     # join elements in value lists in keepD and trimD
     keepD, trimD = join_keepD_and_trimD(keepD, trimD)
 

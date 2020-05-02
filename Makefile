@@ -23,12 +23,3 @@ test.unit:
 
 test.integration:
 	python -m pytest --basetemp=output -m "integration"
-
-test_default_params:
-	# test clipkit with default parameters
-	python3 -m clipkit-runner test_files/test.fa -o output/test.fa.test_default_params
-	python3 -m clipkit-runner test_files/12_YIL115C_Anc_2.253_codon_aln.fasta -o output/12_YIL115C_Anc_2.253_codon_aln.fasta.test_default_params
-	python3 -m clipkit-runner test_files/12_YIL115C_Anc_2.253_aa_aln.fasta -o output/12_YIL115C_Anc_2.253_aa_aln.fasta.test_default_params
-	cmp --silent test_expected_output/test.fa.test_default_params output/test.fa.test_default_params || echo "Fail"
-	cmp --silent test_expected_output/12_YIL115C_Anc_2.253_codon_aln.fasta.test_default_params output/12_YIL115C_Anc_2.253_codon_aln.fasta.test_default_params || echo "Fail"
-	cmp --silent test_expected_output/12_YIL115C_Anc_2.253_aa_aln.fasta.test_default_params output/12_YIL115C_Anc_2.253_aa_aln.fasta.test_default_params || echo "Fail"
