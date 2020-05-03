@@ -11,6 +11,9 @@ here = Path(__file__)
 @pytest.mark.integration
 class TestKpiMode(object):
     def test_simple(self):
+        """
+        usage: clipkit simple.fa -kpi
+        """
         in_file = f"{here.parent}/samples/simple.fa"
         out_file = "output/simpla.fa.TestKpiMode_test_simple.clipkit"
         in_file_format = FileFormat.fasta
@@ -35,9 +38,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with codon alignment of yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -m kpi
     def test_12_YIL115C_Anc_2_253_codon_aln(self):
+        """
+        test kpi with codon alignment of yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -m kpi
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -64,9 +69,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with amino acid alignment of yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta -m kpi
     def test_12_YIL115C_Anc_2_253_aa_aln(self):
+        """
+        test kpi with amino acid alignment of yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta -m kpi
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -93,9 +100,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with amino acid alignment of mammalian sequences
-    # usage: clipkit 24_ENSG00000163519_aa_aln.fasta -m kpi
     def test_24_ENSG00000163519_aa_aln(self):
+        """
+        test kpi with amino acid alignment of mammalian sequences
+        usage: clipkit 24_ENSG00000163519_aa_aln.fasta -m kpi
+        """
         in_file = f"{here.parent}/samples/24_ENSG00000163519_aa_aln.fasta"
         out_file = "output/24_ENSG00000163519_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -122,9 +131,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with codon alignment of mammalian sequences
-    # usage: clipkit 24_ENSG00000163519_codon_aln.fasta -m kpi
     def test_24_ENSG00000163519_codon_aln(self):
+        """
+        test kpi with codon alignment of mammalian sequences
+        usage: clipkit 24_ENSG00000163519_codon_aln.fasta -m kpi
+        """
         in_file = f"{here.parent}/samples/24_ENSG00000163519_codon_aln.fasta"
         out_file = "output/24_ENSG00000163519_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -151,9 +162,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with amino acid alignment of Penicillium sequences
-    # usage: clipkit EOG091N44M8_aa.fa -m kpi
     def test_EOG091N44M8_aa(self):
+        """
+        test kpi with amino acid alignment of Penicillium sequences
+        usage: clipkit EOG091N44M8_aa.fa -m kpi
+        """
         in_file = f"{here.parent}/samples/EOG091N44M8_aa.fa"
         out_file = "output/EOG091N44M8_aa.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -178,9 +191,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with nucleotide alignment of Penicillium sequences
-    # usage: clipkit EOG091N44M8_nt.fa -m kpi
     def test_EOG091N44M8_nt(self):
+        """
+        test kpi with nucleotide alignment of Penicillium sequences
+        usage: clipkit EOG091N44M8_nt.fa -m kpi
+        """
         in_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
         out_file = "output/EOG091N44M8_nt.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -205,9 +220,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with amino alignment of fungal sequences
-    # usage: clipkit EOG092C0CZK_aa_aln.fasta -m kpi
     def test_EOG092C0CZK_aa(self):
+        """
+        test kpi with amino alignment of fungal sequences
+        usage: clipkit EOG092C0CZK_aa_aln.fasta -m kpi
+        """
         in_file = f"{here.parent}/samples/EOG092C0CZK_aa_aln.fasta"
         out_file = "output/EOG092C0CZK_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -234,9 +251,11 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
-    # test kpi with amino alignment of fungal sequences
-    # usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpi
     def test_EOG092C4VOX_aa(self):
+        """
+        test kpi with amino alignment of fungal sequences
+        usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpi
+        """
         in_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
         out_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta

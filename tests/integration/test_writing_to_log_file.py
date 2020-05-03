@@ -10,9 +10,11 @@ here = Path(__file__)
 
 @pytest.mark.integration
 class TestOutLog(object):
-    # test output in clustal format
-    # usage: clipkit simple.fa -l
     def test_simple(self):
+        """
+        test output in clustal format
+        usage: clipkit simple.fa -l
+        """
         in_file = f"{here.parent}/samples/simple.fa"
         out_file = "output/simple.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -37,9 +39,11 @@ class TestOutLog(object):
 
         assert expected_content == output_content
 
-    # test output in clustal format
-    # usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -l
     def test_12_YIL115C_Anc_2_253_codon_aln(self):
+        """
+        test output in clustal format
+        usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -l
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -67,9 +71,11 @@ class TestOutLog(object):
 
         assert expected_content == output_content
 
-    # test output in clustal format
-    # usage: clipkit EOG091N44M8_nt.fa -l
     def test_EOG091N44M8_nt(self):
+        """
+        test output in clustal format
+        usage: clipkit EOG091N44M8_nt.fa -l
+        """
         in_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
         out_file = "output/EOG091N44M8_nt.fa.clipkit"
         in_file_format = FileFormat.fasta

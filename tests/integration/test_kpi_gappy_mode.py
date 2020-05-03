@@ -11,6 +11,9 @@ here = Path(__file__)
 @pytest.mark.integration
 class TestKpiGappyMode(object):
     def test_simple(self):
+        """
+        usage: clipkit simple.fa -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/simple.fa"
         out_file = "output/simpla.fa.TestKpiGappyMode_test_simple.clipkit"
         in_file_format = FileFormat.fasta
@@ -35,9 +38,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with codon alignment of yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -m kpi-gappy
     def test_12_YIL115C_Anc_2_253_codon_aln(self):
+        """
+        test kpi_gappy with codon alignment of yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -65,9 +70,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with amino acid alignment of yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta -m kpi-gappy
     def test_12_YIL115C_Anc_2_253_aa_aln(self):
+        """
+        test kpi_gappy with amino acid alignment of yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -94,9 +101,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with amino acid alignment of mammalian sequences
-    # usage: clipkit 24_ENSG00000163519_aa_aln.fasta -m kpi-gappy
     def test_24_ENSG00000163519_aa_aln(self):
+        """
+        test kpi_gappy with amino acid alignment of mammalian sequences
+        usage: clipkit 24_ENSG00000163519_aa_aln.fasta -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/24_ENSG00000163519_aa_aln.fasta"
         out_file = "output/24_ENSG00000163519_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -123,9 +132,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with codon alignment of mammalian sequences
-    # usage: clipkit 24_ENSG00000163519_codon_aln.fasta -m kpi-gappy
     def test_24_ENSG00000163519_codon_aln(self):
+        """
+        test kpi_gappy with codon alignment of mammalian sequences
+        usage: clipkit 24_ENSG00000163519_codon_aln.fasta -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/24_ENSG00000163519_codon_aln.fasta"
         out_file = "output/24_ENSG00000163519_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -152,9 +163,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with amino acid alignment of Penicillium sequences
-    # usage: clipkit EOG091N44M8_aa.fa -m kpi-gappy
     def test_EOG091N44M8_aa(self):
+        """
+        test kpi_gappy with amino acid alignment of Penicillium sequences
+        usage: clipkit EOG091N44M8_aa.fa -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/EOG091N44M8_aa.fa"
         out_file = "output/EOG091N44M8_aa.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -181,9 +194,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with nucleotide alignment of Penicillium sequences
-    # usage: clipkit EOG091N44M8_nt.fa -m kpi-gappy
     def test_EOG091N44M8_nt(self):
+        """
+        test kpi_gappy with nucleotide alignment of Penicillium sequences
+        usage: clipkit EOG091N44M8_nt.fa -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
         out_file = "output/EOG091N44M8_nt.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -210,9 +225,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with amino alignment of fungal sequences
-    # usage: clipkit EOG092C0CZK_aa_aln.fasta -m kpi-gappy
     def test_EOG092C0CZK_aa(self):
+        """
+        test kpi_gappy with amino alignment of fungal sequences
+        usage: clipkit EOG092C0CZK_aa_aln.fasta -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/EOG092C0CZK_aa_aln.fasta"
         out_file = "output/EOG092C0CZK_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -239,9 +256,11 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
-    # test gappy with amino alignment of fungal sequences
-    # usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpi-gappy
     def test_EOG092C4VOX_aa(self):
+        """
+        test gappy with amino alignment of fungal sequences
+        usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
         out_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -271,9 +290,11 @@ class TestKpiGappyMode(object):
 
 @pytest.mark.integration
 class TestKPIGappyModeCustomGapsParameter(object):
-    # test kpi_gappy with a custom gaps parameter
-    # usage: clipkit simple.fa -g 0.2 -m kpi-gappy
     def test_simple(self):
+        """
+        test kpi_gappy with a custom gaps parameter
+        usage: clipkit simple.fa -g 0.2 -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/simple.fa"
         out_file = "output/simpla.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -300,9 +321,11 @@ class TestKPIGappyModeCustomGapsParameter(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with codon alignment of yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -g 0.3 -m kpi-gappy
     def test_12_YIL115C_Anc_2_253_codon_aln(self):
+        """
+        test kpi_gappy with codon alignment of yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -g 0.3 -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         out_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -330,9 +353,11 @@ class TestKPIGappyModeCustomGapsParameter(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with codon alignment of mammalian sequences
-    # usage: clipkit 24_ENSG00000163519_codon_aln.fasta -g .4 -m kpi-gappy
     def test_24_ENSG00000163519_codon_aln(self):
+        """
+        test kpi_gappy with codon alignment of mammalian sequences
+        usage: clipkit 24_ENSG00000163519_codon_aln.fasta -g .4 -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/24_ENSG00000163519_codon_aln.fasta"
         out_file = "output/24_ENSG00000163519_codon_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -360,9 +385,11 @@ class TestKPIGappyModeCustomGapsParameter(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with nucleotide alignment of Penicillium sequences
-    # usage: clipkit EOG091N44M8_nt.fa -g .1 -m kpi-gappy
     def test_EOG091N44M8_nt(self):
+        """
+        test kpi_gappy with nucleotide alignment of Penicillium sequences
+        usage: clipkit EOG091N44M8_nt.fa -g .1 -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
         out_file = "output/EOG091N44M8_nt.fa.clipkit"
         in_file_format = FileFormat.fasta
@@ -389,9 +416,11 @@ class TestKPIGappyModeCustomGapsParameter(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with amino alignment of fungal sequences
-    # usage: clipkit EOG092C0CZK_aa_aln.fasta -g .5 -m kpi-gappy
     def test_EOG092C0CZK_aa(self):
+        """
+        test kpi_gappy with amino alignment of fungal sequences
+        usage: clipkit EOG092C0CZK_aa_aln.fasta -g .5 -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/EOG092C0CZK_aa_aln.fasta"
         out_file = "output/EOG092C0CZK_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
@@ -419,9 +448,11 @@ class TestKPIGappyModeCustomGapsParameter(object):
 
         assert expected_content == output_content
 
-    # test kpi_gappy with amino alignment of fungal sequences
-    # usage: clipkit EOG092C4VOX_aa_aln.fasta -g .25 -m kpi-gappy
     def test_EOG092C4VOX_aa(self):
+        """
+        test kpi_gappy with amino alignment of fungal sequences
+        usage: clipkit EOG092C4VOX_aa_aln.fasta -g .25 -m kpi-gappy
+        """
         in_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
         out_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
         in_file_format = FileFormat.fasta
