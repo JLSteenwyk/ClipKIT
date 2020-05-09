@@ -13,6 +13,9 @@
         <a href="https://lbesson.mit-license.org/" alt="Contributors">
             <img src="https://img.shields.io/badge/License-MIT-blue.svg">
         </a>
+        <a href="https://codecov.io/gh/jlsteenwyk/clipkit">
+          <img src="https://codecov.io/gh/jlsteenwyk/clipkit/branch/master/graph/badge.svg?token=0J49I6441V" />
+        </a>
         <a href="https://github.com/jlsteenwyk/clipkit/graphs/contributors" alt="Contributors">
             <img src="https://img.shields.io/github/contributors/jlsteenwyk/clipkit">
         </a>
