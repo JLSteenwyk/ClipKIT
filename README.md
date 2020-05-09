@@ -10,16 +10,22 @@
     <a href="https://github.com/jlsteenwyk/clipkit/issues">Request Feature</a>
   </p>
     <p align="center">
-        <a href="https://lbesson.mit-license.org/" alt="Contributors">
+        <a href="https://lbesson.mit-license.org/" alt="License">
             <img src="https://img.shields.io/badge/License-MIT-blue.svg">
         </a>
-        <a href="https://codecov.io/gh/jlsteenwyk/clipkit">
-          <img src="https://codecov.io/gh/jlsteenwyk/clipkit/branch/master/graph/badge.svg?token=0J49I6441V" />
+        <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
+          <img src="https://img.shields.io/pypi/pyversions/clipkit">
+        </a>
+        <a href="https://github.com/JLSteenwyk/ClipKIT/actions" alt="Build">
+            <img src="https://img.shields.io/github/workflow/status/jlsteenwyk/clipkit/ci/master">
+        </a>
+        <a href="https://codecov.io/gh/jlsteenwyk/clipkit" alt="Coverage">
+          <img src="https://codecov.io/gh/jlsteenwyk/clipkit/branch/master/graph/badge.svg?token=0J49I6441V">
         </a>
         <a href="https://github.com/jlsteenwyk/clipkit/graphs/contributors" alt="Contributors">
             <img src="https://img.shields.io/github/contributors/jlsteenwyk/clipkit">
         </a>
-        <a href="https://twitter.com/intent/follow?screen_name=jlsteenwyk">
+        <a href="https://twitter.com/intent/follow?screen_name=jlsteenwyk" alt="Author Twitter">
             <img src="https://img.shields.io/twitter/follow/jlsteenwyk?style=social&logo=twitter"
                 alt="follow on Twitter">
         </a>
@@ -45,7 +51,7 @@ If you found clipkit useful, please cite **Add journal and citation information*
 ## Quick Start
 ### 1) Installation
 To install, use the following commands:
-```
+```shell
 pip install clipkit # Currently not implemented while in development
 ```
 <br />
@@ -124,6 +130,7 @@ It can be very useful to have information about the each position in an alignmen
 * col3: reports if the site is constant or not (Const or nConst), parsimony informative or not (PI or nPI), or neither (nConst, nPI)
 * col4: reports the gappyness of the position (number of gaps / entries in alignment)
 <br />
+
 ```
 clipkit <input> -l
 ```
@@ -138,7 +145,7 @@ Having an alignment of the sequences that were trimmed can be useful for other a
 ```
 clipkit <input> -c
 ```
-Output file with the suffix '.clipkit.complementary'
+Output file with the suffix ".clipkit.complementary"
 
 <br />
 

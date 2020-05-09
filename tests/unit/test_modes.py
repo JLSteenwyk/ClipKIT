@@ -8,7 +8,6 @@ from clipkit.modes import TrimmingMode, trim, shouldKeep
 here = Path(__file__)
 
 
-
 class TestModes(object):
     def test_shouldKeep_kpi_gappy_keep(self):
         ## setup

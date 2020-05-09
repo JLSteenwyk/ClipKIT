@@ -116,12 +116,12 @@ def main(argv=None):
                        | |                       
                        |_|  
 
-            Citation: Steenwyk et al. Journal, journal info, link
+        Citation: Steenwyk et al. Journal, journal info, link
 
-            ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
+        ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
 
-            Usage: clipkit <input> [optional arguments]
-            """
+        Usage: clipkit <input> [optional arguments]
+        """
         ),
     )
 
