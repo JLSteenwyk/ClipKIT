@@ -18,10 +18,10 @@ from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-from .helpers import keep_trim_and_log, write_keepD, write_trimD
-from .files import get_alignment_and_format, FileFormat
-from .modes import TrimmingMode
 from .args_processing import process_args
+from .files import get_alignment_and_format, FileFormat
+from .helpers import keep_trim_and_log, write_keepD, write_trimD
+from .modes import TrimmingMode
 from .warnings import (
     checking_if_all_sites_were_trimmed,
     checking_if_entry_contains_only_gaps,

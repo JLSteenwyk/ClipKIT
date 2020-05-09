@@ -1,12 +1,12 @@
 import pytest
 from pathlib import Path
 
-from Bio import AlignIO
 import numpy as np
+from Bio import AlignIO
+from clipkit.modes import TrimmingMode, trim, shouldKeep
 
 here = Path(__file__)
 
-from clipkit.modes import TrimmingMode, trim, shouldKeep
 
 
 class TestModes(object):

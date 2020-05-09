@@ -1,14 +1,14 @@
 import pytest
 import pytest_mock
-
 from pathlib import Path
 
+
+import numpy as np
 from Bio import AlignIO
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
-import numpy as np
 
 from clipkit.helpers import count_characters_at_position
 from clipkit.helpers import get_sequence_at_position_and_report_features

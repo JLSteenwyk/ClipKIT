@@ -1,6 +1,7 @@
-import os.path
 import logging
+import os.path
 import sys
+
 from .modes import TrimmingMode
 
 logger = logging.getLogger(__name__)

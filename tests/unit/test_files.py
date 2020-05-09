@@ -1,10 +1,10 @@
 import pytest
-from Bio import AlignIO
 from pathlib import Path
 
-here = Path(__file__)
-
+from Bio import AlignIO
 from clipkit.files import get_alignment_and_format, FileFormat
+
+here = Path(__file__)
 
 
 class TestAutomaticFileTypeDetermination(object):

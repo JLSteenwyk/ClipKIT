@@ -2,11 +2,11 @@ import sys
 import textwrap
 import time
 
+import numpy as np
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
-import numpy as np
 from math import floor
 from tqdm import tqdm
 
