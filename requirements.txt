@@ -10,7 +10,6 @@ bleach==3.1.4
 certifi==2020.4.5.1
 chardet==3.0.4
 click==7.1.1
-clipkit==0.0.5
 Cython==0.29.16
 distlib==0.3.0
 docutils==0.16

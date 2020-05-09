@@ -23,3 +23,13 @@ test.unit:
 
 test.integration:
 	python -m pytest --basetemp=output -m "integration"
+
+
+# used by GitHub actions during CI workflow
+test.coverage: coverage.unit coverage.integration
+
+coverage.unit:
+	python -m pytest --cov=./ -m "not integration" --cov-report=xml:unit.coverage.xml
+
+coverage.integration:
+	python -m pytest --basetemp=output --cov=./ -m "integration" --cov-report=xml:integration.coverage.xml
