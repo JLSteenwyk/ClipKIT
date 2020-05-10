@@ -4,5 +4,6 @@ coverage:
   round: down
   range: "70...95"
 ignore:
-  - tests
-  -
+  - "tests"
+  - "clipkit-runner.py"
+  - "setup.py"
