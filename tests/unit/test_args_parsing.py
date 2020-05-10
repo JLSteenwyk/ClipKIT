@@ -46,12 +46,12 @@ class TestArgsProcessing(object):
     def test_process_args_default_use_logs(self, args):
         args.log = None
         res = process_args(args)
-        assert res["use_logs"] is False
+        assert res["use_log"] is False
 
     def test_process_args_default_output_file(self, args):
         args.output = None
         res = process_args(args)
-        assert res["output_file"] == f"{args.input_file}.clipkit"
+        assert res["output_file"] == f"{args.input}.clipkit"
 
     def test_process_args_expected_keywords(self, args):
         res = process_args(args)

@@ -9,14 +9,11 @@ logger = logging.getLogger(__name__)
 
 def process_args(args) -> dict:
     """
-    Function to process arguments
-    This function processes arguments
-    subfunctions to trim the input file
+    Process args from argparser and set defaults
     """
     input_file = args.input
     output_file = args.output or f"{input_file}.clipkit"
 
-    # check that input file exists
     if not os.path.isfile(input_file):
         logger.warning("Input file does not exist")
         sys.exit()
@@ -30,7 +27,7 @@ def process_args(args) -> dict:
     mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.gappy
     gaps = float(args.gaps) if args.gaps is not None else 0.9
     use_log = args.log or False
-    
+
     return dict(
         input_file=input_file,
         output_file=output_file,

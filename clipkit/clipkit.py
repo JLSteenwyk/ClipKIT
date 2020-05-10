@@ -34,7 +34,7 @@ ch.setLevel(logging.INFO)
 logger.addHandler(ch)
 
 
-def execute(    
+def execute(
     input_file: str,
     input_file_format: FileFormat,
     output_file: str,
@@ -61,7 +61,9 @@ def execute(
     start_time = time.time()
 
     # read in alignment and save the format of the alignment
-    alignment, input_file_format = get_alignment_and_format(input_file, file_format=input_file_format)
+    alignment, input_file_format = get_alignment_and_format(
+        input_file, file_format=input_file_format
+    )
 
     # set output file format if not specified
     if not output_file_format:
@@ -69,7 +71,14 @@ def execute(
 
     # Print to stdout the user arguments
     write_user_args(
-        input_file, input_file_format, output_file, output_file_format, gaps, mode, complement, use_log
+        input_file,
+        input_file_format,
+        output_file,
+        output_file_format,
+        gaps,
+        mode,
+        complement,
+        use_log,
     )
 
     # create dictionaries of sequences to keep or trim from the alignment
