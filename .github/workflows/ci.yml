@@ -12,7 +12,10 @@ jobs:
       with:
         python-version: 3.7
     - name: Install dependencies
-      run: pip install -r requirements.txt
+      run: |
+        pip install -r requirements.txt
+        # make clipkit CLI available for tests 
+        make install
     - name: Generate coverage report
       run: |
         pip install pytest
