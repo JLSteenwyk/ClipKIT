@@ -13,26 +13,25 @@ class TestOutFormats(object):
     # test output in clustal format
     # usage: clipkit simple.fa -of clustal
     def test_clustal(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.clustal"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.clustal
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.clustal"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.clustal,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.clustal", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, "r") as out_file:
+        with open(output_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -40,26 +39,25 @@ class TestOutFormats(object):
     # test output in maf format
     # usage: clipkit simple.fa -of maf
     def test_maf(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.maf"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.maf
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.maf"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.maf,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.maf", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, "r") as out_file:
+        with open(output_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -67,26 +65,25 @@ class TestOutFormats(object):
     # test output in mauve format
     # usage: clipkit simple.fa -of mauve
     def test_mauve(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.mauve"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.mauve
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.mauve"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.mauve,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.mauve", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, "r") as out_file:
+        with open(output_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -94,26 +91,25 @@ class TestOutFormats(object):
     # test output in phylip format
     # usage: clipkit simple.fa -of phylip
     def test_phylip(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.phylip"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.phylip
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.phylip"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.phylip,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.phylip", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, "r") as out_file:
+        with open(output_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -121,26 +117,25 @@ class TestOutFormats(object):
     # test output in phylip-sequential format
     # usage: clipkit simple.fa -of phylip-sequential
     def test_phylip_sequential(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.phylip-sequential"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.phylip_seq
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.phylip-sequential"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.phylip_seq,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.phylip-sequential", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, "r") as out_file:
+        with open(output_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -148,26 +143,27 @@ class TestOutFormats(object):
     # test output in phylip-relaxed format
     # usage: clipkit simple.fa -of phylip-relaxed
     def test_phylip_relaxed(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.phylip-relaxed"
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.phylip-relaxed"
         in_file_format = FileFormat.fasta
         out_file_format = FileFormat.phylip_rel
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.phylip_rel,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.phylip-relaxed", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, "r") as out_file:
+        with open(output_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -175,26 +171,25 @@ class TestOutFormats(object):
     # test output in stockholm format
     # usage: clipkit simple.fa -of stockholm
     def test_stockholm(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.stockholm"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.stockholm
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.stockholm"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.stockholm,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.stockholm", "r") as expected:
             expected_content = expected.read()
 
-        with open(out_file, "r") as out_file:
+        with open(output_file, "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content

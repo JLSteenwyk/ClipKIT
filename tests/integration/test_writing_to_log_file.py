@@ -15,26 +15,25 @@ class TestOutLog(object):
         test output in clustal format
         usage: clipkit simple.fa -l
         """
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.fa.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        input_file = f"{here.parent}/samples/simple.fa"
+        output_file = "output/simple.fa.clipkit"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.fasta,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=True,
         )
+        execute(**kwargs)
 
         with open(f"{here.parent}/expected/simple.fa.clipkit.log", "r") as expected:
             expected_content = expected.read()
 
-        with open(f"{out_file}.log", "r") as out_file:
+        with open(f"{output_file}.log", "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -44,21 +43,20 @@ class TestOutLog(object):
         test output in clustal format
         usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -l
         """
-        in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
-        out_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
+        output_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.fasta,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=True,
         )
+        execute(**kwargs)
 
         with open(
             f"{here.parent}/expected/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit.log",
@@ -66,7 +64,7 @@ class TestOutLog(object):
         ) as expected:
             expected_content = expected.read()
 
-        with open(f"{out_file}.log", "r") as out_file:
+        with open(f"{output_file}.log", "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content
@@ -76,28 +74,27 @@ class TestOutLog(object):
         test output in clustal format
         usage: clipkit EOG091N44M8_nt.fa -l
         """
-        in_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
-        out_file = "output/EOG091N44M8_nt.fa.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        input_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
+        output_file = "output/EOG091N44M8_nt.fa.clipkit"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.fasta,
             complement=False,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=True,
         )
+        execute(**kwargs)
 
         with open(
             f"{here.parent}/expected/EOG091N44M8_nt.fa.clipkit.log", "r"
         ) as expected:
             expected_content = expected.read()
 
-        with open(f"{out_file}.log", "r") as out_file:
+        with open(f"{output_file}.log", "r") as out_file:
             output_content = out_file.read()
 
         assert expected_content == output_content

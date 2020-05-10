@@ -34,11 +34,11 @@ ch.setLevel(logging.INFO)
 logger.addHandler(ch)
 
 
-def execute(
-    inFile: str,
-    outFile: str,
-    inFileFormat: FileFormat,
-    outFileFormat: FileFormat,
+def execute(    
+    input_file: str,
+    input_file_format: FileFormat,
+    output_file: str,
+    output_file_format: FileFormat,
     gaps: float,
     complement: bool,
     mode: TrimmingMode,
@@ -53,7 +53,7 @@ def execute(
     if use_log:
         # write INFO level logging to file for user
         logger.setLevel(logging.DEBUG)
-        fh = logging.FileHandler(f"{outFile}.log", mode="w")
+        fh = logging.FileHandler(f"{output_file}.log", mode="w")
         fh.setLevel(logging.DEBUG)
         logger.addHandler(fh)
 
@@ -61,20 +61,20 @@ def execute(
     start_time = time.time()
 
     # read in alignment and save the format of the alignment
-    alignment, inFileFormat = get_alignment_and_format(inFile, file_format=inFileFormat)
+    alignment, input_file_format = get_alignment_and_format(input_file, file_format=input_file_format)
 
     # set output file format if not specified
-    if not outFileFormat:
-        outFileFormat = inFileFormat
+    if not output_file_format:
+        output_file_format = input_file_format
 
     # Print to stdout the user arguments
     write_user_args(
-        inFile, inFileFormat, outFile, outFileFormat, gaps, mode, complement, use_log
+        input_file, input_file_format, output_file, output_file_format, gaps, mode, complement, use_log
     )
 
     # create dictionaries of sequences to keep or trim from the alignment
     keepD, trimD = keep_trim_and_log(
-        alignment, gaps, mode, use_log, outFile, complement
+        alignment, gaps, mode, use_log, output_file, complement
     )
 
     # check if resulting alingment length is 0
@@ -85,12 +85,12 @@ def execute(
 
     # convert keepD and trimD to multiple sequence alignment objects
     # and write out file
-    write_keepD(keepD, outFile, outFileFormat)
+    write_keepD(keepD, output_file, output_file_format)
 
     # if the -c/--complementary argument was used,
     # create an alignment of the trimmed sequences
     if complement:
-        write_trimD(trimD, outFile, outFileFormat)
+        write_trimD(trimD, output_file, output_file_format)
 
     # print out output statistics
     write_output_stats(alignment, keepD, trimD, start_time)
@@ -268,7 +268,7 @@ def main(argv=None):
     args = parser.parse_args()
 
     # pass to master execute function
-    execute(*process_args(args))
+    execute(**process_args(args))
 
 
 if __name__ == "__main__":

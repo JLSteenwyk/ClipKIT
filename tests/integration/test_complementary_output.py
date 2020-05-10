@@ -13,22 +13,21 @@ class TestComplementOut(object):
     # test complementary output file with a simple case
     # usage: clipkit simple.fa -c
     def test_simple_complement(self):
-        in_file = f"{here.parent}/samples/simple.fa"
-        out_file = "output/simple.fa_gappy"
-        complement_out_file = f"{out_file}.complement"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        output_file = "output/simple.fa_gappy"
+        complement_out_file = f"{output_file}.complement"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=f"{here.parent}/samples/simple.fa",
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.fasta,
             complement=True,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+
+        execute(**kwargs)
 
         with open(
             f"{here.parent}/expected/simple.fa_gappy.complement", "r"
@@ -43,22 +42,20 @@ class TestComplementOut(object):
     # test complementary output file for amino acid yeast sequences
     # usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta -c
     def test_12_YIL115C_Anc_2_253_aa_aln_complement(self):
-        in_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta"
-        out_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy"
-        complement_out_file = f"{out_file}.complement"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        output_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy"
+        complement_out_file = f"{output_file}.complement"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta",
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.fasta,
             complement=True,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(
             f"{here.parent}/expected/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy.complement",
@@ -74,22 +71,20 @@ class TestComplementOut(object):
     # test complementary output file for amino acid Penicillium sequences
     # usage: clipkit EOG091N44M8_aa.fa -c
     def test_EOG091N44M8_aa_complement(self):
-        in_file = f"{here.parent}/samples/EOG091N44M8_aa.fa"
-        out_file = "output/EOG091N44M8_aa.fa_gappy"
-        complement_out_file = f"{out_file}.complement"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        output_file = "output/EOG091N44M8_aa.fa_gappy"
+        complement_out_file = f"{output_file}.complement"
 
-        execute(
-            in_file,
-            out_file,
-            in_file_format,
-            out_file_format,
-            gaps=0.9,
+        kwargs = dict(
+            input_file=f"{here.parent}/samples/EOG091N44M8_aa.fa",
+            output_file=output_file,
+            input_file_format=FileFormat.fasta,
+            output_file_format=FileFormat.fasta,
             complement=True,
+            gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
         )
+        execute(**kwargs)
 
         with open(
             f"{here.parent}/expected/EOG091N44M8_aa.fa_gappy.complement", "r"
