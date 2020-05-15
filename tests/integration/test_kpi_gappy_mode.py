@@ -218,6 +218,7 @@ class TestKpiGappyMode(object):
 
         assert expected_content == output_content
 
+    @pytest.mark.slow
     def test_EOG092C0CZK_aa(self):
         """
         test kpi_gappy with amino alignment of fungal sequences
@@ -403,6 +404,7 @@ class TestKPIGappyModeCustomGapsParameter(object):
 
         assert expected_content == output_content
 
+    @pytest.mark.slow
     def test_EOG092C0CZK_aa(self):
         """
         test kpi_gappy with amino alignment of fungal sequences

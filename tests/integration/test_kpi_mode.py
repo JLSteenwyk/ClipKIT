@@ -213,6 +213,7 @@ class TestKpiMode(object):
 
         assert expected_content == output_content
 
+    @pytest.mark.slow
     def test_EOG092C0CZK_aa(self):
         """
         test kpi with amino alignment of fungal sequences
