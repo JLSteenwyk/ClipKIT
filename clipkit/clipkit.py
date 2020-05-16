@@ -186,11 +186,11 @@ def main(argv=None):
         | Detailed explanation of arguments | 
         -------------------------------------
         Modes
-            gappy: trim sites that are greater than the gaps threshold
-            kpic: keeps parismony informative and constant sites
-            kpic-gappy: a combination of kpic- and gappy-based trimming
-            kpi: keep only parsimony informative sites
-            kpi-gappy: a combination of kpi- and gappy-based trimming
+            light (alias: gappy): trim sites that are greater than the gaps threshold
+            medium (alias: kpic): keeps parismony informative and constant sites
+            medium-gappy (alias: kpic-gappy): a combination of kpic- and gappy-based trimming
+            heavy (alias: kpi): keep only parsimony informative sites
+            heavy-gappy (alias: kpi-gappy): a combination of kpi- and gappy-based trimming
 
         Gaps
             Positions with gappyness greater than threshold will be trimmed. 
@@ -219,12 +219,9 @@ def main(argv=None):
 
     optional.add_argument("-o", "--output", help=SUPPRESS, metavar="output")
 
+    mode_choices = [mode.value for mode in TrimmingMode]
     optional.add_argument(
-        "-m",
-        "--mode",
-        help=SUPPRESS,
-        nargs="?",
-        choices=("kpi", "gappy", "kpi-gappy", "kpic", "kpic-gappy"),
+        "-m", "--mode", help=SUPPRESS, nargs="?", choices=mode_choices,
     )
 
     optional.add_argument(
