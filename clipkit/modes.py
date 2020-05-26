@@ -11,7 +11,6 @@ class TrimmingMode(Enum):
     gappy = "gappy"
     kpic = "kpic"
     kpic_gappy = "kpic-gappy"
-    light = "light"
     medium = "medium"
     medium_gappy = "medium-gappy"
     heavy = "heavy"
@@ -24,7 +23,7 @@ def shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps):
     """
     if mode in (TrimmingMode.kpi_gappy, TrimmingMode.heavy_gappy):
         return gappyness <= gaps and parsimony_informative
-    elif mode in (TrimmingMode.gappy, TrimmingMode.light):
+    elif mode == TrimmingMode.gappy:
         return gappyness <= gaps
     elif mode in (TrimmingMode.kpi, TrimmingMode.heavy):
         return parsimony_informative

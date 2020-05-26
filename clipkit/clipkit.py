@@ -160,9 +160,11 @@ def main(argv=None):
         -o, --output <output_file_name>             output file name 
                                                     (default: input file named with '.clipkit' suffix)
 
-        -m, --modes <gappy,                          trimming mode 
-                    kpic, kpic-gappy,                (default: gappy)
-                    kpi, kpi-gappy>                      
+        -m, --modes <gappy,                         trimming mode 
+                    kpic (alias: medium),           (default: gappy)
+                    kpic-gappy (alias: medium-gappy),                
+                    kpi (alias: heavy),
+                    kpi-gappy (alias: heavy-gappy)>                      
                                                     
         -g, --gaps <threshold of gaps>              specifies gaps threshold
                                                     (default: 0.9)
@@ -186,7 +188,7 @@ def main(argv=None):
         | Detailed explanation of arguments | 
         -------------------------------------
         Modes
-            light (alias: gappy): trim sites that are greater than the gaps threshold
+            gappy: trim sites that are greater than the gaps threshold
             medium (alias: kpic): keeps parismony informative and constant sites
             medium-gappy (alias: kpic-gappy): a combination of kpic- and gappy-based trimming
             heavy (alias: kpi): keep only parsimony informative sites
