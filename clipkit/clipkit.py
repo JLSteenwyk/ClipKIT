@@ -189,10 +189,10 @@ def main(argv=None):
         -------------------------------------
         Modes
             gappy: trim sites that are greater than the gaps threshold
-            medium (alias: kpic): keeps parismony informative and constant sites
-            medium-gappy (alias: kpic-gappy): a combination of kpic- and gappy-based trimming
-            heavy (alias: kpi): keep only parsimony informative sites
-            heavy-gappy (alias: kpi-gappy): a combination of kpi- and gappy-based trimming
+            kpic (alias: medium): keeps parismony informative and constant sites
+            kpic-gappy (alias: medium-gappy): a combination of kpic- and gappy-based trimming
+            kpi (alias: heavy): keep only parsimony informative sites
+            kpi-gappy (alias: heavy-gappy): a combination of kpi- and gappy-based trimming
 
         Gaps
             Positions with gappyness greater than threshold will be trimmed. 

@@ -17,7 +17,13 @@ class TrimmingMode(Enum):
     heavy_gappy = "heavy-gappy"
 
 
-def shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps):
+def shouldKeep(
+    mode: TrimmingMode,
+    parsimony_informative: bool,
+    constant_site: bool,
+    gappyness: float,
+    gaps: float,
+):
     """
     Determine if a site should be kept or not
     """

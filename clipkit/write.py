@@ -1,8 +1,11 @@
 import textwrap
 import time
 
-## Function to print out processing alignment
+
 def write_processing_aln():
+    """
+    Function to print out processing alignment
+    """
     print(
         textwrap.dedent(
             f"""\
@@ -15,11 +18,12 @@ def write_processing_aln():
     )
 
 
-## Function to print user arguments to stdout
 def write_user_args(
     inFile, inFileFormat, outFile, outFileFormat, gaps, mode, complement, use_log
 ):
-
+    """
+    Function to print user arguments to stdout
+    """
     print(
         textwrap.dedent(
             f"""\
@@ -37,8 +41,10 @@ def write_user_args(
     )
 
 
-## Function to print out that the output files are being written
 def write_output_files_message(outFile, complement, use_log):
+    """
+    Function to print out that the output files are being written
+    """
     print(
         textwrap.dedent(
             f"""\
@@ -55,8 +61,10 @@ def write_output_files_message(outFile, complement, use_log):
     )
 
 
-## Function to print out output statistics
 def write_output_stats(alignment, keepD, trimD, start_time):
+    """
+    Function to print out output statistics
+    """
     alignment_length = alignment.get_alignment_length()
     output_len = len(next(iter(keepD.values())))
     trimmed_len = len(next(iter(trimD.values())))

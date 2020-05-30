@@ -10,9 +10,11 @@ here = Path(__file__)
 
 @pytest.mark.integration
 class TestComplementOut(object):
-    # test complementary output file with a simple case
-    # usage: clipkit simple.fa -c
     def test_simple_complement(self):
+        """
+        test complementary output file with a simple case
+        usage: clipkit simple.fa -c
+        """
         output_file = "output/simple.fa_gappy"
         complement_out_file = f"{output_file}.complement"
 
@@ -39,9 +41,11 @@ class TestComplementOut(object):
 
         assert expected_content == output_content
 
-    # test complementary output file for amino acid yeast sequences
-    # usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta -c
     def test_12_YIL115C_Anc_2_253_aa_aln_complement(self):
+        """
+        test complementary output file for amino acid yeast sequences
+        usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta -c
+        """
         output_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta_gappy"
         complement_out_file = f"{output_file}.complement"
 
@@ -68,9 +72,11 @@ class TestComplementOut(object):
 
         assert expected_content == output_content
 
-    # test complementary output file for amino acid Penicillium sequences
-    # usage: clipkit EOG091N44M8_aa.fa -c
     def test_EOG091N44M8_aa_complement(self):
+        """
+        test complementary output file for amino acid Penicillium sequences
+        usage: clipkit EOG091N44M8_aa.fa -c
+        """
         output_file = "output/EOG091N44M8_aa.fa_gappy"
         complement_out_file = f"{output_file}.complement"
 

@@ -10,9 +10,11 @@ here = Path(__file__)
 
 @pytest.mark.integration
 class TestOutFormats(object):
-    # test output in clustal format
-    # usage: clipkit simple.fa -of clustal
     def test_clustal(self):
+        """
+        test output in clustal format
+        usage: clipkit simple.fa -of clustal
+        """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.clustal"
 
@@ -36,9 +38,11 @@ class TestOutFormats(object):
 
         assert expected_content == output_content
 
-    # test output in maf format
-    # usage: clipkit simple.fa -of maf
     def test_maf(self):
+        """
+        test output in maf format
+        usage: clipkit simple.fa -of maf
+        """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.maf"
 
@@ -62,9 +66,11 @@ class TestOutFormats(object):
 
         assert expected_content == output_content
 
-    # test output in mauve format
-    # usage: clipkit simple.fa -of mauve
     def test_mauve(self):
+        """
+        test output in mauve format
+        usage: clipkit simple.fa -of mauve
+        """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.mauve"
 
@@ -88,9 +94,11 @@ class TestOutFormats(object):
 
         assert expected_content == output_content
 
-    # test output in phylip format
-    # usage: clipkit simple.fa -of phylip
     def test_phylip(self):
+        """
+        test output in phylip format
+        usage: clipkit simple.fa -of phylip
+        """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.phylip"
 
@@ -114,9 +122,11 @@ class TestOutFormats(object):
 
         assert expected_content == output_content
 
-    # test output in phylip-sequential format
-    # usage: clipkit simple.fa -of phylip-sequential
     def test_phylip_sequential(self):
+        """
+        test output in phylip-sequential format
+        usage: clipkit simple.fa -of phylip-sequential
+        """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.phylip-sequential"
 
@@ -140,9 +150,11 @@ class TestOutFormats(object):
 
         assert expected_content == output_content
 
-    # test output in phylip-relaxed format
-    # usage: clipkit simple.fa -of phylip-relaxed
     def test_phylip_relaxed(self):
+        """
+        test output in phylip-relaxed format
+        usage: clipkit simple.fa -of phylip-relaxed
+        """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.phylip-relaxed"
         in_file_format = FileFormat.fasta
@@ -168,9 +180,11 @@ class TestOutFormats(object):
 
         assert expected_content == output_content
 
-    # test output in stockholm format
-    # usage: clipkit simple.fa -of stockholm
     def test_stockholm(self):
+        """
+        test output in stockholm format
+        usage: clipkit simple.fa -of stockholm
+        """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.stockholm"
 
