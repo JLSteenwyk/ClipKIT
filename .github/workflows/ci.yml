@@ -45,7 +45,7 @@ jobs:
       run: |
         make test.coverage
     - name: Upload unit test coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v1.0.7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./unit.coverage.xml
@@ -54,7 +54,7 @@ jobs:
         name: codecov-unit
         fail_ci_if_error: true
     - name: Upload integration test coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v1.0.7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./integration.coverage.xml
