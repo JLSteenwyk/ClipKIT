@@ -52,7 +52,7 @@ jobs:
         flags: unit
         env_vars: PYTHON
         name: codecov-unit
-        fail_ci_if_error: true
+        fail_ci_if_error: false
     - name: Upload integration test coverage to Codecov
       uses: codecov/codecov-action@v1.0.7
       with:
@@ -61,4 +61,4 @@ jobs:
         flags: integration
         env_vars: PYTHON
         name: codecov-integration
-        fail_ci_if_error: true
+        fail_ci_if_error: false
