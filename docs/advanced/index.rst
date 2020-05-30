@@ -6,32 +6,59 @@ Advanced Usage
 This section describes the various features and options of ClipKIT.
 
 - Modes_
+- Output_
 - Log_
 - Complementary_
-- `Miscellaneous options`_
+- `All options`_
 
 .. _Modes:
 
 Modes
 -----
 
-ClipKIT can be run with three different modes (kpi, gappy, kpi-gappy), which are specified with the -m/--mode argument.
+ClipKIT can be run with five different modes (gappy, kpic, kpic-gappy, kpi, and kpi-gappy), which are specified with the -m/--mode argument.
 *Default: 'gappy'*
 
-* kpi will trim all sites that are not parsimony informative
-* gappy will remove all sites that are above a threshold of gappyness (default: 0.9)
-* kpi-gappy is the combination of kpi- and gappy-based trimming
+* gappy: trim all sites that are above a threshold of gappyness (default: 0.9)
+* kpic (alias: medium): keep only parismony informative and constant sites
+* kpic-gappy (alias: medium-gappy): a combination of kpic- and gappy-based trimming
+* kpi (alias: heavy): keep only parsimony informative sites
+* kpi-gappy (alias: heavy-gappy): a combination of kpi- and gappy-based trimming
 
 .. code-block:: shell
 
+	# gappy-based trimming
+	clipkit <input>
+	clipkit <input> -m gappy
+
+	# kpic-based trimming
+	clipkit <input> -m kpic
+	clipkit <input> -m medium
+
+	# kpic- and gappy-based trimming
+	clipkit <input> -m kpic-gappy
+	clipkit <input> -m medium-gappy
+
 	# kpi-based trimming
 	clipkit <input> -m kpi
-
-	# gappy-based trimming
-	clipkit <input> -m gappy
+	clipkit <input> -m heavy
 
 	# kpi- and gappy-based trimming
 	clipkit <input> -m kpi-gappy
+	clipkit <input> -m heavy-gappy
+
+.. _Output:
+
+Output
+------
+
+By default, output files will have the same name as the input file with the suffix ".clipkit"
+appended to the name. Users can specify output file names with the -o option. 
+
+.. code-block:: shell
+
+	# specify output
+	clipkit <input> -o <output>
 
 .. _Log:
 
@@ -43,11 +70,8 @@ parameters, etc. To create the log file, use the -l/\\-\\-log option. Using this
 will create a four column file with the suffix 'clipkit.log'. *Default: off*
 
 * col1: position in the alignment (starting at 1)
-
 * col2: reports if site was trimmed or kept (trim or keep, respectively)
-
 * col3: reports if the site is parsimony informative or not (PI or nPI, respectively)
-
 * col4: reports the gappyness of the position (number of gaps / entries in alignment)
 
 .. code-block:: shell
@@ -69,9 +93,9 @@ option.
 
 Output file with the suffix '.clipkit.complementary'
 
-.. _`Miscellaneous options`:
+.. _`All options`:
 
-Miscellaneous options
+All options
 ---------------------
 
 
@@ -82,12 +106,19 @@ Miscellaneous options
 +-----------------------------+-------------------------------------------------------------------+
 | -v/\\-\\-version            | Print software version                                            |
 +-----------------------------+-------------------------------------------------------------------+
-| -g/\\-\\-gaps     	      | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
+| -o/\\-\\-output             | Specify output file name                                          |
++-----------------------------+-------------------------------------------------------------------+
+| -g/\\-\\-gaps               | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
 +-----------------------------+-------------------------------------------------------------------+
 | -if/\\-\\-input_file_format | Specify input file format*. *Default: auto-detect*                |
 +-----------------------------+-------------------------------------------------------------------+
 | -of/\\-\\-input_file_format | Specify output file format*. *Default: input file type*           |
 +-----------------------------+-------------------------------------------------------------------+
+| -l/\\-\\-log                | Create a log file. *Default: off*                                 |
++-----------------------------+-------------------------------------------------------------------+
+| -c/--complementary          | Create a complementary alignment file. *Default: off*             |
++-----------------------------+-------------------------------------------------------------------+
+
 
 \*Acceptable file formats include: 
 `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_,

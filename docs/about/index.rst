@@ -10,20 +10,19 @@ About
 **Clip**\ing and **K**\eeping **I**\nformation **T**\rimmer (**ClipKIT**) was developed as
 part of `Jacob L. Steenwyk <https://jlsteenwyk.github.io/>`_'s graduate thesis work. 
 
-The concept of ClipKIT is largely motviated by the work of |TanLink|_. Specifically, 
-Tan and colleagues revealed alignment trimming software often resulted in worse single-gene
-phylogenetic inferences. Additional analyses suggested that 'aggressive' alignment trimming
-(or the removal of many sites in an alignment) was the main culprit. As a result, the
-authors suggest that 'light' trimming may be the best strategy. However, the authors
-note that the motivation of alignment trimming -- a process to remove alignment uncertainty
--- is just and that it is still possible to design effective trimming methods.
+For approximately 30 years, multiple sequence alignments have been filtered or "trimmed"
+to remove sites that may cause errors in phylogenetic inference. Errors can be caused by
+erroneously inferring site homology or saturation of multiple substitutions, both of which
+often present as highly divergent sites. However, recent analysis by |TanLink|_ revealed 
+current methods of alignment trimming often resulted in worse phylogenetic inferences.
+These findings highlight the need for alternative MSA trimming strategies.
 
-In light of these findings, we developed a simple and distinct trimming strategy implemented
-in ClipKIT. Specifically, we provide methods for 'light' and 'aggressive' trimming, which
-trim sites according to gappyness and whether or not it is parsimony informative,
-respectively. Our assessments of ClipKIT's performance using empirical datasets of
-Mammalian and Yeast sequences (:ref:`see details here <performance>`) suggest ClipKIT is a
-top-performing software.  
+In light of these findings, we developed ClipKIT, which implements an innovative yet simple
+trimming strategy. ClipKIT achieves this by identifying and retaining phylogenetically-informative
+sites rather than identifying and trimming highly divergent ones. Our assessments of ClipKIT's
+performance using empirical datasets of Mammalian and Yeast sequences and simulated sequences
+from metazoans, flowering plants, filamentous fungi, and budding yeasts (:ref:`see details here 
+<performance>`) suggests ClipKIT is a top-performing software.  
 
 .. _TanLink: https://academic.oup.com/sysbio/article/64/5/778/1685763
 .. |TanLink| replace:: Tan *et al.* (2015) 
@@ -77,8 +76,7 @@ in backend software development. Flagship side projects include `twitch-top-eigh
 <https://github.com/TJBIII/twitch-top-eight>`_, a panel
 extension to view top viewers/streamers, and `Hue Kolorize 
 <https://github.com/TJBIII/hue-kolorize>`_, a Hue light extension that matches the dominant
-color extracted from a flexible source to the Hue light color. In his free time, Buida
-enjoys rock climbing and gaming. Find out more infomration at his `personal website
+color extracted from a flexible source to the Hue light color. Find out more infomration at his `personal website
 <http://tjbiii.com/>`_.
 
 
