@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/jlsteenwyk/clipkit">
-    <img src="docs/_static/img/logo.jpg" alt="Logo" width="400">
+    <img src="https://github.com/JLSteenwyk/ClipKIT/blob/master/docs/_static/img/logo.jpg" alt="Logo" width="400">
   </a>
   <p align="center">
     <a href="https://jlsteenwyk.github.io/clipkit">Docs</a>
@@ -186,7 +186,7 @@ Output file with the suffix ".clipkit.complementary"
 In brief, performance assessment and comparison of multiple trimming alignment software revealed that ClipKIT with nearly any mode is a top-performing software. Here, we provide greater detail into the empirical datasets used to assess alignment trimming performance. 
 <p align="center">
   <a href="https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1">
-    <img src="docs/_static/img/Performance_summary.jpg" alt="Performance Summary" width="1000">
+    <img src="https://github.com/JLSteenwyk/ClipKIT/blob/master/docs/_static/img/Performance_summary.jpg" alt="Performance Summary" width="1000">
   </a>
 </p>
 
