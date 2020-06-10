@@ -18,7 +18,7 @@ setup(
     url="https://github.com/jlsteenwyk/clipkit",
     packages=["clipkit"],
     entry_points={"console_scripts": ["clipkit = clipkit.clipkit:main"]},
-    version="0.0.5",
+    version="0.1.0",
     include_package_data=True,
     install_requires=REQUIRES,
 )

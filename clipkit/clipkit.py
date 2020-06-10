@@ -125,7 +125,8 @@ def main(argv=None):
                        | |                       
                        |_|  
 
-        Citation: Steenwyk et al. Journal, journal info, link
+        Citation: Steenwyk et al. bioRxiv.
+        https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1
 
         ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
 
