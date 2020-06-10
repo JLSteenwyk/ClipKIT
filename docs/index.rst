@@ -22,7 +22,7 @@ To install, use the following commands:
 
 .. code-block:: shell
 
-	pip install clipkit # Currently not implemented. This will be functional by June 11th 2020.
+	pip install clipkit
 
 |
 

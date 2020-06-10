@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/jlsteenwyk/clipkit">
-    <img src="https://github.com/JLSteenwyk/ClipKIT/blob/master/docs/_static/img/logo.jpg" alt="Logo" width="400">
+    <img src="https://raw.githubusercontent.com/JLSteenwyk/ClipKIT/master/docs/_static/img/logo.jpg" alt="Logo" width="400">
   </a>
   <p align="center">
     <a href="https://jlsteenwyk.github.io/clipkit">Docs</a>
@@ -12,6 +12,9 @@
     <p align="center">
         <a href="https://lbesson.mit-license.org/" alt="License">
             <img src="https://img.shields.io/badge/License-MIT-blue.svg">
+        </a>
+        <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
+            <img src="https://img.shields.io/pypi/pyversions/clipkit">
         </a>
         <a href="https://github.com/JLSteenwyk/ClipKIT/actions" alt="Build">
             <img src="https://img.shields.io/github/workflow/status/jlsteenwyk/clipkit/CI/master">
@@ -49,7 +52,7 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 ### 1) Installation
 To install, use the following commands:
 ```shell
-pip install clipkit # Currently not implemented. This will be functional by June 11th 2020.
+pip install clipkit
 ```
 <br />
 
@@ -186,7 +189,7 @@ Output file with the suffix ".clipkit.complementary"
 In brief, performance assessment and comparison of multiple trimming alignment software revealed that ClipKIT with nearly any mode is a top-performing software. Here, we provide greater detail into the empirical datasets used to assess alignment trimming performance. 
 <p align="center">
   <a href="https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1">
-    <img src="https://github.com/JLSteenwyk/ClipKIT/blob/master/docs/_static/img/Performance_summary.jpg" alt="Performance Summary" width="1000">
+    <img src="https://raw.githubusercontent.com/JLSteenwyk/ClipKIT/master/docs/_static/img/Performance_summary.jpg" alt="Performance Summary" width="1000">
   </a>
 </p>
 
