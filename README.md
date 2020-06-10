@@ -13,11 +13,8 @@
         <a href="https://lbesson.mit-license.org/" alt="License">
             <img src="https://img.shields.io/badge/License-MIT-blue.svg">
         </a>
-        <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
-          <img src="https://img.shields.io/pypi/pyversions/clipkit">
-        </a>
         <a href="https://github.com/JLSteenwyk/ClipKIT/actions" alt="Build">
-            <img src="https://img.shields.io/github/workflow/status/jlsteenwyk/clipkit/ci/master">
+            <img src="https://img.shields.io/github/workflow/status/jlsteenwyk/clipkit/CI/master">
         </a>
         <a href="https://codecov.io/gh/jlsteenwyk/clipkit" alt="Coverage">
           <img src="https://codecov.io/gh/jlsteenwyk/clipkit/branch/master/graph/badge.svg?token=0J49I6441V">
