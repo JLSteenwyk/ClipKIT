@@ -10,7 +10,7 @@ About
 **Clip**\ing and **K**\eeping **I**\nformation **T**\rimmer (**ClipKIT**) was developed as
 part of `Jacob L. Steenwyk <https://jlsteenwyk.github.io/>`_'s graduate thesis work. 
 
-For approximately 30 years, multiple sequence alignments have been filtered or "trimmed"
+Since the early 1990's, multiple sequence alignments have been filtered or "trimmed"
 to remove sites that may cause errors in phylogenetic inference. Errors can be caused by
 erroneously inferring site homology or saturation of multiple substitutions, both of which
 often present as highly divergent sites. However, recent analysis by |TanLink|_ revealed 

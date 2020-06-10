@@ -8,7 +8,10 @@ ClipKIT Documentation
 ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes those that display characteristics poor phylogenetic signal.
 
 
-If you found clipkit useful, please cite **Add journal and citation information**.
+If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment-trimming algorithm for accurate phylogenomic inference*. bioRxiv. doi: |doiLink|_.
+
+.. _doiLink: https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1
+.. |doiLink| replace:: 10.1101/2020.06.08.140384 
 
 
 Quick Start
@@ -19,7 +22,7 @@ To install, use the following commands:
 
 .. code-block:: shell
 
-	pip install clipkit # Currently not implemented while in development
+	pip install clipkit # Currently not implemented. This will be functional by June 11th 2020.
 
 |
 
@@ -30,6 +33,19 @@ To install from source, use the following commands:
 	git clone https://github.com/JLSteenwyk/ClipKIT.git
 	cd ClipKIT/
 	make install
+
+If you run into permission errors when executing *make install*, create a 
+virtual environemnt for your installation:
+
+.. code-block:: shell
+
+	git clone https://github.com/JLSteenwyk/ClipKIT.git
+	cd ClipKIT/
+	python -m venv .venv
+	source .venv/bin/activate
+	make install
+
+Note, the virtual environment must be activated to use clipkit.
 
 |
 

@@ -23,4 +23,8 @@ ClipKIT: kg = kpi-gappy mode; BMGE = BMGE default; BMGE 0.3 = 0.3 entropy thresh
 BMGE 0.7 = 0.7 entropy threshold; trimAl: s = strict; trimAl: sp = strictplus; Noisy = default;
 Gblocks = default; No trim = no trimming.
 
-For additional details about performance assessment, please see **manuscript link**
+For additional details about performance assessment, please see *ClipKIT: a multiple sequence
+alignment-trimming algorithm for accurate phylogenomic inference*. bioRxiv. doi: |doiLink|_.
+
+.. _doiLink: https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1
+.. |doiLink| replace:: 10.1101/2020.06.08.140384 
