@@ -17,8 +17,8 @@ from .helpers import keep_trim_and_log, write_keepD, write_trimD
 from .modes import TrimmingMode
 from .parser import create_parser
 from .warnings import (
-    checking_if_all_sites_were_trimmed,
-    checking_if_entry_contains_only_gaps,
+    check_if_all_sites_were_trimmed,
+    check_if_entry_contains_only_gaps,
 )
 from .write import write_user_args, write_output_stats
 
@@ -81,10 +81,10 @@ def execute(
     )
 
     # check if resulting alingment length is 0
-    checking_if_all_sites_were_trimmed(keepD)
+    check_if_all_sites_were_trimmed(keepD)
 
     # checking if any sequence entry contains only gaps
-    checking_if_entry_contains_only_gaps(keepD)
+    check_if_entry_contains_only_gaps(keepD)
 
     # convert keepD and trimD to multiple sequence alignment objects
     # and write out file

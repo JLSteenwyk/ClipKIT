@@ -37,5 +37,15 @@ class TestAutomaticFileTypeDetermination(object):
         file_format = None
         mocker.patch("clipkit.files.AlignIO.read", side_effect=ValueError())
 
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as excinfo:
             get_alignment_and_format(in_file, file_format)
+        assert "No such file or directory" in str(excinfo.value)
+
+    def test_get_alignment_and_format_raises_error_when_detection_fails(self, mocker):
+        in_file = f"{here.parent}/examples/simple.fa"
+        file_format = None
+        mocker.patch("clipkit.files.AlignIO.read", side_effect=ValueError())
+
+        with pytest.raises(Exception) as excinfo:
+            get_alignment_and_format(in_file, file_format)
+        assert "Input file could not be read" in str(excinfo.value)

@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def checking_if_all_sites_were_trimmed(keepD):
+def check_if_all_sites_were_trimmed(keepD):
     """
     Determine if every site in an alignment was trimmed
     """
@@ -14,7 +14,7 @@ def checking_if_all_sites_were_trimmed(keepD):
         )
 
 
-def checking_if_entry_contains_only_gaps(keepD):
+def check_if_entry_contains_only_gaps(keepD):
     """
     Determine if any output sequence contains only gaps
     """

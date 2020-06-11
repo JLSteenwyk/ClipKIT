@@ -7,3 +7,4 @@ ignore:
   - "tests"
   - "clipkit-runner.py"
   - "setup.py"
+  - "clipkit/__main__.py"
