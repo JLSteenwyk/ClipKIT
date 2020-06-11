@@ -27,9 +27,9 @@ copyright = "2020 Jacob L. Steenwyk"
 author = "Jacob L. Steenwyk <jlsteenwyk@gmail.com>"
 
 # The short X.Y version
-version = "0.0.1"
+# version = "0.0.1"
 # The full version, including alpha/beta/rc tags
-release = "0.0.1-alpha"
+# release = "0.0.1-alpha"
 
 
 # -- General configuration ---------------------------------------------------
