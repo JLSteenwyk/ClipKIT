@@ -62,3 +62,28 @@ jobs:
         env_vars: PYTHON
         name: codecov-integration
         fail_ci_if_error: false
+  docs:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.7
+      - name: Install pipenv
+        uses: dschep/install-pipenv-action@v1
+      - name: Build docs
+        run: |
+          cd docs
+          pipenv install
+          pipenv run make html
+          cd ..
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: docs/_build/html
