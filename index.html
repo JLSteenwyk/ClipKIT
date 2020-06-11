@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ClipKIT Documentation &#8212; clipkit 0.0.1-alpha documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/flavicon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="About" href="about/index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="clipkit-documentation">
+<h1>ClipKIT Documentation<a class="headerlink" href="#clipkit-documentation" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes those that display characteristics poor phylogenetic signal.</p>
+<p>If you found clipkit useful, please cite <em>ClipKIT: a multiple sequence alignment-trimming algorithm for accurate phylogenomic inference</em>. bioRxiv. doi: <a class="reference external" href="https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1">10.1101/2020.06.08.140384</a>.</p>
+<div class="section" id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p><strong>1) Installation</strong></p>
+<p>To install, use the following commands:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install clipkit
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>To install from source, use the following commands:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/JLSteenwyk/ClipKIT.git
+<span class="nb">cd</span> ClipKIT/
+make install
+</pre></div>
+</div>
+<p>If you run into permission errors when executing <em>make install</em>, create a
+virtual environemnt for your installation:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/JLSteenwyk/ClipKIT.git
+<span class="nb">cd</span> ClipKIT/
+python -m venv .venv
+<span class="nb">source</span> .venv/bin/activate
+make install
+</pre></div>
+</div>
+<p>Note, the virtual environment must be activated to use clipkit.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>2) Usage</strong></p>
+<p>To use ClipKIT in its simpliest form, execute the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit &lt;input&gt;
+</pre></div>
+</div>
+<p>Output file with the suffix “.clipkit”</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<hr class="docutils" />
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about/index.html">About</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about/index.html#the-developers">The Developers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/index.html">Advanced Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#modes">Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#log">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#complementary">Complementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#all-options">All options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="performance_assessment/index.html">Performance Assessment</a></li>
+</ul>
+</div>
+<hr class="docutils" />
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><link href='http://fonts.googleapis.com/css?family=Oxygen:300,400,700' rel='stylesheet'>
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+
+
+<div id="logo">
+    <center>
+        <a href="#"><img src="_static/img/sidebar_logo_sphnix.jpg" height="150" alt="ClipKIT logo"/></a>
+    </center>
+</div>
+
+<div id="gh-buttons">
+    <a class="github-button" href="https://github.com/jlsteenwyk/clipkit" aria-label="View jlsteenwyk/clipkit on GitHub" data-style="mega">Source</a>
+    <a class="github-button" href="https://github.com/jlsteenwyk/clipkit/issues" data-icon="octicon-issue-opened" aria-label="Issue jlsteenwyk/clipkit on GitHub" data-style="mega">Issue</a>
+</div><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about/index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/index.html">Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance_assessment/index.html">Performance Assessment</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="about/index.html" title="next chapter">About</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020 Jacob L. Steenwyk.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
