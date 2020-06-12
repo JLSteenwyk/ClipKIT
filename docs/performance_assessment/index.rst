@@ -1,4 +1,9 @@
+.. image:: ../_static/img/ClipKIT_logo_top_only_v1.jpg
+   :width: 55%
+   :align: center
+
 .. _performance:
+
 
 Performance Assessment
 ======================
