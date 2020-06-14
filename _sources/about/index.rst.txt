@@ -1,6 +1,8 @@
 .. image:: ../_static/img/ClipKIT_logo_top_only_v1.jpg
    :width: 55%
    :align: center
+   :target: https://jlsteenwyk.com/ClipKIT
+
 
 About
 =====
@@ -127,7 +129,4 @@ tree of life, and the evolution of human pregnancy. Find out more information at
 |
 
 Information about other team members coming soon!
-
-
-                    
 

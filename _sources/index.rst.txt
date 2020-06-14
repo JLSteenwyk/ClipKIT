@@ -1,6 +1,7 @@
 .. image:: _static/img/ClipKIT_logo_top_only_v1.jpg
    :width: 55%
    :align: center
+   :target: https://jlsteenwyk.com/ClipKIT
 
 ^^^^^
 
@@ -69,6 +70,7 @@ Output file with the suffix ".clipkit"
 	about/index
 	advanced/index
 	performance_assessment/index
+	frequently_asked_questions/index
 
 ^^^^
 
