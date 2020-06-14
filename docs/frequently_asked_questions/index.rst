@@ -11,13 +11,13 @@ FAQ
 
 **Does ClipKIT trim amino acids, nucleotides, or codons?**
 
-ClipKIT's trims amino acid and nucleotide alignments. Currently, ClipKIT does not trim codons. 
+ClipKIT trims amino acid and nucleotide alignments. Currently, ClipKIT does not trim codons. 
 
 |
 
-**Is there a website version of ClipKIT?**
+**Is there a website application of ClipKIT?**
 
-Currently, there is not website version of ClipKIT.
+Currently, ClipKIT is only a command line tool.
 
 |
 
