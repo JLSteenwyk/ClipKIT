@@ -43,7 +43,8 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 ## Guide
 [Quick Start](#quick-start)<br />
 [Advanced Usage](#advanced-usage)<br />
-[Performance Assessment](#performance-assessment)
+[Performance Assessment](#performance-assessment)<br />
+[FAQ](#faq)
 
 
 ---
@@ -201,15 +202,37 @@ For additional performance details, please see the manuscript *ClipKIT: a multip
 
 ---
 
-## Authors
+## FAQ
+
+<strong>If tree inference with no trim works well, why even trim?</strong>
+
+Tree inference with trimmed multiple sequence alignments is computationally efficient. In other words, shorter alignments require less computational time and memory during tree search. We found that ClipKIT reduced computation time by an average of 20%. As datasets continuously become bigger, an alignment trimming algorithm that can reduce computational time will be of great value. 
+
+<br />
+
+<strong>Does ClipKIT trim amino acids, nucleotides, or codons?</strong>
+
+ClipKIT's trims amino acid and nucleotide alignments. Currently, ClipKIT does not trim codons. 
+
+<br />
+
+<strong>Is there a website version of ClipKIT?</strong>
+
+Currently, there is not website version of ClipKIT.
+
+<br />
+
+---
+
+## Developers
+* [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
+* [Thomas Buida](https://tjbiii.com)<br />
+<br />
+
+## All Team Members
 * [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
 * [Thomas Buida](https://tjbiii.com)<br />
 * [Yuanning Li](https://scholar.google.com/citations?user=65ygCIsAAAAJ&hl=en&oi=ao)
 * [Xing-Xing Shen](https://xingxingshen.github.io/)
 * [Antonis Rokas](https://as.vanderbilt.edu/rokaslab/)
-<br />
-
-## Developers
-* [Jacob Steenwyk](https://jlsteenwyk.github.io/)<br />
-* [Thomas Buida](https://tjbiii.com)<br />
 <br />
