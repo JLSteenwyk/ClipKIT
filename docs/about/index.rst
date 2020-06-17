@@ -71,7 +71,7 @@ through diverse avenues of community engagement. Find out more information at hi
 |TJBuida|
 |GitHubBuida| |TwitterBuida|
 
-`Thomas J. Buida III <www.tjbiii.com>`_ is a senior software and data engineer at
+`Thomas J. Buida III <http://tjbiii.com/>`_ is a senior software and data engineer at
 `Initial State <https://www.initialstate.com/>`_. His main interests are in the
 design and execution of elegant solutions to complex data problems. His expertise lies
 in backend software development. Flagship side projects include `twitch-top-eight 
