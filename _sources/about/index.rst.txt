@@ -39,6 +39,7 @@ The Developers
 ClipKIT is developed and maintained by `Jacob L. Steenwyk <https://jlsteenwyk.github.io/>`_
 and `Thomas J. Buida III <www.tjbiii.com>`_.
 
+|
 
 |JLSteenwyk|
 |GoogleScholarSteenwyk| |GitHubSteenwyk| |TwitterSteenwyk| 
@@ -100,8 +101,10 @@ More Team Members
 ^^^^^
 
 ClipKIT has been made possible by other key personnel including `Antonis Rokas
-<https://as.vanderbilt.edu/rokaslab/>`_, Yuanning Li, and Xing-Xing
-Shen.
+<https://as.vanderbilt.edu/rokaslab/>`_, Yuanning Li, and `Xing-Xing
+Shen <https://xingxingshen.github.io/>`_.
+
+|
 
 |ARokas|
 |GoogleScholarRokas| |TwitterRokas| 
@@ -124,6 +127,34 @@ tree of life, and the evolution of human pregnancy. Find out more information at
 
 .. |TwitterRokas| image:: ../_static/img/Twitter.png
    :target: https://twitter.com/RokasLab
+   :width: 4.5%
+
+|
+
+|XXShen|
+|GoogleScholarShen| |GitHubShen| |TwitterShen| 
+
+`Xing-Xing Shen <https://xingxingshen.github.io/>`_ is an Assistant Professor of Institute of
+Insect Sciences at Zhejiang University. His lab is broadly interested in evolutionary biology,
+phylogenetics, comparative genomics, and bioinformatics. His current research mainly focus on:
+1) investigating phylogenetic relationships in animals and fungi using genome-scale data;
+2) identifying the factors that lead to phylogenetic incongruence;
+and 3) exploring insect species and ecological diversity. Find out more information at his
+`laboratory's website <https://xingxingshen.github.io/>`_.
+
+.. |XXShen| image:: ../_static/img/Shen.jpg
+   :width: 35%
+
+.. |GoogleScholarShen| image:: ../_static/img/GoogleScholar.png
+   :target: https://scholar.google.com/citations?user=aNqPBsEAAAAJ&hl=en
+   :width: 4.5%
+
+.. |TwitterShen| image:: ../_static/img/Twitter.png
+   :target: https://twitter.com/shenxingxing1
+   :width: 4.5%
+
+.. |GitHubShen| image:: ../_static/img/Github.png
+   :target: https://github.com/xingxingshen
    :width: 4.5%
 
 |
