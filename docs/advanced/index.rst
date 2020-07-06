@@ -118,7 +118,7 @@ All options
 +-----------------------------+-------------------------------------------------------------------+
 | -if/\\-\\-input_file_format | Specify input file format*. *Default: auto-detect*                |
 +-----------------------------+-------------------------------------------------------------------+
-| -of/\\-\\-input_file_format | Specify output file format*. *Default: input file type*           |
+| -of/\\-\\-output_file_format| Specify output file format*. *Default: input file type*           |
 +-----------------------------+-------------------------------------------------------------------+
 | -l/\\-\\-log                | Create a log file. *Default: off*                                 |
 +-----------------------------+-------------------------------------------------------------------+
