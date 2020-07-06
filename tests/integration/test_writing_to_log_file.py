@@ -21,8 +21,8 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -49,8 +49,8 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -80,8 +80,8 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,

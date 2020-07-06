@@ -21,8 +21,8 @@ class TestComplementOut(object):
         kwargs = dict(
             input_file=f"{here.parent}/samples/simple.fa",
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=True,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -52,8 +52,8 @@ class TestComplementOut(object):
         kwargs = dict(
             input_file=f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta",
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=True,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -83,8 +83,8 @@ class TestComplementOut(object):
         kwargs = dict(
             input_file=f"{here.parent}/samples/EOG091N44M8_aa.fa",
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=True,
             gaps=0.9,
             mode=TrimmingMode.gappy,

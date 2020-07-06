@@ -157,7 +157,12 @@ def write_keepD(keepD, outFile, outFileFormat: FileFormat):
     for indiv in keepD.keys():
         seqList.append(SeqRecord(Seq(str(keepD[indiv])), id=str(indiv), description=""))
     keepMSA = MultipleSeqAlignment(seqList)
-    SeqIO.write(keepMSA, outFile, outFileFormat.value)
+    if outFileFormat.value == 'phylip_relaxed':
+        SeqIO.write(keepMSA, outFile, 'phylip-relaxed')
+    elif outFileFormat.value == 'phylip_sequential':
+        SeqIO.write(keepMSA, outFile, 'phylip-sequential')
+    else:
+        SeqIO.write(keepMSA, outFile, outFileFormat.value)
 
 
 def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):

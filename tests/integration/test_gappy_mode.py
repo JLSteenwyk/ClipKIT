@@ -21,8 +21,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -45,14 +45,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         output_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -77,14 +77,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta"
         output_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -109,14 +109,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/24_ENSG00000163519_aa_aln.fasta"
         output_file = "output/24_ENSG00000163519_aa_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -141,14 +141,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/24_ENSG00000163519_codon_aln.fasta"
         output_file = "output/24_ENSG00000163519_codon_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -173,14 +173,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/EOG091N44M8_aa.fa"
         output_file = "output/EOG091N44M8_aa.fa.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -203,14 +203,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
         output_file = "output/EOG091N44M8_nt.fa.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -234,14 +234,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/EOG092C0CZK_aa_aln.fasta"
         output_file = "output/EOG092C0CZK_aa_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -266,14 +266,14 @@ class TestGappyMode(object):
         """
         input_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
         output_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -301,14 +301,14 @@ class TestGappyModeCustomGapsParameter(object):
         """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simpla.fa.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.2,
             mode=TrimmingMode.gappy,
@@ -333,14 +333,14 @@ class TestGappyModeCustomGapsParameter(object):
         """
         input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         output_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.fasta
+        in_file_format = 'fasta'
+        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.3,
             mode=TrimmingMode.gappy,
@@ -370,8 +370,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.4,
             mode=TrimmingMode.gappy,
@@ -401,8 +401,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.1,
             mode=TrimmingMode.gappy,
@@ -432,8 +432,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.5,
             mode=TrimmingMode.gappy,
@@ -462,8 +462,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.fasta,
+            input_file_format='fasta',
+            output_file_format='fasta',
             complement=False,
             gaps=0.25,
             mode=TrimmingMode.gappy,

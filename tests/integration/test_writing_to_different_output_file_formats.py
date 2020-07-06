@@ -21,8 +21,8 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.clustal,
+            input_file_format='fasta',
+            output_file_format='clustal',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -49,8 +49,8 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.maf,
+            input_file_format='fasta',
+            output_file_format='maf',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -77,8 +77,8 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.mauve,
+            input_file_format='fasta',
+            output_file_format='mauve',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -105,8 +105,8 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.phylip,
+            input_file_format='fasta',
+            output_file_format='phylip',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -133,8 +133,8 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.phylip_seq,
+            input_file_format='fasta',
+            output_file_format='phylip_sequential',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -157,14 +157,12 @@ class TestOutFormats(object):
         """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.phylip-relaxed"
-        in_file_format = FileFormat.fasta
-        out_file_format = FileFormat.phylip_rel
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.phylip_rel,
+            input_file_format='fasta',
+            output_file_format='phylip_relaxed',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
@@ -191,8 +189,8 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format=FileFormat.fasta,
-            output_file_format=FileFormat.stockholm,
+            input_file_format='fasta',
+            output_file_format='stockholm',
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,

@@ -63,6 +63,7 @@ def execute(
     if not output_file_format:
         output_file_format = input_file_format
     else:
+        print(output_file_format)
         output_file_format = FileFormat[output_file_format]
 
     # Print to stdout the user arguments

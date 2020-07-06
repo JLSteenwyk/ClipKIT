@@ -13,8 +13,8 @@ class FileFormat(Enum):
     maf = "maf"
     mauve = "mauve"
     phylip = "phylip"
-    phylip_seq = "phylip-sequential"
-    phylip_rel = "phylip-relaxed"
+    phylip_sequential = "phylip_sequential"
+    phylip_relaxed = "phylip_relaxed"
     stockholm = "stockholm"
 
 
