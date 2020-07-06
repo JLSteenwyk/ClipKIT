@@ -58,10 +58,12 @@ def execute(
     alignment, input_file_format = get_alignment_and_format(
         input_file, file_format=input_file_format
     )
-
+    
     # set output file format if not specified
     if not output_file_format:
         output_file_format = input_file_format
+    else:
+        output_file_format = FileFormat[output_file_format]
 
     # Print to stdout the user arguments
     write_user_args(

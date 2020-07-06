@@ -31,6 +31,7 @@ def get_alignment_and_format(inFile: str, file_format: FileFormat):
 
     # if file format is provided, read the file according to the user's file format
     if file_format:
+        file_format = FileFormat[file_format]
         alignment = AlignIO.read(open(inFile), file_format.value)
         return alignment, file_format
     else:
