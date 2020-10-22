@@ -23,8 +23,11 @@ Across a total of 138,152 multiple sequence alignments (MSAs) from empirical (le
 simulated (right) datasets, desirability-based integration of accuracy and support metrics
 per MSA facilitated the comparison of relative software performance and revealed ClipKIT
 is a top-performing software. MSA trimming approaches are ordered along the x-axis from
-the highest-performing software to the lowest-performing software according to average
-desirability-based rank. Abbreviations of trimmers and parameters are as follows: 
+the highest-performing software (left) to the lowest-performing software (right) according to average
+desirability-based rank, which is derived from measures of tree accuracy (i.e., normalized Robinson
+Foulds distance) and tree support (i.e., average bipartition support). 
+
+Abbreviations of trimmers and parameters are as follows: 
 ClipKIT: g = gappy mode; ClipKIT: kc = kpic; ClipKIT: kcg = kpic-gappy; ClipKIT: k = kpi mode;
 ClipKIT: kg = kpi-gappy mode; BMGE = BMGE default; BMGE 0.3 = 0.3 entropy threshold;
 BMGE 0.7 = 0.7 entropy threshold; trimAl: s = strict; trimAl: sp = strictplus; Noisy = default;
