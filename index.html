@@ -41,18 +41,26 @@
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
 <p><strong>1) Installation</strong></p>
 <p>To install, use the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install clipkit
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># create virtual environment</span>
+python -m venv .venv
+<span class="c1"># activate virtual environment</span>
+<span class="nb">source</span> .venv/bin/activate
+<span class="c1"># install clipkit</span>
+pip install clipkit
 </pre></div>
 </div>
+<p><strong>Note, the virtual environment must be activated to use *clipkit*.</strong></p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>To install from source, use the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/JLSteenwyk/ClipKIT.git
-<span class="nb">cd</span> ClipKIT/
-make install
-</pre></div>
-</div>
+<p>Similarly, to install from source, we strongly recommend using a virtual environment. To do so, use the following commands:</p>
+<p>To deactivate your virtual environment, use the following command:</p>
+<p><strong>Note, the virtual environment must be activated to use *clipkit*.</strong></p>
+<blockquote>
+<div><p>git clone <a class="reference external" href="https://github.com/JLSteenwyk/ClipKIT.git">https://github.com/JLSteenwyk/ClipKIT.git</a>
+cd ClipKIT/
+make install</p>
+</div></blockquote>
 <p>If you run into permission errors when executing <em>make install</em>, create a
 virtual environemnt for your installation:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/JLSteenwyk/ClipKIT.git
