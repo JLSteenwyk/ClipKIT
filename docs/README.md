@@ -51,43 +51,29 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 
 ## Quick Start
 ### 1) Installation
-To install using *pip*, we strongly recommend building a virtual environment to avoid software dependency issues. To do so, execute the following commands:
+To install, use the following commands:
 ```shell
-# create virtual environment
-python -m venv .venv
-# activate virtual environment
-source .venv/bin/activate
-# install clipkit
 pip install clipkit
 ```
-**Note, the virtual environment must be activated to use *clipkit*.**
-
-After using ClipKIT, you may wish to deactivate your virtual environment and can do so using the following command:
-```shell
-# deactivate virtual environment
-deactivate
-```
-
 <br />
 
-Similarly, to install from source, we strongly recommend using a virtual environment. To do so, use the following commands:
+To install from source, use the following commands:
 ```shell
-# download
 git clone https://github.com/JLSteenwyk/ClipKIT.git
-cd PhyKIT/
-# create virtual environment
-python -m venv .venv
-# activate virtual environment
-source .venv/bin/activate
-# install
+cd ClipKIT/
 make install
 ```
-To deactivate your virtual environment, use the following command:
+<br />
+
+If you run into permission errors when executing *make install*, create a virtual environment for your installation:
 ```shell
-# deactivate virtual environment
-deactivate
+git clone https://github.com/JLSteenwyk/ClipKIT.git
+cd ClipKIT/
+python -m venv .venv
+source .venv/bin/activate
+make install
 ```
-**Note, the virtual environment must be activated to use *clipkit*.**
+Note, the virtual environment must be activated to use clipkit.
 <br />
 
 ### 2) Usage
@@ -233,10 +219,6 @@ ClipKIT's trims amino acid and nucleotide alignments. Currently, ClipKIT does no
 <strong>Is there a website version of ClipKIT?</strong>
 
 Currently, there is not website version of ClipKIT.
-
-<strong>I am having trouble install PhyKIT, what should I do?</strong>
-
-Please install ClipKIT using a virtual environment as directed in the installation instructions. If you are still running into issues after installing in a virtual environment, please contact the main software developer via [email](https://jlsteenwyk.com/contact.html) or [twitter](https://twitter.com/jlsteenwyk).
 
 <br />
 
