@@ -29,7 +29,7 @@ setup(
     packages=["clipkit"],
     classifiers=CLASSIFIERS,
     entry_points={"console_scripts": ["clipkit = clipkit.clipkit:main"]},
-    version="0.1.4",
+    version="0.1.5",
     include_package_data=True,
     install_requires=REQUIRES,
 )
