@@ -53,6 +53,9 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 
 ## Quick Start
 ### 1) Installation
+
+**If you are having trouble installing PhyKIT, please contact the lead developer, Jacob L. Steenwyk, via [email](https://jlsteenwyk.com/contact.html) or [twitter](https://twitter.com/jlsteenwyk) to get help.**
+
 To install using *pip*, we strongly recommend building a virtual environment to avoid software dependency issues. To do so, execute the following commands:
 ```shell
 # create virtual environment
