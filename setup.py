@@ -29,7 +29,11 @@ setup(
     packages=["clipkit"],
     classifiers=CLASSIFIERS,
     entry_points={"console_scripts": ["clipkit = clipkit.clipkit:main"]},
-    version="0.1.7",
+    version="0.1.8",
     include_package_data=True,
     install_requires=REQUIRES,
 )
+
+## push new version to pypi
+# python setup.py sdist bdist_wheel --universal
+# twine upload dist/* -r pypi
