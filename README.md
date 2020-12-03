@@ -34,7 +34,7 @@
 </p>
 
 ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes others.<br /><br />
-If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment-trimming algorithm for accurate phylogenomic inference*. bioRxiv. doi: [10.1101/2020.06.08.140384](https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1).
+If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment-trimming algorithm for accurate phylogenomic inference*. Steenwyk et al. 2020, PLoS Biology. doi: [10.1371/journal.pbio.3001007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007).
 <br /><br />
 
 
