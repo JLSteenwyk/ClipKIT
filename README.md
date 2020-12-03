@@ -216,7 +216,7 @@ In brief, performance assessment and comparison of multiple trimming alignment s
 
 Abbreviations of trimmers and parameters are as follows: ClipKIT: g = gappy mode; ClipKIT: kc = kpic; ClipKIT: kcg = kpic-gappy; ClipKIT: k = kpi mode; ClipKIT: kg = kpi-gappy mode; BMGE = BMGE default; BMGE 0.3 = 0.3 entropy threshold; BMGE 0.7 = 0.7 entropy threshold; trimAl: s = strict; trimAl: sp = strictplus; Noisy = default; Gblocks = default; No trim = no trimming.   
 
-For additional performance details, please see the manuscript *ClipKIT: a multiple sequence alignment-trimming algorithm for accurate phylogenomic inference*. bioRxiv. doi: [10.1101/2020.06.08.140384](https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1).
+For additional performance details, please see the manuscript *ClipKIT: a multiple sequence alignment-trimming algorithm for accurate phylogenomic inference*. Steenwyk et al. 2020, PLoS Biology. doi: [10.1371/journal.pbio.3001007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007).
 
 <br /><br /><br />
 
