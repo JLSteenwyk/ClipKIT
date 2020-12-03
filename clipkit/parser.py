@@ -27,8 +27,8 @@ def create_parser():
                        | |                       
                        |_|  
 
-        Citation: Steenwyk et al. bioRxiv.
-        https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1
+        Citation: Steenwyk et al. 2020, PLOS Biology. doi: 10.1371/journal.pbio.3001007
+        https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007
 
         ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
 

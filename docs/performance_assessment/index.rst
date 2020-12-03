@@ -34,7 +34,7 @@ BMGE 0.7 = 0.7 entropy threshold; trimAl: s = strict; trimAl: sp = strictplus; N
 Gblocks = default; No trim = no trimming.
 
 For additional details about performance assessment, please see *ClipKIT: a multiple sequence
-alignment-trimming algorithm for accurate phylogenomic inference*. bioRxiv. doi: |doiLink|_.
+alignment-trimming algorithm for accurate phylogenomic inference*. Steenwyk et al. PLoS Biology. doi: |doiLink|_.
 
-.. _doiLink: https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1
-.. |doiLink| replace:: 10.1101/2020.06.08.140384 
+.. _doiLink: https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007
+.. |doiLink| replace:: 10.1371/journal.pbio.3001007 
