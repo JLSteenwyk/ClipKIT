@@ -1,9 +1,3 @@
-.. image:: ../_static/img/ClipKIT_logo_top_only_v1.jpg
-   :width: 55%
-   :align: center
-   :target: https://jlsteenwyk.com/ClipKIT
-
-
 .. _performance:
 
 
