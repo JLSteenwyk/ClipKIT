@@ -42,6 +42,7 @@ and `Thomas J. Buida III <www.tjbiii.com>`_.
 |
 
 |JLSteenwyk|
+
 |GoogleScholarSteenwyk| |GitHubSteenwyk| |TwitterSteenwyk| 
 
 `Jacob L. Steenwyk <https://jlsteenwyk.github.io/>`_ is a Howard Hughes Medical Institute
@@ -70,6 +71,7 @@ through diverse avenues of community engagement. Find out more information at hi
 |
 
 |TJBuida|
+
 |GitHubBuida| |TwitterBuida|
 
 `Thomas J. Buida III <http://tjbiii.com/>`_ is a senior software and data engineer at
@@ -107,6 +109,7 @@ Shen <https://xingxingshen.github.io/>`_.
 |
 
 |ARokas|
+
 |GoogleScholarRokas| |TwitterRokas| 
 
 `Antonis Rokas <https://as.vanderbilt.edu/rokaslab/>`_ is the Cornelius Vanderbilt Chair in 
@@ -132,6 +135,7 @@ tree of life, and the evolution of human pregnancy. Find out more information at
 |
 
 |XXShen|
+
 |GoogleScholarShen| |GitHubShen| |TwitterShen| 
 
 `Xing-Xing Shen <https://xingxingshen.github.io/>`_ is an Assistant Professor of Institute of
