@@ -9,7 +9,7 @@
 ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes those that display characteristics poor phylogenetic signal.
 
 
-If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment-trimming algorithm for accurate phylogenomic inference*. Steenwyk et al. 2020, PLoS Biology. doi: |doiLink|_.
+If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference*. Steenwyk et al. 2020, PLoS Biology. doi: |doiLink|_.
 
 .. _doiLink: https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007
 .. |doiLink| replace:: 10.1371/journal.pbio.3001007
@@ -75,6 +75,14 @@ virtual environemnt for your installation:
 Note, the virtual environment must be activated to use clipkit.
 
 |
+
+To install via anaconda, execute the follwoing command:
+
+.. code-block: shell
+	conda install -c jlsteenwyk clipkit
+
+Visit here for more information: https://anaconda.org/jlsteenwyk/clipkit
+
 
 **2) Usage**
 

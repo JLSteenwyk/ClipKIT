@@ -92,6 +92,16 @@ To deactivate your virtual environment, use the following command:
 deactivate
 ```
 **Note, the virtual environment must be activated to use *clipkit*.**
+
+<br />
+
+To install via anaconda, execute the follwoing command:
+
+``` shell
+	conda install -c jlsteenwyk clipkit
+```
+Visit here for more information: https://anaconda.org/jlsteenwyk/clipkit
+
 <br />
 
 ### 2) Usage
