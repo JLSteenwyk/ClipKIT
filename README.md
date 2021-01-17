@@ -25,7 +25,6 @@
         <a href="https://github.com/jlsteenwyk/clipkit/graphs/contributors" alt="Contributors">
             <img src="https://img.shields.io/github/contributors/jlsteenwyk/clipkit">
         </a>
-        <a href="https://img.shields.io/pypi/dm/ClipKIT"><img src="https://img.shields.io/pypi/dm/ClipKIT" alt="Monthly downloads" height="20"></a>
         <a href="https://twitter.com/intent/follow?screen_name=jlsteenwyk" alt="Author Twitter">
             <img src="https://img.shields.io/twitter/follow/jlsteenwyk?style=social&logo=twitter"
                 alt="follow on Twitter">
