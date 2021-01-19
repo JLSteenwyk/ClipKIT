@@ -249,7 +249,9 @@ ClipKIT's trims amino acid and nucleotide alignments. Currently, ClipKIT does no
 
 Currently, there is not website version of ClipKIT.
 
-<strong>I am having trouble install ClipKIT, what should I do?</strong>
+<br />
+
+<strong>I am having trouble installing ClipKIT, what should I do?</strong>
 
 Please install ClipKIT using a virtual environment as directed in the installation instructions. If you are still running into issues after installing in a virtual environment, please contact the main software developer via [email](https://jlsteenwyk.com/contact.html) or [twitter](https://twitter.com/jlsteenwyk).
 
