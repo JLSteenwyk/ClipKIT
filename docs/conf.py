@@ -87,7 +87,7 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "body_max_width": "900px",
     'logo_only': True,
-    'analytics_id': 'UA-169242151-1'
+    'analytics_id': 'UA-104875636-1'
 }
 html_logo = '_static/img/ClipKIT_logo_top_only_v1.png'
 html_show_sourcelink = False
