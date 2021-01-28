@@ -134,7 +134,7 @@ def create_parser():
     )
 
     optional.add_argument(
-        "-v", "--version", action="version", version="%(prog)s 0.1", help=SUPPRESS,
+        "-v", "--version", action="version", version="%(prog)s 1.0.5", help=SUPPRESS,
     )
 
     optional.add_argument(
