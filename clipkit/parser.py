@@ -10,6 +10,7 @@ from argparse import (
 
 from .modes import TrimmingMode
 from .files import FileFormat
+from .version import __version__
 
 def create_parser():
     parser = ArgumentParser(
@@ -27,6 +28,7 @@ def create_parser():
                        | |                       
                        |_|  
 
+        Version: {__version__}
         Citation: Steenwyk et al. 2020, PLOS Biology. doi: 10.1371/journal.pbio.3001007
         https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007
 
@@ -134,7 +136,7 @@ def create_parser():
     )
 
     optional.add_argument(
-        "-v", "--version", action="version", version="%(prog)s 1.0.5", help=SUPPRESS,
+        "-v", "--version", action="version", version=f"clipkit {__version__}", help=SUPPRESS,
     )
 
     optional.add_argument(
