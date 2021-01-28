@@ -36,6 +36,11 @@ ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetical
 If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference*. Steenwyk et al. 2020, PLoS Biology. doi: [10.1371/journal.pbio.3001007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007).
 <br /><br />
 
+---
+
+
+This documentation covers downloading and installing PhyKIT. Details about each function as well as tutorials for using PhyKIT are available in the online documentation.
+
 
 ---
 
