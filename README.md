@@ -223,7 +223,7 @@ Output file with the suffix ".clipkit.complementary"
 ## Performance Assessment
 In brief, performance assessment and comparison of multiple trimming alignment software revealed that ClipKIT with nearly any mode is a top-performing software. Here, we provide greater detail into the empirical datasets used to assess alignment trimming performance. 
 <p align="center">
-  <a href="https://www.biorxiv.org/content/10.1101/2020.06.08.140384v1">
+  <a href="https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007">
     <img src="https://raw.githubusercontent.com/JLSteenwyk/ClipKIT/master/docs/_static/img/Performance_summary.jpg" alt="Performance Summary" width="1000">
   </a>
 </p>
