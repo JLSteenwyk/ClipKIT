@@ -18,3 +18,8 @@ class TestEntrypoint(object):
         cmd = "clipkit /file/doesnt/exist"
         response = subprocess.check_output([cmd], stderr=subprocess.STDOUT, shell=True)
         assert response == b"Input file does not exist\n"
+
+    def test_run_no_args(self):
+        cmd = "clipkit"
+        exit_status = os.system(cmd)
+        assert exit_status == 0
