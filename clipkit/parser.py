@@ -18,7 +18,7 @@ def create_parser():
         formatter_class=RawDescriptionHelpFormatter,
         usage=SUPPRESS,
         description=textwrap.dedent(
-            """\
+            f"""\
               _____ _ _       _  _______ _______ 
              / ____| (_)     | |/ /_   _|__   __|
             | |    | |_ _ __ | ' /  | |    | |   
