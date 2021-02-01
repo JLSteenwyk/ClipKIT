@@ -37,6 +37,7 @@ To install, use the following commands:
 Similarly, to install from source, we strongly recommend using a virtual environment. To do so, use the following commands:
 
 .. code-block:: shell
+
 	# download
 	git clone https://github.com/JLSteenwyk/ClipKIT.git
 	cd PhyKIT/
@@ -50,6 +51,7 @@ Similarly, to install from source, we strongly recommend using a virtual environ
 To deactivate your virtual environment, use the following command:
 
 .. code-block:: shell
+
 	# deactivate virtual environment
 	deactivate
 
@@ -79,6 +81,7 @@ Note, the virtual environment must be activated to use clipkit.
 To install via anaconda, execute the follwoing command:
 
 .. code-block: shell
+
 	conda install -c jlsteenwyk clipkit
 
 Visit here for more information: https://anaconda.org/jlsteenwyk/clipkit
