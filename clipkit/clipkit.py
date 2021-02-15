@@ -10,17 +10,23 @@ from Bio import AlignIO, SeqIO
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+import numpy as np
 
 from .args_processing import process_args
 from .files import get_alignment_and_format, FileFormat
-from .helpers import keep_trim_and_log, write_keepD, write_trimD
+from .helpers import (
+    keep_trim_and_log,
+    write_keepD,
+    write_trimD
+)
 from .modes import TrimmingMode
 from .parser import create_parser
+from .smart_gap_helper import smart_gap_threshold_determination
 from .warnings import (
     check_if_all_sites_were_trimmed,
     check_if_entry_contains_only_gaps,
 )
-from .write import write_user_args, write_output_stats
+from .write import write_determining_smart_gap_threshold, write_user_args, write_output_stats
 
 logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
@@ -63,8 +69,12 @@ def execute(
     if not output_file_format:
         output_file_format = input_file_format
     else:
-        print(output_file_format)
         output_file_format = FileFormat[output_file_format]
+
+    # determine smart_gap threshold
+    if mode in {TrimmingMode.smart_gap, TrimmingMode.kpi_smart_gap, TrimmingMode.kpic_smart_gap}:
+        write_determining_smart_gap_threshold()
+        gaps = smart_gap_threshold_determination(alignment)
 
     # Print to stdout the user arguments
     write_user_args(

@@ -24,7 +24,7 @@ def process_args(args) -> dict:
 
     # assign optional arguments
     complement = args.complementary or False
-    mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.gappy
+    mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.smart_gap
     gaps = float(args.gaps) if args.gaps is not None else 0.9
     use_log = args.log or False
 

@@ -6,15 +6,14 @@ logger = logging.getLogger("clipkit.clipkit")
 
 
 class TrimmingMode(Enum):
-    kpi_gappy = "kpi-gappy"
-    kpi = "kpi"
     gappy = "gappy"
+    smart_gap = "smart-gap"
+    kpi = "kpi"
+    kpi_gappy = "kpi-gappy"
+    kpi_smart_gap = "kpi-smart-gap"
     kpic = "kpic"
     kpic_gappy = "kpic-gappy"
-    medium = "medium"
-    medium_gappy = "medium-gappy"
-    heavy = "heavy"
-    heavy_gappy = "heavy-gappy"
+    kpic_smart_gap = "kpic-smart-gap"
 
 
 def shouldKeep(
@@ -27,16 +26,22 @@ def shouldKeep(
     """
     Determine if a site should be kept or not
     """
-    if mode in (TrimmingMode.kpi_gappy, TrimmingMode.heavy_gappy):
+    if mode == TrimmingMode.kpi_gappy:
         return gappyness <= gaps and parsimony_informative
     elif mode == TrimmingMode.gappy:
         return gappyness <= gaps
-    elif mode in (TrimmingMode.kpi, TrimmingMode.heavy):
+    elif mode == TrimmingMode.kpi:
         return parsimony_informative
-    elif mode in (TrimmingMode.kpic, TrimmingMode.medium):
+    elif mode == TrimmingMode.kpic:
         return parsimony_informative or constant_site
-    elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.medium_gappy):
+    elif mode == TrimmingMode.kpic_gappy:
         return gappyness <= gaps and (parsimony_informative or constant_site)
+    elif mode == TrimmingMode.smart_gap:
+        return round(gappyness, 4) < gaps
+    elif mode == TrimmingMode.kpic_smart_gap:
+        return round(gappyness, 4) < gaps and (parsimony_informative or constant_site)
+    elif mode == TrimmingMode.kpi_smart_gap:
+        return round(gappyness, 4) < gaps and parsimony_informative
 
 
 def trim(

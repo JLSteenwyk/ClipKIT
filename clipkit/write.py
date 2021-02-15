@@ -84,3 +84,16 @@ def write_output_stats(alignment, keepD, trimD, start_time):
     """
         )
     )
+
+def write_determining_smart_gap_threshold():
+    """
+    Function to inform using that the smart-gap threshold is being determined
+    """
+    print(
+        textwrap.dedent(
+            f"""\
+
+        Determining smart-gap threshold...
+    """
+        )
+    )

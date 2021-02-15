@@ -32,7 +32,7 @@ class TestArgsProcessing(object):
 
     def test_process_args_default_mode(self, args):
         res = process_args(args)
-        assert res["mode"] == TrimmingMode.gappy
+        assert res["mode"] == TrimmingMode.smart_gap
 
     def test_process_args_default_complementary(self, args):
         args.complementary = None
