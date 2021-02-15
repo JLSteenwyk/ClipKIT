@@ -94,8 +94,9 @@ and sites with greater than or equal to 60% gaps and removing 3/7ths
 of the alignment. Next, ClipKIT will determine the slope between sites
 with greater than or equal to 60% gaps and removing 3/7ths of the
 alignment and sites with greater than or equal to 20% gaps and removing 
-4/7ths of the alignment and so on and so forth. Next, ClipKIT will examine
+4/7ths of the alignment and so on and so forth. ClipKIT will then examine
 the first half of slope values and use the less strict gaps threshold
-from the two points that generated the greatest slope.
+from the two points that generated the greatest difference between 
+consecutive slopes.
 
 
