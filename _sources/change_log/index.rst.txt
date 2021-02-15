@@ -1,0 +1,13 @@
+.. _change_log:
+
+
+Change log
+==========
+
+^^^^^
+
+Major changes to ClipKIT are summarized here.
+
+**1.1.0:**
+smart-gap trimming is introduced and is now the default trimming approach used in ClipKIT.
+smart-gap trimming is a dynamic approach to determine the appropriate gaps threshold for an alignment.

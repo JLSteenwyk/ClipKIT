@@ -97,6 +97,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../performance_assessment/index.html">Performance Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../change_log/index.html">Change log</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../frequently_asked_questions/index.html">FAQ</a></li>
 </ul>
 
@@ -176,31 +177,39 @@
 <p>ClipKIT can be run with five different modes (gappy, kpic, kpic-gappy, kpi, and kpi-gappy), which are specified with the -m/–mode argument.
 <em>Default: ‘gappy’</em></p>
 <ul class="simple">
+<li><p>smart-gap: dynamic determination of gaps threshold</p></li>
 <li><p>gappy: trim all sites that are above a threshold of gappyness (default: 0.9)</p></li>
-<li><p>kpic (alias: medium): keep only parismony informative and constant sites</p></li>
-<li><p>kpic-gappy (alias: medium-gappy): a combination of kpic- and gappy-based trimming</p></li>
-<li><p>kpi (alias: heavy): keep only parsimony informative sites</p></li>
-<li><p>kpi-gappy (alias: heavy-gappy): a combination of kpi- and gappy-based trimming</p></li>
+<li><p>kpic: keep only parismony informative and constant sites</p></li>
+<li><p>kpic-smart-gap: a combination of kpic- and smart-gap-based trimming</p></li>
+<li><p>kpic-gappy: a combination of kpic- and gappy-based trimming</p></li>
+<li><p>kpi: keep only parsimony informative sites</p></li>
+<li><p>kpi-smart-gap: a combination of kpi- and smart-gap-based trimming</p></li>
+<li><p>kpi-gappy: a combination of kpi- and gappy-based trimming</p></li>
 </ul>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># gappy-based trimming</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># smart-gap-based trimming</span>
 clipkit &lt;input&gt;
+clipkit -m smart-gap
+
+<span class="c1"># gappy-based trimming</span>
 clipkit &lt;input&gt; -m gappy
 
 <span class="c1"># kpic-based trimming</span>
 clipkit &lt;input&gt; -m kpic
-clipkit &lt;input&gt; -m medium
+
+<span class="c1"># kpic- and smart-gap-based trimming</span>
+clipkit &lt;input&gt; -m kpic-smart-gap
 
 <span class="c1"># kpic- and gappy-based trimming</span>
 clipkit &lt;input&gt; -m kpic-gappy
-clipkit &lt;input&gt; -m medium-gappy
 
 <span class="c1"># kpi-based trimming</span>
 clipkit &lt;input&gt; -m kpi
-clipkit &lt;input&gt; -m heavy
+
+<span class="c1"># kpi- and smart-gap-based trimming</span>
+clipkit &lt;input&gt; -m kpi-smart-gap
 
 <span class="c1"># kpi- and gappy-based trimming</span>
 clipkit &lt;input&gt; -m kpi-gappy
-clipkit &lt;input&gt; -m heavy-gappy
 </pre></div>
 </div>
 </div>
@@ -241,43 +250,6 @@ option.</p>
 </div>
 <div class="section" id="all-options">
 <span id="id5"></span><h2>All options<a class="headerlink" href="#all-options" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 30%" />
-<col style="width: 70%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Option</p></th>
-<th class="head"><p>Usage and meaning</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>-h/--help</p></td>
-<td><p>Print help message</p></td>
-</tr>
-<tr class="row-odd"><td><p>-v/--version</p></td>
-<td><p>Print software version</p></td>
-</tr>
-<tr class="row-even"><td><p>-o/--output</p></td>
-<td><p>Specify output file name</p></td>
-</tr>
-<tr class="row-odd"><td><p>-g/--gaps</p></td>
-<td><p>Specify gappyness threshold (between 0 and 1). <em>Default: 0.9</em></p></td>
-</tr>
-<tr class="row-even"><td><p>-if/--input_file_format</p></td>
-<td><p>Specify input file format*. <em>Default: auto-detect</em></p></td>
-</tr>
-<tr class="row-odd"><td><p>-of/--output_file_format</p></td>
-<td><p>Specify output file format*. <em>Default: input file type</em></p></td>
-</tr>
-<tr class="row-even"><td><p>-l/--log</p></td>
-<td><p>Create a log file. <em>Default: off</em></p></td>
-</tr>
-<tr class="row-odd"><td><p>-c/–complementary</p></td>
-<td><p>Create a complementary alignment file. <em>Default: off</em></p></td>
-</tr>
-</tbody>
-</table>
 <p>*Acceptable file formats include:
 <a class="reference external" href="https://en.wikipedia.org/wiki/FASTA_format">fasta</a>,
 <a class="reference external" href="http://meme-suite.org/doc/clustalw-format.html">clustal</a>,

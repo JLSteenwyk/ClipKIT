@@ -19,33 +19,41 @@ Modes
 ClipKIT can be run with five different modes (gappy, kpic, kpic-gappy, kpi, and kpi-gappy), which are specified with the -m/--mode argument.
 *Default: 'gappy'*
 
+* smart-gap: dynamic determination of gaps threshold
 * gappy: trim all sites that are above a threshold of gappyness (default: 0.9)
-* kpic (alias: medium): keep only parismony informative and constant sites
-* kpic-gappy (alias: medium-gappy): a combination of kpic- and gappy-based trimming
-* kpi (alias: heavy): keep only parsimony informative sites
-* kpi-gappy (alias: heavy-gappy): a combination of kpi- and gappy-based trimming
+* kpic: keep only parismony informative and constant sites
+* kpic-smart-gap: a combination of kpic- and smart-gap-based trimming 
+* kpic-gappy: a combination of kpic- and gappy-based trimming
+* kpi: keep only parsimony informative sites
+* kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
+* kpi-gappy: a combination of kpi- and gappy-based trimming
 
 .. code-block:: shell
 
-	# gappy-based trimming
+	# smart-gap-based trimming
 	clipkit <input>
+	clipkit -m smart-gap
+
+	# gappy-based trimming
 	clipkit <input> -m gappy
 
 	# kpic-based trimming
 	clipkit <input> -m kpic
-	clipkit <input> -m medium
+
+	# kpic- and smart-gap-based trimming
+	clipkit <input> -m kpic-smart-gap
 
 	# kpic- and gappy-based trimming
 	clipkit <input> -m kpic-gappy
-	clipkit <input> -m medium-gappy
 
 	# kpi-based trimming
 	clipkit <input> -m kpi
-	clipkit <input> -m heavy
+
+	# kpi- and smart-gap-based trimming
+	clipkit <input> -m kpi-smart-gap
 
 	# kpi- and gappy-based trimming
 	clipkit <input> -m kpi-gappy
-	clipkit <input> -m heavy-gappy
 
 .. _Output:
 
@@ -102,19 +110,21 @@ All options
 +-----------------------------+-------------------------------------------------------------------+
 | Option                      | Usage and meaning                                                 |
 +=============================+===================================================================+
-| -h/\\-\\-help               | Print help message                                                |
+| -h/\-\-help                 | Print help message                                                |
 +-----------------------------+-------------------------------------------------------------------+
-| -v/\\-\\-version            | Print software version                                            |
+| -v/\-\-version              | Print software version                                            |
 +-----------------------------+-------------------------------------------------------------------+
-| -o/\\-\\-output             | Specify output file name                                          |
+| -m/\-\-mode                 | Specify trimming mode (default: smart-gap)                       |
 +-----------------------------+-------------------------------------------------------------------+
-| -g/\\-\\-gaps               | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
+| -o/\-\-output               | Specify output file name                                          |
 +-----------------------------+-------------------------------------------------------------------+
-| -if/\\-\\-input_file_format | Specify input file format*. *Default: auto-detect*                |
+| -g/\-\-gaps                 | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
 +-----------------------------+-------------------------------------------------------------------+
-| -of/\\-\\-output_file_format| Specify output file format*. *Default: input file type*           |
+| -if/\-\-input_file_format   | Specify input file format*. *Default: auto-detect*                |
 +-----------------------------+-------------------------------------------------------------------+
-| -l/\\-\\-log                | Create a log file. *Default: off*                                 |
+| -of/\-\-output_file_format  | Specify output file format*. *Default: input file type*           |
++-----------------------------+-------------------------------------------------------------------+
+| -l/\-\-log                  | Create a log file. *Default: off*                                 |
 +-----------------------------+-------------------------------------------------------------------+
 | -c/--complementary          | Create a complementary alignment file. *Default: off*             |
 +-----------------------------+-------------------------------------------------------------------+
@@ -129,3 +139,4 @@ All options
 `phylip-sequential <http://rosalind.info/glossary/phylip-format/>`_,
 `phylip-relaxed <https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html>`_,
 `stockholm <https://en.wikipedia.org/wiki/Stockholm_format>`_
+
