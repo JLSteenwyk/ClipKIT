@@ -57,7 +57,7 @@ To deactivate your virtual environment, use the following command:
 
 **Note, the virtual environment must be activated to use clipkit.**
 
-
+.. code-block:: shell
 
 	git clone https://github.com/JLSteenwyk/ClipKIT.git
 	cd ClipKIT/
