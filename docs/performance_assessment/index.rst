@@ -6,8 +6,8 @@ Performance Assessment
 
 |
 
-Benchmarking ClipKIT
---------------------
+Benchmarking
+------------
 
 ^^^^^
 
