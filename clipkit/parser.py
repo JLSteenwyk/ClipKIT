@@ -65,11 +65,14 @@ def create_parser():
         -o, --output <output_file_name>             output file name 
                                                     (default: input file named with '.clipkit' suffix)
 
-        -m, --modes <gappy,                         trimming mode 
-                    kpic (alias: medium),           (default: gappy)
-                    kpic-gappy (alias: medium-gappy),                
-                    kpi (alias: heavy),
-                    kpi-gappy (alias: heavy-gappy)>                      
+        -m, --modes <smart-gap,                     trimming mode 
+                    gappy,                          (default: smart-gap)
+                    kpic,
+                    kpic-smart-gap,           
+                    kpic-gappy,                
+                    kpi,
+                    kpi-smart-gap,
+                    kpi-gappy>                      
                                                     
         -g, --gaps <threshold of gaps>              specifies gaps threshold
                                                     (default: 0.9)
@@ -93,16 +96,20 @@ def create_parser():
         | Detailed explanation of arguments | 
         -------------------------------------
         Modes
+            smart-gap: dynamic determination of gaps threshold
             gappy: trim sites that are greater than the gaps threshold
-            kpic (alias: medium): keeps parismony informative and constant sites
-            kpic-gappy (alias: medium-gappy): a combination of kpic- and gappy-based trimming
-            kpi (alias: heavy): keep only parsimony informative sites
-            kpi-gappy (alias: heavy-gappy): a combination of kpi- and gappy-based trimming
+            kpic: keeps parismony informative and constant sites
+            kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
+            kpic-gappy: a combination of kpic- and gappy-based trimming
+            kpi: keep only parsimony informative sites
+            kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
+            kpi-gappy: a combination of kpi- and gappy-based trimming
 
         Gaps
             Positions with gappyness greater than threshold will be trimmed. 
             Must be between 0 and 1. (Default: 0.9). This argument is ignored
-            when using the kpi mode of trimming.
+            when using the kpi and kpic mdoes of trimming as well as an 
+            iteration of trimming that uses smart-gap.
 
         Input and output file formats
             Supported input and output files include:
