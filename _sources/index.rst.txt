@@ -19,7 +19,11 @@ Quick Start
 -----------
 **1) Installation**
 
-To install, use the following commands:
+To help ensure ClipKIT can be installed using your favorite workflow, we have made ClipKIT available from pip, source, and the anaconda cloud.
+
+**Install from pip**
+
+To install from pip, use the following commands:
 
 .. code-block:: shell
 
@@ -33,6 +37,8 @@ To install, use the following commands:
 **Note, the virtual environment must be activated to use clipkit.**
 
 |
+
+**Install from source**
 
 Similarly, to install from source, we strongly recommend using a virtual environment. To do so, use the following commands:
 
@@ -78,14 +84,17 @@ Note, the virtual environment must be activated to use clipkit.
 
 |
 
-To install via anaconda, execute the follwoing command:
+**Install from anaconda**
 
-.. code-block: shell
+To install via anaconda, execute the following command:
+
+.. code-block:: shell
 
 	conda install -c jlsteenwyk clipkit
 
 Visit here for more information: https://anaconda.org/jlsteenwyk/clipkit
 
+|
 
 **2) Usage**
 
