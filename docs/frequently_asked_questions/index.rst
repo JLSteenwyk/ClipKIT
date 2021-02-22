@@ -24,7 +24,9 @@ search. We found that ClipKIT reduced computation time by an average of 20%. As 
 continuously become bigger, an alignment trimming algorithm that can reduce computational
 time will be of great value. 
 
-**I am having trouble install PhyKIT, what should I do?**
+|
+
+**I am having trouble install ClipKIT, what should I do?**
 
 Please install ClipKIT using a virtual environment as directed in the installation instructions.
 If you are still running into issues after installing in a virtual environment, please contact the

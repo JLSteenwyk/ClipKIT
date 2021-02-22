@@ -11,6 +11,8 @@ This section describes the various features and options of ClipKIT.
 - Complementary_
 - `All options`_
 
+|
+
 .. _Modes:
 
 Modes
@@ -57,6 +59,8 @@ ClipKIT can be run with five different modes (gappy, kpic, kpic-gappy, kpi, and 
 
 .. _Output:
 
+|
+
 Output
 ------
 
@@ -67,6 +71,8 @@ appended to the name. Users can specify output file names with the -o option.
 
 	# specify output
 	clipkit <input> -o <output>
+
+|
 
 .. _Log:
 
@@ -86,6 +92,8 @@ will create a four column file with the suffix 'clipkit.log'. *Default: off*
 
 	clipkit <input> -l 
 
+|
+
 .. _Complementary:
 
 Complementary
@@ -100,6 +108,8 @@ option.
 	clipkit <input> -c
 
 Output file with the suffix '.clipkit.complementary'
+
+|
 
 .. _`All options`:
 
