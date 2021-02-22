@@ -90,6 +90,7 @@ color extracted from a flexible source to the Hue light color. Find out more inf
    :target: https://github.com/TJBIII
    :width: 4.5% 
 
+|
 
 More Team Members
 -----------------

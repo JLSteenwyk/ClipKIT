@@ -108,6 +108,7 @@ Output file with the suffix ".clipkit"
 	advanced/index
 	performance_assessment/index
 	change_log/index
+	other_software/index
 	frequently_asked_questions/index
 
 ^^^^
