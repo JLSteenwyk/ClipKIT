@@ -18,8 +18,11 @@ This section describes the various features and options of ClipKIT.
 Modes
 -----
 
-ClipKIT can be run with five different modes (gappy, kpic, kpic-gappy, kpi, and kpi-gappy), which are specified with the -m/--mode argument.
-*Default: 'gappy'*
+Herein, we describe the various trimming modes implemented in ClipKIT. If you are unsure which is appropriate for you,
+**we recommend using the default smart-gap trimming mode**. 
+
+ClipKIT can be run with eight different modes, which are specified with the -m/--mode argument.
+*Default: 'smart-gap'*
 
 * smart-gap: dynamic determination of gaps threshold
 * gappy: trim all sites that are above a threshold of gappyness (default: 0.9)
