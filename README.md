@@ -71,7 +71,7 @@ Similarly, to install from source, we strongly recommend using a virtual environ
 ```shell
 # download
 git clone https://github.com/JLSteenwyk/ClipKIT.git
-cd PhyKIT/
+cd ClipKIT/
 # create virtual environment
 python -m venv .venv
 # activate virtual environment
