@@ -65,7 +65,7 @@ def create_parser():
         -o, --output <output_file_name>             output file name 
                                                     (default: input file named with '.clipkit' suffix)
 
-        -m, --modes <smart-gap,                     trimming mode 
+        -m, --mode <smart-gap,                      trimming mode 
                     gappy,                          (default: smart-gap)
                     kpic,
                     kpic-smart-gap,           
