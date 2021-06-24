@@ -80,7 +80,7 @@ def trim(
     # save to keepD
     if shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps):
         for entry in alignment:
-            keepD[entry.id][alignment_position] = entry.seq._data[alignment_position]
+            keepD[entry.id][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
         if use_log:
             if constant_site:
                 logger.debug(f"{str(alignment_position + 1)} keep Const {gappyness}")
@@ -93,7 +93,7 @@ def trim(
     # save to trimD
     else:
         for entry in alignment:
-            trimD[entry.id][alignment_position] = entry.seq._data[alignment_position]
+            trimD[entry.id][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
         if use_log:
             if constant_site:
                 logger.debug(f"{str(alignment_position + 1)} trim Const {gappyness}")

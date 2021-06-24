@@ -150,18 +150,18 @@ class TestPopulateEmptyKeepDAndTrimD(object):
 
         ## check results
         expected_keepD = {
-            "1": np.empty([6], dtype=str),
-            "2": np.empty([6], dtype=str),
-            "3": np.empty([6], dtype=str),
-            "4": np.empty([6], dtype=str),
-            "5": np.empty([6], dtype=str),
+            "1": np.zeros([6], dtype=bytes),
+            "2": np.zeros([6], dtype=bytes),
+            "3": np.zeros([6], dtype=bytes),
+            "4": np.zeros([6], dtype=bytes),
+            "5": np.zeros([6], dtype=bytes),
         }
         expected_trimD = {
-            "1": np.empty([6], dtype=str),
-            "2": np.empty([6], dtype=str),
-            "3": np.empty([6], dtype=str),
-            "4": np.empty([6], dtype=str),
-            "5": np.empty([6], dtype=str),
+            "1": np.zeros([6], dtype=bytes),
+            "2": np.zeros([6], dtype=bytes),
+            "3": np.zeros([6], dtype=bytes),
+            "4": np.zeros([6], dtype=bytes),
+            "5": np.zeros([6], dtype=bytes),
         }
 
         assert expected_keepD.keys() == keepD.keys()
@@ -177,14 +177,22 @@ class TestPopulateEmptyKeepDAndTrimD(object):
 class TestJoinKeepDAndTrimD(object):
     def test_join_keepD_and_trimD(self):
         ## set up
+
         keepD = {
-            "1": ["A", "-", "G", "T", "A", "T"],
-            "2": ["A", "-", "G", "-", "A", "T"],
-            "3": ["A", "-", "G", "-", "T", "A"],
-            "4": ["A", "G", "A", "-", "T", "A"],
-            "5": ["A", "C", "a", "-", "T", "-"],
+            '1': np.array([b'A', b'-', b'G', b'T', b'A', b'T'], dtype='|S1'),
+            '2': np.array([b'A', b'-', b'G', b'-', b'A', b'T'], dtype='|S1'),
+            '3': np.array([b'A', b'-', b'G', b'-', b'T', b'A'], dtype='|S1'),
+            '4': np.array([b'A', b'G', b'A', b'-', b'T', b'A'], dtype='|S1'),
+            '5': np.array([b'A', b'C', b'a', b'-', b'T', b'-'], dtype='|S1')
         }
-        trimD = {"1": [], "2": [], "3": [], "4": [], "5": []}
+        
+        trimD = {
+            '1': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
+            '2': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
+            '3': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
+            '4': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
+            '5': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1')
+        }
 
         ## execution
         keepD, trimD = join_keepD_and_trimD(keepD, trimD)

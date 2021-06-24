@@ -4,3 +4,5 @@ Major changes to ClipKIT are summarized here.
 smart-gap trimming is introduced and is now the default trimming approach used in ClipKIT.
 smart-gap trimming is a dynamic approach to determine the appropriate gaps threshold for an alignment.
 
+1.1.5
+carried over code base to biopython, v1.79

@@ -108,10 +108,10 @@ def populate_empty_keepD_and_trimD(alignment):
     keepD = {}
     alignment_length = alignment.get_alignment_length()
     for entry in alignment:
-        keepD[entry.id] = np.empty([alignment_length], dtype=str)
+        keepD[entry.id] = np.zeros([alignment_length], dtype=bytes)
     trimD = {}
     for entry in alignment:
-        trimD[entry.id] = np.empty([alignment_length], dtype=str)
+        trimD[entry.id] = np.zeros([alignment_length], dtype=bytes)
 
     return keepD, trimD
 
@@ -131,9 +131,9 @@ def join_keepD_and_trimD(keepD, trimD):
 
     # join elements in value lists in keepD and trimD
     for k, v in keepD.items():
-        keepD[k] = "".join(v)
+        keepD[k] = "".join(np.char.decode(v))
     for k, v in trimD.items():
-        trimD[k] = "".join(v)
+        trimD[k] = "".join(np.char.decode(v))
 
     return keepD, trimD
 
