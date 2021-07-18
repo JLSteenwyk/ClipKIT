@@ -50,7 +50,7 @@ prune user inputted phylogenies or phylogenies in our database using an intuitiv
 user interface.
 
 `Publication PDF <https://jlsteenwyk.com/publication_pdfs/2019_Steenwyk_and_Rokas_BMC_Research_Notes.pdf>`_;
-`Source code <https://github.com/JLSteenwyk/treehouse>`_
+`Documentation & Source code <https://github.com/JLSteenwyk/treehouse>`_
 
 .. |treehouse| image:: ../_static/img/treehouse_logo.png
    :width: 50%
@@ -65,7 +65,7 @@ ggpubfigs
 create publication ready figures that are colorblind friendly using our collection of ggplot2 themes
 
 `Zenodo record <https://zenodo.org/record/4126988#.YCK_2ZNKhlc>`_;
-`Source code <https://github.com/JLSteenwyk/ggpubfigs>`_
+`Documentation & Source code <https://github.com/JLSteenwyk/ggpubfigs>`_
 
 .. |ggpubfigs| image:: ../_static/img/ggpubfigs_logo.png
    :width: 50%
