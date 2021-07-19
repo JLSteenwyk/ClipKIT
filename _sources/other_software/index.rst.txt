@@ -18,7 +18,7 @@ PhyKIT
 A broadly applicable command line toolkit with 30 (and counting) functions for analyzing
 and processing phylogenetic trees and multiple sequence alignments.
 
-`Publication PDF <https://jlsteenwyk.com/publication_pdfs/2021_Steenwyk_etal_Bioinformatics.pdf`;
+`Publication PDF <https://jlsteenwyk.com/publication_pdfs/2021_Steenwyk_etal_Bioinformatics.pdf>`_;
 `Documentation <https://jlsteenwyk.com/PhyKIT/>`_;
 `Source code <https://github.com/JLSteenwyk/PhyKIT>`_
 
