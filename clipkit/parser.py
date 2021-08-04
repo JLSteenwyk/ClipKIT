@@ -131,7 +131,9 @@ def create_parser():
         ),
     )
 
-    optional.add_argument("-o", "--output", help=SUPPRESS, metavar="output")
+    optional.add_argument(
+        "-o", "--output", help=SUPPRESS, metavar="output"
+    )
 
     mode_choices = [mode.value for mode in TrimmingMode]
     optional.add_argument(
