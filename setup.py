@@ -15,10 +15,11 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     'Topic :: Scientific/Engineering',
 ]
 
-REQUIRES = ["biopython>=1.79", "numpy>=1.18", "tqdm>=4.45"]
+REQUIRES = ["biopython>=1.79", "numpy>=1.18", "tqdm>=4.45", "cython"]
 
 setup(
     name="clipkit",
@@ -38,5 +39,5 @@ setup(
 
 ## push new version to pypi
 # rm -rf dist
-# python setup.py sdist bdist_wheel --universal
+# python3 setup.py sdist bdist_wheel --universal
 # twine upload dist/* -r pypi
