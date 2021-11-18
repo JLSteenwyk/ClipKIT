@@ -10,12 +10,6 @@
     <a href="https://github.com/jlsteenwyk/clipkit/issues">Request Feature</a>
   </p>
     <p align="center">
-        <a href="https://lbesson.mit-license.org/" alt="License">
-            <img src="https://img.shields.io/badge/License-MIT-blue.svg">
-        </a>
-        <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
-            <img src="https://img.shields.io/pypi/pyversions/clipkit">
-        </a>
         <a href="https://github.com/JLSteenwyk/ClipKIT/actions" alt="Build">
             <img src="https://img.shields.io/github/workflow/status/jlsteenwyk/clipkit/CI/master">
         </a>
@@ -28,6 +22,16 @@
         <a href="https://twitter.com/intent/follow?screen_name=jlsteenwyk" alt="Author Twitter">
             <img src="https://img.shields.io/twitter/follow/jlsteenwyk?style=social&logo=twitter"
                 alt="follow on Twitter">
+        </a>
+        <br />
+        <a href="https://lbesson.mit-license.org/" alt="License">
+            <img src="https://img.shields.io/badge/License-MIT-blue.svg">
+        </a>
+        <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
+            <img src="https://img.shields.io/pypi/pyversions/clipkit">
+        </a>
+        <a href="https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007">
+          <img src="https://zenodo.org/badge/DOI/10.1371/journal.pbio.3001007.svg">
         </a>
     </p>
 </p>
