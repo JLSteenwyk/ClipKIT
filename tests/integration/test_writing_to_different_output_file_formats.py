@@ -205,3 +205,171 @@ class TestOutFormats(object):
             output_content = out_file.read()
 
         assert expected_content == output_content
+
+    def test_clustal_long_description(self):
+        """
+        test output in clustal format
+        usage: clipkit simple_long_description.fa -of clustal
+        """
+        input_file = f"{here.parent}/samples/simple_long_description.fa"
+        output_file = "output/simple_long_description.clustal"
+
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format='fasta',
+            output_file_format='clustal',
+            complement=False,
+            gaps=0.9,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+        )
+        execute(**kwargs)
+
+        with open(f"{here.parent}/expected/simple_long_description.clustal", "r") as expected:
+            expected_content = expected.read()
+
+        with open(output_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content
+
+    def test_maf_long_description(self):
+        """
+        test output in maf format
+        usage: clipkit simple_long_description.fa -of maf
+        """
+        input_file = f"{here.parent}/samples/simple_long_description.fa"
+        output_file = "output/simple_long_description.maf"
+
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format='fasta',
+            output_file_format='maf',
+            complement=False,
+            gaps=0.9,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+        )
+        execute(**kwargs)
+
+        with open(f"{here.parent}/expected/simple_long_description.maf", "r") as expected:
+            expected_content = expected.read()
+
+        with open(output_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content
+
+    def test_mauve_long_description(self):
+        """
+        test output in mauve format
+        usage: clipkit simple_long_description.fa -of mauve
+        """
+        input_file = f"{here.parent}/samples/simple_long_description.fa"
+        output_file = "output/simple_long_description.mauve"
+
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format='fasta',
+            output_file_format='mauve',
+            complement=False,
+            gaps=0.9,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+        )
+        execute(**kwargs)
+
+        with open(f"{here.parent}/expected/simple_long_description.mauve", "r") as expected:
+            expected_content = expected.read()
+
+        with open(output_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content
+
+    def test_phylip_long_description(self):
+        """
+        test output in phylip format
+        usage: clipkit simple_long_description.fa -of phylip
+        """
+        input_file = f"{here.parent}/samples/simple_long_description.fa"
+        output_file = "output/simple_long_description.phylip"
+
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format='fasta',
+            output_file_format='phylip',
+            complement=False,
+            gaps=0.9,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+        )
+        execute(**kwargs)
+
+        with open(f"{here.parent}/expected/simple_long_description.phylip", "r") as expected:
+            expected_content = expected.read()
+
+        with open(output_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content
+
+    def test_phylip_sequential_long_description(self):
+        """
+        test output in phylip-sequential format
+        usage: clipkit simple_long_description.fa -of phylip-sequential
+        """
+        input_file = f"{here.parent}/samples/simple_long_description.fa"
+        output_file = "output/simple_long_description.phylip-sequential"
+
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format='fasta',
+            output_file_format='phylip_sequential',
+            complement=False,
+            gaps=0.9,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+        )
+        execute(**kwargs)
+
+        with open(f"{here.parent}/expected/simple_long_description.phylip-sequential", "r") as expected:
+            expected_content = expected.read()
+
+        with open(output_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content
+
+    def test_stockholm_long_description(self):
+        """
+        test output in stockholm format
+        usage: clipkit simple_long_description.fa -of stockholm
+        """
+        input_file = f"{here.parent}/samples/simple_long_description.fa"
+        output_file = "output/simple_long_description.stockholm"
+
+        kwargs = dict(
+            input_file=input_file,
+            output_file=output_file,
+            input_file_format='fasta',
+            output_file_format='stockholm',
+            complement=False,
+            gaps=0.9,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+        )
+        execute(**kwargs)
+
+        with open(f"{here.parent}/expected/simple_long_description.stockholm", "r") as expected:
+            expected_content = expected.read()
+
+        with open(output_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content

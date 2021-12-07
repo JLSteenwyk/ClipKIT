@@ -142,10 +142,10 @@ class TestModes(object):
         constant_site = False
 
         for entry in alignment:
-            keepD[entry.id] = np.empty([6], dtype=str)
+            keepD[entry.description] = np.empty([6], dtype=str)
         trimD = {}
         for entry in alignment:
-            trimD[entry.id] = np.empty([6], dtype=str)
+            trimD[entry.description] = np.empty([6], dtype=str)
 
         ## execution
         keepD, trimD = trim(
@@ -199,10 +199,10 @@ class TestModes(object):
         use_log = False
 
         for entry in alignment:
-            keepD[entry.id] = np.empty([6], dtype=str)
+            keepD[entry.description] = np.empty([6], dtype=str)
         trimD = {}
         for entry in alignment:
-            trimD[entry.id] = np.empty([6], dtype=str)
+            trimD[entry.description] = np.empty([6], dtype=str)
 
         ## execution
         keepD, trimD = trim(
@@ -256,10 +256,10 @@ class TestModes(object):
         use_log = False
 
         for entry in alignment:
-            keepD[entry.id] = np.empty([6], dtype=str)
+            keepD[entry.description] = np.empty([6], dtype=str)
         trimD = {}
         for entry in alignment:
-            trimD[entry.id] = np.empty([6], dtype=str)
+            trimD[entry.description] = np.empty([6], dtype=str)
 
         ## execution
         keepD, trimD = trim(
@@ -313,10 +313,10 @@ class TestModes(object):
         use_log = False
 
         for entry in alignment:
-            keepD[entry.id] = np.empty([6], dtype=str)
+            keepD[entry.description] = np.empty([6], dtype=str)
         trimD = {}
         for entry in alignment:
-            trimD[entry.id] = np.empty([6], dtype=str)
+            trimD[entry.description] = np.empty([6], dtype=str)
 
         ## execution
         keepD, trimD = trim(
@@ -370,10 +370,10 @@ class TestModes(object):
         use_log = False
 
         for entry in alignment:
-            keepD[entry.id] = np.empty([6], dtype=str)
+            keepD[entry.description] = np.empty([6], dtype=str)
         trimD = {}
         for entry in alignment:
-            trimD[entry.id] = np.empty([6], dtype=str)
+            trimD[entry.description] = np.empty([6], dtype=str)
 
         ## execution
         keepD, trimD = trim(

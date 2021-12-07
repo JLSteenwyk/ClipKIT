@@ -41,6 +41,37 @@ class TestComplementOut(object):
 
         assert expected_content == output_content
 
+    def test_simple_long_description_complement(self):
+        """
+        test complementary output file with a simple case
+        usage: clipkit simple_long_description.fa -c
+        """
+        output_file = "output/simple_long_description.fa_gappy"
+        complement_out_file = f"{output_file}.complement"
+
+        kwargs = dict(
+            input_file=f"{here.parent}/samples/simple_long_description.fa",
+            output_file=output_file,
+            input_file_format='fasta',
+            output_file_format='fasta',
+            complement=True,
+            gaps=0.9,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+        )
+
+        execute(**kwargs)
+
+        with open(
+            f"{here.parent}/expected/simple_long_description.fa_gappy.complement", "r"
+        ) as expected:
+            expected_content = expected.read()
+
+        with open(complement_out_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content
+
     def test_12_YIL115C_Anc_2_253_aa_aln_complement(self):
         """
         test complementary output file for amino acid yeast sequences

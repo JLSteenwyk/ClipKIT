@@ -106,12 +106,11 @@ def populate_empty_keepD_and_trimD(alignment):
         biopython multiple sequence alignment object
     """
     keepD = {}
+    trimD = {}
     alignment_length = alignment.get_alignment_length()
     for entry in alignment:
-        keepD[entry.id] = np.zeros([alignment_length], dtype=bytes)
-    trimD = {}
-    for entry in alignment:
-        trimD[entry.id] = np.zeros([alignment_length], dtype=bytes)
+        keepD[entry.description] = np.zeros([alignment_length], dtype=bytes)
+        trimD[entry.description] = np.zeros([alignment_length], dtype=bytes)
 
     return keepD, trimD
 
