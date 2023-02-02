@@ -22,6 +22,7 @@ from .helpers import (
 from .modes import TrimmingMode
 from .parser import create_parser
 from .smart_gap_helper import smart_gap_threshold_determination
+from .stats import calculate_stats
 from .warnings import (
     check_if_all_sites_were_trimmed,
     check_if_entry_contains_only_gaps,
@@ -109,7 +110,12 @@ def execute(
         write_trimD(trimD, output_file, output_file_format)
 
     # print out output statistics
-    write_output_stats(alignment, keepD, trimD, start_time)
+    stats = calculate_stats(alignment, keepD, trimD)
+    write_output_stats(stats, start_time)
+
+    return {
+        "stats": stats
+    }
 
 
 def main(argv=None):

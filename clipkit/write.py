@@ -1,6 +1,8 @@
 import textwrap
 import time
 
+from .stats import TrimmingStats
+
 
 def write_processing_aln():
     """
@@ -61,13 +63,10 @@ def write_output_files_message(outFile, complement, use_log):
     )
 
 
-def write_output_stats(alignment, keepD, trimD, start_time):
+def write_output_stats(stats: TrimmingStats, start_time):
     """
     Function to print out output statistics
     """
-    alignment_length = alignment.get_alignment_length()
-    output_len = len(next(iter(keepD.values())))
-    trimmed_len = len(next(iter(trimD.values())))
     print(
         textwrap.dedent(
             f"""\
@@ -75,10 +74,10 @@ def write_output_stats(alignment, keepD, trimD, start_time):
         ---------------------
         | Output Statistics |
         ---------------------
-        Number of sites kept: {output_len}
-        Number of sites trimmed: {trimmed_len}
+        Number of sites kept: {stats.output_length}
+        Number of sites trimmed: {stats.trimmed_length}
 
-        Percentage of alignment trimmed: {round((trimmed_len / alignment_length) * 100, 3)}%
+        Percentage of alignment trimmed: {stats.trimmed_percentage}%
 
         Execution time: {round(time.time() - start_time, 3)}s
     """
