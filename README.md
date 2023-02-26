@@ -33,11 +33,8 @@
         <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
             <img src="https://img.shields.io/pypi/pyversions/clipkit">
         </a>
-        <br />
         <a href="https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007">
-          <img src="https://zenodo.org/badge/DOI/10.1371/journal.pbio.3001007.svg">
-        </a>
-        <a href="https://patreon.com/jlsteenwyk"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Djlsteenwyk%26type%3Dpatrons&style=flat" alt="Support me on Patreon" /></a>        
+          <img src="https://zenodo.org/badge/DOI/10.1371/journal.pbio.3001007.svg">     
     </p>
 </p>
 
