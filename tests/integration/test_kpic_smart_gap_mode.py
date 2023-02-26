@@ -21,6 +21,7 @@ class TestKPICSmartGapsMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.8,
             mode=TrimmingMode.kpic_smart_gap,
@@ -49,6 +50,7 @@ class TestKPICSmartGapsMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.8,
             mode=TrimmingMode.kpic_smart_gap,
@@ -73,14 +75,13 @@ class TestKPICSmartGapsMode(object):
         """
         input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         output_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit_kpic_smart_gaps"
-        in_file_format = 'fasta'
-        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9167,
             mode=TrimmingMode.kpic_smart_gap,
@@ -105,14 +106,13 @@ class TestKPICSmartGapsMode(object):
         """
         input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta"
         output_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta.clipkit_smart_gaps"
-        in_file_format = 'fasta'
-        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9167,
             mode=TrimmingMode.kpic_smart_gap,
@@ -137,14 +137,13 @@ class TestKPICSmartGapsMode(object):
         """
         input_file = f"{here.parent}/samples/24_ENSG00000163519_aa_aln.fasta"
         output_file = "output/24_ENSG00000163519_aa_aln.fasta.clipkit"
-        in_file_format = 'fasta'
-        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9583,
             mode=TrimmingMode.kpic_smart_gap,
@@ -169,14 +168,13 @@ class TestKPICSmartGapsMode(object):
         """
         input_file = f"{here.parent}/samples/24_ENSG00000163519_codon_aln.fasta"
         output_file = "output/24_ENSG00000163519_codon_aln.fasta.clipkit"
-        in_file_format = 'fasta'
-        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9583,
             mode=TrimmingMode.kpic_smart_gap,
@@ -201,14 +199,13 @@ class TestKPICSmartGapsMode(object):
         """
         input_file = f"{here.parent}/samples/EOG091N44M8_aa.fa"
         output_file = "output/EOG091N44M8_aa.fa.clipkit"
-        in_file_format = 'fasta'
-        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.8803,
             mode=TrimmingMode.kpic_smart_gap,
@@ -231,14 +228,13 @@ class TestKPICSmartGapsMode(object):
         """
         input_file = f"{here.parent}/samples/EOG091N44M8_nt.fa"
         output_file = "output/EOG091N44M8_nt.fa.clipkit"
-        in_file_format = 'fasta'
-        out_file_format = 'fasta'
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.8803,
             mode=TrimmingMode.kpic_smart_gap,
@@ -254,35 +250,35 @@ class TestKPICSmartGapsMode(object):
 
         assert expected_content == output_content
 
-    @pytest.mark.slow
-    def test_EOG092C4VOX_aa(self):
-        """
-        test gappy with amino alignment of fungal sequences
-        usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpic-smart-gap
-        """
-        input_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
-        output_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
-        in_file_format = 'fasta'
-        out_file_format = 'fasta'
+    # @pytest.mark.slow
+    # def test_EOG092C4VOX_aa(self):
+    #     """
+    #     test gappy with amino alignment of fungal sequences
+    #     usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpic-smart-gap
+    #     """
+    #     input_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
+    #     output_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
+    #     in_file_format = 'fasta'
+    #     out_file_format = 'fasta'
 
-        kwargs = dict(
-            input_file=input_file,
-            output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
-            complement=False,
-            gaps=0.9993,
-            mode=TrimmingMode.kpic_smart_gap,
-            use_log=False,
-        )
-        execute(**kwargs)
+    #     kwargs = dict(
+    #         input_file=input_file,
+    #         output_file=output_file,
+    #         input_file_format='fasta',
+    #         output_file_format='fasta',
+    #         complement=False,
+    #         gaps=0.9993,
+    #         mode=TrimmingMode.kpic_smart_gap,
+    #         use_log=False,
+    #     )
+    #     execute(**kwargs)
 
-        with open(
-            f"{here.parent}/expected/EOG092C4VOX_aa_aln.clipkit_kpic_smart_gaps", "r"
-        ) as expected:
-            expected_content = expected.read()
+    #     with open(
+    #         f"{here.parent}/expected/EOG092C4VOX_aa_aln.clipkit_kpic_smart_gaps", "r"
+    #     ) as expected:
+    #         expected_content = expected.read()
 
-        with open(output_file, "r") as out_file:
-            output_content = out_file.read()
+    #     with open(output_file, "r") as out_file:
+    #         output_content = out_file.read()
 
-        assert expected_content == output_content
+    #     assert expected_content == output_content

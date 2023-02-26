@@ -17,6 +17,7 @@ from clipkit.helpers import populate_empty_keepD_and_trimD
 from clipkit.helpers import join_keepD_and_trimD
 from clipkit.helpers import write_trimD
 from clipkit.helpers import write_keepD
+from clipkit.helpers import SeqType
 from clipkit.files import FileFormat
 
 here = Path(__file__)
@@ -90,7 +91,7 @@ class TestGetSequenceAtPositionAndReportFeatures(object):
         i = int(5)
 
         ## execution
-        seq, gappyness = get_sequence_at_position_and_report_features(alignment, i)
+        seq, gappyness = get_sequence_at_position_and_report_features(alignment, i, SeqType.nt)
 
         ## check results
         # test output types

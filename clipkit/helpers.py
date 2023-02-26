@@ -14,8 +14,33 @@ from .modes import TrimmingMode, trim
 from .files import FileFormat
 from .write import write_processing_aln, write_output_files_message
 
+from enum import Enum
 
-def get_sequence_at_position_and_report_features(alignment, i):
+
+class SeqType(Enum):
+    aa = "aa"
+    nt = "nt"
+
+
+def get_seq_type(
+        alignment,
+        sequence_type: SeqType
+):
+    """
+    determine sequence type of input file
+    """
+    if not sequence_type:
+        seqs = [str(record.seq) for record in alignment]
+        seqs = ''.join(seqs)
+        for gap_char in ["-", "?", "*", "X"]:
+            seqs = seqs.replace(gap_char, "")
+        if len(set(seqs.upper())) > 5:
+            sequence_type = SeqType.aa
+        else:
+            sequence_type = SeqType.nt
+    return sequence_type
+
+def get_sequence_at_position_and_report_features(alignment, i, char):
     """
     Count the occurence of each character at a given position
     in an alignment. This information is used to determine
@@ -35,6 +60,13 @@ def get_sequence_at_position_and_report_features(alignment, i):
 
     # determine the length and number of gaps in an alignment position
     lengthOfSeq = len(seqAtPosition)
+    if char == SeqType.aa:
+        for gap_char in ["?", "*", "X"]:
+            seqAtPosition = seqAtPosition.replace(gap_char, "-")
+    else:
+        for gap_char in ["?", "*", "X", "N"]:
+            seqAtPosition = seqAtPosition.replace(gap_char, "-")
+
     numOfGaps = seqAtPosition.count("-")
     gappyness = numOfGaps / lengthOfSeq
 
@@ -187,7 +219,7 @@ def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
 
 
 def keep_trim_and_log(
-    alignment, gaps: float, mode: TrimmingMode, use_log: bool, outFile, complement
+    alignment, gaps: float, mode: TrimmingMode, use_log: bool, outFile, complement, char: SeqType
 ):
     """
     Determines positions to keep or trim and saves these positions
@@ -219,7 +251,7 @@ def keep_trim_and_log(
 
         # save the sequence at the position to a string and calculate the gappyness of the site
         seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
-            alignment, i
+            alignment, i, char
         )
 
         ## determine if the site is parsimony informative and trim accordingly

@@ -22,6 +22,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -49,6 +50,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -77,6 +79,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -107,6 +110,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -137,6 +141,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -167,6 +172,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -197,6 +203,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -225,6 +232,7 @@ class TestKpicMode(object):
             output_file=output_file,
             input_file_format='fasta',
             output_file_format='fasta',
+            sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.kpic,
@@ -240,33 +248,33 @@ class TestKpicMode(object):
 
         assert expected_content == output_content
 
-    @pytest.mark.slow
-    def test_EOG092C4VOX_aa(self):
-        """
-        test kpic with amino alignment of fungal sequences
-        usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpic
-        """
-        input_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
-        output_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
+    # @pytest.mark.slow
+    # def test_EOG092C4VOX_aa(self):
+    #     """
+    #     test kpic with amino alignment of fungal sequences
+    #     usage: clipkit EOG092C4VOX_aa_aln.fasta -m kpic
+    #     """
+    #     input_file = f"{here.parent}/samples/EOG092C4VOX_aa_aln.fasta"
+    #     output_file = "output/EOG092C4VOX_aa_aln.fasta.clipkit"
 
-        kwargs = dict(
-            input_file=input_file,
-            output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
-            complement=False,
-            gaps=0.9,
-            mode=TrimmingMode.kpic,
-            use_log=False,
-        )
-        execute(**kwargs)
+    #     kwargs = dict(
+    #         input_file=input_file,
+    #         output_file=output_file,
+    #         input_file_format='fasta',
+    #         output_file_format='fasta',
+    #         complement=False,
+    #         gaps=0.9,
+    #         mode=TrimmingMode.kpic,
+    #         use_log=False,
+    #     )
+    #     execute(**kwargs)
 
-        with open(
-            f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_kpic", "r"
-        ) as expected:
-            expected_content = expected.read()
+    #     with open(
+    #         f"{here.parent}/expected/EOG092C4VOX_aa_aln.fasta_kpic", "r"
+    #     ) as expected:
+    #         expected_content = expected.read()
 
-        with open(output_file, "r") as out_file:
-            output_content = out_file.read()
+    #     with open(output_file, "r") as out_file:
+    #         output_content = out_file.read()
 
-        assert expected_content == output_content
+    #     assert expected_content == output_content

@@ -19,8 +19,12 @@ def write_processing_aln():
 
 
 def write_user_args(
-    inFile, inFileFormat, outFile, outFileFormat, gaps, mode, complement, use_log
+    inFile, inFileFormat, outFile, outFileFormat, char, gaps, mode, complement, use_log
 ):
+    if char.value == "nt":
+        seq_type = "Nucleotides"
+    else:
+        seq_type = "Protein"
     """
     Function to print user arguments to stdout
     """
@@ -32,6 +36,7 @@ def write_user_args(
     -------------
     Input file: {inFile} (format: {inFileFormat.value})
     Output file: {outFile} (format: {outFileFormat.value})
+    Sequence type: {seq_type}
     Gaps threshold: {gaps}
     Trimming mode: {mode.value}
     Create complementary output: {complement}
