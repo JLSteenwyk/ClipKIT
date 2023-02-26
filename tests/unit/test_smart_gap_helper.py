@@ -17,6 +17,7 @@ from clipkit.smart_gap_helper import (
     get_gaps_distribution,
     count_and_sort_gaps
 )
+from clipkit.helpers import SeqType
 from clipkit.files import FileFormat
 
 here = Path(__file__)
@@ -28,7 +29,7 @@ class TestSmartGapsHelper(object):
         expected_gaps = 0.8
 
         ## execution
-        gaps = smart_gap_threshold_determination(alignment)
+        gaps = smart_gap_threshold_determination(alignment, SeqType.nt)
 
         ## check results
         assert expected_gaps == gaps
@@ -38,7 +39,7 @@ class TestSmartGapsHelper(object):
         alignment = AlignIO.read(f"{here.parent}/examples/EOG091N44M8_aa.fa", "fasta")
         
         ## execution
-        gaps = smart_gap_threshold_determination(alignment)
+        gaps = smart_gap_threshold_determination(alignment, SeqType.aa)
         expected_gaps = 0.8803
 
         ## check results
@@ -135,7 +136,7 @@ class TestSmartGapsHelper(object):
         alignment_length = 6
 
         ## execution
-        gaps_arr = get_gaps_distribution(alignment, alignment_length)
+        gaps_arr = get_gaps_distribution(alignment, alignment_length, SeqType.nt)
         expected_gaps_arr = [0.0, 0.6, 0.0, 0.8, 0.0, 0.2]
 
         ## check results

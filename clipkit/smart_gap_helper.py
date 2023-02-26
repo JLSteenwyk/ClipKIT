@@ -5,13 +5,13 @@ import numpy as np
 from .helpers import get_sequence_at_position_and_report_features
 
 def smart_gap_threshold_determination(
-    alignment
+    alignment, char
 ) -> float:
     # loop through alignment and determine site-wise gappyness
     alignment_length = alignment.get_alignment_length()
 
     # get distribution of gaps rounded to the fourth decimal place
-    gaps_dist = get_gaps_distribution(alignment, alignment_length)
+    gaps_dist = get_gaps_distribution(alignment, alignment_length, char)
     
     # count freq of gaps and convert to sorted np array
     gaps_arr = count_and_sort_gaps(gaps_dist)
@@ -54,10 +54,10 @@ def gap_to_gap_slope(
     # only use first half of slopes
     return slopes[:(len(slopes)//2)]
 
-def get_gaps_distribution(alignment, alignment_length: int):
+def get_gaps_distribution(alignment, alignment_length: int, char):
     gaps_dist = []
     for i in range(0, alignment_length):
-        seqAtPosition, gappyness = get_sequence_at_position_and_report_features(alignment, i)
+        _, gappyness = get_sequence_at_position_and_report_features(alignment, i, char)
         gappyness = round(gappyness, 4)
         gaps_dist.append(gappyness)
     return gaps_dist

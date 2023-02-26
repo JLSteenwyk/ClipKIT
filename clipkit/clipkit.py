@@ -6,19 +6,15 @@ import os.path
 import sys
 import time
 
-from Bio import AlignIO, SeqIO
-from Bio.Align import MultipleSeqAlignment
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
-import numpy as np
-
 from .args_processing import process_args
 from .files import get_alignment_and_format, FileFormat
 from .helpers import (
+    get_seq_type,
     keep_trim_and_log,
     write_keepD,
     write_trimD
 )
+from .helpers import SeqType
 from .modes import TrimmingMode
 from .parser import create_parser
 from .smart_gap_helper import smart_gap_threshold_determination
@@ -39,6 +35,7 @@ def execute(
     input_file_format: FileFormat,
     output_file: str,
     output_file_format: FileFormat,
+    sequence_type: SeqType,
     gaps: float,
     complement: bool,
     mode: TrimmingMode,
@@ -65,6 +62,9 @@ def execute(
         input_file, file_format=input_file_format
     )
     
+    # determine sequnece type of the input file
+    sequence_type = get_seq_type(alignment, sequence_type)
+
     # set output file format if not specified
     if not output_file_format:
         output_file_format = input_file_format
@@ -74,7 +74,7 @@ def execute(
     # determine smart_gap threshold
     if mode in {TrimmingMode.smart_gap, TrimmingMode.kpi_smart_gap, TrimmingMode.kpic_smart_gap}:
         write_determining_smart_gap_threshold()
-        gaps = smart_gap_threshold_determination(alignment)
+        gaps = smart_gap_threshold_determination(alignment, sequence_type)
 
     # Print to stdout the user arguments
     write_user_args(
@@ -82,6 +82,7 @@ def execute(
         input_file_format,
         output_file,
         output_file_format,
+        sequence_type,
         gaps,
         mode,
         complement,
@@ -90,7 +91,7 @@ def execute(
 
     # create dictionaries of sequences to keep or trim from the alignment
     keepD, trimD = keep_trim_and_log(
-        alignment, gaps, mode, use_log, output_file, complement
+        alignment, gaps, mode, use_log, output_file, complement, sequence_type
     )
 
     # check if resulting alingment length is 0

@@ -19,7 +19,7 @@ CLASSIFIERS = [
     'Topic :: Scientific/Engineering',
 ]
 
-REQUIRES = ["biopython>=1.79", "numpy>=1.18", "tqdm>=4.45", "cython"]
+REQUIRES = ["biopython==1.79", "numpy>=1.24", "tqdm>=4.45", "cython"]
 
 setup(
     name="clipkit",

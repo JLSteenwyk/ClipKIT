@@ -8,6 +8,7 @@ from argparse import (
     RawDescriptionHelpFormatter,
 )
 
+from .helpers import SeqType
 from .modes import TrimmingMode
 from .files import FileFormat
 from .version import __version__
@@ -74,11 +75,14 @@ def create_parser():
                     kpi-smart-gap,
                     kpi-gappy>                      
                                                     
-        -g, --gaps <threshold of gaps>              specifies gaps threshold
+        -g, --gaps <threshold_of_gaps>              specifies gaps threshold
                                                     (default: 0.9)
 
         -if, --input_file_format <file_format>      specifies input file format
                                                     (default: auto-detect)    
+
+        -s, --sequence_type <nt, aa>                specifies sequence type of input file
+                                                    (default: auto-detect)
 
         -of, --output_file_format <file_format>     specifies output file format
                                                     (default: same as input file format)
@@ -111,6 +115,14 @@ def create_parser():
             when using the kpi and kpic mdoes of trimming as well as an 
             iteration of trimming that uses smart-gap.
 
+        Sequence type
+            Specifies the type of sequences in the input file. Valid options
+            include aa or nt for amino acids and nucleotides. This argument
+            is case insensitive. This matters for what characters are
+            considered gaps. For amino acids, -, ?, *, and X are considered
+            gaps. For nucleotide sequences, the same characters are
+            considered gaps as well as N.
+
         Input and output file formats
             Supported input and output files include:
             fasta, clustal, maf, mauve, phylip, phylip-sequential, 
@@ -122,7 +134,7 @@ def create_parser():
             - Column 1 is the position in the alignment (starting at 1), 
             - Column 2 reports if the site was trimmed or kept (trim and keep, respectively),
             - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), or
-              a constant site or not (Const, nConst), or neither (nConst, nPI)
+              a constant site or not (Const and nConst, respectively), or neither (nConst, nPI)
             - Column 4 reports the gappyness of the the position (number of gaps / entries in alignment)
 
         Complementary
@@ -138,6 +150,11 @@ def create_parser():
     mode_choices = [mode.value for mode in TrimmingMode]
     optional.add_argument(
         "-m", "--mode", help=SUPPRESS, nargs="?", choices=mode_choices,
+    )
+
+    seq_type_choices = [seq.value.upper() for seq in SeqType] + [seq.value.lower() for seq in SeqType]
+    optional.add_argument(
+        "-s", "--sequence_type", help=SUPPRESS, nargs="?", choices=seq_type_choices,
     )
 
     optional.add_argument(
