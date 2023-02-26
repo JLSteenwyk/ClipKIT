@@ -8,6 +8,9 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**1.4.0**
+new argument for specifying if sequences are amino acids or nucleotides
+
 **1.3.0**
 long description of sequences, rather than identifiers, are kept in the ClipKIT output
 
