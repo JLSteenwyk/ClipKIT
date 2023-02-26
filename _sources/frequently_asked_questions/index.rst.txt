@@ -26,6 +26,12 @@ time will be of great value.
 
 |
 
+**What characters are considered gaps?**
+
+For amino acids ?, \*, -, X; for nucleotides, the same characters and N.
+
+|
+
 **I am having trouble install ClipKIT, what should I do?**
 
 Please install ClipKIT using a virtual environment as directed in the installation instructions.
