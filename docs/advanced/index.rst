@@ -9,6 +9,7 @@ This section describes the various features and options of ClipKIT.
 - Output_
 - Log_
 - Complementary_
+- `Sequence Type`_
 - `All options`_
 
 |
@@ -114,6 +115,33 @@ Output file with the suffix '.clipkit.complementary'
 
 |
 
+.. _`Sequence Type`:
+
+Sequence Type
+-------------
+
+Specifies the type of sequences in the input file. The default
+is auto-detection of sequence type. Valid options
+include aa or nt for amino acids and nucleotides. This argument
+is case insensitive. This matters for what characters are
+considered gaps. For amino acids, -, ?, \*, and X are considered
+gaps. For nucleotide sequences, the same characters are
+considered gaps as well as N.
+
+.. code-block:: shell
+
+	clipkit <input> -s aa
+
+Specify input sequences are amino acids
+
+.. code-block:: shell
+
+	clipkit <input> -s nt
+
+Specify input sequences are nucleotides 
+
+|
+
 .. _`All options`:
 
 All options
@@ -123,23 +151,23 @@ All options
 +-----------------------------+-------------------------------------------------------------------+
 | Option                      | Usage and meaning                                                 |
 +=============================+===================================================================+
-| -h/\-\-help                 | Print help message                                                |
+| -h/\\-\\-help                 | Print help message                                                |
 +-----------------------------+-------------------------------------------------------------------+
-| -v/\-\-version              | Print software version                                            |
+| -v/\\-\\-version              | Print software version                                            |
 +-----------------------------+-------------------------------------------------------------------+
-| -m/\-\-mode                 | Specify trimming mode (default: smart-gap)                        |
+| -m/\\-\\-mode                 | Specify trimming mode (default: smart-gap)                        |
 +-----------------------------+-------------------------------------------------------------------+
-| -o/\-\-output               | Specify output file name                                          |
+| -o/\\-\\-output               | Specify output file name                                          |
 +-----------------------------+-------------------------------------------------------------------+
-| -g/\-\-gaps                 | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
+| -g/\\-\\-gaps                 | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
 +-----------------------------+-------------------------------------------------------------------+
-| -if/\-\-input_file_format   | Specify input file format*. *Default: auto-detect*                |
+| -if/\\-\\-input_file_format   | Specify input file format*. *Default: auto-detect*                |
 +-----------------------------+-------------------------------------------------------------------+
-| -of/\-\-output_file_format  | Specify output file format*. *Default: input file type*           |
+| -of/\\-\\-output_file_format  | Specify output file format*. *Default: input file type*           |
 +-----------------------------+-------------------------------------------------------------------+
-| -l/\-\-log                  | Create a log file. *Default: off*                                 |
+| -l/\\-\\-log                  | Create a log file. *Default: off*                                 |
 +-----------------------------+-------------------------------------------------------------------+
-| -c/--complementary          | Create a complementary alignment file. *Default: off*             |
+| -c/\\-\\-complementary          | Create a complementary alignment file. *Default: off*             |
 +-----------------------------+-------------------------------------------------------------------+
 
 
