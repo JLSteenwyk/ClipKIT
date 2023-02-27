@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#id2">Output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#log">Log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#complementary">Complementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequence-type">Sequence Type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#all-options">All options</a></li>
 </ul>
 </li>
@@ -171,6 +172,7 @@
 <li><p><a class="reference internal" href="#output">Output</a></p></li>
 <li><p><a class="reference internal" href="#log">Log</a></p></li>
 <li><p><a class="reference internal" href="#complementary">Complementary</a></p></li>
+<li><p><a class="reference internal" href="#sequence-type">Sequence Type</a></p></li>
 <li><p><a class="reference internal" href="#all-options">All options</a></p></li>
 </ul>
 <div class="line-block">
@@ -266,48 +268,29 @@ option.</p>
 <div class="line"><br /></div>
 </div>
 </div>
+<div class="section" id="sequence-type">
+<span id="id5"></span><h2>Sequence Type<a class="headerlink" href="#sequence-type" title="Permalink to this headline">¶</a></h2>
+<p>Specifies the type of sequences in the input file. The default
+is auto-detection of sequence type. Valid options
+include aa or nt for amino acids and nucleotides. This argument
+is case insensitive. This matters for what characters are
+considered gaps. For amino acids, -, ?, *, and X are considered
+gaps. For nucleotide sequences, the same characters are
+considered gaps as well as N.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit &lt;input&gt; -s aa
+</pre></div>
+</div>
+<p>Specify input sequences are amino acids</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit &lt;input&gt; -s nt
+</pre></div>
+</div>
+<p>Specify input sequences are nucleotides</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
 <div class="section" id="all-options">
-<span id="id5"></span><h2>All options<a class="headerlink" href="#all-options" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 30%" />
-<col style="width: 70%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Option</p></th>
-<th class="head"><p>Usage and meaning</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>-h/–help</p></td>
-<td><p>Print help message</p></td>
-</tr>
-<tr class="row-odd"><td><p>-v/–version</p></td>
-<td><p>Print software version</p></td>
-</tr>
-<tr class="row-even"><td><p>-m/–mode</p></td>
-<td><p>Specify trimming mode (default: smart-gap)</p></td>
-</tr>
-<tr class="row-odd"><td><p>-o/–output</p></td>
-<td><p>Specify output file name</p></td>
-</tr>
-<tr class="row-even"><td><p>-g/–gaps</p></td>
-<td><p>Specify gappyness threshold (between 0 and 1). <em>Default: 0.9</em></p></td>
-</tr>
-<tr class="row-odd"><td><p>-if/–input_file_format</p></td>
-<td><p>Specify input file format*. <em>Default: auto-detect</em></p></td>
-</tr>
-<tr class="row-even"><td><p>-of/–output_file_format</p></td>
-<td><p>Specify output file format*. <em>Default: input file type</em></p></td>
-</tr>
-<tr class="row-odd"><td><p>-l/–log</p></td>
-<td><p>Create a log file. <em>Default: off</em></p></td>
-</tr>
-<tr class="row-even"><td><p>-c/–complementary</p></td>
-<td><p>Create a complementary alignment file. <em>Default: off</em></p></td>
-</tr>
-</tbody>
-</table>
+<span id="id6"></span><h2>All options<a class="headerlink" href="#all-options" title="Permalink to this headline">¶</a></h2>
 <p>*Acceptable file formats include:
 <a class="reference external" href="https://en.wikipedia.org/wiki/FASTA_format">fasta</a>,
 <a class="reference external" href="http://meme-suite.org/doc/clustalw-format.html">clustal</a>,
