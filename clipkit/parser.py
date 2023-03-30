@@ -3,7 +3,6 @@ import textwrap
 
 from argparse import (
     ArgumentParser,
-    RawTextHelpFormatter,
     SUPPRESS,
     RawDescriptionHelpFormatter,
 )
