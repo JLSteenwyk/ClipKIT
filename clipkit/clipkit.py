@@ -20,8 +20,8 @@ from .parser import create_parser
 from .smart_gap_helper import smart_gap_threshold_determination
 from .stats import calculate_stats
 from .warnings import (
-    check_if_all_sites_were_trimmed,
-    check_if_entry_contains_only_gaps,
+    warn_if_all_sites_were_trimmed,
+    warn_if_entry_contains_only_gaps,
 )
 from .write import write_determining_smart_gap_threshold, write_user_args, write_output_stats
 
@@ -95,11 +95,10 @@ def execute(
         alignment, gaps, mode, use_log, output_file, complement, sequence_type
     )
 
-    # check if resulting alingment length is 0
-    check_if_all_sites_were_trimmed(keepD)
+    if use_log:
+        warn_if_all_sites_were_trimmed(keepD)
 
-    # checking if any sequence entry contains only gaps
-    check_if_entry_contains_only_gaps(keepD)
+        warn_if_entry_contains_only_gaps(keepD)
 
     # convert keepD and trimD to multiple sequence alignment objects
     # and write out file
