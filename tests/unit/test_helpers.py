@@ -12,7 +12,7 @@ from Bio.Align import MultipleSeqAlignment
 
 from clipkit.helpers import count_characters_at_position
 from clipkit.helpers import get_sequence_at_position_and_report_features
-from clipkit.helpers import parsimony_informative_or_constant
+from clipkit.helpers import determine_site_classification_type
 from clipkit.helpers import populate_empty_keepD_and_trimD
 from clipkit.helpers import join_keepD_and_trimD
 from clipkit.helpers import write_trimD
@@ -100,7 +100,7 @@ class TestGetSequenceAtPositionAndReportFeatures(object):
 
 
 class TestParsimonyInformativeOrConstant(object):
-    def test_parsimony_informative_or_constant(self):
+    def test_determine_site_classification_type(self):
         ## set up
         # pi = parsimony informative
         num_occurences_pi = {"A": 5, "T": 10, "G": 2, "C": 4}
@@ -116,18 +116,18 @@ class TestParsimonyInformativeOrConstant(object):
         (
             is_parsimony_informative,
             constant_site_holder_is_pi,
-        ) = parsimony_informative_or_constant(num_occurences_pi)
+        ) = determine_site_classification_type(num_occurences_pi)
         # result is False and False
         (
             is_not_parsimony_informative,
             constant_site_holder_is_npi,
-        ) = parsimony_informative_or_constant(num_occurences_npi)
+        ) = determine_site_classification_type(num_occurences_npi)
         # result is False and True
-        is_not_pi_0, is_constant_site = parsimony_informative_or_constant(
+        is_not_pi_0, is_constant_site = determine_site_classification_type(
             num_occurences_const
         )
         # result is False and False
-        is_not_pi_1, is_not_constant_site = parsimony_informative_or_constant(
+        is_not_pi_1, is_not_constant_site = determine_site_classification_type(
             num_occurences_nconst
         )
 

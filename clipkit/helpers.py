@@ -21,6 +21,11 @@ class SeqType(Enum):
     aa = "aa"
     nt = "nt"
 
+class SiteClassificationType(Enum):
+    parsimony_informative = "parsimony-informative"
+    constant = "constant"
+    singleton = "singleton"
+    other = "other"
 
 def get_seq_type(
         alignment,
@@ -92,7 +97,7 @@ def count_characters_at_position(seqAtPosition):
     return numOccurences
 
 
-def parsimony_informative_or_constant(numOccurences):
+def determine_site_classification_type(numOccurences) -> SiteClassificationType:
     """
     Determines if a site is parsimony informative or constant.
     A site is parsimony-informative if it contains at least two types of nucleotides 
@@ -107,24 +112,16 @@ def parsimony_informative_or_constant(numOccurences):
     argv: numOccurences
         dictionary with sequence characters (keys) and their counts (values)
     """
-
     # create a dictionary of characters that occur at least twice
     d = dict((k, v) for k, v in numOccurences.items() if v >= 2)
-    # if multiple characters occur at least twice, the site is parsimony
-    # informative and not constant
     if len(d) >= 2:
-        parsimony_informative = True
-        constant_site = False
-    # if one character occurs at least twice and is the only character,
-    # the site is not parismony informative but it is constant
+        return SiteClassificationType.parsimony_informative
     elif len(d) == 1 and len(numOccurences) == 1:
-        parsimony_informative = False
-        constant_site = True
-    else:
-        parsimony_informative = False
-        constant_site = False
+        return SiteClassificationType.constant
+    elif len(d) == 1 and len(numOccurences) > 1:
+        return SiteClassificationType.singleton
 
-    return parsimony_informative, constant_site
+    return SiteClassificationType.other
 
 
 def populate_empty_keepD_and_trimD(alignment):
@@ -247,7 +244,7 @@ def keep_trim_and_log(
 
     # loop through alignment
     write_processing_aln()
-    for i in tqdm(range(0, alignment_length, int(1))):
+    for i in tqdm(range(alignment_length)):
 
         # save the sequence at the position to a string and calculate the gappyness of the site
         seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
@@ -267,15 +264,14 @@ def keep_trim_and_log(
         # defined as a site that contains the same nucl or amino acid at all
         # sequence entries. Additionally, that nucl or amino acid must occur at
         # least twice
-        parsimony_informative, constant_site = parsimony_informative_or_constant(
+        site_classification_type = determine_site_classification_type(
             numOccurences
         )
 
         # trim based on the mode
         keepD, trimD = trim(
             gappyness,
-            parsimony_informative,
-            constant_site,
+            site_classification_type,
             keepD,
             trimD,
             i,
