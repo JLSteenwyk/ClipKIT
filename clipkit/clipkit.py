@@ -6,6 +6,7 @@ import os.path
 import sys
 import time
 
+from typing import Union
 from .args_processing import process_args
 from .files import get_alignment_and_format, FileFormat
 from .helpers import (
@@ -36,7 +37,7 @@ def execute(
     input_file_format: FileFormat,
     output_file: str,
     output_file_format: FileFormat,
-    sequence_type: SeqType,
+    sequence_type: Union[SeqType, None],
     gaps: float,
     complement: bool,
     mode: TrimmingMode,
@@ -47,9 +48,7 @@ def execute(
     This function executes the main functions and calls other    
     subfunctions to trim the input file  
     """
-    # logic for whether or not to create a log file
     if use_log:
-        # write INFO level logging to file for user
         logger.setLevel(logging.DEBUG)
         fh = logging.FileHandler(f"{output_file}.log", mode="w")
         fh.setLevel(logging.DEBUG)

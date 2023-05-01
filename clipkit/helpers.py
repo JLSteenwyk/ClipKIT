@@ -28,22 +28,22 @@ class SiteClassificationType(Enum):
     other = "other"
 
 def get_seq_type(
-        alignment,
-        sequence_type: SeqType
-):
-    """
-    determine sequence type of input file
-    """
-    if not sequence_type:
-        seqs = [str(record.seq) for record in alignment]
-        seqs = ''.join(seqs)
-        for gap_char in ["-", "?", "*", "X"]:
-            seqs = seqs.replace(gap_char, "")
-        if len(set(seqs.upper())) > 5:
-            sequence_type = SeqType.aa
-        else:
-            sequence_type = SeqType.nt
+    alignment: MultipleSeqAlignment,
+) -> SeqType:
+    seq = str(alignment[0].seq)
+    if len(seq) < 200:
+        seq = [str(record.seq) for record in alignment]
+        seq = ''.join(seq)
+    for gap_char in ["-", "?", "*", "X"]:
+        seq = seq.replace(gap_char, "")
+
+    if len(set(seq.upper())) > 5:
+        sequence_type = SeqType.aa
+    else:
+        sequence_type = SeqType.nt
+
     return sequence_type
+
 
 def get_sequence_at_position_and_report_features(alignment, i, char):
     """
