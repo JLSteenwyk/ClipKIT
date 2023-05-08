@@ -62,8 +62,7 @@ def execute(
         input_file, file_format=input_file_format
     )
     
-    # determine sequnece type of the input file
-    sequence_type = get_seq_type(alignment, sequence_type)
+    sequence_type = sequence_type or get_seq_type(alignment)
 
     # set output file format if not specified
     if not output_file_format:

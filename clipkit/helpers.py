@@ -1,3 +1,4 @@
+import re
 import sys
 import textwrap
 import time
@@ -27,15 +28,18 @@ class SiteClassificationType(Enum):
     singleton = "singleton"
     other = "other"
 
+
+def remove_gaps(seq: str) -> str:
+    return re.sub("\-|\?|\*|\x", "", seq, flags=re.IGNORECASE)
+
 def get_seq_type(
     alignment: MultipleSeqAlignment,
 ) -> SeqType:
     seq = str(alignment[0].seq)
+    seq = remove_gaps(seq)
     if len(seq) < 200:
-        seq = [str(record.seq) for record in alignment]
-        seq = ''.join(seq)
-    for gap_char in ["-", "?", "*", "X"]:
-        seq = seq.replace(gap_char, "")
+        seq = "".join([str(record.seq) for record in alignment])
+        seq = remove_gaps(seq)
 
     if len(set(seq.upper())) > 5:
         sequence_type = SeqType.aa

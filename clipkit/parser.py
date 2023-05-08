@@ -91,7 +91,7 @@ def create_parser():
 
         -c, --complementary                         creates complementary alignment of trimmed sequences
                                                     (input file named with '.log' suffix)
- 
+
         -h, --help                                  help message
         -v, --version                               print version
 
