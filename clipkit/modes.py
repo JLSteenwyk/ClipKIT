@@ -1,9 +1,8 @@
-import logging
-
+from .logger import log_file_logger
 from enum import Enum
-
-logger = logging.getLogger("clipkit.clipkit")
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .helpers import SiteClassificationType
 
 class TrimmingMode(Enum):
     gappy = "gappy"
@@ -18,8 +17,7 @@ class TrimmingMode(Enum):
 
 def shouldKeep(
     mode: TrimmingMode,
-    parsimony_informative: bool,
-    constant_site: bool,
+    site_classification_type: "SiteClassificationType",
     gappyness: float,
     gaps: float,
 ):
@@ -27,26 +25,26 @@ def shouldKeep(
     Determine if a site should be kept or not
     """
     if mode == TrimmingMode.kpi_gappy:
-        return gappyness <= gaps and parsimony_informative
+        return gappyness <= gaps and site_classification_type.parsimony_informative
     elif mode == TrimmingMode.gappy:
         return gappyness <= gaps
     elif mode == TrimmingMode.kpi:
-        return parsimony_informative
+        return site_classification_type.parsimony_informative
     elif mode == TrimmingMode.kpic:
-        return parsimony_informative or constant_site
+        return site_classification_type.parsimony_informative or site_classification_type.constant_site
     elif mode == TrimmingMode.kpic_gappy:
-        return gappyness <= gaps and (parsimony_informative or constant_site)
+        return gappyness <= gaps and (site_classification_type.parsimony_informative or site_classification_type.constant_site)
     elif mode == TrimmingMode.smart_gap:
         return round(gappyness, 4) < gaps
     elif mode == TrimmingMode.kpic_smart_gap:
-        return round(gappyness, 4) < gaps and (parsimony_informative or constant_site)
+        return round(gappyness, 4) < gaps and (site_classification_type.parsimony_informative or site_classification_type.constant_site)
     elif mode == TrimmingMode.kpi_smart_gap:
-        return round(gappyness, 4) < gaps and parsimony_informative
+        return round(gappyness, 4) < gaps and site_classification_type.parsimony_informative
 
 
 def trim(
     gappyness: float,
-    site_classification_type,
+    site_classification_type: "SiteClassificationType",
     keepD: dict,
     trimD: dict,
     alignment_position: int,
@@ -59,11 +57,11 @@ def trim(
         for entry in alignment:
             keepD[entry.description][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
         if use_log:
-            logger.debug(f"{str(alignment_position + 1)} keep {site_classification_type} {gappyness}")
+            log_file_logger.debug(f"{str(alignment_position + 1)} keep {site_classification_type.value} {gappyness}")
     else:
         for entry in alignment:
             trimD[entry.description][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
         if use_log:
-            logger.debug(f"{str(alignment_position + 1)} trim {site_classification_type} {gappyness}")
+            log_file_logger.debug(f"{str(alignment_position + 1)} trim {site_classification_type.value} {gappyness}")
 
     return keepD, trimD

@@ -28,9 +28,8 @@ class SiteClassificationType(Enum):
     singleton = "singleton"
     other = "other"
 
-
 def remove_gaps(seq: str) -> str:
-    return re.sub("\-|\?|\*|\x", "", seq, flags=re.IGNORECASE)
+    return re.sub("\-|\?|\*|x", "", seq, flags=re.IGNORECASE)
 
 def get_seq_type(
     alignment: MultipleSeqAlignment,
@@ -220,7 +219,7 @@ def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
 
 
 def keep_trim_and_log(
-    alignment, gaps: float, mode: TrimmingMode, use_log: bool, outFile, complement, char: SeqType
+    alignment, gaps: float, mode: TrimmingMode, use_log: bool, outFile, complement, char: SeqType, quiet: bool
 ):
     """
     Determines positions to keep or trim and saves these positions
@@ -237,7 +236,6 @@ def keep_trim_and_log(
     argv: mode
         mode of how to trim alignment
     """
-
     # initialize dictionaries that will eventually be populated with
     # alignment positions to keep or trim (keys) and the sequence at
     # that position (values). Also, initialize a list of log information
@@ -248,8 +246,8 @@ def keep_trim_and_log(
 
     # loop through alignment
     write_processing_aln()
-    for i in tqdm(range(alignment_length)):
-
+    iter = range(alignment_length) if quiet else tqdm(range(alignment_length))
+    for i in iter:
         # save the sequence at the position to a string and calculate the gappyness of the site
         seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
             alignment, i, char

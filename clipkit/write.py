@@ -1,13 +1,13 @@
 import textwrap
 import time
-from stats import TrimmingStats
-
+from .logger import logger
+from .stats import TrimmingStats
 
 def write_processing_aln():
     """
     Function to print out processing alignment
     """
-    print(
+    logger.info(
         textwrap.dedent(
             f"""\
         
@@ -29,7 +29,7 @@ def write_user_args(
     """
     Function to print user arguments to stdout
     """
-    print(
+    logger.info(
         textwrap.dedent(
             f"""\
     -------------
@@ -51,7 +51,7 @@ def write_output_files_message(outFile, complement, use_log):
     """
     Function to print out that the output files are being written
     """
-    print(
+    logger.info(
         textwrap.dedent(
             f"""\
 
@@ -71,7 +71,7 @@ def write_output_stats(stats: TrimmingStats, start_time):
     """
     Function to print out output statistics
     """
-    print(
+    logger.info(
         textwrap.dedent(
             f"""\
 
@@ -92,7 +92,7 @@ def write_determining_smart_gap_threshold():
     """
     Function to inform using that the smart-gap threshold is being determined
     """
-    print(
+    logger.info(
         textwrap.dedent(
             f"""\
 

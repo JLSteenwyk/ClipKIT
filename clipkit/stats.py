@@ -8,18 +8,23 @@ class TrimmingStats:
     keepD: dict
     trimD: dict
 
+    @property
     def alignment_length(self):
         return self.alignment.get_alignment_length()
 
+    @property
     def output_length(self):
         return len(next(iter(self.keepD.values())))
 
+    @property
     def trimmed_length(self):
         return len(next(iter(self.trimD.values())))
 
+    @property
     def trimmed_percentage(self):
         return round((self.trimmed_length / self.alignment_length) * 100, 3)
 
+    @property
     def summary(self):
         return {
             "alignment_length": self.alignment_length,

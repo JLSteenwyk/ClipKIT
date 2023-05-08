@@ -28,6 +28,7 @@ def process_args(args) -> dict:
     mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.smart_gap
     gaps = float(args.gaps) if args.gaps is not None else 0.9
     use_log = args.log or False
+    quiet = args.quiet or False
     sequence_type = SeqType(args.sequence_type.lower()) if args.sequence_type else None
 
     return dict(
@@ -40,4 +41,5 @@ def process_args(args) -> dict:
         gaps=gaps,
         mode=mode,
         use_log=use_log,
+        quiet=quiet,
     )

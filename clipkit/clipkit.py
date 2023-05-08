@@ -16,6 +16,7 @@ from .helpers import (
     write_trimD
 )
 from .helpers import SeqType
+from .logger import logger, log_file_logger
 from .modes import TrimmingMode
 from .parser import create_parser
 from .smart_gap_helper import smart_gap_threshold_determination
@@ -25,11 +26,6 @@ from .warnings import (
     warn_if_entry_contains_only_gaps,
 )
 from .write import write_determining_smart_gap_threshold, write_user_args, write_output_stats
-
-logger = logging.getLogger(__name__)
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-logger.addHandler(ch)
 
 
 def execute(
@@ -42,17 +38,17 @@ def execute(
     complement: bool,
     mode: TrimmingMode,
     use_log: bool,
+    quiet: bool,
 ):
-    """
-    Master execute Function                                      
-    This function executes the main functions and calls other    
-    subfunctions to trim the input file  
-    """
     if use_log:
-        logger.setLevel(logging.DEBUG)
+        log_file_logger.setLevel(logging.DEBUG)
+        log_file_logger.propagate = False
         fh = logging.FileHandler(f"{output_file}.log", mode="w")
         fh.setLevel(logging.DEBUG)
-        logger.addHandler(fh)
+        log_file_logger.addHandler(fh)
+
+    if quiet:
+        logger.disabled = True
 
     # create start time logger
     start_time = time.time()
@@ -90,7 +86,7 @@ def execute(
 
     # create dictionaries of sequences to keep or trim from the alignment
     keepD, trimD = keep_trim_and_log(
-        alignment, gaps, mode, use_log, output_file, complement, sequence_type
+        alignment, gaps, mode, use_log, output_file, complement, sequence_type, quiet
     )
 
     if use_log:

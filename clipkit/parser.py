@@ -92,6 +92,8 @@ def create_parser():
         -c, --complementary                         creates complementary alignment of trimmed sequences
                                                     (input file named with '.log' suffix)
 
+        -q, --quiet                                 disables all logging to stdout
+
         -h, --help                                  help message
         -v, --version                               print version
 
@@ -140,6 +142,10 @@ def create_parser():
             Creates an alignment file of only the trimmed sequences
         """
         ),
+    )
+
+    optional.add_argument(
+        "-q", "--quiet", help=SUPPRESS, action="store_true", required=False,
     )
 
     optional.add_argument(
