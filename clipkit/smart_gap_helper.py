@@ -1,17 +1,19 @@
 from collections import Counter
 
 import numpy as np
+from tqdm import tqdm
 
 from .helpers import get_sequence_at_position_and_report_features
+from .logger import logger
 
 def smart_gap_threshold_determination(
-    alignment, char
+    alignment, char, quiet
 ) -> float:
     # loop through alignment and determine site-wise gappyness
     alignment_length = alignment.get_alignment_length()
 
     # get distribution of gaps rounded to the fourth decimal place
-    gaps_dist = get_gaps_distribution(alignment, alignment_length, char)
+    gaps_dist = get_gaps_distribution(alignment, alignment_length, char, quiet)
     
     # count freq of gaps and convert to sorted np array
     gaps_arr = count_and_sort_gaps(gaps_dist)
@@ -54,12 +56,14 @@ def gap_to_gap_slope(
     # only use first half of slopes
     return slopes[:(len(slopes)//2)]
 
-def get_gaps_distribution(alignment, alignment_length: int, char):
+def get_gaps_distribution(alignment, alignment_length: int, char, quiet: bool):
     gaps_dist = []
-    for i in range(0, alignment_length):
+    for i in tqdm(range(0, alignment_length), disable=quiet, postfix="smart-gap"):
         _, gappyness = get_sequence_at_position_and_report_features(alignment, i, char)
         gappyness = round(gappyness, 4)
         gaps_dist.append(gappyness)
+
+    logger.info("\n")
     return gaps_dist
 
 def count_and_sort_gaps(gaps_dist: list):

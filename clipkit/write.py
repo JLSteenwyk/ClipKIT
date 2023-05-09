@@ -95,8 +95,9 @@ def write_determining_smart_gap_threshold():
     logger.info(
         textwrap.dedent(
             f"""\
-
-        Determining smart-gap threshold...
-    """
+        -----------------------------------
+        | Determining smart-gap threshold |
+        -----------------------------------
+        """
         )
     )

@@ -246,8 +246,7 @@ def keep_trim_and_log(
 
     # loop through alignment
     write_processing_aln()
-    iter = range(alignment_length) if quiet else tqdm(range(alignment_length))
-    for i in iter:
+    for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
         # save the sequence at the position to a string and calculate the gappyness of the site
         seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
             alignment, i, char

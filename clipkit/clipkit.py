@@ -69,7 +69,7 @@ def execute(
     # determine smart_gap threshold
     if mode in {TrimmingMode.smart_gap, TrimmingMode.kpi_smart_gap, TrimmingMode.kpic_smart_gap}:
         write_determining_smart_gap_threshold()
-        gaps = smart_gap_threshold_determination(alignment, sequence_type)
+        gaps = smart_gap_threshold_determination(alignment, sequence_type, quiet)
 
     # Print to stdout the user arguments
     write_user_args(
