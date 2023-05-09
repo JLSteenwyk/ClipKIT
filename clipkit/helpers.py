@@ -11,6 +11,7 @@ from Bio.Align import MultipleSeqAlignment
 from math import floor
 from tqdm import tqdm
 
+from .msa import MSA
 from .modes import TrimmingMode, trim
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
@@ -142,39 +143,14 @@ def populate_empty_keepD_and_trimD(alignment):
     argv: alignment
         biopython multiple sequence alignment object
     """
-    keepD = {}
-    trimD = {}
-    alignment_length = alignment.get_alignment_length()
-    for entry in alignment:
-        keepD[entry.description] = np.zeros([alignment_length], dtype=bytes)
-        trimD[entry.description] = np.zeros([alignment_length], dtype=bytes)
 
-    return keepD, trimD
+    keep = MSA.from_bio_msa(alignment)
+    trim = MSA.from_bio_msa(alignment)
+
+    return keep, trim
 
 
-def join_keepD_and_trimD(keepD, trimD):
-    """
-    Currently, each position is its own element. This function
-    will join those elements into one string.
-
-    Arguments
-    ---------
-    argv: keepD
-        dictionary of sequences to be kept after trimmed
-    argv: trimD
-        dictionary of sequences to be trimmed off
-    """
-
-    # join elements in value lists in keepD and trimD
-    for k, v in keepD.items():
-        keepD[k] = "".join(np.char.decode(v))
-    for k, v in trimD.items():
-        trimD[k] = "".join(np.char.decode(v))
-
-    return keepD, trimD
-
-
-def write_keepD(keepD, outFile, outFileFormat: FileFormat):
+def write_keepMSA(keepMSA, outFile, outFileFormat: FileFormat):
     """
     This creates a biopython multisequence alignment object. Object
     is populated with sites that are kept after trimming is finished
@@ -189,19 +165,16 @@ def write_keepD(keepD, outFile, outFileFormat: FileFormat):
         output file format
     """
 
-    seqList = []
-    for indiv in keepD.keys():
-        seqList.append(SeqRecord(Seq(str(keepD[indiv])), id=str(indiv), description=""))
-    keepMSA = MultipleSeqAlignment(seqList)
+    output_msa = keepMSA.to_bio_msa()
     if outFileFormat.value == 'phylip_relaxed':
-        SeqIO.write(keepMSA, outFile, 'phylip-relaxed')
+        SeqIO.write(output_msa, outFile, 'phylip-relaxed')
     elif outFileFormat.value == 'phylip_sequential':
-        SeqIO.write(keepMSA, outFile, 'phylip-sequential')
+        SeqIO.write(output_msa, outFile, 'phylip-sequential')
     else:
-        SeqIO.write(keepMSA, outFile, outFileFormat.value)
+        SeqIO.write(output_msa, outFile, outFileFormat.value)
 
 
-def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
+def write_trimMSA(trimMSA, outFile: str, outFileFormat: FileFormat):
     """
     This creates a biopython multisequence alignment object. Object
     is populated with sites that are trimmed after trimming is finished
@@ -214,13 +187,13 @@ def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
         file format of complementary output file
     argv: name of output file
     """
-
-    seqList = []
-    for indiv in trimD.keys():
-        seqList.append(SeqRecord(Seq(str(trimD[indiv])), id=str(indiv), description=""))
-    trimMSA = MultipleSeqAlignment(seqList)
+    output_msa = trimMSA.to_bio_msa()
     completmentOut = str(outFile) + ".complement"
-    SeqIO.write(trimMSA, completmentOut, outFileFormat.value)
+    if outFileFormat.value == 'phylip_relaxed':
+        SeqIO.write(output_msa, outFile, 'phylip-relaxed')
+    elif outFileFormat.value == 'phylip_sequential':
+        SeqIO.write(output_msa, outFile, 'phylip-sequential')
+    SeqIO.write(output_msa, completmentOut, outFileFormat.value)
 
 
 def keep_trim_and_log(
@@ -245,7 +218,7 @@ def keep_trim_and_log(
     # alignment positions to keep or trim (keys) and the sequence at
     # that position (values). Also, initialize a list of log information
     # that will be kept in an array format
-    keepD, trimD = populate_empty_keepD_and_trimD(alignment)
+    keepMSA, trimMSA = populate_empty_keepD_and_trimD(alignment)
 
     alignment_length = alignment.get_alignment_length()
 
@@ -275,11 +248,11 @@ def keep_trim_and_log(
         )
 
         # trim based on the mode
-        keepD, trimD = trim(
+        keepMSA, trimMSA = trim(
             gappyness,
             site_classification_type,
-            keepD,
-            trimD,
+            keepMSA,
+            trimMSA,
             i,
             gaps,
             alignment,
@@ -289,7 +262,5 @@ def keep_trim_and_log(
 
     # print to stdout that output files are being written
     write_output_files_message(outFile, complement, use_log)
-    # join elements in value lists in keepD and trimD
-    keepD, trimD = join_keepD_and_trimD(keepD, trimD)
 
-    return keepD, trimD
+    return keepMSA, trimMSA

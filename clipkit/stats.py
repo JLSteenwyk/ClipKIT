@@ -2,11 +2,14 @@ from dataclasses import dataclass
 
 from Bio.Align import MultipleSeqAlignment
 
+from .msa import MSA
+
+
 @dataclass
 class TrimmingStats:
     alignment: MultipleSeqAlignment
-    keepD: dict
-    trimD: dict
+    keepMSA: MSA
+    trimMSA: MSA
 
     @property
     def alignment_length(self):
@@ -14,11 +17,11 @@ class TrimmingStats:
 
     @property
     def output_length(self):
-        return len(next(iter(self.keepD.values())))
+        return self.keepMSA.length
 
     @property
     def trimmed_length(self):
-        return len(next(iter(self.trimD.values())))
+        return self.trimMSA.length
 
     @property
     def trimmed_percentage(self):

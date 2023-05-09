@@ -13,8 +13,8 @@ from .files import get_alignment_and_format, FileFormat
 from .helpers import (
     get_seq_type,
     keep_trim_and_log,
-    write_keepD,
-    write_trimD
+    write_keepMSA,
+    write_trimMSA
 )
 from .helpers import SeqType
 from .logger import logger, log_file_logger
@@ -90,26 +90,26 @@ def execute(
     )
 
     # create dictionaries of sequences to keep or trim from the alignment
-    keepD, trimD = keep_trim_and_log(
+    keepMSA, trimMSA = keep_trim_and_log(
         alignment, gaps, mode, use_log, output_file, complement, sequence_type, quiet
     )
 
     if use_log:
-        warn_if_all_sites_were_trimmed(keepD)
+        warn_if_all_sites_were_trimmed(keepMSA)
 
-        warn_if_entry_contains_only_gaps(keepD)
+        warn_if_entry_contains_only_gaps(keepMSA, sequence_type)
 
-    # convert keepD and trimD to multiple sequence alignment objects
+    # convert keepMSA and trimMSA to multiple sequence alignment objects
     # and write out file
-    write_keepD(keepD, output_file, output_file_format)
+    write_keepMSA(keepMSA, output_file, output_file_format)
 
     # if the -c/--complementary argument was used,
     # create an alignment of the trimmed sequences
     if complement:
-        write_trimD(trimD, output_file, output_file_format)
+        write_trimMSA(trimMSA, output_file, output_file_format)
 
     # print out output statistics
-    stats = TrimmingStats(alignment, keepD, trimD)
+    stats = TrimmingStats(alignment, keepMSA, trimMSA)
     write_output_stats(stats, start_time)
 
 

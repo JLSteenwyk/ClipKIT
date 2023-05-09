@@ -45,8 +45,8 @@ def shouldKeep(
 def trim(
     gappyness: float,
     site_classification_type: "SiteClassificationType",
-    keepD: dict,
-    trimD: dict,
+    keepMSA: dict,
+    trimMSA: dict,
     alignment_position: int,
     gaps: float,
     alignment,
@@ -55,13 +55,15 @@ def trim(
 ):
     if shouldKeep(mode, site_classification_type, gappyness, gaps):
         for entry in alignment:
-            keepD[entry.description][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
+            new_value = entry.seq._data[alignment_position:alignment_position+1]
+            keepMSA.set_entry_sequence_at_position(entry.description, alignment_position, new_value)
         if use_log:
             log_file_logger.debug(f"{str(alignment_position + 1)} keep {site_classification_type.value} {gappyness}")
     else:
         for entry in alignment:
-            trimD[entry.description][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
+            new_value = entry.seq._data[alignment_position:alignment_position+1]
+            trimMSA.set_entry_sequence_at_position(entry.description, alignment_position, new_value)
         if use_log:
             log_file_logger.debug(f"{str(alignment_position + 1)} trim {site_classification_type.value} {gappyness}")
 
-    return keepD, trimD
+    return keepMSA, trimMSA
