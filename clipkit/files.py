@@ -4,6 +4,9 @@ from typing import Tuple
 
 from Bio import AlignIO
 
+from .exceptions import InvalidInputFileFormat
+
+
 log = logging.getLogger(__name__)
 
 
@@ -47,4 +50,5 @@ def get_alignment_and_format(inFile: str, file_format: FileFormat):
             except AssertionError:
                 continue
 
-        raise Exception("Input file could not be read")
+        # raise Exception("Input file could not be read")
+        raise InvalidInputFileFormat("File could not be read")

@@ -5,9 +5,10 @@ import logging
 import os.path
 import sys
 import time
-
 from typing import Union
+
 from .args_processing import process_args
+from .exceptions import InvalidInputFileFormat
 from .files import get_alignment_and_format, FileFormat
 from .helpers import (
     get_seq_type,
@@ -54,9 +55,12 @@ def execute(
     start_time = time.time()
 
     # read in alignment and save the format of the alignment
-    alignment, input_file_format = get_alignment_and_format(
-        input_file, file_format=input_file_format
-    )
+    try:
+        alignment, input_file_format = get_alignment_and_format(
+            input_file, file_format=input_file_format
+        )
+    except InvalidInputFileFormat:
+        return logger.error(f"""Format type could not be read.\nPlease check acceptable input file formats: {", ".join([file_format.value for file_format in FileFormat])}""")
     
     sequence_type = sequence_type or get_seq_type(alignment)
 
