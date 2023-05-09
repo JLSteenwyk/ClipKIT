@@ -21,7 +21,7 @@ class TrimmingStats:
 
     @property
     def trimmed_length(self):
-        return self.trimMSA.length
+        return self.alignment_length - self.output_length
 
     @property
     def trimmed_percentage(self):

@@ -59,7 +59,7 @@ def trim(
             keepMSA.set_entry_sequence_at_position(entry.description, alignment_position, new_value)
         if use_log:
             log_file_logger.debug(f"{str(alignment_position + 1)} keep {site_classification_type.value} {gappyness}")
-    else:
+    elif trimMSA is not None:
         for entry in alignment:
             new_value = entry.seq._data[alignment_position:alignment_position+1]
             trimMSA.set_entry_sequence_at_position(entry.description, alignment_position, new_value)

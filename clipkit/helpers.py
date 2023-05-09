@@ -133,7 +133,7 @@ def determine_site_classification_type(character_counts: dict) -> SiteClassifica
     return SiteClassificationType.other
 
 
-def populate_empty_keepD_and_trimD(alignment):
+def populate_empty_keepD_and_trimD(alignment, complement):
     """
     Creates barebones dictionaries for sites kept and trimmed. Creates
     an array for keeping log information.
@@ -145,7 +145,10 @@ def populate_empty_keepD_and_trimD(alignment):
     """
 
     keep = MSA.from_bio_msa(alignment)
-    trim = MSA.from_bio_msa(alignment)
+    if complement:
+        trim = MSA.from_bio_msa(alignment)
+    else:
+        trim = None
 
     return keep, trim
 
@@ -218,7 +221,7 @@ def keep_trim_and_log(
     # alignment positions to keep or trim (keys) and the sequence at
     # that position (values). Also, initialize a list of log information
     # that will be kept in an array format
-    keepMSA, trimMSA = populate_empty_keepD_and_trimD(alignment)
+    keepMSA, trimMSA = populate_empty_keepD_and_trimD(alignment, complement)
 
     alignment_length = alignment.get_alignment_length()
 
