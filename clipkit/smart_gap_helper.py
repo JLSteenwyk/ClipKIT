@@ -3,7 +3,7 @@ from collections import Counter
 import numpy as np
 from tqdm import tqdm
 
-from .helpers import get_sequence_at_position_and_report_features
+from .helpers import report_column_featurs
 from .logger import logger
 
 def smart_gap_threshold_determination(
@@ -59,7 +59,7 @@ def gap_to_gap_slope(
 def get_gaps_distribution(alignment, alignment_length: int, char, quiet: bool):
     gaps_dist = []
     for i in tqdm(range(0, alignment_length), disable=quiet, postfix="smart-gap"):
-        _, gappyness = get_sequence_at_position_and_report_features(alignment, i, char)
+        _, gappyness = report_column_featurs(alignment, i, char)
         gappyness = round(gappyness, 4)
         gaps_dist.append(gappyness)
 

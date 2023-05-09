@@ -11,7 +11,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
 from clipkit.helpers import count_characters_at_position
-from clipkit.helpers import get_sequence_at_position_and_report_features
+from clipkit.helpers import report_column_featurs
 from clipkit.helpers import determine_site_classification_type
 from clipkit.helpers import populate_empty_keepD_and_trimD
 from clipkit.helpers import join_keepD_and_trimD
@@ -91,7 +91,7 @@ class TestGetSequenceAtPositionAndReportFeatures(object):
         i = int(5)
 
         ## execution
-        seq, gappyness = get_sequence_at_position_and_report_features(alignment, i, SeqType.nt)
+        seq, gappyness = report_column_featurs(alignment, i, SeqType.nt)
 
         ## check results
         # test output types

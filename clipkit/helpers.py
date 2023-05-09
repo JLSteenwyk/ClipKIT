@@ -30,8 +30,7 @@ class SiteClassificationType(Enum):
     other = "other"
 
 def remove_gaps(seq: str) -> str:
-    gaps_to_remove = ['-'] + DEFAULT_AA_GAP_CHARS
-    pattern = "|".join([re.escape(char) for char in gaps_to_remove])
+    pattern = "|".join([re.escape(char) for char in DEFAULT_AA_GAP_CHARS])
     return re.sub(pattern, "", seq)
 
 def get_seq_type(
@@ -50,8 +49,12 @@ def get_seq_type(
 
     return sequence_type
 
+def get_alignment_column(alignment, index: int) -> str:
+    alignment_column = ""
+    alignment_column += alignment[:, index]
+    return alignment_column.upper()
 
-def get_sequence_at_position_and_report_features(alignment, i, char):
+def report_column_featurs(alignment, i: int, char: SeqType):
     """
     Count the occurence of each character at a given position
     in an alignment. This information is used to determine
@@ -63,28 +66,22 @@ def get_sequence_at_position_and_report_features(alignment, i, char):
     argv: seqAtPosition
         string that contains the sequence at a given column 
     """
-
-    # save the sequence at the position to a string
-    seqAtPosition = ""
-    seqAtPosition += alignment[:, i]
-    seqAtPosition = seqAtPosition.upper()
+    alignment_column = get_alignment_column(alignment, i)
 
     # determine the length and number of gaps in an alignment position
-    lengthOfSeq = len(seqAtPosition)
-    if char == SeqType.aa:
-        for gap_char in DEFAULT_AA_GAP_CHARS:
-            seqAtPosition = seqAtPosition.replace(gap_char, "-")
+    column_length = len(alignment_column)
+    if char == SeqType.nt:
+        gap_chars = DEFAULT_NT_GAP_CHARS
     else:
-        for gap_char in DEFAULT_NT_GAP_CHARS:
-            seqAtPosition = seqAtPosition.replace(gap_char, "-")
+        gap_chars = DEFAULT_AA_GAP_CHARS
+        
+    number_of_gaps = sum([alignment_column.count(char) for char in gap_chars])
+    gappyness = number_of_gaps / column_length
 
-    numOfGaps = seqAtPosition.count("-")
-    gappyness = numOfGaps / lengthOfSeq
-
-    return seqAtPosition, gappyness
+    return alignment_column, gappyness
 
 
-def count_characters_at_position(seqAtPosition):
+def count_characters_at_position(alignment_column):
     """
     Count the occurence of each character at a given position
     in an alignment. This information is used to determine
@@ -98,12 +95,12 @@ def count_characters_at_position(seqAtPosition):
     """
 
     numOccurences = {}
-    for char in set(seqAtPosition.replace("-", "")):
-        numOccurences[char] = seqAtPosition.count(char)
+    for char in set(alignment_column.replace("-", "")):
+        numOccurences[char] = alignment_column.count(char)
     return numOccurences
 
 
-def determine_site_classification_type(numOccurences) -> SiteClassificationType:
+def determine_site_classification_type(character_counts: dict) -> SiteClassificationType:
     """
     Determines if a site is parsimony informative or constant.
     A site is parsimony-informative if it contains at least two types of nucleotides 
@@ -118,13 +115,18 @@ def determine_site_classification_type(numOccurences) -> SiteClassificationType:
     argv: numOccurences
         dictionary with sequence characters (keys) and their counts (values)
     """
-    # create a dictionary of characters that occur at least twice
-    d = dict((k, v) for k, v in numOccurences.items() if v >= 2)
-    if len(d) >= 2:
-        return SiteClassificationType.parsimony_informative
-    elif len(d) == 1 and len(numOccurences) == 1:
+    parsimony_informative_threshold = 2
+    counts_gte_threshold = 0
+    
+    for count in character_counts.values():
+        if count >= 2:
+            counts_gte_threshold += 1
+        if counts_gte_threshold >= parsimony_informative_threshold:
+            return SiteClassificationType.parsimony_informative
+
+    if counts_gte_threshold == 1 and len(character_counts) == 1:
         return SiteClassificationType.constant
-    elif len(d) == 1 and len(numOccurences) > 1:
+    elif counts_gte_threshold == 1 and len(character_counts) > 1:
         return SiteClassificationType.singleton
 
     return SiteClassificationType.other
@@ -251,7 +253,7 @@ def keep_trim_and_log(
     write_processing_aln()
     for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
         # save the sequence at the position to a string and calculate the gappyness of the site
-        seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
+        seqAtPosition, gappyness = report_column_featurs(
             alignment, i, char
         )
 
