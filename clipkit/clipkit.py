@@ -40,6 +40,7 @@ def execute(
     mode: TrimmingMode,
     use_log: bool,
     quiet: bool,
+    **kwargs,
 ):
     if use_log:
         log_file_logger.setLevel(logging.DEBUG)
@@ -57,7 +58,7 @@ def execute(
     # read in alignment and save the format of the alignment
     try:
         alignment, input_file_format = get_alignment_and_format(
-            input_file, file_format=input_file_format
+            input_file, input_file_format
         )
     except InvalidInputFileFormat:
         return logger.error(f"""Format type could not be read.\nPlease check acceptable input file formats: {", ".join([file_format.value for file_format in FileFormat])}""")

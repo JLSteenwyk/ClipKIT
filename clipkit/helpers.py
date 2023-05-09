@@ -12,6 +12,7 @@ from math import floor
 from tqdm import tqdm
 
 from .modes import TrimmingMode, trim
+from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
 from .write import write_processing_aln, write_output_files_message
 
@@ -29,7 +30,9 @@ class SiteClassificationType(Enum):
     other = "other"
 
 def remove_gaps(seq: str) -> str:
-    return re.sub("\-|\?|\*|x", "", seq, flags=re.IGNORECASE)
+    gaps_to_remove = ['-'] + DEFAULT_AA_GAP_CHARS
+    pattern = "|".join([re.escape(char) for char in gaps_to_remove])
+    return re.sub(pattern, "", seq)
 
 def get_seq_type(
     alignment: MultipleSeqAlignment,
@@ -69,10 +72,10 @@ def get_sequence_at_position_and_report_features(alignment, i, char):
     # determine the length and number of gaps in an alignment position
     lengthOfSeq = len(seqAtPosition)
     if char == SeqType.aa:
-        for gap_char in ["?", "*", "X"]:
+        for gap_char in DEFAULT_AA_GAP_CHARS:
             seqAtPosition = seqAtPosition.replace(gap_char, "-")
     else:
-        for gap_char in ["?", "*", "X", "N"]:
+        for gap_char in DEFAULT_NT_GAP_CHARS:
             seqAtPosition = seqAtPosition.replace(gap_char, "-")
 
     numOfGaps = seqAtPosition.count("-")
