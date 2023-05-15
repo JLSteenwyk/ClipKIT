@@ -10,12 +10,7 @@ from typing import Union
 from .args_processing import process_args
 from .exceptions import InvalidInputFileFormat
 from .files import get_alignment_and_format, FileFormat
-from .helpers import (
-    get_seq_type,
-    keep_trim_and_log,
-    write_keepMSA,
-    write_trimMSA
-)
+from .helpers import get_seq_type, keep_trim_and_log, write_keepMSA, write_trimMSA
 from .helpers import SeqType
 from .logger import logger, log_file_logger
 from .modes import TrimmingMode
@@ -26,7 +21,11 @@ from .warnings import (
     warn_if_all_sites_were_trimmed,
     warn_if_entry_contains_only_gaps,
 )
-from .write import write_determining_smart_gap_threshold, write_user_args, write_output_stats
+from .write import (
+    write_determining_smart_gap_threshold,
+    write_user_args,
+    write_output_stats,
+)
 
 
 def execute(
@@ -61,8 +60,10 @@ def execute(
             input_file, input_file_format
         )
     except InvalidInputFileFormat:
-        return logger.error(f"""Format type could not be read.\nPlease check acceptable input file formats: {", ".join([file_format.value for file_format in FileFormat])}""")
-    
+        return logger.error(
+            f"""Format type could not be read.\nPlease check acceptable input file formats: {", ".join([file_format.value for file_format in FileFormat])}"""
+        )
+
     sequence_type = sequence_type or get_seq_type(alignment)
 
     # set output file format if not specified
@@ -72,7 +73,11 @@ def execute(
         output_file_format = FileFormat[output_file_format]
 
     # determine smart_gap threshold
-    if mode in {TrimmingMode.smart_gap, TrimmingMode.kpi_smart_gap, TrimmingMode.kpic_smart_gap}:
+    if mode in {
+        TrimmingMode.smart_gap,
+        TrimmingMode.kpi_smart_gap,
+        TrimmingMode.kpic_smart_gap,
+    }:
         write_determining_smart_gap_threshold()
         gaps = smart_gap_threshold_determination(alignment, sequence_type, quiet)
 
@@ -115,7 +120,7 @@ def execute(
 
 def main(argv=None):
     """
-    Function that parses and collects arguments              
+    Function that parses and collects arguments
     """
     # parse and assign arguments
     parser = create_parser()

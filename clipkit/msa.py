@@ -4,6 +4,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 
+
 class MSA:
     def __init__(self, entries, starting_length) -> None:
         self.starting_length = starting_length

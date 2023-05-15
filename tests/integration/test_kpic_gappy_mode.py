@@ -20,8 +20,8 @@ class TestKpicGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -43,13 +43,15 @@ class TestKpicGappyMode(object):
         usage: clipkit simple_long_description.fa -m kpic-gappy
         """
         input_file = f"{here.parent}/samples/simple_long_description.fa"
-        output_file = "output/simple_long_description.fa.TestKpiMode_test_simple.clipkit"
+        output_file = (
+            "output/simple_long_description.fa.TestKpiMode_test_simple.clipkit"
+        )
 
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -58,7 +60,9 @@ class TestKpicGappyMode(object):
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.fa_kpic_gappy", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.fa_kpic_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:
@@ -77,8 +81,8 @@ class TestKpicGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -109,8 +113,8 @@ class TestKpicGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -140,8 +144,8 @@ class TestKpicGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -171,8 +175,8 @@ class TestKpicGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -202,8 +206,8 @@ class TestKpicGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -233,8 +237,8 @@ class TestKpicGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,

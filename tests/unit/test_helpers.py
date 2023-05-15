@@ -132,13 +132,13 @@ class TestParsimonyInformativeOrConstant(object):
         )
 
         ## check results
-        assert is_parsimony_informative == True and constant_site_holder_is_pi == False
+        assert is_parsimony_informative is True and constant_site_holder_is_pi is False
         assert (
-            is_not_parsimony_informative == False
-            and constant_site_holder_is_npi == False
+            is_not_parsimony_informative is False
+            and constant_site_holder_is_npi is False
         )
-        assert is_not_pi_0 == False and is_constant_site == True
-        assert is_not_pi_1 == False and is_not_constant_site == False
+        assert is_not_pi_0 is False and is_constant_site is True
+        assert is_not_pi_1 is False and is_not_constant_site is False
 
 
 class TestPopulateEmptyKeepDAndTrimD(object):
@@ -180,19 +180,19 @@ class TestJoinKeepDAndTrimD(object):
         ## set up
 
         keepD = {
-            '1': np.array([b'A', b'-', b'G', b'T', b'A', b'T'], dtype='|S1'),
-            '2': np.array([b'A', b'-', b'G', b'-', b'A', b'T'], dtype='|S1'),
-            '3': np.array([b'A', b'-', b'G', b'-', b'T', b'A'], dtype='|S1'),
-            '4': np.array([b'A', b'G', b'A', b'-', b'T', b'A'], dtype='|S1'),
-            '5': np.array([b'A', b'C', b'a', b'-', b'T', b'-'], dtype='|S1')
+            "1": np.array([b"A", b"-", b"G", b"T", b"A", b"T"], dtype="|S1"),
+            "2": np.array([b"A", b"-", b"G", b"-", b"A", b"T"], dtype="|S1"),
+            "3": np.array([b"A", b"-", b"G", b"-", b"T", b"A"], dtype="|S1"),
+            "4": np.array([b"A", b"G", b"A", b"-", b"T", b"A"], dtype="|S1"),
+            "5": np.array([b"A", b"C", b"a", b"-", b"T", b"-"], dtype="|S1"),
         }
-        
+
         trimD = {
-            '1': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
-            '2': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
-            '3': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
-            '4': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1'),
-            '5': np.array([b'', b'', b'', b'', b'', b''], dtype='|S1')
+            "1": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
+            "2": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
+            "3": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
+            "4": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
+            "5": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
         }
 
         ## execution

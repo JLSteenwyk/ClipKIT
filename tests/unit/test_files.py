@@ -11,7 +11,7 @@ class TestAutomaticFileTypeDetermination(object):
     def test_get_alignment_and_format_when_format_is_provided(self):
         # setup
         in_file = f"{here.parent}/examples/simple.fa"
-        file_format = 'fasta'
+        file_format = "fasta"
 
         # execution
         alignment, in_file_format = get_alignment_and_format(in_file, file_format)

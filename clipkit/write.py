@@ -3,18 +3,19 @@ import time
 from .logger import logger
 from .stats import TrimmingStats
 
+
 def write_processing_aln():
     """
     Function to print out processing alignment
     """
     logger.info(
         textwrap.dedent(
-            f"""\
+            """\
         
         ------------------------
         | Processing Alignment |
         ------------------------
-    """
+    """  # noqa
         )
     )
 
@@ -88,13 +89,14 @@ def write_output_stats(stats: TrimmingStats, start_time):
         )
     )
 
+
 def write_determining_smart_gap_threshold():
     """
     Function to inform using that the smart-gap threshold is being determined
     """
     logger.info(
         textwrap.dedent(
-            f"""\
+            """\
         -----------------------------------
         | Determining smart-gap threshold |
         -----------------------------------

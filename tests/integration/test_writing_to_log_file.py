@@ -21,8 +21,8 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -50,8 +50,8 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -60,7 +60,9 @@ class TestOutLog(object):
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.fa.clipkit.log", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.fa.clipkit.log", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(f"{output_file}.log", "r") as out_file:
@@ -79,8 +81,8 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -111,8 +113,8 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,

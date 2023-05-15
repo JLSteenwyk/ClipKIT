@@ -55,19 +55,19 @@ class TestArgsProcessing(object):
         args.output = None
         res = process_args(args)
         assert res["output_file"] == f"{args.input}.clipkit"
-    
+
     def test_process_args_default_sequence_type(self, args):
         args.sequence_type = None
         res = process_args(args)
-        assert res["sequence_type"] == None
+        assert res["sequence_type"] is None
 
     def test_process_args_aa_sequence_type(self, args):
-        args.sequence_type = 'aa'
+        args.sequence_type = "aa"
         res = process_args(args)
         assert res["sequence_type"] == SeqType.aa
-    
+
     def test_process_args_capital_aa_sequence_type(self, args):
-        args.sequence_type = 'AA'
+        args.sequence_type = "AA"
         res = process_args(args)
         assert res["sequence_type"] == SeqType.aa
 

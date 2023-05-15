@@ -12,7 +12,7 @@ here = Path(__file__)
 class TestGappyMode(object):
     def test_simple_no_change(self):
         """
-        test gappy where no changes are expected in the resulting 
+        test gappy where no changes are expected in the resulting
         output alignment.
         usage: clipkit simple.fa
         """
@@ -21,8 +21,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -41,7 +41,7 @@ class TestGappyMode(object):
 
     def test_simple_no_change_long_description(self):
         """
-        test gappy where no changes are expected in the resulting 
+        test gappy where no changes are expected in the resulting
         output alignment.
         usage: clipkit simple.fa
         """
@@ -50,8 +50,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -79,8 +79,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -102,7 +102,7 @@ class TestGappyMode(object):
     def test_12_YIL115C_Anc_2_253_aa_aln(self):
         """
         test gappy with amino acid alignment of yeast sequences
-        usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta 
+        usage: clipkit 12_YIL115C_Anc_2.253_aa_aln.fasta
         """
         input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_aa_aln.fasta"
         output_file = "output/12_YIL115C_Anc_2.253_aa_aln.fasta.clipkit"
@@ -110,8 +110,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -133,7 +133,7 @@ class TestGappyMode(object):
     def test_24_ENSG00000163519_aa_aln(self):
         """
         test gappy with amino acid alignment of mammalian sequences
-        usage: clipkit 24_ENSG00000163519_aa_aln.fasta 
+        usage: clipkit 24_ENSG00000163519_aa_aln.fasta
         """
         input_file = f"{here.parent}/samples/24_ENSG00000163519_aa_aln.fasta"
         output_file = "output/24_ENSG00000163519_aa_aln.fasta.clipkit"
@@ -141,8 +141,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -172,8 +172,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -203,8 +203,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -232,8 +232,8 @@ class TestGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -295,8 +295,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.2,
@@ -326,8 +326,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.3,
@@ -358,8 +358,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.4,
@@ -390,8 +390,8 @@ class TestGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.1,

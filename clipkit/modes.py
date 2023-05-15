@@ -1,8 +1,10 @@
 from .logger import log_file_logger
 from enum import Enum
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .helpers import SiteClassificationType
+
 
 class TrimmingMode(Enum):
     gappy = "gappy"
@@ -31,15 +33,27 @@ def shouldKeep(
     elif mode == TrimmingMode.kpi:
         return site_classification_type.parsimony_informative
     elif mode == TrimmingMode.kpic:
-        return site_classification_type.parsimony_informative or site_classification_type.constant_site
+        return (
+            site_classification_type.parsimony_informative
+            or site_classification_type.constant_site
+        )
     elif mode == TrimmingMode.kpic_gappy:
-        return gappyness <= gaps and (site_classification_type.parsimony_informative or site_classification_type.constant_site)
+        return gappyness <= gaps and (
+            site_classification_type.parsimony_informative
+            or site_classification_type.constant_site
+        )
     elif mode == TrimmingMode.smart_gap:
         return round(gappyness, 4) < gaps
     elif mode == TrimmingMode.kpic_smart_gap:
-        return round(gappyness, 4) < gaps and (site_classification_type.parsimony_informative or site_classification_type.constant_site)
+        return round(gappyness, 4) < gaps and (
+            site_classification_type.parsimony_informative
+            or site_classification_type.constant_site
+        )
     elif mode == TrimmingMode.kpi_smart_gap:
-        return round(gappyness, 4) < gaps and site_classification_type.parsimony_informative
+        return (
+            round(gappyness, 4) < gaps
+            and site_classification_type.parsimony_informative
+        )
 
 
 def trim(
@@ -55,15 +69,23 @@ def trim(
 ):
     if shouldKeep(mode, site_classification_type, gappyness, gaps):
         for entry in alignment:
-            new_value = entry.seq._data[alignment_position:alignment_position+1]
-            keepMSA.set_entry_sequence_at_position(entry.description, alignment_position, new_value)
+            new_value = entry.seq._data[alignment_position : alignment_position + 1]
+            keepMSA.set_entry_sequence_at_position(
+                entry.description, alignment_position, new_value
+            )
         if use_log:
-            log_file_logger.debug(f"{str(alignment_position + 1)} keep {site_classification_type.value} {gappyness}")
+            log_file_logger.debug(
+                f"{str(alignment_position + 1)} keep {site_classification_type.value} {gappyness}"
+            )
     elif trimMSA is not None:
         for entry in alignment:
-            new_value = entry.seq._data[alignment_position:alignment_position+1]
-            trimMSA.set_entry_sequence_at_position(entry.description, alignment_position, new_value)
+            new_value = entry.seq._data[alignment_position : alignment_position + 1]
+            trimMSA.set_entry_sequence_at_position(
+                entry.description, alignment_position, new_value
+            )
         if use_log:
-            log_file_logger.debug(f"{str(alignment_position + 1)} trim {site_classification_type.value} {gappyness}")
+            log_file_logger.debug(
+                f"{str(alignment_position + 1)} trim {site_classification_type.value} {gappyness}"
+            )
 
     return keepMSA, trimMSA

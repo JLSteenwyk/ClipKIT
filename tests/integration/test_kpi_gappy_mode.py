@@ -20,8 +20,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -48,8 +48,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -58,7 +58,9 @@ class TestKpiGappyMode(object):
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.fa_kpi_gappy", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.fa_kpi_gappy", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:
@@ -77,8 +79,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -109,8 +111,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -140,8 +142,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -171,8 +173,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -202,8 +204,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -233,8 +235,8 @@ class TestKpiGappyMode(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
@@ -298,8 +300,8 @@ class TestKPIGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.2,
@@ -329,8 +331,8 @@ class TestKPIGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.3,
@@ -361,8 +363,8 @@ class TestKPIGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.4,
@@ -393,8 +395,8 @@ class TestKPIGappyModeCustomGapsParameter(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.1,

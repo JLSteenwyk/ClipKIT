@@ -12,6 +12,7 @@ from .modes import TrimmingMode
 from .files import FileFormat
 from .version import __version__
 
+
 def create_parser():
     parser = ArgumentParser(
         add_help=False,
@@ -19,7 +20,7 @@ def create_parser():
         usage=SUPPRESS,
         description=textwrap.dedent(
             f"""\
-              _____ _ _       _  _______ _______ 
+              _____ _ _       _  _______ _______  
              / ____| (_)     | |/ /_   _|__   __|
             | |    | |_ _ __ | ' /  | |    | |   
             | |    | | | '_ \|  <   | |    | |   
@@ -35,7 +36,7 @@ def create_parser():
         ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
 
         Usage: clipkit <input> [optional arguments]
-        """
+        """  # noqa
         ),
     )
 
@@ -140,34 +141,53 @@ def create_parser():
 
         Complementary
             Creates an alignment file of only the trimmed sequences
-        """
+        """  # noqa
         ),
     )
 
     optional.add_argument(
-        "-q", "--quiet", help=SUPPRESS, action="store_true", required=False,
+        "-q",
+        "--quiet",
+        help=SUPPRESS,
+        action="store_true",
+        required=False,
     )
 
-    optional.add_argument(
-        "-o", "--output", help=SUPPRESS, metavar="output"
-    )
+    optional.add_argument("-o", "--output", help=SUPPRESS, metavar="output")
 
     mode_choices = [mode.value for mode in TrimmingMode]
     optional.add_argument(
-        "-m", "--mode", help=SUPPRESS, nargs="?", choices=mode_choices,
+        "-m",
+        "--mode",
+        help=SUPPRESS,
+        nargs="?",
+        choices=mode_choices,
     )
 
-    seq_type_choices = [seq.value.upper() for seq in SeqType] + [seq.value.lower() for seq in SeqType]
+    seq_type_choices = [seq.value.upper() for seq in SeqType] + [
+        seq.value.lower() for seq in SeqType
+    ]
     optional.add_argument(
-        "-s", "--sequence_type", help=SUPPRESS, nargs="?", choices=seq_type_choices,
+        "-s",
+        "--sequence_type",
+        help=SUPPRESS,
+        nargs="?",
+        choices=seq_type_choices,
     )
 
     optional.add_argument(
-        "-h", "--help", action="help", help=SUPPRESS,
+        "-h",
+        "--help",
+        action="help",
+        help=SUPPRESS,
     )
 
     optional.add_argument(
-        "-v", "--version", action="version", version=f"clipkit {__version__}", help=SUPPRESS,
+        "-v",
+        "--version",
+        action="version",
+        version=f"clipkit {__version__}",
+        help=SUPPRESS,
     )
 
     optional.add_argument(
@@ -201,11 +221,19 @@ def create_parser():
     )
 
     optional.add_argument(
-        "-l", "--log", action="store_true", required=False, help=SUPPRESS,
+        "-l",
+        "--log",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
     )
 
     optional.add_argument(
-        "-c", "--complementary", action="store_true", required=False, help=SUPPRESS,
+        "-c",
+        "--complementary",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
     )
 
     return parser
