@@ -8,27 +8,27 @@ from .msa import MSA
 @dataclass
 class TrimmingStats:
     alignment: MultipleSeqAlignment
-    keepMSA: MSA
-    trimMSA: MSA
+    keep_msa: MSA
+    trim_msa: MSA
 
     @property
-    def alignment_length(self):
+    def alignment_length(self) -> int:
         return self.alignment.get_alignment_length()
 
     @property
-    def output_length(self):
-        return self.keepMSA.length
+    def output_length(self) -> int:
+        return self.keep_msa.length
 
     @property
-    def trimmed_length(self):
+    def trimmed_length(self) -> int:
         return self.alignment_length - self.output_length
 
     @property
-    def trimmed_percentage(self):
+    def trimmed_percentage(self) -> float:
         return round((self.trimmed_length / self.alignment_length) * 100, 3)
 
     @property
-    def summary(self):
+    def summary(self) -> dict:
         return {
             "alignment_length": self.alignment_length,
             "output_length": self.output_length,

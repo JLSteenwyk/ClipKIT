@@ -1,9 +1,11 @@
-from .logger import log_file_logger
 from enum import Enum
 from typing import TYPE_CHECKING
+from .logger import log_file_logger
 
 if TYPE_CHECKING:
     from .helpers import SiteClassificationType
+    from Bio.Align import MultipleSeqAlignment
+    from .msa import MSA
 
 
 class TrimmingMode(Enum):
@@ -17,15 +19,12 @@ class TrimmingMode(Enum):
     kpic_smart_gap = "kpic-smart-gap"
 
 
-def shouldKeep(
+def should_keep_site(
     mode: TrimmingMode,
     site_classification_type: "SiteClassificationType",
     gappyness: float,
     gaps: float,
-):
-    """
-    Determine if a site should be kept or not
-    """
+) -> bool:
     if mode == TrimmingMode.kpi_gappy:
         return gappyness <= gaps and site_classification_type.parsimony_informative
     elif mode == TrimmingMode.gappy:
@@ -59,28 +58,28 @@ def shouldKeep(
 def trim(
     gappyness: float,
     site_classification_type: "SiteClassificationType",
-    keepMSA: dict,
-    trimMSA: dict,
+    keep_msa: dict,
+    trim_msa: dict,
     alignment_position: int,
     gaps: float,
-    alignment,
+    alignment: "MultipleSeqAlignment",
     mode: TrimmingMode,
     use_log: bool,
-):
-    if shouldKeep(mode, site_classification_type, gappyness, gaps):
+) -> tuple["MSA", "MSA"]:
+    if should_keep_site(mode, site_classification_type, gappyness, gaps):
         for entry in alignment:
             new_value = entry.seq._data[alignment_position : alignment_position + 1]
-            keepMSA.set_entry_sequence_at_position(
+            keep_msa.set_entry_sequence_at_position(
                 entry.description, alignment_position, new_value
             )
         if use_log:
             log_file_logger.debug(
                 f"{str(alignment_position + 1)} keep {site_classification_type.value} {gappyness}"
             )
-    elif trimMSA is not None:
+    elif trim_msa is not None:
         for entry in alignment:
             new_value = entry.seq._data[alignment_position : alignment_position + 1]
-            trimMSA.set_entry_sequence_at_position(
+            trim_msa.set_entry_sequence_at_position(
                 entry.description, alignment_position, new_value
             )
         if use_log:
@@ -88,4 +87,4 @@ def trim(
                 f"{str(alignment_position + 1)} trim {site_classification_type.value} {gappyness}"
             )
 
-    return keepMSA, trimMSA
+    return keep_msa, trim_msa

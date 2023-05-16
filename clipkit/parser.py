@@ -8,12 +8,12 @@ from argparse import (
 )
 
 from .helpers import SeqType
-from .modes import TrimmingMode
 from .files import FileFormat
+from .modes import TrimmingMode
 from .version import __version__
 
 
-def create_parser():
+def create_parser() -> ArgumentParser:
     parser = ArgumentParser(
         add_help=False,
         formatter_class=RawDescriptionHelpFormatter,
@@ -45,7 +45,7 @@ def create_parser():
         parser.print_help(sys.stderr)
         sys.exit()
 
-    ## required arguments
+    # required arguments
     required = parser.add_argument_group(
         "required arguments",
         description=textwrap.dedent(
@@ -58,7 +58,7 @@ def create_parser():
 
     required.add_argument("input", type=str, help=SUPPRESS)
 
-    ## optional arguments
+    # optional arguments
     optional = parser.add_argument_group(
         "optional arguments",
         description=textwrap.dedent(

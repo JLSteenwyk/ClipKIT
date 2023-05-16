@@ -11,12 +11,12 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
 from clipkit.helpers import count_characters_at_position
-from clipkit.helpers import report_column_featurs
+from clipkit.helpers import report_column_features
 from clipkit.helpers import determine_site_classification_type
-from clipkit.helpers import populate_empty_keepD_and_trimD
+from clipkit.helpers import create_keep_and_trim_msas
 from clipkit.helpers import join_keepD_and_trimD
-from clipkit.helpers import write_trimMSA
-from clipkit.helpers import write_keepMSA
+from clipkit.helpers import write_trim_msa
+from clipkit.helpers import write_keep_msa
 from clipkit.helpers import SeqType
 from clipkit.files import FileFormat
 
@@ -91,7 +91,7 @@ class TestGetSequenceAtPositionAndReportFeatures(object):
         i = int(5)
 
         ## execution
-        seq, gappyness = report_column_featurs(alignment, i, SeqType.nt)
+        seq, gappyness = report_column_features(alignment, i, SeqType.nt)
 
         ## check results
         # test output types
@@ -142,12 +142,12 @@ class TestParsimonyInformativeOrConstant(object):
 
 
 class TestPopulateEmptyKeepDAndTrimD(object):
-    def test_populate_empty_keepD_and_trimD(self):
+    def test_create_keep_and_trim_msas(self):
         ## set up
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
 
         ## execution
-        keepD, trimD = populate_empty_keepD_and_trimD(alignment)
+        keepD, trimD = create_keep_and_trim_msas(alignment)
 
         ## check results
         expected_keepD = {
@@ -213,7 +213,7 @@ class TestJoinKeepDAndTrimD(object):
 
 
 class TestWriteKeepD(object):
-    def test_write_keepMSA_writes_file(self, mocker, sample_msa):
+    def test_write_keep_msa_writes_file(self, mocker, sample_msa):
         ## set up
         keepD = {"1": ["A"], "2": ["A"], "3": ["A"], "4": ["A"], "5": ["A"]}
         out_file = "output_file_name.fa"
@@ -223,14 +223,14 @@ class TestWriteKeepD(object):
         mock_write = mocker.patch("clipkit.helpers.SeqIO.write")
 
         ## execution
-        write_keepMSA(keepD, out_file, out_file_format)
+        write_keep_msa(keepD, out_file, out_file_format)
 
         ## check results
         mock_write.assert_called_once_with(sample_msa, out_file, out_file_format.value)
 
 
 class TestWriteTrimD(object):
-    def test_write_trimMSA_calls_seqio_write(self, mocker, sample_msa):
+    def test_write_trim_msa_calls_seqio_write(self, mocker, sample_msa):
         ## set up
         trimD = {"1": ["A"], "2": ["A"], "3": ["A"], "4": ["A"], "5": ["A"]}
         out_file = "output_file_name.fa"
@@ -240,7 +240,7 @@ class TestWriteTrimD(object):
         mock_write = mocker.patch("Bio.SeqIO.write")
 
         ## execution
-        write_trimMSA(trimD, out_file, out_file_format)
+        write_trim_msa(trimD, out_file, out_file_format)
 
         ## check results
         expected_completmentOut = f"{out_file}.complement"

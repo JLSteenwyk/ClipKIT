@@ -1,37 +1,39 @@
-import numpy as np
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
+import numpy as np
+from typing import Union
+
+from .settings import DEFAULT_AA_GAP_CHARS
 
 
 class MSA:
-    def __init__(self, entries, starting_length) -> None:
+    def __init__(self, entries: list[str], starting_length: int) -> None:
         self.starting_length = starting_length
         self.entries = entries
         self._data = self._init_data()
         self._joined = None
 
-    def _init_data(self):
+    def _init_data(self) -> dict[str, np.array]:
         data = {}
         for entry in self.entries:
             data[entry] = np.zeros([self.starting_length], dtype=bytes)
         return data
 
-    def _reset_joined(self):
+    def _reset_joined(self) -> None:
         self._joined = None
 
     @property
-    def length(self):
+    def length(self) -> int:
         return np.count_nonzero(next(iter(self._data.values())))
 
     @property
-    def is_empty(self):
+    def is_empty(self) -> bool:
         all_zeros = not np.any(next(iter(self._data.values()[0])))
         return all_zeros
 
     @property
-    def string_sequences(self):
+    def string_sequences(self) -> dict[str, str]:
         if self._joined:
             return self._joined
         else:
@@ -53,13 +55,17 @@ class MSA:
             seqList.append(SeqRecord(Seq(str(joined)), id=str(entry), description=""))
         return MultipleSeqAlignment(seqList)
 
-    def set_entry_sequence_at_position(self, entry, position, value):
+    def set_entry_sequence_at_position(
+        self, entry: str, position: int, value: str
+    ) -> None:
         self._data[entry][position] = value
 
         # since we've mutated the sequence data we need to release our cached _joined
         self._reset_joined()
 
-    def is_any_entry_sequence_only_gaps(self, gap_chars=DEFAULT_AA_GAP_CHARS):
+    def is_any_entry_sequence_only_gaps(
+        self, gap_chars=DEFAULT_AA_GAP_CHARS
+    ) -> tuple[bool, Union[str, None]]:
         for entry, sequence in self._data.items():
             first_sequence_value = sequence[0]
             sequence_values_all_same = np.all(sequence == first_sequence_value)

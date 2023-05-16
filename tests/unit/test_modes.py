@@ -3,13 +3,13 @@ from pathlib import Path
 
 import numpy as np
 from Bio import AlignIO
-from clipkit.modes import TrimmingMode, trim, shouldKeep
+from clipkit.modes import TrimmingMode, trim, should_keep_site
 
 here = Path(__file__)
 
 
 class TestModes(object):
-    def test_shouldKeep_kpi_gappy_keep(self):
+    def test_should_keep_site_kpi_gappy_keep(self):
         ## setup
         mode = TrimmingMode.kpi_gappy
         gappyness = 0.00
@@ -17,11 +17,14 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert True == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is True
         )
 
-    def test_shouldKeep_kpi_gappy_trim(self):
+    def test_should_keep_site_kpi_gappy_trim(self):
         ## setup
         mode = TrimmingMode.kpi_gappy
         gappyness = 0.00
@@ -29,11 +32,14 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = False
 
-        assert False == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is False
         )
 
-    def test_shouldKeep_gappy_keep(self):
+    def test_should_keep_site_gappy_keep(self):
         ## setup
         mode = TrimmingMode.gappy
         gappyness = 0.00
@@ -41,11 +47,14 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert True == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is True
         )
 
-    def test_shouldKeep_gappy_trim(self):
+    def test_should_keep_site_gappy_trim(self):
         ## setup
         mode = TrimmingMode.gappy
         gappyness = 0.95
@@ -53,11 +62,14 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert False == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is False
         )
 
-    def test_shouldKeep_kpi_keep(self):
+    def test_should_keep_site_kpi_keep(self):
         ## setup
         mode = TrimmingMode.kpi
         gappyness = 0.00
@@ -65,11 +77,14 @@ class TestModes(object):
         parsimony_informative = True
         constant_site = False
 
-        assert True == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is True
         )
 
-    def test_shouldKeep_kpi_trim(self):
+    def test_should_keep_site_kpi_trim(self):
         ## setup
         mode = TrimmingMode.kpi
         gappyness = 0.95
@@ -77,11 +92,14 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = False
 
-        assert False == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is False
         )
 
-    def test_shouldKeep_kpic_keep(self):
+    def test_should_keep_site_kpic_keep(self):
         ## setup
         mode = TrimmingMode.kpic
         gappyness = 0.95
@@ -89,11 +107,14 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = True
 
-        assert True == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is True
         )
 
-    def test_shouldKeep_kpic_trim(self):
+    def test_should_keep_site_kpic_trim(self):
         ## setup
         mode = TrimmingMode.kpic
         gappyness = 0.95
@@ -101,11 +122,14 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = False
 
-        assert False == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is False
         )
 
-    def test_shouldKeep_kpic_gappy_keep(self):
+    def test_should_keep_site_kpic_gappy_keep(self):
         ## setup
         mode = TrimmingMode.kpic_gappy
         gappyness = 0.70
@@ -113,11 +137,14 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = True
 
-        assert True == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is True
         )
 
-    def test_shouldKeep_kpic_gappy_trim(self):
+    def test_should_keep_site_kpic_gappy_trim(self):
         ## setup
         mode = TrimmingMode.kpic_gappy
         gappyness = 0.95
@@ -125,8 +152,11 @@ class TestModes(object):
         parsimony_informative = False
         constant_site = True
 
-        assert False == shouldKeep(
-            mode, parsimony_informative, constant_site, gappyness, gaps
+        assert (
+            should_keep_site(
+                mode, parsimony_informative, constant_site, gappyness, gaps
+            )
+            is False
         )
 
     def test_gappy_mode(self):

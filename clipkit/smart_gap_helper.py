@@ -1,14 +1,16 @@
 from collections import Counter
 
+from Bio.Align import MultipleSeqAlignment
 import numpy as np
 from tqdm import tqdm
 
-from .helpers import report_column_featurs
+from .helpers import report_column_features
 from .logger import logger
 
 
-def smart_gap_threshold_determination(alignment, char, quiet) -> float:
-    # loop through alignment and determine site-wise gappyness
+def smart_gap_threshold_determination(
+    alignment: MultipleSeqAlignment, char: str, quiet: bool
+) -> float:
     alignment_length = alignment.get_alignment_length()
 
     # get distribution of gaps rounded to the fourth decimal place
@@ -20,12 +22,11 @@ def smart_gap_threshold_determination(alignment, char, quiet) -> float:
     # calculate gap-to-gap slope
     slopes = gap_to_gap_slope(gaps_arr, alignment_length)
 
-    # find the greatest difference in slopes and set
-    # gaps to y1
+    # find the greatest difference in slopes and set gaps to y1
     return greatest_diff_in_slopes(slopes, gaps_arr)
 
 
-def greatest_diff_in_slopes(slopes, gaps_arr):
+def greatest_diff_in_slopes(slopes: list[float], gaps_arr: np.array) -> float:
     diffs = []
     # if there is only one slope, use that value to determine
     # the threshold. Otherwise, calculate the greatest difference
@@ -41,7 +42,7 @@ def greatest_diff_in_slopes(slopes, gaps_arr):
     return gaps_arr[diffs.index(max(diffs))][0]
 
 
-def gap_to_gap_slope(gaps_arr, alignment_length):
+def gap_to_gap_slope(gaps_arr: np.array, alignment_length: int) -> list[float]:
     sum_sites_current = gaps_arr[0][1] / alignment_length
     sum_sites_previous = 0
     slopes = []
@@ -55,18 +56,19 @@ def gap_to_gap_slope(gaps_arr, alignment_length):
     return slopes[: (len(slopes) // 2)]
 
 
-def get_gaps_distribution(alignment, alignment_length: int, char, quiet: bool):
+def get_gaps_distribution(
+    alignment: MultipleSeqAlignment, alignment_length: int, char: str, quiet: bool
+) -> list[float]:
     gaps_dist = []
     for i in tqdm(range(0, alignment_length), disable=quiet, postfix="smart-gap"):
-        _, gappyness = report_column_featurs(alignment, i, char)
+        _, gappyness = report_column_features(alignment, i, char)
         gappyness = round(gappyness, 4)
         gaps_dist.append(gappyness)
 
-    logger.info("\n")
     return gaps_dist
 
 
-def count_and_sort_gaps(gaps_dist: list):
+def count_and_sort_gaps(gaps_dist: list) -> list:
     gaps_count = dict(Counter(gaps_dist))
     gaps_arr = np.array(list(gaps_count.items()))
     return gaps_arr[np.argsort(-gaps_arr[:, 0])].tolist()

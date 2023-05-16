@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-import getopt
 import logging
-import os.path
 import sys
 import time
 from typing import Union
@@ -10,8 +8,13 @@ from typing import Union
 from .args_processing import process_args
 from .exceptions import InvalidInputFileFormat
 from .files import get_alignment_and_format, FileFormat
-from .helpers import get_seq_type, keep_trim_and_log, write_keepMSA, write_trimMSA
-from .helpers import SeqType
+from .helpers import (
+    get_seq_type,
+    keep_trim_and_log,
+    write_keep_msa,
+    write_trim_msa,
+    SeqType,
+)
 from .logger import logger, log_file_logger
 from .modes import TrimmingMode
 from .parser import create_parser
@@ -40,7 +43,7 @@ def execute(
     use_log: bool,
     quiet: bool,
     **kwargs,
-):
+) -> None:
     if use_log:
         log_file_logger.setLevel(logging.DEBUG)
         log_file_logger.propagate = False
@@ -51,10 +54,9 @@ def execute(
     if quiet:
         logger.disabled = True
 
-    # create start time logger
+    # for reporting runtime duration to user
     start_time = time.time()
 
-    # read in alignment and save the format of the alignment
     try:
         alignment, input_file_format = get_alignment_and_format(
             input_file, input_file_format
@@ -66,7 +68,6 @@ def execute(
 
     sequence_type = sequence_type or get_seq_type(alignment)
 
-    # set output file format if not specified
     if not output_file_format:
         output_file_format = input_file_format
     else:
@@ -81,7 +82,7 @@ def execute(
         write_determining_smart_gap_threshold()
         gaps = smart_gap_threshold_determination(alignment, sequence_type, quiet)
 
-    # Print to stdout the user arguments
+    # display to user what args are being used in stdout
     write_user_args(
         input_file,
         input_file_format,
@@ -94,27 +95,22 @@ def execute(
         use_log,
     )
 
-    # create dictionaries of sequences to keep or trim from the alignment
-    keepMSA, trimMSA = keep_trim_and_log(
+    # instantiates MSAs to track what we keep/trim from the alignment
+    keep_msa, trim_msa = keep_trim_and_log(
         alignment, gaps, mode, use_log, output_file, complement, sequence_type, quiet
     )
 
     if use_log:
-        warn_if_all_sites_were_trimmed(keepMSA)
+        warn_if_all_sites_were_trimmed(keep_msa)
+        warn_if_entry_contains_only_gaps(keep_msa, sequence_type)
 
-        warn_if_entry_contains_only_gaps(keepMSA, sequence_type)
+    write_keep_msa(keep_msa, output_file, output_file_format)
 
-    # convert keepMSA and trimMSA to multiple sequence alignment objects
-    # and write out file
-    write_keepMSA(keepMSA, output_file, output_file_format)
-
-    # if the -c/--complementary argument was used,
-    # create an alignment of the trimmed sequences
+    # if the -c/--complementary argument was used, create an alignment of the trimmed sequences
     if complement:
-        write_trimMSA(trimMSA, output_file, output_file_format)
+        write_trim_msa(trim_msa, output_file, output_file_format)
 
-    # print out output statistics
-    stats = TrimmingStats(alignment, keepMSA, trimMSA)
+    stats = TrimmingStats(alignment, keep_msa, trim_msa)
     write_output_stats(stats, start_time)
 
 
@@ -122,11 +118,9 @@ def main(argv=None):
     """
     Function that parses and collects arguments
     """
-    # parse and assign arguments
     parser = create_parser()
     args = parser.parse_args()
 
-    # pass to master execute function
     execute(**process_args(args))
 
 
