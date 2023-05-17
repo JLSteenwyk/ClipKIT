@@ -17,6 +17,16 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 
 Quick Start
 -----------
+These two lines represent the simpliest method to rapidly install and run ClipKIT.
+.. code-block:: shell
+
+	# install
+	pip install clipkit
+	# run
+	clipkit input.fa
+
+Below are more detailed instructions, including alternative installation methods.
+
 **1) Installation**
 
 To help ensure ClipKIT can be installed using your favorite workflow, we have made ClipKIT available from pip, source, and the anaconda cloud.
