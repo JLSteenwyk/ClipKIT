@@ -28,9 +28,9 @@ To install from pip, use the following commands:
 .. code-block:: shell
 
 	# create virtual environment
-	python -m venv .venv
+	python -m venv venv
 	# activate virtual environment
-	source .venv/bin/activate
+	source venv/bin/activate
 	# install clipkit
 	pip install clipkit
 
@@ -48,9 +48,9 @@ Similarly, to install from source, we strongly recommend using a virtual environ
 	git clone https://github.com/JLSteenwyk/ClipKIT.git
 	cd ClipKIT/
 	# create virtual environment
-	python -m venv .venv
+	python -m venv venv
 	# activate virtual environment
-	source .venv/bin/activate
+	source venv/bin/activate
 	# install
 	make install
 
@@ -76,8 +76,8 @@ virtual environemnt for your installation:
 
 	git clone https://github.com/JLSteenwyk/ClipKIT.git
 	cd ClipKIT/
-	python -m venv .venv
-	source .venv/bin/activate
+	python -m venv venv 
+	source venv/bin/activate
 	make install
 
 Note, the virtual environment must be activated to use clipkit.
