@@ -4,6 +4,7 @@ import sys
 
 from .helpers import SeqType
 from .modes import TrimmingMode
+from .settings import DEFAULT_AA_GAP_CHARS
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,9 @@ def process_args(args) -> dict:
     complement = args.complementary or False
     mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.smart_gap
     gaps = float(args.gaps) if args.gaps is not None else 0.9
+    gap_characters = (
+        [c for c in args.gap_characters] if args.gap_characters is not None else None
+    )
     use_log = args.log or False
     quiet = args.quiet or False
     sequence_type = SeqType(args.sequence_type.lower()) if args.sequence_type else None
@@ -39,6 +43,7 @@ def process_args(args) -> dict:
         sequence_type=sequence_type,
         complement=complement,
         gaps=gaps,
+        gap_characters=gap_characters,
         mode=mode,
         use_log=use_log,
         quiet=quiet,

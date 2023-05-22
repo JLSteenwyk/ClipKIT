@@ -9,12 +9,12 @@ from .logger import logger
 
 
 def smart_gap_threshold_determination(
-    alignment: MultipleSeqAlignment, char: str, quiet: bool
+    alignment: MultipleSeqAlignment, gap_chars: list, quiet: bool
 ) -> float:
     alignment_length = alignment.get_alignment_length()
 
     # get distribution of gaps rounded to the fourth decimal place
-    gaps_dist = get_gaps_distribution(alignment, alignment_length, char, quiet)
+    gaps_dist = get_gaps_distribution(alignment, alignment_length, gap_chars, quiet)
 
     # count freq of gaps and convert to sorted np array
     gaps_arr = count_and_sort_gaps(gaps_dist)
@@ -57,11 +57,11 @@ def gap_to_gap_slope(gaps_arr: np.array, alignment_length: int) -> list[float]:
 
 
 def get_gaps_distribution(
-    alignment: MultipleSeqAlignment, alignment_length: int, char: str, quiet: bool
+    alignment: MultipleSeqAlignment, alignment_length: int, gap_chars: list, quiet: bool
 ) -> list[float]:
     gaps_dist = []
     for i in tqdm(range(0, alignment_length), disable=quiet, postfix="smart-gap"):
-        _, gappyness = report_column_features(alignment, i, char)
+        _, gappyness = report_column_features(alignment, i, gap_chars)
         gappyness = round(gappyness, 4)
         gaps_dist.append(gappyness)
 

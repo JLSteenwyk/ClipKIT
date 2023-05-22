@@ -31,6 +31,7 @@ def write_user_args(
     out_file_format: "FileFormat",
     seq_type: "SeqType",
     gaps: float,
+    gap_chars: list,
     mode: "TrimmingMode",
     complement: bool,
     use_log: bool,
@@ -53,6 +54,7 @@ def write_user_args(
     Output file: {out_file_name} (format: {out_file_format.value})
     Sequence type: {seq_type_name}
     Gaps threshold: {gaps}
+    Gap characters: {gap_chars}
     Trimming mode: {mode.value}
     Create complementary output: {complement}
     Create log file: {use_log}

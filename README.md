@@ -58,6 +58,7 @@ pip install clipkit
 # run
 clipkit input.fa
 ```
+
 <br />
 
 **Installation**

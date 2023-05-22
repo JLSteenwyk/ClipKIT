@@ -10,6 +10,7 @@ from .exceptions import InvalidInputFileFormat
 from .files import get_alignment_and_format, FileFormat
 from .helpers import (
     get_seq_type,
+    get_gap_chars,
     keep_trim_and_log,
     write_keep_msa,
     write_trim_msa,
@@ -18,6 +19,7 @@ from .helpers import (
 from .logger import logger, log_file_logger
 from .modes import TrimmingMode
 from .parser import create_parser
+from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .smart_gap_helper import smart_gap_threshold_determination
 from .stats import TrimmingStats
 from .warnings import (
@@ -38,6 +40,7 @@ def execute(
     output_file_format: FileFormat,
     sequence_type: Union[SeqType, None],
     gaps: float,
+    gap_characters: Union[list, None],
     complement: bool,
     mode: TrimmingMode,
     use_log: bool,
@@ -68,6 +71,9 @@ def execute(
 
     sequence_type = sequence_type or get_seq_type(alignment)
 
+    if not gap_characters:
+        gap_characters = get_gap_chars(sequence_type)
+
     if not output_file_format:
         output_file_format = input_file_format
     else:
@@ -80,7 +86,7 @@ def execute(
         TrimmingMode.kpic_smart_gap,
     }:
         write_determining_smart_gap_threshold()
-        gaps = smart_gap_threshold_determination(alignment, sequence_type, quiet)
+        gaps = smart_gap_threshold_determination(alignment, gap_characters, quiet)
 
     # display to user what args are being used in stdout
     write_user_args(
@@ -90,6 +96,7 @@ def execute(
         output_file_format,
         sequence_type,
         gaps,
+        gap_characters,
         mode,
         complement,
         use_log,
@@ -97,7 +104,7 @@ def execute(
 
     # instantiates MSAs to track what we keep/trim from the alignment
     keep_msa, trim_msa = keep_trim_and_log(
-        alignment, gaps, mode, use_log, output_file, complement, sequence_type, quiet
+        alignment, gaps, mode, use_log, output_file, complement, gap_characters, quiet
     )
 
     if use_log:

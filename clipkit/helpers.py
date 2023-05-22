@@ -59,7 +59,7 @@ def get_gap_chars(seq_type: SeqType) -> list[str]:
 
 
 def report_column_features(
-    alignment: MultipleSeqAlignment, index: int, seq_type: SeqType
+    alignment: MultipleSeqAlignment, index: int, gap_chars: list
 ) -> tuple[str, float]:
     """
     Count the occurence of each character at a given position
@@ -70,7 +70,6 @@ def report_column_features(
     alignment_column = get_alignment_column(alignment, index)
 
     column_length = len(alignment_column)
-    gap_chars = get_gap_chars(seq_type)
 
     number_of_gaps = sum([alignment_column.count(char) for char in gap_chars])
     gappyness = number_of_gaps / column_length
@@ -78,10 +77,9 @@ def report_column_features(
     return alignment_column, gappyness
 
 
-def count_characters_at_position(alignment_column: str, seq_type: SeqType) -> dict:
+def count_characters_at_position(alignment_column: str, gap_chars: list) -> dict:
     character_counts = {}
 
-    gap_chars = get_gap_chars(seq_type)
     alignment_column = remove_gaps(alignment_column, gap_chars)
     for char in set(alignment_column):
         character_counts[char] = alignment_column.count(char)
@@ -171,7 +169,7 @@ def keep_trim_and_log(
     use_log: bool,
     out_file_name: str,
     complement: bool,
-    seq_type: SeqType,
+    gap_chars: list,
     quiet: bool,
 ) -> tuple[MSA, MSA]:
     """
@@ -184,9 +182,9 @@ def keep_trim_and_log(
 
     write_processing_aln()
     for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
-        sequence_at_index, gappyness = report_column_features(alignment, i, seq_type)
+        sequence_at_index, gappyness = report_column_features(alignment, i, gap_chars)
 
-        character_counts = count_characters_at_position(sequence_at_index, seq_type)
+        character_counts = count_characters_at_position(sequence_at_index, gap_chars)
 
         # determine if a site is parsimony informative, singleton, or constant
         site_classification_type = determine_site_classification_type(character_counts)

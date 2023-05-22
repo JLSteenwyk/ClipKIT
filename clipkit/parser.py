@@ -78,6 +78,10 @@ def create_parser() -> ArgumentParser:
         -g, --gaps <threshold_of_gaps>              specifies gaps threshold
                                                     (default: 0.9)
 
+        -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
+                                                    (default for aa: "-?*XxNn"
+                                                     default for nt: "-?*Xx")
+
         -if, --input_file_format <file_format>      specifies input file format
                                                     (default: auto-detect)    
 
@@ -116,6 +120,12 @@ def create_parser() -> ArgumentParser:
             Must be between 0 and 1. (Default: 0.9). This argument is ignored
             when using the kpi and kpic mdoes of trimming as well as an 
             iteration of trimming that uses smart-gap.
+
+        Gap characters
+            Specifies gap characters used in the input file. All gap characters
+            should have a quotes (single or double) surrounding them. For example,
+            "NnXx-?" would specify that "N", "n", "X", "x", "-", and "?" are
+            gap characters.
 
         Sequence type
             Specifies the type of sequences in the input file. Valid options
@@ -197,6 +207,15 @@ def create_parser() -> ArgumentParser:
         required=False,
         help=SUPPRESS,
         metavar="fraction of gaps",
+    )
+
+    optional.add_argument(
+        "-gc",
+        "--gap_characters",
+        type=str,
+        required=False,
+        help=SUPPRESS,
+        metavar="gap characters",
     )
 
     file_format_choices = [file_format.value.lower() for file_format in FileFormat]
