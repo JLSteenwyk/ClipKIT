@@ -64,3 +64,4 @@ def clipkit(
         return trim_run.keep_msa.to_bio_msa()
     else:
         write_keep_msa(trim_run.keep_msa, output_file_path, trim_run.output_file_format)
+        return output_file_path
