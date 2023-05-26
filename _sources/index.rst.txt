@@ -18,6 +18,7 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 Quick Start
 -----------
 These two lines represent the simpliest method to rapidly install and run ClipKIT.
+
 .. code-block:: shell
 
 	# install
