@@ -18,7 +18,7 @@ def clipkit(
     gap_characters=None,
     input_file_format=FileFormat.fasta,
     output_file_format=FileFormat.fasta,
-    sequence_type=SeqType.aa,
+    sequence_type=SeqType.aa
 ) -> TextIO:
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
@@ -26,9 +26,6 @@ def clipkit(
     If raw_alignment is given we write it to NamedTemporaryFile and then pass to execute
         * handles when output_file_path is given and also when not given
     """
-    print(f"output_file_format: {output_file_format}")
-    print(sequence_type)
-
     logger.disabled = True
     output_temp_file = None
     input_temp_file = None
@@ -60,7 +57,7 @@ def clipkit(
     )
 
     if not output_file_path:
-        return trim_run.keep_msa.to_bio_msa()
+        return trim_run
     else:
         write_keep_msa(trim_run.keep_msa, output_file_path, trim_run.output_file_format)
         return output_file_path

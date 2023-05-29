@@ -58,6 +58,7 @@ def should_keep_site(
 def trim(
     gappyness: float,
     site_classification_type: "SiteClassificationType",
+    site_classification_counts: dict,
     keep_msa: dict,
     trim_msa: dict,
     alignment_position: int,
@@ -67,6 +68,7 @@ def trim(
     use_log: bool,
 ) -> tuple["MSA", "MSA"]:
     if should_keep_site(mode, site_classification_type, gappyness, gaps):
+        site_classification_counts[site_classification_type] += 1
         for entry in alignment:
             new_value = entry.seq._data[alignment_position : alignment_position + 1]
             keep_msa.set_entry_sequence_at_position(

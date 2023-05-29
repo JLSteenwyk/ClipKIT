@@ -180,6 +180,12 @@ def keep_trim_and_log(
 
     alignment_length = alignment.get_alignment_length()
 
+    site_classification_counts = dict()
+    site_classification_counts[SiteClassificationType.parsimony_informative] = 0
+    site_classification_counts[SiteClassificationType.constant] = 0
+    site_classification_counts[SiteClassificationType.singleton] = 0
+    site_classification_counts[SiteClassificationType.other] = 0
+
     write_processing_aln()
     for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
         sequence_at_index, gappyness = report_column_features(alignment, i, gap_chars)
@@ -192,6 +198,7 @@ def keep_trim_and_log(
         keep_msa, trim_msa = trim(
             gappyness,
             site_classification_type,
+            site_classification_counts,
             keep_msa,
             trim_msa,
             i,
@@ -203,4 +210,4 @@ def keep_trim_and_log(
 
     # inform user that output files are being written
     write_output_files_message(out_file_name, complement, use_log)
-    return keep_msa, trim_msa
+    return keep_msa, trim_msa, site_classification_counts
