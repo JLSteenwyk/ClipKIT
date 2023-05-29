@@ -78,7 +78,7 @@ def run(
     if not output_file_format:
         output_file_format = input_file_format
     else:
-        output_file_format = FileFormat[output_file_format]
+        output_file_format = FileFormat(output_file_format)
 
     # determine smart_gap threshold
     if mode in {

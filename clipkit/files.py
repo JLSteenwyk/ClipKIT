@@ -30,7 +30,7 @@ def get_alignment_and_format(
     """
 
     if file_format:
-        file_format = FileFormat[file_format]
+        file_format = FileFormat(file_format)
         alignment = AlignIO.read(open(input_file_name), file_format.value)
         return alignment, file_format
     else:

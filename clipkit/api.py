@@ -15,13 +15,10 @@ def clipkit(
     output_file_path: Union[str, None] = None,
     mode: TrimmingMode = TrimmingMode.smart_gap,
     gaps: Union[float, None] = None,
-    # TODO: complement, use_log, gap_characters, ...
     gap_characters=None,
-    complement=False,
-    use_log=False,
     input_file_format=FileFormat.fasta,
     output_file_format=FileFormat.fasta,
-    sequence_type=SeqType.aa
+    sequence_type=SeqType.aa,
 ) -> TextIO:
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
@@ -29,6 +26,9 @@ def clipkit(
     If raw_alignment is given we write it to NamedTemporaryFile and then pass to execute
         * handles when output_file_path is given and also when not given
     """
+    print(f"output_file_format: {output_file_format}")
+    print(sequence_type)
+
     logger.disabled = True
     output_temp_file = None
     input_temp_file = None
@@ -40,8 +40,7 @@ def clipkit(
     if not output_file_path:
         output_temp_file = NamedTemporaryFile()
 
-    input_file_format = output_file_format = "fasta"
-    gap_characters = None
+    # override some options not currently available through programmatic interface
     complement = False
     use_log = False
     quiet = True
