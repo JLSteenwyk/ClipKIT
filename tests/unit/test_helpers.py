@@ -14,7 +14,6 @@ from clipkit.helpers import count_characters_at_position
 from clipkit.helpers import report_column_features
 from clipkit.helpers import determine_site_classification_type
 from clipkit.helpers import create_keep_and_trim_msas
-from clipkit.helpers import join_keepD_and_trimD
 from clipkit.helpers import write_trim_msa
 from clipkit.helpers import write_keep_msa
 from clipkit.helpers import SeqType
@@ -173,43 +172,6 @@ class TestPopulateEmptyKeepDAndTrimD(object):
         assert all(
             np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
         )
-
-
-class TestJoinKeepDAndTrimD(object):
-    def test_join_keepD_and_trimD(self):
-        ## set up
-
-        keepD = {
-            "1": np.array([b"A", b"-", b"G", b"T", b"A", b"T"], dtype="|S1"),
-            "2": np.array([b"A", b"-", b"G", b"-", b"A", b"T"], dtype="|S1"),
-            "3": np.array([b"A", b"-", b"G", b"-", b"T", b"A"], dtype="|S1"),
-            "4": np.array([b"A", b"G", b"A", b"-", b"T", b"A"], dtype="|S1"),
-            "5": np.array([b"A", b"C", b"a", b"-", b"T", b"-"], dtype="|S1"),
-        }
-
-        trimD = {
-            "1": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
-            "2": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
-            "3": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
-            "4": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
-            "5": np.array([b"", b"", b"", b"", b"", b""], dtype="|S1"),
-        }
-
-        ## execution
-        keepD, trimD = join_keepD_and_trimD(keepD, trimD)
-
-        ## check results
-        expected_keepD = {
-            "1": "A-GTAT",
-            "2": "A-G-AT",
-            "3": "A-G-TA",
-            "4": "AGA-TA",
-            "5": "ACa-T-",
-        }
-        expected_trimD = {"1": "", "2": "", "3": "", "4": "", "5": ""}
-
-        assert expected_keepD == keepD
-        assert expected_trimD == trimD
 
 
 class TestWriteKeepD(object):
