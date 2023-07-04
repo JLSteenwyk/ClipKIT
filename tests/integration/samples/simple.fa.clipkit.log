@@ -1,6 +1,5 @@
 1 keep constant 0.0
 2 keep other 0.6
 3 keep parsimony-informative 0.0
-4 trim other 0.8
 5 keep parsimony-informative 0.0
 6 keep parsimony-informative 0.2

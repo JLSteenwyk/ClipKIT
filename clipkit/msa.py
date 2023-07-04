@@ -29,7 +29,7 @@ class MSA:
 
     @property
     def is_empty(self) -> bool:
-        all_zeros = not np.any(next(iter(self._data.values()[0])))
+        all_zeros = np.all(self._data[self.entries[0]] == b"")
         return all_zeros
 
     @property
@@ -69,7 +69,10 @@ class MSA:
         for entry, sequence in self._data.items():
             first_sequence_value = sequence[0]
             sequence_values_all_same = np.all(sequence == first_sequence_value)
-            if sequence_values_all_same and first_sequence_value in gap_chars:
+            if (
+                sequence_values_all_same
+                and first_sequence_value.decode("utf-8") in gap_chars
+            ):
                 return True, entry
 
         return False, None
