@@ -43,19 +43,19 @@ def should_keep_site(
     elif mode == TrimmingMode.kpic:
         return (
             site_classification_type == SiteClassificationType.parsimony_informative
-            or site_classification_type == SiteClassificationType.constant_site
+            or site_classification_type == SiteClassificationType.constant
         )
     elif mode == TrimmingMode.kpic_gappy:
         return gappyness <= gaps and (
             site_classification_type == SiteClassificationType.parsimony_informative
-            or site_classification_type == SiteClassificationType.constant_site
+            or site_classification_type == SiteClassificationType.constant
         )
     elif mode == TrimmingMode.smart_gap:
         return round(gappyness, 4) < gaps
     elif mode == TrimmingMode.kpic_smart_gap:
         return round(gappyness, 4) < gaps and (
             site_classification_type == SiteClassificationType.parsimony_informative
-            or site_classification_type == SiteClassificationType.constant_site
+            or site_classification_type == SiteClassificationType.constant
         )
     elif mode == TrimmingMode.kpi_smart_gap:
         return (
