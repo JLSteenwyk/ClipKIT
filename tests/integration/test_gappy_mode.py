@@ -4,6 +4,7 @@ from pathlib import Path
 from clipkit.clipkit import execute
 from clipkit.files import FileFormat
 from clipkit.modes import TrimmingMode
+from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 
 here = Path(__file__)
 
@@ -28,6 +29,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -57,6 +60,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -86,6 +91,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -117,6 +124,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_AA_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -148,6 +157,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_AA_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -179,6 +190,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -210,6 +223,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_AA_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -239,6 +254,8 @@ class TestGappyMode(object):
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -302,6 +319,8 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.2,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -333,6 +352,8 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.3,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -365,6 +386,8 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.4,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -397,6 +420,8 @@ class TestGappyModeCustomGapsParameter(object):
             gaps=0.1,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
