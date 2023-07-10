@@ -47,6 +47,7 @@ class TrimRun:
     input_file_format: FileFormat
     output_file_format: FileFormat
     site_classification_counts: dict
+    gaps: float
 
 
 def run(
@@ -104,6 +105,7 @@ def run(
         input_file_format,
         output_file_format,
         site_classification_counts,
+        gaps,
     )
 
 
@@ -155,7 +157,7 @@ def execute(
         output_file,
         trim_run.output_file_format,
         trim_run.sequence_type,
-        gaps,
+        trim_run.gaps,
         trim_run.gap_characters,
         mode,
         complement,
