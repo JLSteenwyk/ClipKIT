@@ -5,7 +5,7 @@ from Bio.Align import MultipleSeqAlignment
 from tqdm import tqdm
 
 from .msa import MSA
-from .modes import TrimmingMode, trim
+from .modes import SiteClassificationType, TrimmingMode, trim
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
 from .write import write_processing_aln, write_output_files_message
@@ -16,13 +16,6 @@ from enum import Enum
 class SeqType(Enum):
     aa = "aa"
     nt = "nt"
-
-
-class SiteClassificationType(Enum):
-    parsimony_informative = "parsimony-informative"
-    constant = "constant"
-    singleton = "singleton"
-    other = "other"
 
 
 def remove_gaps(seq: str, gap_chars: list[str] = DEFAULT_AA_GAP_CHARS) -> str:
