@@ -4,6 +4,7 @@ from pathlib import Path
 from clipkit.clipkit import execute
 from clipkit.files import FileFormat
 from clipkit.modes import TrimmingMode
+from clipkit.settings import DEFAULT_NT_GAP_CHARS, DEFAULT_AA_GAP_CHARS
 
 here = Path(__file__)
 
@@ -26,6 +27,8 @@ class TestSmartGapsMode(object):
             gaps=0.8,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -53,6 +56,8 @@ class TestSmartGapsMode(object):
             gaps=0.8,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -84,6 +89,8 @@ class TestSmartGapsMode(object):
             gaps=0.9167,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -116,6 +123,8 @@ class TestSmartGapsMode(object):
             gaps=0.9167,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_AA_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -148,6 +157,8 @@ class TestSmartGapsMode(object):
             gaps=0.9583,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_AA_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -176,9 +187,11 @@ class TestSmartGapsMode(object):
             output_file_format="fasta",
             sequence_type=None,
             complement=False,
-            gaps=0.9583,
+            gaps=0.9,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -211,6 +224,8 @@ class TestSmartGapsMode(object):
             gaps=0.8803,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_AA_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -242,6 +257,8 @@ class TestSmartGapsMode(object):
             gaps=0.8803,
             mode=TrimmingMode.smart_gap,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 

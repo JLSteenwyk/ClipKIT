@@ -16,10 +16,6 @@ class TestWarnings(object):
         entries = ["some_id"]
         length = 10
         keep_msa = MSA(entries, length)
-        print(vars(keep_msa))
-        print(keep_msa.entries[0])
-        print(keep_msa._data[entries[0]])
-        print(keep_msa._data[entries[0]].size)
         warn_if_all_sites_were_trimmed(keep_msa)
 
         mocked_warning.assert_called_once_with(
