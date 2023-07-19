@@ -4,6 +4,7 @@ import pytest
 from clipkit.args_processing import process_args
 from clipkit.helpers import SeqType
 from clipkit.modes import TrimmingMode
+from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 
 
 @pytest.fixture
@@ -18,6 +19,8 @@ def args():
         mode=None,
         output="output/simple",
         output_file_format=None,
+        gap_characters=DEFAULT_NT_GAP_CHARS,
+        quiet=True,
     )
     return Namespace(**kwargs)
 
@@ -71,6 +74,24 @@ class TestArgsProcessing(object):
         res = process_args(args)
         assert res["sequence_type"] == SeqType.aa
 
+    def test_process_args_gap_characters_nt(self, args):
+        res = process_args(args)
+        assert res["gap_characters"] == DEFAULT_NT_GAP_CHARS
+
+    def test_process_args_gap_characters_aa(self, args):
+        args.gap_characters = DEFAULT_AA_GAP_CHARS
+        res = process_args(args)
+        assert res["gap_characters"] == DEFAULT_AA_GAP_CHARS
+
+    def test_process_quiet_true(self, args):
+        res = process_args(args)
+        assert res["quiet"]
+
+    def test_process_quiet_false(self, args):
+        args.quiet = False
+        res = process_args(args)
+        assert res["quiet"] is False
+
     def test_process_args_expected_keywords(self, args):
         res = process_args(args)
         expected_keys = [
@@ -83,5 +104,7 @@ class TestArgsProcessing(object):
             "gaps",
             "mode",
             "use_log",
+            "gap_characters",
+            "quiet",
         ]
         assert sorted(res.keys()) == sorted(expected_keys)

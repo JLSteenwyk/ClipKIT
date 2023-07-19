@@ -419,6 +419,8 @@ class TestModes(object):
             use_log,
         )
 
+        print(keepD)
+
         ## check results
         expected_keepD = {
             "1": np.array(["", "", "", "", "", ""]),

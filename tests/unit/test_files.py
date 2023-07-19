@@ -48,4 +48,4 @@ class TestAutomaticFileTypeDetermination(object):
 
         with pytest.raises(Exception) as excinfo:
             get_alignment_and_format(in_file, file_format)
-        assert "Input file could not be read" in str(excinfo.value)
+        assert "File could not be read" in str(excinfo.value)
