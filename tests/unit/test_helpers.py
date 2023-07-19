@@ -18,6 +18,9 @@ from clipkit.helpers import write_trim_msa
 from clipkit.helpers import write_keep_msa
 from clipkit.helpers import SeqType
 from clipkit.files import FileFormat
+from clipkit.modes import SiteClassificationType, TrimmingMode, trim, should_keep_site
+from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
+
 
 here = Path(__file__)
 
@@ -71,7 +74,7 @@ class TestCountCharactersAtPosition(object):
         s = "ACTTTGGG"
 
         ## execution
-        res = count_characters_at_position(s)
+        res = count_characters_at_position(s, DEFAULT_NT_GAP_CHARS)
 
         ## check results
         # test that each character has an associated key
@@ -87,10 +90,10 @@ class TestGetSequenceAtPositionAndReportFeatures(object):
     def test_gets_sequence_and_gappyness(self):
         ## setup
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
-        i = int(5)
+        i = 5
 
         ## execution
-        seq, gappyness = report_column_features(alignment, i, SeqType.nt)
+        seq, gappyness = report_column_features(alignment, i, DEFAULT_AA_GAP_CHARS)
 
         ## check results
         # test output types
@@ -101,43 +104,28 @@ class TestGetSequenceAtPositionAndReportFeatures(object):
 class TestParsimonyInformativeOrConstant(object):
     def test_determine_site_classification_type(self):
         ## set up
-        # pi = parsimony informative
         num_occurences_pi = {"A": 5, "T": 10, "G": 2, "C": 4}
-        # npi = not parsimony informative
-        num_occurences_npi = {"A": 1, "T": 10, "G": 1}
-        # Const = constant
-        num_occurences_const = {"A": 10}
-        # nConst = not constant
-        num_occurences_nconst = {"A": 1}
+        num_occurences_const = {"T": 10}
+        num_occurences_singleton = {"A": 1, "T": 2}
+        num_occurences_other = {"A": 1}
 
         ## execution
-        # result is True and False
-        (
-            is_parsimony_informative,
-            constant_site_holder_is_pi,
-        ) = determine_site_classification_type(num_occurences_pi)
-        # result is False and False
-        (
-            is_not_parsimony_informative,
-            constant_site_holder_is_npi,
-        ) = determine_site_classification_type(num_occurences_npi)
-        # result is False and True
-        is_not_pi_0, is_constant_site = determine_site_classification_type(
+        res_num_occurences_pi = determine_site_classification_type(num_occurences_pi)
+        res_num_occurences_const = determine_site_classification_type(
             num_occurences_const
         )
-        # result is False and False
-        is_not_pi_1, is_not_constant_site = determine_site_classification_type(
-            num_occurences_nconst
+        res_num_occurences_singleton = determine_site_classification_type(
+            num_occurences_singleton
+        )
+        res_num_occurences_other = determine_site_classification_type(
+            num_occurences_other
         )
 
         ## check results
-        assert is_parsimony_informative is True and constant_site_holder_is_pi is False
-        assert (
-            is_not_parsimony_informative is False
-            and constant_site_holder_is_npi is False
-        )
-        assert is_not_pi_0 is False and is_constant_site is True
-        assert is_not_pi_1 is False and is_not_constant_site is False
+        assert res_num_occurences_pi is SiteClassificationType.parsimony_informative
+        assert res_num_occurences_const is SiteClassificationType.constant
+        assert res_num_occurences_singleton is SiteClassificationType.singleton
+        assert res_num_occurences_other is SiteClassificationType.other
 
 
 class TestPopulateEmptyKeepDAndTrimD(object):
@@ -146,46 +134,50 @@ class TestPopulateEmptyKeepDAndTrimD(object):
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
 
         ## execution
-        keepD, trimD = create_keep_and_trim_msas(alignment)
+        keep_msa, trim_msa = create_keep_and_trim_msas(alignment, True)
 
         ## check results
-        expected_keepD = {
-            "1": np.zeros([6], dtype=bytes),
-            "2": np.zeros([6], dtype=bytes),
-            "3": np.zeros([6], dtype=bytes),
-            "4": np.zeros([6], dtype=bytes),
-            "5": np.zeros([6], dtype=bytes),
+        expected_keep_data = {
+            "1": np.array([b"", b"", b"", b"", b"", b""]),
+            "2": np.array([b"", b"", b"", b"", b"", b""]),
+            "3": np.array([b"", b"", b"", b"", b"", b""]),
+            "4": np.array([b"", b"", b"", b"", b"", b""]),
+            "5": np.array([b"", b"", b"", b"", b"", b""]),
         }
-        expected_trimD = {
-            "1": np.zeros([6], dtype=bytes),
-            "2": np.zeros([6], dtype=bytes),
-            "3": np.zeros([6], dtype=bytes),
-            "4": np.zeros([6], dtype=bytes),
-            "5": np.zeros([6], dtype=bytes),
+        expected_trim_data = {
+            "1": np.array([b"", b"", b"", b"", b"", b""]),
+            "2": np.array([b"", b"", b"", b"", b"", b""]),
+            "3": np.array([b"", b"", b"", b"", b"", b""]),
+            "4": np.array([b"", b"", b"", b"", b"", b""]),
+            "5": np.array([b"", b"", b"", b"", b"", b""]),
         }
 
-        assert expected_keepD.keys() == keepD.keys()
+        assert expected_keep_data.keys() == keep_msa._data.keys()
         assert all(
-            np.array_equal(expected_keepD[key], keepD[key]) for key in expected_keepD
+            np.array_equal(expected_keep_data[key], keep_msa._data[key])
+            for key in expected_keep_data
         )
-        assert expected_trimD.keys() == trimD.keys()
+        assert expected_trim_data.keys() == trim_msa._data.keys()
         assert all(
-            np.array_equal(expected_trimD[key], trimD[key]) for key in expected_trimD
+            np.array_equal(expected_trim_data[key], trim_msa._data[key])
+            for key in expected_trim_data
         )
 
 
 class TestWriteKeepD(object):
     def test_write_keep_msa_writes_file(self, mocker, sample_msa):
         ## set up
-        keepD = {"1": ["A"], "2": ["A"], "3": ["A"], "4": ["A"], "5": ["A"]}
+        alignment = AlignIO.read(f"{here.parent}/examples/single_site.fa", "fasta")
+        keep_msa, _ = create_keep_and_trim_msas(alignment, True)
+
         out_file = "output_file_name.fa"
         out_file_format = FileFormat.fasta
-        mock_msa = mocker.patch("clipkit.helpers.MultipleSeqAlignment")
+        mock_msa = mocker.patch("clipkit.msa.MultipleSeqAlignment")
         mock_msa.return_value = sample_msa
         mock_write = mocker.patch("clipkit.helpers.SeqIO.write")
 
         ## execution
-        write_keep_msa(keepD, out_file, out_file_format)
+        write_keep_msa(keep_msa, out_file, out_file_format)
 
         ## check results
         mock_write.assert_called_once_with(sample_msa, out_file, out_file_format.value)
@@ -194,15 +186,17 @@ class TestWriteKeepD(object):
 class TestWriteTrimD(object):
     def test_write_trim_msa_calls_seqio_write(self, mocker, sample_msa):
         ## set up
-        trimD = {"1": ["A"], "2": ["A"], "3": ["A"], "4": ["A"], "5": ["A"]}
+        alignment = AlignIO.read(f"{here.parent}/examples/single_site.fa", "fasta")
+        _, trim_msa = create_keep_and_trim_msas(alignment, True)
+
         out_file = "output_file_name.fa"
         out_file_format = FileFormat.fasta
-        mock_msa = mocker.patch("clipkit.helpers.MultipleSeqAlignment")
+        mock_msa = mocker.patch("clipkit.msa.MultipleSeqAlignment")
         mock_msa.return_value = sample_msa
-        mock_write = mocker.patch("Bio.SeqIO.write")
+        mock_write = mocker.patch("clipkit.helpers.SeqIO.write")
 
         ## execution
-        write_trim_msa(trimD, out_file, out_file_format)
+        write_trim_msa(trim_msa, out_file, out_file_format)
 
         ## check results
         expected_completmentOut = f"{out_file}.complement"
