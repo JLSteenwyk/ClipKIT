@@ -46,7 +46,7 @@ wcwidth = "==0.1.9"
 webencodings = "==0.5.1"
 wrapt = "==1.11.2"
 Cython = "==0.29.16"
-Pygments = "==2.7.4"
+Pygments = "==2.15.0"
 
 [requires]
 python_version = "3.7"
