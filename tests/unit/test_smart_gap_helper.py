@@ -13,14 +13,17 @@ from Bio.Align import MultipleSeqAlignment
 from clipkit.smart_gap_helper import (
     smart_gap_threshold_determination,
     greatest_diff_in_slopes,
-    gap_to_gap_slope, 
+    gap_to_gap_slope,
     get_gaps_distribution,
-    count_and_sort_gaps
+    count_and_sort_gaps,
 )
 from clipkit.helpers import SeqType
 from clipkit.files import FileFormat
+from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
+
 
 here = Path(__file__)
+
 
 class TestSmartGapsHelper(object):
     def test_smart_gap_threshold_simple_case(self):
@@ -29,7 +32,7 @@ class TestSmartGapsHelper(object):
         expected_gaps = 0.8
 
         ## execution
-        gaps = smart_gap_threshold_determination(alignment, SeqType.nt)
+        gaps = smart_gap_threshold_determination(alignment, DEFAULT_AA_GAP_CHARS, True)
 
         ## check results
         assert expected_gaps == gaps
@@ -37,9 +40,9 @@ class TestSmartGapsHelper(object):
     def test_smart_gap_threshold_standard_case(self):
         ## set up
         alignment = AlignIO.read(f"{here.parent}/examples/EOG091N44M8_aa.fa", "fasta")
-        
+
         ## execution
-        gaps = smart_gap_threshold_determination(alignment, SeqType.aa)
+        gaps = smart_gap_threshold_determination(alignment, DEFAULT_AA_GAP_CHARS, True)
         expected_gaps = 0.8803
 
         ## check results
@@ -74,7 +77,7 @@ class TestSmartGapsHelper(object):
             1.0319917440660464,
             0.7933269867174482,
             0.11399518940300717,
-            0.8026602453847114
+            0.8026602453847114,
         ]
         gaps_arr = [
             [0.9915, 136.0],
@@ -108,7 +111,7 @@ class TestSmartGapsHelper(object):
             [0.0256, 3.0],
             [0.0171, 1.0],
             [0.0085, 1.0],
-            [0.0, 95.0]
+            [0.0, 95.0],
         ]
         expected_return = 0.8803
 
@@ -136,7 +139,9 @@ class TestSmartGapsHelper(object):
         alignment_length = 6
 
         ## execution
-        gaps_arr = get_gaps_distribution(alignment, alignment_length, SeqType.nt)
+        gaps_arr = get_gaps_distribution(
+            alignment, alignment_length, DEFAULT_NT_GAP_CHARS, True
+        )
         expected_gaps_arr = [0.0, 0.6, 0.0, 0.8, 0.0, 0.2]
 
         ## check results
@@ -152,8 +157,3 @@ class TestSmartGapsHelper(object):
 
         ## check results
         assert expected_gaps_arr == gaps_arr
-
-
-        
-
-

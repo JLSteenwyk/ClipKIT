@@ -1,25 +1,29 @@
 import logging
 
+from .helpers import SeqType
+from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .msa import MSA
+
+
 logger = logging.getLogger(__name__)
 
 
-def check_if_all_sites_were_trimmed(keepD):
-    """
-    Determine if every site in an alignment was trimmed
-    """
-    # check if resulting alingment length is 0
-    if not len(next(iter(keepD.values()))):
+def warn_if_all_sites_were_trimmed(keep_msa: "MSA") -> None:
+    if keep_msa.is_empty:
         logger.warning(
             "WARNING: All sites trimmed from alignment. Please use different parameters."
         )
 
 
-def check_if_entry_contains_only_gaps(keepD):
-    """
-    Determine if any output sequence contains only gaps
-    """
-    for entry, sequence in keepD.items():
-        chars_in_sequence = set(sequence)
-        if len(chars_in_sequence) == 1 and "-" in chars_in_sequence:
-            logger.warning(f"WARNING: header id '{entry}' contains only gaps")
-            break
+def warn_if_entry_contains_only_gaps(keep_msa: "MSA", sequence_type: SeqType) -> None:
+    if sequence_type == SeqType.aa:
+        gap_chars = DEFAULT_AA_GAP_CHARS
+    else:
+        gap_chars = DEFAULT_NT_GAP_CHARS
+    should_warn, entry = keep_msa.is_any_entry_sequence_only_gaps(gap_chars)
+    if should_warn:
+        logger.warning(f"WARNING: header id '{entry}' contains only gaps")

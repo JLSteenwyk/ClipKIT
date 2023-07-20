@@ -1,16 +1,12 @@
-import sys
-import textwrap
-import time
+import re
 
-import numpy as np
 from Bio import SeqIO
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
-from math import floor
 from tqdm import tqdm
 
-from .modes import TrimmingMode, trim
+from .msa import MSA
+from .modes import SiteClassificationType, TrimmingMode, trim
+from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
 from .write import write_processing_aln, write_output_files_message
 
@@ -22,262 +18,182 @@ class SeqType(Enum):
     nt = "nt"
 
 
-def get_seq_type(
-        alignment,
-        sequence_type: SeqType
-):
-    """
-    determine sequence type of input file
-    """
-    if not sequence_type:
-        seqs = [str(record.seq) for record in alignment]
-        seqs = ''.join(seqs)
-        for gap_char in ["-", "?", "*", "X"]:
-            seqs = seqs.replace(gap_char, "")
-        if len(set(seqs.upper())) > 5:
-            sequence_type = SeqType.aa
-        else:
-            sequence_type = SeqType.nt
+def remove_gaps(seq: str, gap_chars: list[str] = DEFAULT_AA_GAP_CHARS) -> str:
+    pattern = "|".join([re.escape(char) for char in gap_chars])
+    return re.sub(pattern, "", seq)
+
+
+def get_seq_type(alignment: MultipleSeqAlignment) -> SeqType:
+    seq = str(alignment[0].seq)
+    seq = remove_gaps(seq)
+    if len(seq) < 200:
+        seq = "".join([str(record.seq) for record in alignment])
+        seq = remove_gaps(seq)
+
+    if len(set(seq.upper())) > 5:
+        sequence_type = SeqType.aa
+    else:
+        sequence_type = SeqType.nt
+
     return sequence_type
 
-def get_sequence_at_position_and_report_features(alignment, i, char):
-    """
-    Count the occurence of each character at a given position
-    in an alignment. This information is used to determine
-    if the aligment is parsimony informative or not. When 
-    count characters, gaps ('-') are excluded
 
-    Arguments
-    ---------
-    argv: seqAtPosition
-        string that contains the sequence at a given column 
-    """
+def get_alignment_column(alignment: MultipleSeqAlignment, index: int) -> str:
+    alignment_column = ""
+    alignment_column += alignment[:, index]
+    return alignment_column.upper()
 
-    # save the sequence at the position to a string
-    seqAtPosition = ""
-    seqAtPosition += alignment[:, i]
-    seqAtPosition = seqAtPosition.upper()
 
-    # determine the length and number of gaps in an alignment position
-    lengthOfSeq = len(seqAtPosition)
-    if char == SeqType.aa:
-        for gap_char in ["?", "*", "X"]:
-            seqAtPosition = seqAtPosition.replace(gap_char, "-")
+def get_gap_chars(seq_type: SeqType) -> list[str]:
+    if seq_type == SeqType.nt:
+        return DEFAULT_NT_GAP_CHARS
     else:
-        for gap_char in ["?", "*", "X", "N"]:
-            seqAtPosition = seqAtPosition.replace(gap_char, "-")
-
-    numOfGaps = seqAtPosition.count("-")
-    gappyness = numOfGaps / lengthOfSeq
-
-    return seqAtPosition, gappyness
+        return DEFAULT_AA_GAP_CHARS
 
 
-def count_characters_at_position(seqAtPosition):
+def report_column_features(
+    alignment: MultipleSeqAlignment, index: int, gap_chars: list
+) -> tuple[str, float]:
     """
     Count the occurence of each character at a given position
     in an alignment. This information is used to determine
-    if the aligment is parsimony informative or not. When 
-    count characters, gaps ('-') are excluded
-
-    Arguments
-    ---------
-    argv: seqAtPosition
-        string that contains the sequence at a given column
+    if the aligment is parsimony informative or not. When
+    counting characters, gaps are excluded.
     """
+    alignment_column = get_alignment_column(alignment, index)
 
-    numOccurences = {}
-    for char in set(seqAtPosition.replace("-", "")):
-        numOccurences[char] = seqAtPosition.count(char)
-    return numOccurences
+    column_length = len(alignment_column)
+
+    number_of_gaps = sum([alignment_column.count(char) for char in gap_chars])
+    gappyness = number_of_gaps / column_length
+
+    return alignment_column, gappyness
 
 
-def parsimony_informative_or_constant(numOccurences):
+def count_characters_at_position(alignment_column: str, gap_chars: list) -> dict:
+    character_counts = {}
+
+    alignment_column = remove_gaps(alignment_column, gap_chars)
+    for char in set(alignment_column):
+        character_counts[char] = alignment_column.count(char)
+    return character_counts
+
+
+def determine_site_classification_type(
+    character_counts: dict,
+) -> SiteClassificationType:
     """
     Determines if a site is parsimony informative or constant.
-    A site is parsimony-informative if it contains at least two types of nucleotides 
+    A site is parsimony-informative if it contains at least two types of nucleotides
     (or amino acids), and at least two of them occur with a minimum frequency of two.
     https://www.megasoftware.net/web_help_7/rh_parsimony_informative_site.htm
 
     A site is constant if it contains only one character and that character occurs
     at least twice. https://www.megasoftware.net/web_help_7/rh_constant_site.htm
 
-    Arguments
-    ---------
-    argv: numOccurences
-        dictionary with sequence characters (keys) and their counts (values)
+    A singleton is a site that contains at least two types of characters with, at most,
+    one occuring multiple times. https://www.megasoftware.net/web_help_7/rh_singleton_sites.htm
+    """
+    parsimony_informative_threshold = 2
+    counts_gte_threshold = 0
+
+    for count in character_counts.values():
+        if count >= 2:
+            counts_gte_threshold += 1
+        if counts_gte_threshold >= parsimony_informative_threshold:
+            return SiteClassificationType.parsimony_informative
+
+    if counts_gte_threshold == 1 and len(character_counts) == 1:
+        return SiteClassificationType.constant
+    elif counts_gte_threshold == 1 and len(character_counts) > 1:
+        return SiteClassificationType.singleton
+
+    return SiteClassificationType.other
+
+
+def create_keep_and_trim_msas(
+    alignment: MultipleSeqAlignment, complement: bool
+) -> tuple[MSA, MSA]:
+    """
+    Creates MSA classes to track sites kept and trimmed
     """
 
-    # create a dictionary of characters that occur at least twice
-    d = dict((k, v) for k, v in numOccurences.items() if v >= 2)
-    # if multiple characters occur at least twice, the site is parsimony
-    # informative and not constant
-    if len(d) >= 2:
-        parsimony_informative = True
-        constant_site = False
-    # if one character occurs at least twice and is the only character,
-    # the site is not parismony informative but it is constant
-    elif len(d) == 1 and len(numOccurences) == 1:
-        parsimony_informative = False
-        constant_site = True
+    keep_msa = MSA.from_bio_msa(alignment)
+    if complement:
+        trim_msa = MSA.from_bio_msa(alignment)
     else:
-        parsimony_informative = False
-        constant_site = False
+        trim_msa = None
 
-    return parsimony_informative, constant_site
+    return keep_msa, trim_msa
 
 
-def populate_empty_keepD_and_trimD(alignment):
+def write_keep_msa(
+    keep_msa: MSA, out_file_name: str, out_file_format: FileFormat
+) -> None:
     """
-    Creates barebones dictionaries for sites kept and trimmed. Creates
-    an array for keeping log information.
-
-    Arguments
-    ---------
-    argv: alignment
-        biopython multiple sequence alignment object
+    keep_msa is populated with sites that are kept after trimming is finished
     """
-    keepD = {}
-    trimD = {}
-    alignment_length = alignment.get_alignment_length()
-    for entry in alignment:
-        keepD[entry.description] = np.zeros([alignment_length], dtype=bytes)
-        trimD[entry.description] = np.zeros([alignment_length], dtype=bytes)
-
-    return keepD, trimD
-
-
-def join_keepD_and_trimD(keepD, trimD):
-    """
-    Currently, each position is its own element. This function
-    will join those elements into one string.
-
-    Arguments
-    ---------
-    argv: keepD
-        dictionary of sequences to be kept after trimmed
-    argv: trimD
-        dictionary of sequences to be trimmed off
-    """
-
-    # join elements in value lists in keepD and trimD
-    for k, v in keepD.items():
-        keepD[k] = "".join(np.char.decode(v))
-    for k, v in trimD.items():
-        trimD[k] = "".join(np.char.decode(v))
-
-    return keepD, trimD
-
-
-def write_keepD(keepD, outFile, outFileFormat: FileFormat):
-    """
-    This creates a biopython multisequence alignment object. Object
-    is populated with sites that are kept after trimming is finished
-
-    Arguments
-    ---------
-    argv: keepD
-        dictionary of sites that are kept in resulting alignment
-    argv: outFile
-        name of the output file
-    argv: outFileFormat
-        output file format
-    """
-
-    seqList = []
-    for indiv in keepD.keys():
-        seqList.append(SeqRecord(Seq(str(keepD[indiv])), id=str(indiv), description=""))
-    keepMSA = MultipleSeqAlignment(seqList)
-    if outFileFormat.value == 'phylip_relaxed':
-        SeqIO.write(keepMSA, outFile, 'phylip-relaxed')
-    elif outFileFormat.value == 'phylip_sequential':
-        SeqIO.write(keepMSA, outFile, 'phylip-sequential')
+    output_msa = keep_msa.to_bio_msa()
+    if out_file_format.value == "phylip_relaxed":
+        SeqIO.write(output_msa, out_file_name, "phylip-relaxed")
+    elif out_file_format.value == "phylip_sequential":
+        SeqIO.write(output_msa, out_file_name, "phylip-sequential")
     else:
-        SeqIO.write(keepMSA, outFile, outFileFormat.value)
+        SeqIO.write(output_msa, out_file_name, out_file_format.value)
 
 
-def write_trimD(trimD, outFile: str, outFileFormat: FileFormat):
+def write_trim_msa(trim_msa: MSA, out_file: str, out_file_format: FileFormat) -> None:
     """
-    This creates a biopython multisequence alignment object. Object
-    is populated with sites that are trimmed after trimming is finished
-
-    Arguments
-    ---------
-    argv: trimD
-        dictionary of sites that are trimmed in final alignment
-    argv: outFileFormat
-        file format of complementary output file
-    argv: name of output file
+    trim_msa is populated with sites that are trimmed after trimming is finished
     """
-
-    seqList = []
-    for indiv in trimD.keys():
-        seqList.append(SeqRecord(Seq(str(trimD[indiv])), id=str(indiv), description=""))
-    trimMSA = MultipleSeqAlignment(seqList)
-    completmentOut = str(outFile) + ".complement"
-    SeqIO.write(trimMSA, completmentOut, outFileFormat.value)
+    output_msa = trim_msa.to_bio_msa()
+    completmentOut = str(out_file) + ".complement"
+    if out_file_format.value == "phylip_relaxed":
+        SeqIO.write(output_msa, out_file, "phylip-relaxed")
+    elif out_file_format.value == "phylip_sequential":
+        SeqIO.write(output_msa, out_file, "phylip-sequential")
+    SeqIO.write(output_msa, completmentOut, out_file_format.value)
 
 
 def keep_trim_and_log(
-    alignment, gaps: float, mode: TrimmingMode, use_log: bool, outFile, complement, char: SeqType
-):
+    alignment: MultipleSeqAlignment,
+    gaps: float,
+    mode: TrimmingMode,
+    use_log: bool,
+    out_file_name: str,
+    complement: bool,
+    gap_chars: list,
+    quiet: bool,
+) -> tuple[MSA, MSA]:
     """
-    Determines positions to keep or trim and saves these positions
-    to dictionaries named keepD and trimD. For both dictionaries,
-    keys are the names of the sequence entries and the values are
-    sequences that will be kept or trimmed
-
-    Arguments
-    ---------
-    argv: alignment
-        biopython multiple sequence alignment object
-    argv: gaps
-        gaps threshold to determine if a position is too gappy or not
-    argv: mode
-        mode of how to trim alignment
+    Determines positions to keep or trim and saves these positions on the MSA classes.
     """
-
-    # initialize dictionaries that will eventually be populated with
-    # alignment positions to keep or trim (keys) and the sequence at
-    # that position (values). Also, initialize a list of log information
-    # that will be kept in an array format
-    keepD, trimD = populate_empty_keepD_and_trimD(alignment)
+    # initialize MSA classes
+    keep_msa, trim_msa = create_keep_and_trim_msas(alignment, complement)
 
     alignment_length = alignment.get_alignment_length()
 
-    # loop through alignment
+    site_classification_counts = dict()
+    site_classification_counts[SiteClassificationType.parsimony_informative] = 0
+    site_classification_counts[SiteClassificationType.constant] = 0
+    site_classification_counts[SiteClassificationType.singleton] = 0
+    site_classification_counts[SiteClassificationType.other] = 0
+
     write_processing_aln()
-    for i in tqdm(range(0, alignment_length, int(1))):
+    for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
+        sequence_at_index, gappyness = report_column_features(alignment, i, gap_chars)
 
-        # save the sequence at the position to a string and calculate the gappyness of the site
-        seqAtPosition, gappyness = get_sequence_at_position_and_report_features(
-            alignment, i, char
-        )
+        character_counts = count_characters_at_position(sequence_at_index, gap_chars)
 
-        ## determine if the site is parsimony informative and trim accordingly
-        # Create a dictionary that tracks the number of occurences of each character
-        # excluding gaps or '-'
-        numOccurences = count_characters_at_position(seqAtPosition)
+        # determine if a site is parsimony informative, singleton, or constant
+        site_classification_type = determine_site_classification_type(character_counts)
 
-        # if the number of values that are greater than two
-        # in the numOccurences dictionary is greater than two,
-        # the site is parsimony informative
-        #
-        # determine if a site is a constant site or not. A constant site is
-        # defined as a site that contains the same nucl or amino acid at all
-        # sequence entries. Additionally, that nucl or amino acid must occur at
-        # least twice
-        parsimony_informative, constant_site = parsimony_informative_or_constant(
-            numOccurences
-        )
-
-        # trim based on the mode
-        keepD, trimD = trim(
+        keep_msa, trim_msa = trim(
             gappyness,
-            parsimony_informative,
-            constant_site,
-            keepD,
-            trimD,
+            site_classification_type,
+            site_classification_counts,
+            keep_msa,
+            trim_msa,
             i,
             gaps,
             alignment,
@@ -285,9 +201,6 @@ def keep_trim_and_log(
             use_log,
         )
 
-    # print to stdout that output files are being written
-    write_output_files_message(outFile, complement, use_log)
-    # join elements in value lists in keepD and trimD
-    keepD, trimD = join_keepD_and_trimD(keepD, trimD)
-
-    return keepD, trimD
+    # inform user that output files are being written
+    write_output_files_message(out_file_name, complement, use_log)
+    return keep_msa, trim_msa, site_classification_counts

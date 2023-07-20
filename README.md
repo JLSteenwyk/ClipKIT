@@ -50,6 +50,17 @@ This documentation covers downloading and installing ClipKIT. Details about each
 
 <br />
 
+**Quick Start**
+
+```shell
+# install
+pip install clipkit
+# run
+clipkit input.fa
+```
+
+<br />
+
 **Installation**
 
 **If you are having trouble installing ClipKIT, please contact the lead developer, Jacob L. Steenwyk, via [email](https://jlsteenwyk.com/contact.html) or [twitter](https://twitter.com/jlsteenwyk) to get help.**
@@ -57,9 +68,9 @@ This documentation covers downloading and installing ClipKIT. Details about each
 To install using *pip*, we strongly recommend building a virtual environment to avoid software dependency issues. To do so, execute the following commands:
 ```shell
 # create virtual environment
-python -m venv .venv
+python -m venv venv
 # activate virtual environment
-source .venv/bin/activate
+source venv/bin/activate
 # install clipkit
 pip install clipkit
 ```
@@ -79,9 +90,9 @@ Similarly, to install from source, we strongly recommend using a virtual environ
 git clone https://github.com/JLSteenwyk/ClipKIT.git
 cd ClipKIT/
 # create virtual environment
-python -m venv .venv
+python -m venv venv
 # activate virtual environment
-source .venv/bin/activate
+source venv/bin/activate
 # install
 make install
 ```

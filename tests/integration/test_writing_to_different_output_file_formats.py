@@ -4,6 +4,7 @@ from pathlib import Path
 from clipkit.clipkit import execute
 from clipkit.files import FileFormat
 from clipkit.modes import TrimmingMode
+from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 
 here = Path(__file__)
 
@@ -21,13 +22,15 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='clustal',
+            input_file_format="fasta",
+            output_file_format="clustal",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -50,13 +53,15 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='maf',
+            input_file_format="fasta",
+            output_file_format="maf",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -79,13 +84,15 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='mauve',
+            input_file_format="fasta",
+            output_file_format="mauve",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -108,13 +115,15 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='phylip',
+            input_file_format="fasta",
+            output_file_format="phylip",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -137,13 +146,15 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='phylip_sequential',
+            input_file_format="fasta",
+            output_file_format="phylip_sequential",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -166,13 +177,15 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='phylip_relaxed',
+            input_file_format="fasta",
+            output_file_format="phylip_relaxed",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -195,13 +208,15 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='stockholm',
+            input_file_format="fasta",
+            output_file_format="stockholm",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -224,17 +239,21 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='clustal',
+            input_file_format="fasta",
+            output_file_format="clustal",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.clustal", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.clustal", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:
@@ -253,17 +272,21 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='maf',
+            input_file_format="fasta",
+            output_file_format="maf",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.maf", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.maf", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:
@@ -282,17 +305,21 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='mauve',
+            input_file_format="fasta",
+            output_file_format="mauve",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.mauve", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.mauve", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:
@@ -311,17 +338,21 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='phylip',
+            input_file_format="fasta",
+            output_file_format="phylip",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.phylip", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.phylip", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:
@@ -340,17 +371,21 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='phylip_sequential',
+            input_file_format="fasta",
+            output_file_format="phylip_sequential",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.phylip-sequential", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.phylip-sequential", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:
@@ -369,17 +404,21 @@ class TestOutFormats(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='stockholm',
+            input_file_format="fasta",
+            output_file_format="stockholm",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.stockholm", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.stockholm", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:

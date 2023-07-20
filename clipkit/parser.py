@@ -8,18 +8,19 @@ from argparse import (
 )
 
 from .helpers import SeqType
-from .modes import TrimmingMode
 from .files import FileFormat
+from .modes import TrimmingMode
 from .version import __version__
 
-def create_parser():
+
+def create_parser() -> ArgumentParser:
     parser = ArgumentParser(
         add_help=False,
         formatter_class=RawDescriptionHelpFormatter,
         usage=SUPPRESS,
         description=textwrap.dedent(
             f"""\
-              _____ _ _       _  _______ _______ 
+              _____ _ _       _  _______ _______  
              / ____| (_)     | |/ /_   _|__   __|
             | |    | |_ _ __ | ' /  | |    | |   
             | |    | | | '_ \|  <   | |    | |   
@@ -35,7 +36,7 @@ def create_parser():
         ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
 
         Usage: clipkit <input> [optional arguments]
-        """
+        """  # noqa
         ),
     )
 
@@ -44,7 +45,7 @@ def create_parser():
         parser.print_help(sys.stderr)
         sys.exit()
 
-    ## required arguments
+    # required arguments
     required = parser.add_argument_group(
         "required arguments",
         description=textwrap.dedent(
@@ -57,7 +58,7 @@ def create_parser():
 
     required.add_argument("input", type=str, help=SUPPRESS)
 
-    ## optional arguments
+    # optional arguments
     optional = parser.add_argument_group(
         "optional arguments",
         description=textwrap.dedent(
@@ -77,6 +78,10 @@ def create_parser():
         -g, --gaps <threshold_of_gaps>              specifies gaps threshold
                                                     (default: 0.9)
 
+        -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
+                                                    (default for aa: "-?*XxNn"
+                                                     default for nt: "-?*Xx")
+
         -if, --input_file_format <file_format>      specifies input file format
                                                     (default: auto-detect)    
 
@@ -91,7 +96,9 @@ def create_parser():
 
         -c, --complementary                         creates complementary alignment of trimmed sequences
                                                     (input file named with '.log' suffix)
- 
+
+        -q, --quiet                                 disables all logging to stdout
+
         -h, --help                                  help message
         -v, --version                               print version
 
@@ -113,6 +120,12 @@ def create_parser():
             Must be between 0 and 1. (Default: 0.9). This argument is ignored
             when using the kpi and kpic mdoes of trimming as well as an 
             iteration of trimming that uses smart-gap.
+
+        Gap characters
+            Specifies gap characters used in the input file. All gap characters
+            should have a quotes (single or double) surrounding them. For example,
+            "NnXx-?" would specify that "N", "n", "X", "x", "-", and "?" are
+            gap characters.
 
         Sequence type
             Specifies the type of sequences in the input file. Valid options
@@ -138,30 +151,53 @@ def create_parser():
 
         Complementary
             Creates an alignment file of only the trimmed sequences
-        """
+        """  # noqa
         ),
     )
 
     optional.add_argument(
-        "-o", "--output", help=SUPPRESS, metavar="output"
+        "-q",
+        "--quiet",
+        help=SUPPRESS,
+        action="store_true",
+        required=False,
     )
+
+    optional.add_argument("-o", "--output", help=SUPPRESS, metavar="output")
 
     mode_choices = [mode.value for mode in TrimmingMode]
     optional.add_argument(
-        "-m", "--mode", help=SUPPRESS, nargs="?", choices=mode_choices,
+        "-m",
+        "--mode",
+        help=SUPPRESS,
+        nargs="?",
+        choices=mode_choices,
     )
 
-    seq_type_choices = [seq.value.upper() for seq in SeqType] + [seq.value.lower() for seq in SeqType]
+    seq_type_choices = [seq.value.upper() for seq in SeqType] + [
+        seq.value.lower() for seq in SeqType
+    ]
     optional.add_argument(
-        "-s", "--sequence_type", help=SUPPRESS, nargs="?", choices=seq_type_choices,
+        "-s",
+        "--sequence_type",
+        help=SUPPRESS,
+        nargs="?",
+        choices=seq_type_choices,
     )
 
     optional.add_argument(
-        "-h", "--help", action="help", help=SUPPRESS,
+        "-h",
+        "--help",
+        action="help",
+        help=SUPPRESS,
     )
 
     optional.add_argument(
-        "-v", "--version", action="version", version=f"clipkit {__version__}", help=SUPPRESS,
+        "-v",
+        "--version",
+        action="version",
+        version=f"clipkit {__version__}",
+        help=SUPPRESS,
     )
 
     optional.add_argument(
@@ -171,6 +207,15 @@ def create_parser():
         required=False,
         help=SUPPRESS,
         metavar="fraction of gaps",
+    )
+
+    optional.add_argument(
+        "-gc",
+        "--gap_characters",
+        type=str,
+        required=False,
+        help=SUPPRESS,
+        metavar="gap characters",
     )
 
     file_format_choices = [file_format.value.lower() for file_format in FileFormat]
@@ -195,11 +240,19 @@ def create_parser():
     )
 
     optional.add_argument(
-        "-l", "--log", action="store_true", required=False, help=SUPPRESS,
+        "-l",
+        "--log",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
     )
 
     optional.add_argument(
-        "-c", "--complementary", action="store_true", required=False, help=SUPPRESS,
+        "-c",
+        "--complementary",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
     )
 
     return parser

@@ -1,8 +1,17 @@
-import logging
-
 from enum import Enum
+from typing import TYPE_CHECKING
+from .logger import log_file_logger
 
-logger = logging.getLogger("clipkit.clipkit")
+if TYPE_CHECKING:
+    from Bio.Align import MultipleSeqAlignment
+    from .msa import MSA
+
+
+class SiteClassificationType(Enum):
+    parsimony_informative = "parsimony-informative"
+    constant = "constant"
+    singleton = "singleton"
+    other = "other"
 
 
 class TrimmingMode(Enum):
@@ -16,92 +25,78 @@ class TrimmingMode(Enum):
     kpic_smart_gap = "kpic-smart-gap"
 
 
-def shouldKeep(
+def should_keep_site(
     mode: TrimmingMode,
-    parsimony_informative: bool,
-    constant_site: bool,
+    site_classification_type: "SiteClassificationType",
     gappyness: float,
     gaps: float,
-):
-    """
-    Determine if a site should be kept or not
-    """
+) -> bool:
     if mode == TrimmingMode.kpi_gappy:
-        return gappyness <= gaps and parsimony_informative
+        return (
+            gappyness <= gaps
+            and site_classification_type == SiteClassificationType.parsimony_informative
+        )
     elif mode == TrimmingMode.gappy:
         return gappyness <= gaps
     elif mode == TrimmingMode.kpi:
-        return parsimony_informative
+        return site_classification_type == SiteClassificationType.parsimony_informative
     elif mode == TrimmingMode.kpic:
-        return parsimony_informative or constant_site
+        return (
+            site_classification_type == SiteClassificationType.parsimony_informative
+            or site_classification_type == SiteClassificationType.constant
+        )
     elif mode == TrimmingMode.kpic_gappy:
-        return gappyness <= gaps and (parsimony_informative or constant_site)
+        return gappyness <= gaps and (
+            site_classification_type == SiteClassificationType.parsimony_informative
+            or site_classification_type == SiteClassificationType.constant
+        )
     elif mode == TrimmingMode.smart_gap:
         return round(gappyness, 4) < gaps
     elif mode == TrimmingMode.kpic_smart_gap:
-        return round(gappyness, 4) < gaps and (parsimony_informative or constant_site)
+        return round(gappyness, 4) < gaps and (
+            site_classification_type == SiteClassificationType.parsimony_informative
+            or site_classification_type == SiteClassificationType.constant
+        )
     elif mode == TrimmingMode.kpi_smart_gap:
-        return round(gappyness, 4) < gaps and parsimony_informative
+        return (
+            round(gappyness, 4) < gaps
+            and site_classification_type == SiteClassificationType.parsimony_informative
+        )
 
 
 def trim(
     gappyness: float,
-    parsimony_informative: bool,
-    constant_site: bool,
-    keepD: dict,
-    trimD: dict,
+    site_classification_type: "SiteClassificationType",
+    site_classification_counts: dict,
+    keep_msa: "MSA",
+    trim_msa: "MSA",
     alignment_position: int,
     gaps: float,
-    alignment,
+    alignment: "MultipleSeqAlignment",
     mode: TrimmingMode,
     use_log: bool,
-):
-    """
-    Trims according to the mode kpi-gappy wherein only parismony informative
-    sites are kept. Additionally, sites that are sufficiently gappy are removed
-
-    Arguments
-    ---------
-    argv: gappyness
-        a float value for what fraction of characters are gaps
-    argv: parsimony_informative
-        boolean for whether or not a site is parsimony informative
-    argv: keepD
-        dictionary for sites that will be kept in the resulting alignment
-    argv: trimD
-        dictionary for sites that will be removed from the final alignment
-    argv: i
-        i is the position in the alignment that the loop is currently in
-    argv: gaps
-        gaps threshold to determine if a position is too gappy or not
-    argv: alignment
-        biopython multiple sequence alignment object
-    """
-    # save to keepD
-    if shouldKeep(mode, parsimony_informative, constant_site, gappyness, gaps):
+) -> tuple["MSA", "MSA"]:
+    if should_keep_site(mode, site_classification_type, gappyness, gaps):
+        site_classification_counts[site_classification_type] += 1
         for entry in alignment:
-            keepD[entry.description][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
+            new_value = entry.seq._data[alignment_position : alignment_position + 1]
+            keep_msa.set_entry_sequence_at_position(
+                entry.description, alignment_position, new_value
+            )
         if use_log:
-            if constant_site:
-                logger.debug(f"{str(alignment_position + 1)} keep Const {gappyness}")
-            elif parsimony_informative:
-                logger.debug(f"{str(alignment_position + 1)} keep PI {gappyness}")
-            else:
-                logger.debug(
-                    f"{str(alignment_position + 1)} keep nConst,nPI {gappyness}"
-                )
-    # save to trimD
+            log_file_logger.debug(
+                f"{str(alignment_position + 1)} keep {site_classification_type.value} {gappyness}"
+            )
     else:
-        for entry in alignment:
-            trimD[entry.description][alignment_position] = entry.seq._data[alignment_position:alignment_position+1]
-        if use_log:
-            if constant_site:
-                logger.debug(f"{str(alignment_position + 1)} trim Const {gappyness}")
-            elif parsimony_informative:
-                logger.debug(f"{str(alignment_position + 1)} trim PI {gappyness}")
-            else:
-                logger.debug(
-                    f"{str(alignment_position + 1)} trim nConst,nPI {gappyness}"
+        if trim_msa is not None:
+            for entry in alignment:
+                new_value = entry.seq._data[alignment_position : alignment_position + 1]
+                trim_msa.set_entry_sequence_at_position(
+                    entry.description, alignment_position, new_value
                 )
+        if use_log:
+            log_file_logger.debug(
+                f"{str(alignment_position + 1)} trim {site_classification_type.value} {gappyness}"
+            )
 
-    return keepD, trimD
+    return keep_msa, trim_msa

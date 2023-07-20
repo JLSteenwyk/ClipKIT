@@ -4,6 +4,7 @@ from pathlib import Path
 from clipkit.clipkit import execute
 from clipkit.files import FileFormat
 from clipkit.modes import TrimmingMode
+from clipkit.settings import DEFAULT_NT_GAP_CHARS
 
 here = Path(__file__)
 
@@ -13,7 +14,7 @@ class TestOutLog(object):
     def test_simple(self):
         """
         test output in clustal format
-        usage: clipkit simple.fa -l
+        usage: clipkit simple.fa -l -m gappy
         """
         input_file = f"{here.parent}/samples/simple.fa"
         output_file = "output/simple.fa.clipkit"
@@ -21,13 +22,15 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=True,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -42,7 +45,7 @@ class TestOutLog(object):
     def test_simple_long_description(self):
         """
         test output in clustal format
-        usage: clipkit simple_long_description.fa -l
+        usage: clipkit simple_long_description.fa -l -m gappy
         """
         input_file = f"{here.parent}/samples/simple_long_description.fa"
         output_file = "output/simple_long_description.fa.clipkit"
@@ -50,17 +53,21 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=True,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple_long_description.fa.clipkit.log", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_long_description.fa.clipkit.log", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(f"{output_file}.log", "r") as out_file:
@@ -71,7 +78,7 @@ class TestOutLog(object):
     def test_12_YIL115C_Anc_2_253_codon_aln(self):
         """
         test output in clustal format
-        usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -l
+        usage: clipkit 12_YIL115C_Anc_2.253_codon_aln.fasta -l -m gappy
         """
         input_file = f"{here.parent}/samples/12_YIL115C_Anc_2.253_codon_aln.fasta"
         output_file = "output/12_YIL115C_Anc_2.253_codon_aln.fasta.clipkit"
@@ -79,13 +86,15 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=True,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 
@@ -111,13 +120,15 @@ class TestOutLog(object):
         kwargs = dict(
             input_file=input_file,
             output_file=output_file,
-            input_file_format='fasta',
-            output_file_format='fasta',
+            input_file_format="fasta",
+            output_file_format="fasta",
             sequence_type=None,
             complement=False,
             gaps=0.9,
             mode=TrimmingMode.gappy,
             use_log=True,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
         )
         execute(**kwargs)
 

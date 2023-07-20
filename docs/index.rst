@@ -17,6 +17,17 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 
 Quick Start
 -----------
+These two lines represent the simpliest method to rapidly install and run ClipKIT.
+
+.. code-block:: shell
+
+	# install
+	pip install clipkit
+	# run
+	clipkit input.fa
+
+Below are more detailed instructions, including alternative installation methods.
+
 **1) Installation**
 
 To help ensure ClipKIT can be installed using your favorite workflow, we have made ClipKIT available from pip, source, and the anaconda cloud.
@@ -28,9 +39,9 @@ To install from pip, use the following commands:
 .. code-block:: shell
 
 	# create virtual environment
-	python -m venv .venv
+	python -m venv venv
 	# activate virtual environment
-	source .venv/bin/activate
+	source venv/bin/activate
 	# install clipkit
 	pip install clipkit
 
@@ -46,11 +57,11 @@ Similarly, to install from source, we strongly recommend using a virtual environ
 
 	# download
 	git clone https://github.com/JLSteenwyk/ClipKIT.git
-	cd PhyKIT/
+	cd ClipKIT/
 	# create virtual environment
-	python -m venv .venv
+	python -m venv venv
 	# activate virtual environment
-	source .venv/bin/activate
+	source venv/bin/activate
 	# install
 	make install
 
@@ -76,8 +87,8 @@ virtual environemnt for your installation:
 
 	git clone https://github.com/JLSteenwyk/ClipKIT.git
 	cd ClipKIT/
-	python -m venv .venv
-	source .venv/bin/activate
+	python -m venv venv 
+	source venv/bin/activate
 	make install
 
 Note, the virtual environment must be activated to use clipkit.
