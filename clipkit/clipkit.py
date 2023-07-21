@@ -24,6 +24,7 @@ from .parser import create_parser
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .smart_gap_helper import smart_gap_threshold_determination
 from .stats import TrimmingStats
+from .version import __version__ as current_version
 from .warnings import (
     warn_if_all_sites_were_trimmed,
     warn_if_entry_contains_only_gaps,
@@ -48,6 +49,15 @@ class TrimRun:
     output_file_format: FileFormat
     site_classification_counts: dict
     gaps: float
+    version: str = current_version
+
+    @property
+    def complement(self):
+        return self.trim_msa.to_bio_msa() if self.trim_msa else None
+
+    @property
+    def trimmed(self):
+        return self.keep_msa.to_bio_msa()
 
 
 def run(
@@ -96,7 +106,7 @@ def run(
         alignment, gaps, mode, use_log, output_file, complement, gap_characters, quiet
     )
 
-    return TrimRun(
+    trim_run = TrimRun(
         alignment,
         keep_msa,
         trim_msa,
@@ -107,6 +117,9 @@ def run(
         site_classification_counts,
         gaps,
     )
+    stats = TrimmingStats(trim_run.alignment, trim_run.keep_msa, trim_run.trim_msa)
+
+    return trim_run, stats
 
 
 def execute(
@@ -136,7 +149,7 @@ def execute(
     # for reporting runtime duration to user
     start_time = time.time()
 
-    trim_run = run(
+    trim_run, stats = run(
         input_file,
         input_file_format,
         output_file,
@@ -174,7 +187,6 @@ def execute(
     if complement:
         write_trim_msa(trim_run.trim_msa, output_file, trim_run.output_file_format)
 
-    stats = TrimmingStats(trim_run.alignment, trim_run.keep_msa, trim_run.trim_msa)
     write_output_stats(stats, start_time)
 
 

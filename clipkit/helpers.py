@@ -57,7 +57,7 @@ def report_column_features(
     """
     Count the occurence of each character at a given position
     in an alignment. This information is used to determine
-    if the aligment is parsimony informative or not. When
+    if the alignment is parsimony informative or not. When
     counting characters, gaps are excluded.
     """
     alignment_column = get_alignment_column(alignment, index)
