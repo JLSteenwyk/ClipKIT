@@ -10,13 +10,16 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
-from clipkit.helpers import count_characters_at_position
-from clipkit.helpers import report_column_features
-from clipkit.helpers import determine_site_classification_type
-from clipkit.helpers import create_keep_and_trim_msas
-from clipkit.helpers import write_trim_msa
-from clipkit.helpers import write_keep_msa
-from clipkit.helpers import SeqType
+from clipkit.helpers import (
+    count_characters_at_position,
+    get_gap_chars,
+    report_column_features,
+    determine_site_classification_type,
+    create_keep_and_trim_msas,
+    write_trim_msa,
+    write_keep_msa,
+    SeqType,
+)
 from clipkit.files import FileFormat
 from clipkit.modes import SiteClassificationType, TrimmingMode, trim, should_keep_site
 from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
@@ -203,3 +206,16 @@ class TestWriteTrimD(object):
         mock_write.assert_called_once_with(
             sample_msa, expected_completmentOut, out_file_format.value
         )
+
+
+class TestGetGapChars(object):
+    def test_get_gap_chars(self):
+        ## set up
+        seq_type = SeqType.aa
+
+        ## execution
+        res_seq_type = get_gap_chars(seq_type)
+
+        ## check results
+        expected_res = DEFAULT_AA_GAP_CHARS
+        assert expected_res == res_seq_type
