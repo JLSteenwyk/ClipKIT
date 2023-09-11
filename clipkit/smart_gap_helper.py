@@ -59,13 +59,10 @@ def gap_to_gap_slope(gaps_arr: np.array, alignment_length: int) -> list[float]:
 def get_gaps_distribution(
     alignment: MultipleSeqAlignment, alignment_length: int, gap_chars: list, quiet: bool
 ) -> list[float]:
-    gaps_dist = []
-    for i in tqdm(range(0, alignment_length), disable=quiet, postfix="smart-gap"):
-        _, gappyness = report_column_features(alignment, i, gap_chars)
-        gappyness = round(gappyness, 4)
-        gaps_dist.append(gappyness)
+    msa_array = np.array([list(rec) for rec in alignment])
+    gaps_dist = (msa_array == "-").mean(axis=0)
 
-    return gaps_dist
+    return np.round(gaps_dist, decimals=4).tolist()
 
 
 def count_and_sort_gaps(gaps_dist: list) -> list:

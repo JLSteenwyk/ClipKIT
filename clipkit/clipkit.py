@@ -30,7 +30,6 @@ from .warnings import (
     warn_if_entry_contains_only_gaps,
 )
 from .write import (
-    write_determining_smart_gap_threshold,
     write_user_args,
     write_output_stats,
 )
@@ -98,7 +97,6 @@ def run(
         TrimmingMode.kpi_smart_gap,
         TrimmingMode.kpic_smart_gap,
     }:
-        write_determining_smart_gap_threshold()
         gaps = smart_gap_threshold_determination(alignment, gap_characters, quiet)
 
     # instantiates MSAs to track what we keep/trim from the alignment

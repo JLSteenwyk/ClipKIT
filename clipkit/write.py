@@ -105,18 +105,3 @@ def write_output_stats(stats: "TrimmingStats", start_time: float) -> None:
     """
         )
     )
-
-
-def write_determining_smart_gap_threshold() -> None:
-    """
-    Function to inform using that the smart-gap threshold is being determined
-    """
-    logger.info(
-        textwrap.dedent(
-            """\
-        -----------------------------------
-        | Determining smart-gap threshold |
-        -----------------------------------
-        """
-        )
-    )
