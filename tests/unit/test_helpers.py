@@ -15,7 +15,7 @@ from clipkit.helpers import (
     get_gap_chars,
     report_column_features,
     determine_site_classification_type,
-    create_keep_and_trim_msas,
+    create_msa,
     write_trim_msa,
     write_keep_msa,
     SeqType,
@@ -132,12 +132,12 @@ class TestParsimonyInformativeOrConstant(object):
 
 
 class TestPopulateEmptyKeepDAndTrimD(object):
-    def test_create_keep_and_trim_msas(self):
+    def test_create_msa(self):
         ## set up
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
 
         ## execution
-        keep_msa, trim_msa = create_keep_and_trim_msas(alignment, True)
+        keep_msa, trim_msa = create_msa(alignment, True)
 
         ## check results
         expected_keep_data = {
@@ -171,7 +171,7 @@ class TestWriteKeepD(object):
     def test_write_keep_msa_writes_file(self, mocker, sample_msa):
         ## set up
         alignment = AlignIO.read(f"{here.parent}/examples/single_site.fa", "fasta")
-        keep_msa, _ = create_keep_and_trim_msas(alignment, True)
+        keep_msa, _ = create_msa(alignment, True)
 
         out_file = "output_file_name.fa"
         out_file_format = FileFormat.fasta
@@ -190,7 +190,7 @@ class TestWriteTrimD(object):
     def test_write_trim_msa_calls_seqio_write(self, mocker, sample_msa):
         ## set up
         alignment = AlignIO.read(f"{here.parent}/examples/single_site.fa", "fasta")
-        _, trim_msa = create_keep_and_trim_msas(alignment, True)
+        _, trim_msa = create_msa(alignment, True)
 
         out_file = "output_file_name.fa"
         out_file_format = FileFormat.fasta

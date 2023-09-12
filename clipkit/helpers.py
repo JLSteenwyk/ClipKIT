@@ -79,52 +79,43 @@ def count_characters_at_position(alignment_column: str, gap_chars: list) -> dict
     return character_counts
 
 
-def determine_site_classification_type(
-    character_counts: dict,
-) -> SiteClassificationType:
+# def determine_site_classification_type(
+#     character_counts: dict,
+# ) -> SiteClassificationType:
+#     """
+#     Determines if a site is parsimony informative or constant.
+#     A site is parsimony-informative if it contains at least two types of nucleotides
+#     (or amino acids), and at least two of them occur with a minimum frequency of two.
+#     https://www.megasoftware.net/web_help_7/rh_parsimony_informative_site.htm
+
+#     A site is constant if it contains only one character and that character occurs
+#     at least twice. https://www.megasoftware.net/web_help_7/rh_constant_site.htm
+
+#     A singleton is a site that contains at least two types of characters with, at most,
+#     one occuring multiple times. https://www.megasoftware.net/web_help_7/rh_singleton_sites.htm
+#     """
+#     parsimony_informative_threshold = 2
+#     counts_gte_threshold = 0
+
+#     for count in character_counts.values():
+#         if count >= 2:
+#             counts_gte_threshold += 1
+#         if counts_gte_threshold >= parsimony_informative_threshold:
+#             return SiteClassificationType.parsimony_informative
+
+#     if counts_gte_threshold == 1 and len(character_counts) == 1:
+#         return SiteClassificationType.constant
+#     elif counts_gte_threshold == 1 and len(character_counts) > 1:
+#         return SiteClassificationType.singleton
+
+#     return SiteClassificationType.other
+
+
+def create_msa(alignment: MultipleSeqAlignment) -> MSA:
     """
-    Determines if a site is parsimony informative or constant.
-    A site is parsimony-informative if it contains at least two types of nucleotides
-    (or amino acids), and at least two of them occur with a minimum frequency of two.
-    https://www.megasoftware.net/web_help_7/rh_parsimony_informative_site.htm
-
-    A site is constant if it contains only one character and that character occurs
-    at least twice. https://www.megasoftware.net/web_help_7/rh_constant_site.htm
-
-    A singleton is a site that contains at least two types of characters with, at most,
-    one occuring multiple times. https://www.megasoftware.net/web_help_7/rh_singleton_sites.htm
+    Create MSA class
     """
-    parsimony_informative_threshold = 2
-    counts_gte_threshold = 0
-
-    for count in character_counts.values():
-        if count >= 2:
-            counts_gte_threshold += 1
-        if counts_gte_threshold >= parsimony_informative_threshold:
-            return SiteClassificationType.parsimony_informative
-
-    if counts_gte_threshold == 1 and len(character_counts) == 1:
-        return SiteClassificationType.constant
-    elif counts_gte_threshold == 1 and len(character_counts) > 1:
-        return SiteClassificationType.singleton
-
-    return SiteClassificationType.other
-
-
-def create_keep_and_trim_msas(
-    alignment: MultipleSeqAlignment, complement: bool
-) -> tuple[MSA, MSA]:
-    """
-    Creates MSA classes to track sites kept and trimmed
-    """
-
-    keep_msa = MSA.from_bio_msa(alignment)
-    if complement:
-        trim_msa = MSA.from_bio_msa(alignment)
-    else:
-        trim_msa = None
-
-    return keep_msa, trim_msa
+    return MSA.from_bio_msa(alignment)
 
 
 def write_keep_msa(
@@ -168,39 +159,41 @@ def keep_trim_and_log(
     """
     Determines positions to keep or trim and saves these positions on the MSA classes.
     """
-    # initialize MSA classes
-    keep_msa, trim_msa = create_keep_and_trim_msas(alignment, complement)
+    msa = create_msa(alignment)
+    msa.trim(mode, gap_threshold=gaps)
 
-    alignment_length = alignment.get_alignment_length()
+    return msa, None
 
-    site_classification_counts = dict()
-    site_classification_counts[SiteClassificationType.parsimony_informative] = 0
-    site_classification_counts[SiteClassificationType.constant] = 0
-    site_classification_counts[SiteClassificationType.singleton] = 0
-    site_classification_counts[SiteClassificationType.other] = 0
+    # alignment_length = alignment.get_alignment_length()
 
-    write_processing_aln()
-    for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
-        sequence_at_index, gappyness = report_column_features(alignment, i, gap_chars)
+    # site_classification_counts = dict()
+    # site_classification_counts[SiteClassificationType.parsimony_informative] = 0
+    # site_classification_counts[SiteClassificationType.constant] = 0
+    # site_classification_counts[SiteClassificationType.singleton] = 0
+    # site_classification_counts[SiteClassificationType.other] = 0
 
-        character_counts = count_characters_at_position(sequence_at_index, gap_chars)
+    # write_processing_aln()
+    # for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
+    #     sequence_at_index, gappyness = report_column_features(alignment, i, gap_chars)
 
-        # determine if a site is parsimony informative, singleton, or constant
-        site_classification_type = determine_site_classification_type(character_counts)
+    #     character_counts = count_characters_at_position(sequence_at_index, gap_chars)
 
-        keep_msa, trim_msa = trim(
-            gappyness,
-            site_classification_type,
-            site_classification_counts,
-            keep_msa,
-            trim_msa,
-            i,
-            gaps,
-            alignment,
-            mode,
-            use_log,
-        )
+    #     # determine if a site is parsimony informative, singleton, or constant
+    #     site_classification_type = determine_site_classification_type(character_counts)
 
-    # inform user that output files are being written
-    write_output_files_message(out_file_name, complement, use_log)
-    return keep_msa, trim_msa, site_classification_counts
+    #     keep_msa, trim_msa = trim(
+    #         gappyness,
+    #         site_classification_type,
+    #         site_classification_counts,
+    #         keep_msa,
+    #         trim_msa,
+    #         i,
+    #         gaps,
+    #         alignment,
+    #         mode,
+    #         use_log,
+    #     )
+
+    # # inform user that output files are being written
+    # write_output_files_message(out_file_name, complement, use_log)
+    # return keep_msa, trim_msa, site_classification_counts

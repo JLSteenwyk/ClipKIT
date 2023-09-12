@@ -32,7 +32,7 @@ class TestSmartGapsHelper(object):
         expected_gaps = 0.8
 
         ## execution
-        gaps = smart_gap_threshold_determination(alignment, DEFAULT_AA_GAP_CHARS, True)
+        gaps = smart_gap_threshold_determination(alignment, DEFAULT_AA_GAP_CHARS)
 
         ## check results
         assert expected_gaps == gaps
@@ -42,7 +42,7 @@ class TestSmartGapsHelper(object):
         alignment = AlignIO.read(f"{here.parent}/examples/EOG091N44M8_aa.fa", "fasta")
 
         ## execution
-        gaps = smart_gap_threshold_determination(alignment, DEFAULT_AA_GAP_CHARS, True)
+        gaps = smart_gap_threshold_determination(alignment, DEFAULT_AA_GAP_CHARS)
         expected_gaps = 0.8803
 
         ## check results
@@ -136,12 +136,9 @@ class TestSmartGapsHelper(object):
     def test_get_gaps_distribution(self):
         ## set up
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
-        alignment_length = 6
 
         ## execution
-        gaps_arr = get_gaps_distribution(
-            alignment, alignment_length, DEFAULT_NT_GAP_CHARS, True
-        )
+        gaps_arr = get_gaps_distribution(alignment, DEFAULT_NT_GAP_CHARS)
         expected_gaps_arr = [0.0, 0.6, 0.0, 0.8, 0.0, 0.2]
 
         ## check results

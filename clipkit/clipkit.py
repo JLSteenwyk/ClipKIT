@@ -41,7 +41,6 @@ from dataclasses import dataclass
 class TrimRun:
     alignment: MultipleSeqAlignment
     keep_msa: MSA
-    trim_msa: MSA
     gap_characters: list
     sequence_type: SeqType
     input_file_format: FileFormat
@@ -97,17 +96,16 @@ def run(
         TrimmingMode.kpi_smart_gap,
         TrimmingMode.kpic_smart_gap,
     }:
-        gaps = smart_gap_threshold_determination(alignment, gap_characters, quiet)
+        gaps = smart_gap_threshold_determination(alignment, gap_characters)
 
     # instantiates MSAs to track what we keep/trim from the alignment
-    keep_msa, trim_msa, site_classification_counts = keep_trim_and_log(
+    keep_msa, site_classification_counts = keep_trim_and_log(
         alignment, gaps, mode, use_log, output_file, complement, gap_characters, quiet
     )
 
     trim_run = TrimRun(
         alignment,
         keep_msa,
-        trim_msa,
         gap_characters,
         sequence_type,
         input_file_format,

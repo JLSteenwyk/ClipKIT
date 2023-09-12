@@ -5,7 +5,7 @@ import numpy as np
 from Bio import AlignIO
 from clipkit.modes import SiteClassificationType, TrimmingMode, trim, should_keep_site
 from clipkit.msa import MSA
-from clipkit.helpers import create_keep_and_trim_msas
+from clipkit.helpers import create_msa
 
 
 here = Path(__file__)
@@ -144,7 +144,7 @@ class TestModes(object):
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
         use_log = False
 
-        keep_msa, trim_msa = create_keep_and_trim_msas(alignment, True)
+        keep_msa, trim_msa = create_msa(alignment, True)
 
         ## execution
         keep_msa, trim_msa = trim(
@@ -202,7 +202,7 @@ class TestModes(object):
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
         use_log = False
 
-        keep_msa, trim_msa = create_keep_and_trim_msas(alignment, True)
+        keep_msa, trim_msa = create_msa(alignment, True)
 
         ## execution
         keep_msa, trim_msa = trim(
@@ -260,7 +260,7 @@ class TestModes(object):
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
         use_log = False
 
-        keep_msa, trim_msa = create_keep_and_trim_msas(alignment, True)
+        keep_msa, trim_msa = create_msa(alignment, True)
 
         ## execution
         keep_msa, trim_msa = trim(
@@ -318,7 +318,7 @@ class TestModes(object):
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
         use_log = False
 
-        keep_msa, trim_msa = create_keep_and_trim_msas(alignment, True)
+        keep_msa, trim_msa = create_msa(alignment, True)
 
         ## execution
         keep_msa, trim_msa = trim(
@@ -377,7 +377,7 @@ class TestModes(object):
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
         use_log = False
 
-        keep_msa, trim_msa = create_keep_and_trim_msas(alignment, True)
+        keep_msa, trim_msa = create_msa(alignment, True)
 
         ## execution
         keep_msa, trim_msa = trim(
