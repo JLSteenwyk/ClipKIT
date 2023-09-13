@@ -50,18 +50,20 @@ class MSA:
             col_sorted_unique_values_for, col_counts_per_char = np.unique(
                 column, return_counts=True
             )
-            freqs = zip(col_sorted_unique_values_for, col_counts_per_char)
+            freqs = dict(zip(col_sorted_unique_values_for, col_counts_per_char))
             for gap_char in self.gap_chars:
-                del freqs[gap_char]
-            column_character_frequencies.push(freqs)
+                try:
+                    del freqs[gap_char]
+                except KeyError:
+                    continue
+            column_character_frequencies.append(freqs)
         return column_character_frequencies
 
     def determine_sites_to_trim(self, mode, gap_threshold):
-        # TODO: finishing out logic for other modes
-        if mode == TrimmingMode.gappy:
+        if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness > gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
-            col_char_freqs = self.column_character_frequencies
+            col_char_freqs = self.column_character_frequencies()
             site_classification_types = np.array(
                 [
                     determine_site_classification_type(col_char_freq)
@@ -71,9 +73,61 @@ class MSA:
             sites_to_trim = np.where(
                 site_classification_types
                 != SiteClassificationType.parsimony_informative
+            )[0]
+        elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
+            sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
+            col_char_freqs = self.column_character_frequencies()
+            site_classification_types = np.array(
+                [
+                    determine_site_classification_type(col_char_freq)
+                    for col_char_freq in col_char_freqs
+                ]
             )
-        # when trimming using gaps and site classification,
-        # use np.unique(np.concatenate((sites_to_trim_gappy-based, sites_to_trim_classification-based),0))
+            sites_to_trim_classification_based = np.where(
+                site_classification_types
+                != SiteClassificationType.parsimony_informative
+            )[0]
+            sites_to_trim = np.unique(
+                np.concatenate(
+                    (sites_to_trim_gaps_based, sites_to_trim_classification_based)
+                )
+            )
+        elif mode == TrimmingMode.kpic:
+            col_char_freqs = self.column_character_frequencies()
+            site_classification_types = np.array(
+                [
+                    determine_site_classification_type(col_char_freq)
+                    for col_char_freq in col_char_freqs
+                ]
+            )
+            sites_to_trim = np.where(
+                (
+                    site_classification_types
+                    != SiteClassificationType.parsimony_informative
+                )
+                | (site_classification_types != SiteClassificationType.constant)
+            )[0]
+        elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
+            sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
+            col_char_freqs = self.column_character_frequencies()
+            site_classification_types = np.array(
+                [
+                    determine_site_classification_type(col_char_freq)
+                    for col_char_freq in col_char_freqs
+                ]
+            )
+            sites_to_trim_classification_based = np.where(
+                (
+                    site_classification_types
+                    != SiteClassificationType.parsimony_informative
+                )
+                | (site_classification_types != SiteClassificationType.constant)
+            )[0]
+            sites_to_trim = np.unique(
+                np.concatenate(
+                    (sites_to_trim_gaps_based, sites_to_trim_classification_based)
+                )
+            )[0]
         return sites_to_trim
 
     @staticmethod
