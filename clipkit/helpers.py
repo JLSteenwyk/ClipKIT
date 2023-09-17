@@ -8,7 +8,7 @@ from .msa import MSA
 from .modes import SiteClassificationType, TrimmingMode, trim
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
-from .write import write_processing_aln, write_output_files_message
+from .stats import TrimmingStats
 
 from enum import Enum
 
@@ -70,47 +70,6 @@ def report_column_features(
     return alignment_column, gappyness
 
 
-def count_characters_at_position(alignment_column: str, gap_chars: list) -> dict:
-    character_counts = {}
-
-    alignment_column = remove_gaps(alignment_column, gap_chars)
-    for char in set(alignment_column):
-        character_counts[char] = alignment_column.count(char)
-    return character_counts
-
-
-# def determine_site_classification_type(
-#     character_counts: dict,
-# ) -> SiteClassificationType:
-#     """
-#     Determines if a site is parsimony informative or constant.
-#     A site is parsimony-informative if it contains at least two types of nucleotides
-#     (or amino acids), and at least two of them occur with a minimum frequency of two.
-#     https://www.megasoftware.net/web_help_7/rh_parsimony_informative_site.htm
-
-#     A site is constant if it contains only one character and that character occurs
-#     at least twice. https://www.megasoftware.net/web_help_7/rh_constant_site.htm
-
-#     A singleton is a site that contains at least two types of characters with, at most,
-#     one occuring multiple times. https://www.megasoftware.net/web_help_7/rh_singleton_sites.htm
-#     """
-#     parsimony_informative_threshold = 2
-#     counts_gte_threshold = 0
-
-#     for count in character_counts.values():
-#         if count >= 2:
-#             counts_gte_threshold += 1
-#         if counts_gte_threshold >= parsimony_informative_threshold:
-#             return SiteClassificationType.parsimony_informative
-
-#     if counts_gte_threshold == 1 and len(character_counts) == 1:
-#         return SiteClassificationType.constant
-#     elif counts_gte_threshold == 1 and len(character_counts) > 1:
-#         return SiteClassificationType.singleton
-
-#     return SiteClassificationType.other
-
-
 def create_msa(alignment: MultipleSeqAlignment) -> MSA:
     """
     Create MSA class
@@ -119,12 +78,12 @@ def create_msa(alignment: MultipleSeqAlignment) -> MSA:
 
 
 def write_keep_msa(
-    keep_msa: MSA, out_file_name: str, out_file_format: FileFormat
+    msa: MSA, out_file_name: str, out_file_format: FileFormat
 ) -> None:
     """
-    keep_msa is populated with sites that are kept after trimming is finished
+    msa is populated with sites that are kept after trimming is finished
     """
-    output_msa = keep_msa.to_bio_msa()
+    output_msa = msa.to_bio_msa()
     if out_file_format.value == "phylip_relaxed":
         SeqIO.write(output_msa, out_file_name, "phylip-relaxed")
     elif out_file_format.value == "phylip_sequential":
@@ -133,11 +92,11 @@ def write_keep_msa(
         SeqIO.write(output_msa, out_file_name, out_file_format.value)
 
 
-def write_trim_msa(trim_msa: MSA, out_file: str, out_file_format: FileFormat) -> None:
+def write_complement(msa: MSA, out_file: str, out_file_format: FileFormat) -> None:
     """
-    trim_msa is populated with sites that are trimmed after trimming is finished
+    msa is populated with sites that are trimmed after trimming is finished
     """
-    output_msa = trim_msa.to_bio_msa()
+    output_msa = msa.complement_to_bio_msa()
     completmentOut = str(out_file) + ".complement"
     if out_file_format.value == "phylip_relaxed":
         SeqIO.write(output_msa, out_file, "phylip-relaxed")
@@ -146,7 +105,7 @@ def write_trim_msa(trim_msa: MSA, out_file: str, out_file_format: FileFormat) ->
     SeqIO.write(output_msa, completmentOut, out_file_format.value)
 
 
-def keep_trim_and_log(
+def trim_and_get_stats(
     alignment: MultipleSeqAlignment,
     gaps: float,
     mode: TrimmingMode,
@@ -155,14 +114,14 @@ def keep_trim_and_log(
     complement: bool,
     gap_chars: list,
     quiet: bool,
-) -> tuple[MSA, MSA]:
+) -> tuple["TrimRun", "TrimmingStats"]:
     """
     Determines positions to keep or trim and saves these positions on the MSA classes.
     """
     msa = create_msa(alignment)
     msa.trim(mode, gap_threshold=gaps)
 
-    return msa, None
+    return trim_run, stats
 
     # alignment_length = alignment.get_alignment_length()
 

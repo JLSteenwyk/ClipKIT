@@ -59,5 +59,5 @@ def clipkit(
     if not output_file_path:
         return trim_run, stats
     else:
-        write_keep_msa(trim_run.keep_msa, output_file_path, trim_run.output_file_format)
+        write_keep_msa(trim_run.msa, output_file_path, trim_run.output_file_format)
         return output_file_path, stats

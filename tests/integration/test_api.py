@@ -23,7 +23,6 @@ class TestApiInvocation(object):
             "trimmed_percentage": 33.333
         }
         assert isinstance(trim_run.version, str)
-        assert trim_run.complement is None
         assert isinstance(trim_run.trimmed, MultipleSeqAlignment)
 
     def test_raw_alignment(self):
@@ -40,4 +39,3 @@ class TestApiInvocation(object):
             "trimmed_percentage": 16.667
         }
         assert isinstance(trim_run.version, str)
-        assert trim_run.complement is None

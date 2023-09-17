@@ -7,21 +7,38 @@ from typing import Union
 from .modes import SiteClassificationType, TrimmingMode
 from .site_classification import determine_site_classification_type
 from .settings import DEFAULT_AA_GAP_CHARS
+from .stats import TrimmingStats
 
 
 class MSA:
     def __init__(self, header_info, seq_records) -> None:
         self.header_info = header_info
         self.seq_records = seq_records
-        self.trimmed = None
-        self.sites_trimmed = None
+        self._original_length = len(self.seq_records[0])
+        self._site_positions_to_keep = np.arange(self._original_length)
+        self._site_positions_to_trim = np.array([])
         self._gap_chars = DEFAULT_AA_GAP_CHARS
-        self.original_length = len(self.seq_records[0])
-        pass
+        # self.site_classification_counts = None TODO:
+
+    @property
+    def trimmed(self):
+        return np.delete(self.seq_records, self._site_positions_to_trim, axis=1)[0]
+
+    @property
+    def sites_kept(self):
+        return np.take(self.seq_records, self._site_positions_to_keep, axis=1)
+
+    @property
+    def sites_trimmed(self):
+        return np.take(self.seq_records, self._site_positions_to_trim, axis=1)
 
     @property
     def length(self) -> int:
-        return self.original_length if self.trimmed is None else len(self.trimmed[0])
+        return self._original_length if self.trimmed is None else len(self._site_positions_to_keep)
+
+    @property
+    def original_length(self):
+        return self._original_length
 
     @property
     def gap_chars(self):
@@ -35,14 +52,19 @@ class MSA:
     def site_gappyness(self) -> np.floating:
         return (np.isin(self.seq_records, self._gap_chars)).mean(axis=0)
 
+    @property
+    def is_empty(self) -> bool:
+        print(self.sites_kept)
+        all_zeros = np.all(self.sites_kept[0] == b"")
+        return all_zeros
+
     def trim(
         self,
         mode: TrimmingMode,
         gap_threshold=None,
     ) -> np.array:
-        sites_to_trim = self.determine_sites_to_trim(mode, gap_threshold)
-        self.sites_trimmed = sites_to_trim
-        self.trimmed = np.delete(self.seq_records, sites_to_trim, axis=1)
+        self._site_positions_to_trim = self.determine_site_positions_to_trim(mode, gap_threshold)
+        self._site_positions_to_keep = np.delete(np.arange(self._original_length), self._site_positions_to_trim)
 
     def column_character_frequencies(self):
         column_character_frequencies = []
@@ -59,7 +81,7 @@ class MSA:
             column_character_frequencies.append(freqs)
         return column_character_frequencies
 
-    def determine_sites_to_trim(self, mode, gap_threshold):
+    def determine_site_positions_to_trim(self, mode, gap_threshold):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness > gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
@@ -140,81 +162,35 @@ class MSA:
         return MSA(header_info, seq_records)
 
     def to_bio_msa(self) -> MultipleSeqAlignment:
-        data = self.trimmed if self.trimmed is not None else self.seq_records
+        return self._to_bio_msa(self.sites_kept)
+
+    def complement_to_bio_msa(self) -> MultipleSeqAlignment:
+       return self._to_bio_msa(self.sites_trimmed)
+
+    def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
         return MultipleSeqAlignment(
             [
                 SeqRecord(Seq("".join(rec)), **info)
-                for rec, info in zip(data.tolist(), self.header_info)
+                for rec, info in zip(sites.tolist(), self.header_info)
             ]
         )
 
+    @property
+    def stats(self) -> TrimmingStats:
+        return TrimmingStats(self)
 
-# class MSA:
-#     def __init__(self, entries: list[str], starting_length: int) -> None:
-#         self.starting_length = starting_length
-#         self.entries = entries
-#         self._data = self._init_data()
-#         self._joined = None
+    def is_any_entry_sequence_only_gaps(
+        self, gap_chars=DEFAULT_AA_GAP_CHARS
+    ) -> tuple[bool, Union[str, None]]:
+        # TODO: implement this w/ Jacob
+        return False, None 
+        # for entry, sequence in self._data.items():
+        #     first_sequence_value = sequence[0]
+        #     sequence_values_all_same = np.all(sequence == first_sequence_value)
+        #     if (
+        #         sequence_values_all_same
+        #         and first_sequence_value.decode("utf-8") in gap_chars
+        #     ):
+        #         return True, entry
 
-#     def _init_data(self) -> dict[str, np.array]:
-#         data = {}
-#         for entry in self.entries:
-#             data[entry] = np.zeros([self.starting_length], dtype=bytes)
-#         return data
-
-#     def _reset_joined(self) -> None:
-#         self._joined = None
-
-#     @property
-#     def length(self) -> int:
-#         return np.count_nonzero(next(iter(self._data.values())))
-
-#     @property
-#     def is_empty(self) -> bool:
-#         all_zeros = np.all(self._data[self.entries[0]] == b"")
-#         return all_zeros
-
-#     @property
-#     def string_sequences(self) -> dict[str, str]:
-#         if self._joined:
-#             return self._joined
-#         else:
-#             joined = {}
-#             for entry, sequence in self._data.items():
-#                 joined[entry] = "".join(np.char.decode(sequence))
-#             self._joined = joined
-#         return self._joined
-
-#     @staticmethod
-#     def from_bio_msa(alignment: MultipleSeqAlignment) -> "MSA":
-#         entries = [entry.description for entry in alignment]
-#         length = alignment.get_alignment_length()
-#         return MSA(entries, length)
-
-#     def to_bio_msa(self) -> MultipleSeqAlignment:
-#         seqList = []
-#         for entry, joined in self.string_sequences.items():
-#             seqList.append(SeqRecord(Seq(str(joined)), id=str(entry), description=""))
-#         return MultipleSeqAlignment(seqList)
-
-#     def set_entry_sequence_at_position(
-#         self, entry: str, position: int, value: str
-#     ) -> None:
-#         self._data[entry][position] = value
-
-#         # since we've mutated the sequence data we need to release our cached _joined
-#         self._reset_joined()
-
-#     def is_any_entry_sequence_only_gaps(
-#         self, gap_chars=DEFAULT_AA_GAP_CHARS
-#     ) -> tuple[bool, Union[str, None]]:
-#         for entry, sequence in self._data.items():
-#             first_sequence_value = sequence[0]
-#             sequence_values_all_same = np.all(sequence == first_sequence_value)
-#             if (
-#                 sequence_values_all_same
-#                 and first_sequence_value.decode("utf-8") in gap_chars
-#             ):
-#                 return True, entry
-
-#         return False, None
+        # return False, None

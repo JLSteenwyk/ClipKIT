@@ -12,18 +12,18 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def warn_if_all_sites_were_trimmed(keep_msa: "MSA") -> None:
-    if keep_msa.is_empty:
+def warn_if_all_sites_were_trimmed(msa: "MSA") -> None:
+    if msa.is_empty:
         logger.warning(
             "WARNING: All sites trimmed from alignment. Please use different parameters."
         )
 
 
-def warn_if_entry_contains_only_gaps(keep_msa: "MSA", sequence_type: SeqType) -> None:
+def warn_if_entry_contains_only_gaps(msa: "MSA", sequence_type: SeqType) -> None:
     if sequence_type == SeqType.aa:
         gap_chars = DEFAULT_AA_GAP_CHARS
     else:
         gap_chars = DEFAULT_NT_GAP_CHARS
-    should_warn, entry = keep_msa.is_any_entry_sequence_only_gaps(gap_chars)
+    should_warn, entry = msa.is_any_entry_sequence_only_gaps(gap_chars)
     if should_warn:
         logger.warning(f"WARNING: header id '{entry}' contains only gaps")
