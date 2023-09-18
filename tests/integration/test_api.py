@@ -11,7 +11,7 @@ class TestApiInvocation(object):
     def test_input_file(self):
         trim_run, stats = clipkit(
             input_file_path="tests/integration/samples/simple.fa",
-            mode="gappy",
+            mode=TrimmingMode.gappy,
             gaps=0.3,
             sequence_type="nt",
         )

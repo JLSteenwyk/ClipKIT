@@ -50,11 +50,11 @@ class MSA:
 
     @property
     def site_gappyness(self) -> np.floating:
-        return (np.isin(self.seq_records, self._gap_chars)).mean(axis=0)
+        site_gappyness = (np.isin(self.seq_records, self._gap_chars)).mean(axis=0)
+        return np.around(site_gappyness, decimals=4)
 
     @property
     def is_empty(self) -> bool:
-        print(self.sites_kept)
         all_zeros = np.all(self.sites_kept[0] == b"")
         return all_zeros
 
@@ -66,11 +66,12 @@ class MSA:
         self._site_positions_to_trim = self.determine_site_positions_to_trim(mode, gap_threshold)
         self._site_positions_to_keep = np.delete(np.arange(self._original_length), self._site_positions_to_trim)
 
+
     def column_character_frequencies(self):
         column_character_frequencies = []
         for column in self.seq_records.T:
             col_sorted_unique_values_for, col_counts_per_char = np.unique(
-                column, return_counts=True
+                [char.upper() for char in column], return_counts=True
             )
             freqs = dict(zip(col_sorted_unique_values_for, col_counts_per_char))
             for gap_char in self.gap_chars:
@@ -83,7 +84,7 @@ class MSA:
 
     def determine_site_positions_to_trim(self, mode, gap_threshold):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
-            sites_to_trim = np.where(self.site_gappyness > gap_threshold)[0]
+            sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
             col_char_freqs = self.column_character_frequencies()
             site_classification_types = np.array(
@@ -125,12 +126,16 @@ class MSA:
             sites_to_trim = np.where(
                 (
                     site_classification_types
-                    != SiteClassificationType.parsimony_informative
+                    == SiteClassificationType.other
                 )
-                | (site_classification_types != SiteClassificationType.constant)
+                | (
+                    site_classification_types
+                    == SiteClassificationType.singleton
+                )
             )[0]
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
-            sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
+            sites_to_trim_gaps_based = np.where(self.site_gappyness >= gap_threshold)[0]
+
             col_char_freqs = self.column_character_frequencies()
             site_classification_types = np.array(
                 [
@@ -141,15 +146,20 @@ class MSA:
             sites_to_trim_classification_based = np.where(
                 (
                     site_classification_types
-                    != SiteClassificationType.parsimony_informative
+                    == SiteClassificationType.other
                 )
-                | (site_classification_types != SiteClassificationType.constant)
+                | (
+                    site_classification_types
+                    == SiteClassificationType.singleton
+                )
             )[0]
+
             sites_to_trim = np.unique(
                 np.concatenate(
                     (sites_to_trim_gaps_based, sites_to_trim_classification_based)
                 )
-            )[0]
+            )
+
         return sites_to_trim
 
     @staticmethod
