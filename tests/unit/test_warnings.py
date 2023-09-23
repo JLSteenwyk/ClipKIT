@@ -10,27 +10,94 @@ from clipkit.msa import MSA
 
 
 class TestWarnings(object):
-    def test_all_sites_trimmed(self, mocker):
+    @pytest.mark.parametrize(
+        "header_info, seq_records, should_warn",
+        [
+            (
+                [
+                    {"id": "1", "name": "1", "description": "1"},
+                    {"id": "2", "name": "2", "description": "2"}
+                ],
+                np.array([
+                    ["", "", "", "", "", ""],
+                    ["", "", "", "", "", ""]
+                ]),
+                True
+            ),
+            (
+                [
+                    {"id": "1", "name": "1", "description": "1"},
+                    {"id": "2", "name": "2", "description": "2"}
+                ],
+                np.array([
+                    ["A", "-", "G", "T", "A", "T"],
+                    ["A", "-", "G", "-", "A", "T"]
+                ]),
+                False
+            ),
+        ]
+    )
+    def test_warn_all_sites_trimmed(self, mocker, header_info, seq_records, should_warn):
         mocked_warning = mocker.patch("clipkit.warnings.logger.warning")
 
-        entries = ["some_id"]
-        length = 10
-        keep_msa = MSA(entries, length)
-        warn_if_all_sites_were_trimmed(keep_msa)
+        msa = MSA(header_info, seq_records)
+        warn_if_all_sites_were_trimmed(msa)
 
-        mocked_warning.assert_called_once_with(
-            "WARNING: All sites trimmed from alignment. Please use different parameters."
-        )
+        if should_warn:
+            mocked_warning.assert_called_once_with(
+                "WARNING: All sites trimmed from alignment. Please use different parameters."
+            )
+        else:
+            mocked_warning.assert_not_called()
 
-    def test_gaps_only(self, mocker):
+
+    @pytest.mark.parametrize(
+        "header_info, seq_records, gap_only_header_id",
+        [
+            (
+                [
+                    {"id": "1", "name": "1", "description": "1"},
+                    {"id": "2", "name": "2", "description": "2"}
+                ],
+                np.array([
+                    ["-", "-", "-", "-", "-", "-"],
+                    ["A", "G", "G", "T", "A", "C"]
+                ]),
+                "1"
+            ),
+            (
+                [
+                    {"id": "1", "name": "1", "description": "1"},
+                    {"id": "2", "name": "2", "description": "2"}
+                ],
+                np.array([
+                    ["A", "G", "G", "T", "A", "C"],
+                    ["-", "-", "-", "-", "-", "-"]
+                ]),
+                "2"
+            ),
+            (
+                [
+                    {"id": "1", "name": "1", "description": "1"},
+                    {"id": "2", "name": "2", "description": "2"}
+                ],
+                np.array([
+                    ["A", "-", "G", "T", "A", "T"],
+                    ["A", "-", "G", "-", "A", "T"]
+                ]),
+                None
+            ),
+        ]
+    )
+    def test_warn_if_entry_contains_only_gaps(self, mocker, header_info, seq_records, gap_only_header_id):
         mocked_warning = mocker.patch("clipkit.warnings.logger.warning")
 
-        entries = ["some_id"]
-        length = 1
-        keep_msa = MSA(entries, length)
-        keep_msa.set_entry_sequence_at_position("some_id", 0, "-")
-        warn_if_entry_contains_only_gaps(keep_msa, SeqType.aa)
+        msa = MSA(header_info, seq_records)
+        warn_if_entry_contains_only_gaps(msa)
 
-        mocked_warning.assert_called_once_with(
-            """WARNING: header id 'some_id' contains only gaps"""
-        )
+        if gap_only_header_id:
+            mocked_warning.assert_called_once_with(
+                f"""WARNING: header id '{gap_only_header_id}' contains only gaps"""
+            )
+        else:
+            mocked_warning.assert_not_called()

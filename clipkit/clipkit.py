@@ -100,9 +100,8 @@ def run(
     }:
         gaps = smart_gap_threshold_determination(alignment, gap_characters)
 
-    msa = create_msa(alignment)
+    msa = create_msa(alignment, gap_characters)
     msa.trim(mode, gap_threshold=gaps)
-    stats = msa.stats
 
     # TODO:
     site_classification_counts = {} 
@@ -118,7 +117,7 @@ def run(
         gaps,
     )
 
-    return trim_run, stats
+    return trim_run, msa.stats
 
 
 def execute(
@@ -180,7 +179,7 @@ def execute(
 
     if use_log:
         warn_if_all_sites_were_trimmed(trim_run.msa)
-        warn_if_entry_contains_only_gaps(trim_run.msa, trim_run.sequence_type)
+        warn_if_entry_contains_only_gaps(trim_run.msa)
 
     write_keep_msa(trim_run.msa, output_file, trim_run.output_file_format)
 

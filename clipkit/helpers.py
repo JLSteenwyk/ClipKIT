@@ -5,7 +5,7 @@ from Bio.Align import MultipleSeqAlignment
 from tqdm import tqdm
 
 from .msa import MSA
-from .modes import SiteClassificationType, TrimmingMode, trim
+from .modes import TrimmingMode
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
 from .stats import TrimmingStats
@@ -70,11 +70,11 @@ def report_column_features(
     return alignment_column, gappyness
 
 
-def create_msa(alignment: MultipleSeqAlignment) -> MSA:
+def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str]=None) -> MSA:
     """
     Create MSA class
     """
-    return MSA.from_bio_msa(alignment)
+    return MSA.from_bio_msa(alignment, gap_chars)
 
 
 def write_keep_msa(
@@ -122,37 +122,3 @@ def trim_and_get_stats(
     msa.trim(mode, gap_threshold=gaps)
 
     return trim_run, stats
-
-    # alignment_length = alignment.get_alignment_length()
-
-    # site_classification_counts = dict()
-    # site_classification_counts[SiteClassificationType.parsimony_informative] = 0
-    # site_classification_counts[SiteClassificationType.constant] = 0
-    # site_classification_counts[SiteClassificationType.singleton] = 0
-    # site_classification_counts[SiteClassificationType.other] = 0
-
-    # write_processing_aln()
-    # for i in tqdm(range(alignment_length), disable=quiet, postfix="trimmer"):
-    #     sequence_at_index, gappyness = report_column_features(alignment, i, gap_chars)
-
-    #     character_counts = count_characters_at_position(sequence_at_index, gap_chars)
-
-    #     # determine if a site is parsimony informative, singleton, or constant
-    #     site_classification_type = determine_site_classification_type(character_counts)
-
-    #     keep_msa, trim_msa = trim(
-    #         gappyness,
-    #         site_classification_type,
-    #         site_classification_counts,
-    #         keep_msa,
-    #         trim_msa,
-    #         i,
-    #         gaps,
-    #         alignment,
-    #         mode,
-    #         use_log,
-    #     )
-
-    # # inform user that output files are being written
-    # write_output_files_message(out_file_name, complement, use_log)
-    # return keep_msa, trim_msa, site_classification_counts

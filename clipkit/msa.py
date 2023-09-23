@@ -9,20 +9,19 @@ from .site_classification import determine_site_classification_type
 from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
 
-
 class MSA:
-    def __init__(self, header_info, seq_records) -> None:
+    def __init__(self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS) -> None:
         self.header_info = header_info
         self.seq_records = seq_records
         self._original_length = len(self.seq_records[0])
         self._site_positions_to_keep = np.arange(self._original_length)
         self._site_positions_to_trim = np.array([])
-        self._gap_chars = DEFAULT_AA_GAP_CHARS
+        self._gap_chars = gap_chars
         # self.site_classification_counts = None TODO:
 
     @property
     def trimmed(self):
-        return np.delete(self.seq_records, self._site_positions_to_trim, axis=1)[0]
+        return np.delete(self.seq_records, self._site_positions_to_trim, axis=1)
 
     @property
     def sites_kept(self):
@@ -34,7 +33,7 @@ class MSA:
 
     @property
     def length(self) -> int:
-        return self._original_length if self.trimmed is None else len(self._site_positions_to_keep)
+        return self._original_length if not self.trimmed else len(self._site_positions_to_keep)
 
     @property
     def original_length(self):
@@ -44,10 +43,6 @@ class MSA:
     def gap_chars(self):
         return self._gap_chars
 
-    @gap_chars.setter
-    def gap_chars(self, gap_chars):
-        self._gap_chars = gap_chars
-
     @property
     def site_gappyness(self) -> np.floating:
         site_gappyness = (np.isin(self.seq_records, self._gap_chars)).mean(axis=0)
@@ -55,7 +50,7 @@ class MSA:
 
     @property
     def is_empty(self) -> bool:
-        all_zeros = np.all(self.sites_kept[0] == b"")
+        all_zeros = np.all(self.sites_kept[0] == "")
         return all_zeros
 
     def trim(
@@ -163,13 +158,13 @@ class MSA:
         return sites_to_trim
 
     @staticmethod
-    def from_bio_msa(alignment: MultipleSeqAlignment) -> "MSA":
+    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
         header_info = [
             {"id": rec.id, "name": rec.name, "description": rec.description}
             for rec in alignment
         ]
         seq_records = np.array([list(rec) for rec in alignment])
-        return MSA(header_info, seq_records)
+        return MSA(header_info, seq_records, gap_chars)
 
     def to_bio_msa(self) -> MultipleSeqAlignment:
         return self._to_bio_msa(self.sites_kept)
@@ -189,18 +184,11 @@ class MSA:
     def stats(self) -> TrimmingStats:
         return TrimmingStats(self)
 
-    def is_any_entry_sequence_only_gaps(
-        self, gap_chars=DEFAULT_AA_GAP_CHARS
-    ) -> tuple[bool, Union[str, None]]:
-        # TODO: implement this w/ Jacob
+    def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
+        for idx, row in enumerate(self.trimmed):
+            if (
+                np.all(row == row[0]) # all values the same
+                and row[0] in self.gap_chars
+            ):
+                return True, self.header_info[idx].get("id")
         return False, None 
-        # for entry, sequence in self._data.items():
-        #     first_sequence_value = sequence[0]
-        #     sequence_values_all_same = np.all(sequence == first_sequence_value)
-        #     if (
-        #         sequence_values_all_same
-        #         and first_sequence_value.decode("utf-8") in gap_chars
-        #     ):
-        #         return True, entry
-
-        # return False, None

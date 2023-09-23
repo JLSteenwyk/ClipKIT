@@ -19,11 +19,7 @@ def warn_if_all_sites_were_trimmed(msa: "MSA") -> None:
         )
 
 
-def warn_if_entry_contains_only_gaps(msa: "MSA", sequence_type: SeqType) -> None:
-    if sequence_type == SeqType.aa:
-        gap_chars = DEFAULT_AA_GAP_CHARS
-    else:
-        gap_chars = DEFAULT_NT_GAP_CHARS
-    should_warn, entry = msa.is_any_entry_sequence_only_gaps(gap_chars)
+def warn_if_entry_contains_only_gaps(msa: "MSA") -> None:
+    should_warn, entry = msa.is_any_entry_sequence_only_gaps()
     if should_warn:
         logger.warning(f"WARNING: header id '{entry}' contains only gaps")
