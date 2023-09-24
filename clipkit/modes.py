@@ -6,6 +6,7 @@ if TYPE_CHECKING:
     from Bio.Align import MultipleSeqAlignment
     from .msa import MSA
 
+
 class TrimmingMode(Enum):
     gappy = "gappy"
     smart_gap = "smart-gap"

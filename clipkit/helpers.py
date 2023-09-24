@@ -45,16 +45,14 @@ def get_gap_chars(seq_type: SeqType) -> list[str]:
         return DEFAULT_AA_GAP_CHARS
 
 
-def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str]=None) -> MSA:
+def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str] = None) -> MSA:
     """
     Create MSA class
     """
     return MSA.from_bio_msa(alignment, gap_chars)
 
 
-def write_msa(
-    msa: MSA, out_file_name: str, out_file_format: FileFormat
-) -> None:
+def write_msa(msa: MSA, out_file_name: str, out_file_format: FileFormat) -> None:
     """
     msa is populated with sites that are kept after trimming is finished
     """
@@ -78,4 +76,3 @@ def write_complement(msa: MSA, out_file: str, out_file_format: FileFormat) -> No
     elif out_file_format.value == "phylip_sequential":
         SeqIO.write(output_msa, out_file, "phylip-sequential")
     SeqIO.write(output_msa, completmentOut, out_file_format.value)
-    

@@ -6,6 +6,7 @@ from clipkit.files import FileFormat
 from clipkit.modes import TrimmingMode
 from clipkit.msa import MSA
 
+
 @pytest.mark.integration
 class TestApiInvocation(object):
     def test_input_file(self):
@@ -20,7 +21,7 @@ class TestApiInvocation(object):
             "alignment_length": 6,
             "output_length": 4,
             "trimmed_length": 2,
-            "trimmed_percentage": 33.333
+            "trimmed_percentage": 33.333,
         }
         assert isinstance(trim_run.version, str)
         assert isinstance(trim_run.trimmed, MultipleSeqAlignment)
@@ -36,6 +37,6 @@ class TestApiInvocation(object):
             "alignment_length": 6,
             "output_length": 5,
             "trimmed_length": 1,
-            "trimmed_percentage": 16.667
+            "trimmed_percentage": 16.667,
         }
         assert isinstance(trim_run.version, str)

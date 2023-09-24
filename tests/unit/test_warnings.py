@@ -16,28 +16,26 @@ class TestWarnings(object):
             (
                 [
                     {"id": "1", "name": "1", "description": "1"},
-                    {"id": "2", "name": "2", "description": "2"}
+                    {"id": "2", "name": "2", "description": "2"},
                 ],
-                np.array([
-                    ["", "", "", "", "", ""],
-                    ["", "", "", "", "", ""]
-                ]),
-                True
+                np.array([["", "", "", "", "", ""], ["", "", "", "", "", ""]]),
+                True,
             ),
             (
                 [
                     {"id": "1", "name": "1", "description": "1"},
-                    {"id": "2", "name": "2", "description": "2"}
+                    {"id": "2", "name": "2", "description": "2"},
                 ],
-                np.array([
-                    ["A", "-", "G", "T", "A", "T"],
-                    ["A", "-", "G", "-", "A", "T"]
-                ]),
-                False
+                np.array(
+                    [["A", "-", "G", "T", "A", "T"], ["A", "-", "G", "-", "A", "T"]]
+                ),
+                False,
             ),
-        ]
+        ],
     )
-    def test_warn_all_sites_trimmed(self, mocker, header_info, seq_records, should_warn):
+    def test_warn_all_sites_trimmed(
+        self, mocker, header_info, seq_records, should_warn
+    ):
         mocked_warning = mocker.patch("clipkit.warnings.logger.warning")
 
         msa = MSA(header_info, seq_records)
@@ -50,46 +48,44 @@ class TestWarnings(object):
         else:
             mocked_warning.assert_not_called()
 
-
     @pytest.mark.parametrize(
         "header_info, seq_records, gap_only_header_id",
         [
             (
                 [
                     {"id": "1", "name": "1", "description": "1"},
-                    {"id": "2", "name": "2", "description": "2"}
+                    {"id": "2", "name": "2", "description": "2"},
                 ],
-                np.array([
-                    ["-", "-", "-", "-", "-", "-"],
-                    ["A", "G", "G", "T", "A", "C"]
-                ]),
-                "1"
+                np.array(
+                    [["-", "-", "-", "-", "-", "-"], ["A", "G", "G", "T", "A", "C"]]
+                ),
+                "1",
             ),
             (
                 [
                     {"id": "1", "name": "1", "description": "1"},
-                    {"id": "2", "name": "2", "description": "2"}
+                    {"id": "2", "name": "2", "description": "2"},
                 ],
-                np.array([
-                    ["A", "G", "G", "T", "A", "C"],
-                    ["-", "-", "-", "-", "-", "-"]
-                ]),
-                "2"
+                np.array(
+                    [["A", "G", "G", "T", "A", "C"], ["-", "-", "-", "-", "-", "-"]]
+                ),
+                "2",
             ),
             (
                 [
                     {"id": "1", "name": "1", "description": "1"},
-                    {"id": "2", "name": "2", "description": "2"}
+                    {"id": "2", "name": "2", "description": "2"},
                 ],
-                np.array([
-                    ["A", "-", "G", "T", "A", "T"],
-                    ["A", "-", "G", "-", "A", "T"]
-                ]),
-                None
+                np.array(
+                    [["A", "-", "G", "T", "A", "T"], ["A", "-", "G", "-", "A", "T"]]
+                ),
+                None,
             ),
-        ]
+        ],
     )
-    def test_warn_if_entry_contains_only_gaps(self, mocker, header_info, seq_records, gap_only_header_id):
+    def test_warn_if_entry_contains_only_gaps(
+        self, mocker, header_info, seq_records, gap_only_header_id
+    ):
         mocked_warning = mocker.patch("clipkit.warnings.logger.warning")
 
         msa = MSA(header_info, seq_records)

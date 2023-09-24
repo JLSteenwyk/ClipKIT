@@ -5,12 +5,18 @@ import numpy as np
 from typing import Union
 
 from .modes import TrimmingMode
-from .site_classification import SiteClassificationType, determine_site_classification_type
+from .site_classification import (
+    SiteClassificationType,
+    determine_site_classification_type,
+)
 from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
 
+
 class MSA:
-    def __init__(self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS) -> None:
+    def __init__(
+        self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS
+    ) -> None:
         self.header_info = header_info
         self.seq_records = seq_records
         self._original_length = len(self.seq_records[0])
@@ -33,13 +39,15 @@ class MSA:
         return self._to_bio_msa(self.sites_kept)
 
     def complement_to_bio_msa(self) -> MultipleSeqAlignment:
-       return self._to_bio_msa(self.sites_trimmed)
+        return self._to_bio_msa(self.sites_trimmed)
 
     def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
         # NOTE: we use the description as the id to preserve the full sequence description - see issue #20
         return MultipleSeqAlignment(
             [
-                SeqRecord(Seq("".join(rec)), id=str(info["description"]), description="")
+                SeqRecord(
+                    Seq("".join(rec)), id=str(info["description"]), description=""
+                )
                 for rec, info in zip(sites.tolist(), self.header_info)
             ]
         )
@@ -86,20 +94,23 @@ class MSA:
 
     def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
         for idx, row in enumerate(self.trimmed):
-            if (
-                np.all(row == row[0]) # all values the same
-                and (row[0] in self.gap_chars)
+            if np.all(row == row[0]) and (  # all values the same
+                row[0] in self.gap_chars
             ):
                 return True, self.header_info[idx].get("id")
-        return False, None 
+        return False, None
 
     def trim(
         self,
         mode: TrimmingMode,
         gap_threshold=None,
     ) -> np.array:
-        self._site_positions_to_trim = self.determine_site_positions_to_trim(mode, gap_threshold)
-        self._site_positions_to_keep = np.delete(np.arange(self._original_length), self._site_positions_to_trim)
+        self._site_positions_to_trim = self.determine_site_positions_to_trim(
+            mode, gap_threshold
+        )
+        self._site_positions_to_keep = np.delete(
+            np.arange(self._original_length), self._site_positions_to_trim
+        )
 
     @property
     def column_character_frequencies(self):
@@ -125,7 +136,7 @@ class MSA:
     def site_classification_types(self):
         if self._site_classification_types is not None:
             return self._site_classification_types
-        
+
         site_classification_types = np.array(
             [
                 determine_site_classification_type(col_char_freq)
@@ -162,14 +173,8 @@ class MSA:
             col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
-                (
-                    site_classification_types
-                    == SiteClassificationType.other
-                )
-                | (
-                    site_classification_types
-                    == SiteClassificationType.singleton
-                )
+                (site_classification_types == SiteClassificationType.other)
+                | (site_classification_types == SiteClassificationType.singleton)
             )[0]
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
             sites_to_trim_gaps_based = np.where(self.site_gappyness >= gap_threshold)[0]
@@ -177,14 +182,8 @@ class MSA:
             col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim_classification_based = np.where(
-                (
-                    site_classification_types
-                    == SiteClassificationType.other
-                )
-                | (
-                    site_classification_types
-                    == SiteClassificationType.singleton
-                )
+                (site_classification_types == SiteClassificationType.other)
+                | (site_classification_types == SiteClassificationType.singleton)
             )[0]
 
             sites_to_trim = np.unique(
@@ -194,7 +193,6 @@ class MSA:
             )
 
         return sites_to_trim
-
 
     def generate_debug_log_info(self):
         """
@@ -207,4 +205,9 @@ class MSA:
             keep_or_trim_lookup[trim_idx] = "trim"
 
         for idx, gappyness in enumerate(self.site_gappyness):
-            yield (idx, keep_or_trim_lookup[idx], self.site_classification_types[idx], gappyness)
+            yield (
+                idx,
+                keep_or_trim_lookup[idx],
+                self.site_classification_types[idx],
+                gappyness,
+            )

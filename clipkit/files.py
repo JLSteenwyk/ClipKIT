@@ -45,6 +45,7 @@ def get_alignment_and_format(
 
         raise InvalidInputFileFormat("File could not be read")
 
+
 def write_debug_log_file(msa):
     for info in msa.generate_debug_log_info():
         log_file_logger.debug(f"{str(info[0] + 1)} {info[1]} {info[2].value} {info[3]}")
