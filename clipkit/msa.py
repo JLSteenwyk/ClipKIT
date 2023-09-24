@@ -46,6 +46,8 @@ class MSA:
 
     @property
     def trimmed(self):
+        if len(self._site_positions_to_trim) == 0:
+            return self.seq_records
         return np.delete(self.seq_records, self._site_positions_to_trim, axis=1)
 
     @property
@@ -84,9 +86,10 @@ class MSA:
 
     def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
         for idx, row in enumerate(self.trimmed):
+            print(f"idx: {idx}, row: {row}")
             if (
                 np.all(row == row[0]) # all values the same
-                and row[0] in self.gap_chars
+                and (row[0] in self.gap_chars)
             ):
                 return True, self.header_info[idx].get("id")
         return False, None 
