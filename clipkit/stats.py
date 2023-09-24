@@ -1,23 +1,23 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from Bio.Align import MultipleSeqAlignment
 
-from .msa import MSA
+if TYPE_CHECKING:
+    from .msa import MSA
 
 
 @dataclass
 class TrimmingStats:
-    alignment: MultipleSeqAlignment
-    keep_msa: MSA
-    trim_msa: MSA
+    msa: "MSA"
 
     @property
     def alignment_length(self) -> int:
-        return self.alignment.get_alignment_length()
+        return self.msa.original_length
 
     @property
     def output_length(self) -> int:
-        return self.keep_msa.length
+        return self.msa.length
 
     @property
     def trimmed_length(self) -> int:

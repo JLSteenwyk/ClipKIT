@@ -8,13 +8,13 @@ from typing import Union
 from Bio.Align import MultipleSeqAlignment
 from .args_processing import process_args
 from .exceptions import InvalidInputFileFormat
-from .files import get_alignment_and_format, FileFormat
+from .files import get_alignment_and_format, FileFormat, write_debug_log_file
 from .helpers import (
+    create_msa,
     get_seq_type,
     get_gap_chars,
-    keep_trim_and_log,
-    write_keep_msa,
-    write_trim_msa,
+    write_msa,
+    write_complement,
     SeqType,
 )
 from .logger import logger, log_file_logger
@@ -23,16 +23,16 @@ from .msa import MSA
 from .parser import create_parser
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .smart_gap_helper import smart_gap_threshold_determination
-from .stats import TrimmingStats
 from .version import __version__ as current_version
 from .warnings import (
     warn_if_all_sites_were_trimmed,
     warn_if_entry_contains_only_gaps,
 )
 from .write import (
-    write_determining_smart_gap_threshold,
     write_user_args,
     write_output_stats,
+    write_processing_aln,
+    write_output_files_message,
 )
 
 from dataclasses import dataclass
@@ -41,23 +41,21 @@ from dataclasses import dataclass
 @dataclass
 class TrimRun:
     alignment: MultipleSeqAlignment
-    keep_msa: MSA
-    trim_msa: MSA
+    msa: MSA
     gap_characters: list
     sequence_type: SeqType
     input_file_format: FileFormat
     output_file_format: FileFormat
-    site_classification_counts: dict
     gaps: float
     version: str = current_version
 
     @property
     def complement(self):
-        return self.trim_msa.to_bio_msa() if self.trim_msa else None
+        return self.msa.complement_to_bio_msa()
 
     @property
     def trimmed(self):
-        return self.keep_msa.to_bio_msa()
+        return self.msa.to_bio_msa()
 
 
 def run(
@@ -98,28 +96,22 @@ def run(
         TrimmingMode.kpi_smart_gap,
         TrimmingMode.kpic_smart_gap,
     }:
-        write_determining_smart_gap_threshold()
-        gaps = smart_gap_threshold_determination(alignment, gap_characters, quiet)
+        gaps = smart_gap_threshold_determination(alignment, gap_characters)
 
-    # instantiates MSAs to track what we keep/trim from the alignment
-    keep_msa, trim_msa, site_classification_counts = keep_trim_and_log(
-        alignment, gaps, mode, use_log, output_file, complement, gap_characters, quiet
-    )
+    msa = create_msa(alignment, gap_characters)
+    msa.trim(mode, gap_threshold=gaps)
 
     trim_run = TrimRun(
         alignment,
-        keep_msa,
-        trim_msa,
+        msa,
         gap_characters,
         sequence_type,
         input_file_format,
         output_file_format,
-        site_classification_counts,
         gaps,
     )
-    stats = TrimmingStats(trim_run.alignment, trim_run.keep_msa, trim_run.trim_msa)
 
-    return trim_run, stats
+    return trim_run, msa.stats
 
 
 def execute(
@@ -149,6 +141,7 @@ def execute(
     # for reporting runtime duration to user
     start_time = time.time()
 
+    write_processing_aln()
     trim_run, stats = run(
         input_file,
         input_file_format,
@@ -162,6 +155,7 @@ def execute(
         use_log,
         quiet,
     )
+    write_output_files_message(output_file, complement, use_log)
 
     # display to user what args are being used in stdout
     write_user_args(
@@ -178,14 +172,15 @@ def execute(
     )
 
     if use_log:
-        warn_if_all_sites_were_trimmed(trim_run.keep_msa)
-        warn_if_entry_contains_only_gaps(trim_run.keep_msa, trim_run.sequence_type)
+        warn_if_all_sites_were_trimmed(trim_run.msa)
+        warn_if_entry_contains_only_gaps(trim_run.msa)
+        write_debug_log_file(trim_run.msa)
 
-    write_keep_msa(trim_run.keep_msa, output_file, trim_run.output_file_format)
+    write_msa(trim_run.msa, output_file, trim_run.output_file_format)
 
     # if the -c/--complementary argument was used, create an alignment of the trimmed sequences
     if complement:
-        write_trim_msa(trim_run.trim_msa, output_file, trim_run.output_file_format)
+        write_complement(trim_run.msa, output_file, trim_run.output_file_format)
 
     write_output_stats(stats, start_time)
 

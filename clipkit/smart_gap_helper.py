@@ -4,17 +4,16 @@ from Bio.Align import MultipleSeqAlignment
 import numpy as np
 from tqdm import tqdm
 
-from .helpers import report_column_features
 from .logger import logger
 
 
 def smart_gap_threshold_determination(
-    alignment: MultipleSeqAlignment, gap_chars: list, quiet: bool
+    alignment: MultipleSeqAlignment, gap_chars: list
 ) -> float:
     alignment_length = alignment.get_alignment_length()
 
     # get distribution of gaps rounded to the fourth decimal place
-    gaps_dist = get_gaps_distribution(alignment, alignment_length, gap_chars, quiet)
+    gaps_dist = get_gaps_distribution(alignment, gap_chars)
 
     # count freq of gaps and convert to sorted np array
     gaps_arr = count_and_sort_gaps(gaps_dist)
@@ -57,15 +56,12 @@ def gap_to_gap_slope(gaps_arr: np.array, alignment_length: int) -> list[float]:
 
 
 def get_gaps_distribution(
-    alignment: MultipleSeqAlignment, alignment_length: int, gap_chars: list, quiet: bool
+    alignment: MultipleSeqAlignment, gap_chars: list
 ) -> list[float]:
-    gaps_dist = []
-    for i in tqdm(range(0, alignment_length), disable=quiet, postfix="smart-gap"):
-        _, gappyness = report_column_features(alignment, i, gap_chars)
-        gappyness = round(gappyness, 4)
-        gaps_dist.append(gappyness)
+    msa_array = np.array([list(rec) for rec in alignment])
+    gaps_dist = (np.isin(msa_array, gap_chars)).mean(axis=0)
 
-    return gaps_dist
+    return np.round(gaps_dist, decimals=4).tolist()
 
 
 def count_and_sort_gaps(gaps_dist: list) -> list:

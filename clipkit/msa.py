@@ -4,75 +4,210 @@ from Bio.SeqRecord import SeqRecord
 import numpy as np
 from typing import Union
 
+from .modes import TrimmingMode
+from .site_classification import (
+    SiteClassificationType,
+    determine_site_classification_type,
+)
 from .settings import DEFAULT_AA_GAP_CHARS
+from .stats import TrimmingStats
 
 
 class MSA:
-    def __init__(self, entries: list[str], starting_length: int) -> None:
-        self.starting_length = starting_length
-        self.entries = entries
-        self._data = self._init_data()
-        self._joined = None
+    def __init__(
+        self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS
+    ) -> None:
+        self.header_info = header_info
+        self.seq_records = seq_records
+        self._original_length = len(self.seq_records[0])
+        self._site_positions_to_keep = np.arange(self._original_length)
+        self._site_positions_to_trim = np.array([])
+        self._site_classification_types = None
+        self._column_character_frequencies = None
+        self._gap_chars = gap_chars
 
-    def _init_data(self) -> dict[str, np.array]:
-        data = {}
-        for entry in self.entries:
-            data[entry] = np.zeros([self.starting_length], dtype=bytes)
-        return data
+    @staticmethod
+    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
+        header_info = [
+            {"id": rec.id, "name": rec.name, "description": rec.description}
+            for rec in alignment
+        ]
+        seq_records = np.array([list(rec) for rec in alignment])
+        return MSA(header_info, seq_records, gap_chars)
 
-    def _reset_joined(self) -> None:
-        self._joined = None
+    def to_bio_msa(self) -> MultipleSeqAlignment:
+        return self._to_bio_msa(self.sites_kept)
+
+    def complement_to_bio_msa(self) -> MultipleSeqAlignment:
+        return self._to_bio_msa(self.sites_trimmed)
+
+    def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
+        # NOTE: we use the description as the id to preserve the full sequence description - see issue #20
+        return MultipleSeqAlignment(
+            [
+                SeqRecord(
+                    Seq("".join(rec)), id=str(info["description"]), description=""
+                )
+                for rec, info in zip(sites.tolist(), self.header_info)
+            ]
+        )
+
+    @property
+    def trimmed(self):
+        if len(self._site_positions_to_trim) == 0:
+            return self.seq_records
+        return np.delete(self.seq_records, self._site_positions_to_trim, axis=1)
+
+    @property
+    def sites_kept(self):
+        return np.take(self.seq_records, self._site_positions_to_keep, axis=1)
+
+    @property
+    def sites_trimmed(self):
+        return np.take(self.seq_records, self._site_positions_to_trim, axis=1)
 
     @property
     def length(self) -> int:
-        return np.count_nonzero(next(iter(self._data.values())))
+        return len(self._site_positions_to_keep)
+
+    @property
+    def original_length(self):
+        return self._original_length
+
+    @property
+    def gap_chars(self):
+        return self._gap_chars
+
+    @property
+    def site_gappyness(self) -> np.floating:
+        site_gappyness = (np.isin(self.seq_records, self._gap_chars)).mean(axis=0)
+        return np.around(site_gappyness, decimals=4)
 
     @property
     def is_empty(self) -> bool:
-        all_zeros = np.all(self._data[self.entries[0]] == b"")
+        all_zeros = np.all(self.sites_kept[0] == "")
         return all_zeros
 
     @property
-    def string_sequences(self) -> dict[str, str]:
-        if self._joined:
-            return self._joined
-        else:
-            joined = {}
-            for entry, sequence in self._data.items():
-                joined[entry] = "".join(np.char.decode(sequence))
-            self._joined = joined
-        return self._joined
+    def stats(self) -> TrimmingStats:
+        return TrimmingStats(self)
 
-    @staticmethod
-    def from_bio_msa(alignment: MultipleSeqAlignment) -> "MSA":
-        entries = [entry.description for entry in alignment]
-        length = alignment.get_alignment_length()
-        return MSA(entries, length)
-
-    def to_bio_msa(self) -> MultipleSeqAlignment:
-        seqList = []
-        for entry, joined in self.string_sequences.items():
-            seqList.append(SeqRecord(Seq(str(joined)), id=str(entry), description=""))
-        return MultipleSeqAlignment(seqList)
-
-    def set_entry_sequence_at_position(
-        self, entry: str, position: int, value: str
-    ) -> None:
-        self._data[entry][position] = value
-
-        # since we've mutated the sequence data we need to release our cached _joined
-        self._reset_joined()
-
-    def is_any_entry_sequence_only_gaps(
-        self, gap_chars=DEFAULT_AA_GAP_CHARS
-    ) -> tuple[bool, Union[str, None]]:
-        for entry, sequence in self._data.items():
-            first_sequence_value = sequence[0]
-            sequence_values_all_same = np.all(sequence == first_sequence_value)
-            if (
-                sequence_values_all_same
-                and first_sequence_value.decode("utf-8") in gap_chars
+    def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
+        for idx, row in enumerate(self.trimmed):
+            if np.all(row == row[0]) and (  # all values the same
+                row[0] in self.gap_chars
             ):
-                return True, entry
-
+                return True, self.header_info[idx].get("id")
         return False, None
+
+    def trim(
+        self,
+        mode: TrimmingMode,
+        gap_threshold=None,
+    ) -> np.array:
+        self._site_positions_to_trim = self.determine_site_positions_to_trim(
+            mode, gap_threshold
+        )
+        self._site_positions_to_keep = np.delete(
+            np.arange(self._original_length), self._site_positions_to_trim
+        )
+
+    @property
+    def column_character_frequencies(self):
+        if self._column_character_frequencies is not None:
+            return self._column_character_frequencies
+
+        column_character_frequencies = []
+        for column in self.seq_records.T:
+            col_sorted_unique_values_for, col_counts_per_char = np.unique(
+                [char.upper() for char in column], return_counts=True
+            )
+            freqs = dict(zip(col_sorted_unique_values_for, col_counts_per_char))
+            for gap_char in self.gap_chars:
+                try:
+                    del freqs[gap_char]
+                except KeyError:
+                    continue
+            column_character_frequencies.append(freqs)
+        self._column_character_frequencies = column_character_frequencies
+        return self._column_character_frequencies
+
+    @property
+    def site_classification_types(self):
+        if self._site_classification_types is not None:
+            return self._site_classification_types
+
+        site_classification_types = np.array(
+            [
+                determine_site_classification_type(col_char_freq)
+                for col_char_freq in self.column_character_frequencies
+            ]
+        )
+        self._site_classification_types = site_classification_types
+        return self._site_classification_types
+
+    def determine_site_positions_to_trim(self, mode, gap_threshold):
+        if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
+            sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
+        elif mode == TrimmingMode.kpi:
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
+            sites_to_trim = np.where(
+                site_classification_types
+                != SiteClassificationType.parsimony_informative
+            )[0]
+        elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
+            sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
+            sites_to_trim_classification_based = np.where(
+                site_classification_types
+                != SiteClassificationType.parsimony_informative
+            )[0]
+            sites_to_trim = np.unique(
+                np.concatenate(
+                    (sites_to_trim_gaps_based, sites_to_trim_classification_based)
+                )
+            )
+        elif mode == TrimmingMode.kpic:
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
+            sites_to_trim = np.where(
+                (site_classification_types == SiteClassificationType.other)
+                | (site_classification_types == SiteClassificationType.singleton)
+            )[0]
+        elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
+            sites_to_trim_gaps_based = np.where(self.site_gappyness >= gap_threshold)[0]
+
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
+            sites_to_trim_classification_based = np.where(
+                (site_classification_types == SiteClassificationType.other)
+                | (site_classification_types == SiteClassificationType.singleton)
+            )[0]
+
+            sites_to_trim = np.unique(
+                np.concatenate(
+                    (sites_to_trim_gaps_based, sites_to_trim_classification_based)
+                )
+            )
+
+        return sites_to_trim
+
+    def generate_debug_log_info(self):
+        """
+        Returns tuples of site position, keep or trim, site classification type, and gappyness
+        """
+        keep_or_trim_lookup = {}
+        for keep_idx in self._site_positions_to_keep:
+            keep_or_trim_lookup[keep_idx] = "keep"
+        for trim_idx in self._site_positions_to_trim:
+            keep_or_trim_lookup[trim_idx] = "trim"
+
+        for idx, gappyness in enumerate(self.site_gappyness):
+            yield (
+                idx,
+                keep_or_trim_lookup[idx],
+                self.site_classification_types[idx],
+                gappyness,
+            )

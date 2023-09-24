@@ -1,7 +1,7 @@
 from clipkit import clipkit
 from clipkit.files import FileFormat
 
-trim_run = clipkit(
+trim_run, stats = clipkit(
     # raw_alignment=">1\nA-GTAT\n>2\nA-G-AT\n>3\nA-G-TA\n>4\nAGA-TA\n>5\nACa-T-\n",
     input_file_path="tests/integration/samples/simple.fa",
     # output_file_path="./programmatic-temp.phylip",
@@ -12,4 +12,4 @@ trim_run = clipkit(
     sequence_type="nt",
 )
 
-print(trim_run.site_classification_counts)
+print(trim_run.version)
