@@ -38,36 +38,11 @@ def get_seq_type(alignment: MultipleSeqAlignment) -> SeqType:
     return sequence_type
 
 
-def get_alignment_column(alignment: MultipleSeqAlignment, index: int) -> str:
-    alignment_column = ""
-    alignment_column += alignment[:, index]
-    return alignment_column.upper()
-
-
 def get_gap_chars(seq_type: SeqType) -> list[str]:
     if seq_type == SeqType.nt:
         return DEFAULT_NT_GAP_CHARS
     else:
         return DEFAULT_AA_GAP_CHARS
-
-
-def report_column_features(
-    alignment: MultipleSeqAlignment, index: int, gap_chars: list
-) -> tuple[str, float]:
-    """
-    Count the occurence of each character at a given position
-    in an alignment. This information is used to determine
-    if the alignment is parsimony informative or not. When
-    counting characters, gaps are excluded.
-    """
-    alignment_column = get_alignment_column(alignment, index)
-
-    column_length = len(alignment_column)
-
-    number_of_gaps = sum([alignment_column.count(char) for char in gap_chars])
-    gappyness = number_of_gaps / column_length
-
-    return alignment_column, gappyness
 
 
 def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str]=None) -> MSA:
@@ -103,23 +78,4 @@ def write_complement(msa: MSA, out_file: str, out_file_format: FileFormat) -> No
     elif out_file_format.value == "phylip_sequential":
         SeqIO.write(output_msa, out_file, "phylip-sequential")
     SeqIO.write(output_msa, completmentOut, out_file_format.value)
-
-
-def trim_and_get_stats(
-    alignment: MultipleSeqAlignment,
-    gaps: float,
-    mode: TrimmingMode,
-    use_log: bool,
-    out_file_name: str,
-    complement: bool,
-    gap_chars: list,
-    quiet: bool,
-) -> tuple["TrimRun", "TrimmingStats"]:
-    """
-    Determines positions to keep or trim and saves these positions on the MSA classes.
-    """
-    msa = create_msa(alignment)
-    msa.trim(mode, gap_threshold=gaps)
-
-    return trim_run, stats
     

@@ -13,7 +13,6 @@ from .helpers import (
     create_msa,
     get_seq_type,
     get_gap_chars,
-    trim_and_get_stats,
     write_msa,
     write_complement,
     SeqType,

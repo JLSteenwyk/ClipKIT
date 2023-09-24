@@ -4,7 +4,6 @@ from Bio.Align import MultipleSeqAlignment
 import numpy as np
 from tqdm import tqdm
 
-from .helpers import report_column_features
 from .logger import logger
 
 
