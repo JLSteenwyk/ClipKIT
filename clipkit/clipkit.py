@@ -14,7 +14,7 @@ from .helpers import (
     get_seq_type,
     get_gap_chars,
     trim_and_get_stats,
-    write_keep_msa,
+    write_msa,
     write_complement,
     SeqType,
 )
@@ -33,7 +33,7 @@ from .write import (
     write_user_args,
     write_output_stats,
     write_processing_aln,
-    write_output_files_message
+    write_output_files_message,
 )
 
 from dataclasses import dataclass
@@ -47,7 +47,6 @@ class TrimRun:
     sequence_type: SeqType
     input_file_format: FileFormat
     output_file_format: FileFormat
-    site_classification_counts: dict
     gaps: float
     version: str = current_version
 
@@ -103,9 +102,6 @@ def run(
     msa = create_msa(alignment, gap_characters)
     msa.trim(mode, gap_threshold=gaps)
 
-    # TODO:
-    site_classification_counts = {} 
-
     trim_run = TrimRun(
         alignment,
         msa,
@@ -113,7 +109,6 @@ def run(
         sequence_type,
         input_file_format,
         output_file_format,
-        site_classification_counts,
         gaps,
     )
 
@@ -180,8 +175,9 @@ def execute(
     if use_log:
         warn_if_all_sites_were_trimmed(trim_run.msa)
         warn_if_entry_contains_only_gaps(trim_run.msa)
+        write_debug_log(trim_run.msa)
 
-    write_keep_msa(trim_run.msa, output_file, trim_run.output_file_format)
+    write_msa(trim_run.msa, output_file, trim_run.output_file_format)
 
     # if the -c/--complementary argument was used, create an alignment of the trimmed sequences
     if complement:

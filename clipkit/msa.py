@@ -16,8 +16,9 @@ class MSA:
         self._original_length = len(self.seq_records[0])
         self._site_positions_to_keep = np.arange(self._original_length)
         self._site_positions_to_trim = np.array([])
+        self._site_classification_types = None
+        self._column_character_frequencies = None
         self._gap_chars = gap_chars
-        # self.site_classification_counts = None TODO:
 
     @staticmethod
     def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
@@ -97,7 +98,11 @@ class MSA:
         self._site_positions_to_trim = self.determine_site_positions_to_trim(mode, gap_threshold)
         self._site_positions_to_keep = np.delete(np.arange(self._original_length), self._site_positions_to_trim)
 
+    @property
     def column_character_frequencies(self):
+        if self._column_character_frequencies:
+            return self._column_character_frequencies
+
         column_character_frequencies = []
         for column in self.seq_records.T:
             col_sorted_unique_values_for, col_counts_per_char = np.unique(
@@ -110,32 +115,37 @@ class MSA:
                 except KeyError:
                     continue
             column_character_frequencies.append(freqs)
-        return column_character_frequencies
+        self._column_character_frequencies = column_character_frequencies
+        return self._column_character_frequencies
+
+    @property
+    def site_classification_types(self):
+        if self._site_classification_types:
+            return self._site_classification_types
+        
+        site_classification_types = np.array(
+            [
+                determine_site_classification_type(col_char_freq)
+                for col_char_freq in self.column_character_frequencies
+            ]
+        )
+        self._site_classification_types = site_classification_types
+        return self._site_classification_types
 
     def determine_site_positions_to_trim(self, mode, gap_threshold):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
-            col_char_freqs = self.column_character_frequencies()
-            site_classification_types = np.array(
-                [
-                    determine_site_classification_type(col_char_freq)
-                    for col_char_freq in col_char_freqs
-                ]
-            )
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
                 site_classification_types
                 != SiteClassificationType.parsimony_informative
             )[0]
         elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
             sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
-            col_char_freqs = self.column_character_frequencies()
-            site_classification_types = np.array(
-                [
-                    determine_site_classification_type(col_char_freq)
-                    for col_char_freq in col_char_freqs
-                ]
-            )
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
             sites_to_trim_classification_based = np.where(
                 site_classification_types
                 != SiteClassificationType.parsimony_informative
@@ -146,13 +156,8 @@ class MSA:
                 )
             )
         elif mode == TrimmingMode.kpic:
-            col_char_freqs = self.column_character_frequencies()
-            site_classification_types = np.array(
-                [
-                    determine_site_classification_type(col_char_freq)
-                    for col_char_freq in col_char_freqs
-                ]
-            )
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
                 (
                     site_classification_types
@@ -166,13 +171,8 @@ class MSA:
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
             sites_to_trim_gaps_based = np.where(self.site_gappyness >= gap_threshold)[0]
 
-            col_char_freqs = self.column_character_frequencies()
-            site_classification_types = np.array(
-                [
-                    determine_site_classification_type(col_char_freq)
-                    for col_char_freq in col_char_freqs
-                ]
-            )
+            col_char_freqs = self.column_character_frequencies
+            site_classification_types = self.site_classification_types
             sites_to_trim_classification_based = np.where(
                 (
                     site_classification_types

@@ -77,7 +77,7 @@ def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str]=None) -> MS
     return MSA.from_bio_msa(alignment, gap_chars)
 
 
-def write_keep_msa(
+def write_msa(
     msa: MSA, out_file_name: str, out_file_format: FileFormat
 ) -> None:
     """
