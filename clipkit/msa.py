@@ -4,8 +4,8 @@ from Bio.SeqRecord import SeqRecord
 import numpy as np
 from typing import Union
 
-from .modes import SiteClassificationType, TrimmingMode
-from .site_classification import determine_site_classification_type
+from .modes import TrimmingMode
+from .site_classification import SiteClassificationType, determine_site_classification_type
 from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
 
@@ -18,6 +18,29 @@ class MSA:
         self._site_positions_to_trim = np.array([])
         self._gap_chars = gap_chars
         # self.site_classification_counts = None TODO:
+
+    @staticmethod
+    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
+        header_info = [
+            {"id": rec.id, "name": rec.name, "description": rec.description}
+            for rec in alignment
+        ]
+        seq_records = np.array([list(rec) for rec in alignment])
+        return MSA(header_info, seq_records, gap_chars)
+
+    def to_bio_msa(self) -> MultipleSeqAlignment:
+        return self._to_bio_msa(self.sites_kept)
+
+    def complement_to_bio_msa(self) -> MultipleSeqAlignment:
+       return self._to_bio_msa(self.sites_trimmed)
+
+    def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
+        return MultipleSeqAlignment(
+            [
+                SeqRecord(Seq("".join(rec)), **info)
+                for rec, info in zip(sites.tolist(), self.header_info)
+            ]
+        )
 
     @property
     def trimmed(self):
@@ -33,7 +56,7 @@ class MSA:
 
     @property
     def length(self) -> int:
-        return self._original_length if not self.trimmed else len(self._site_positions_to_keep)
+        return len(self._site_positions_to_keep)
 
     @property
     def original_length(self):
@@ -53,6 +76,19 @@ class MSA:
         all_zeros = np.all(self.sites_kept[0] == "")
         return all_zeros
 
+    @property
+    def stats(self) -> TrimmingStats:
+        return TrimmingStats(self)
+
+    def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
+        for idx, row in enumerate(self.trimmed):
+            if (
+                np.all(row == row[0]) # all values the same
+                and row[0] in self.gap_chars
+            ):
+                return True, self.header_info[idx].get("id")
+        return False, None 
+
     def trim(
         self,
         mode: TrimmingMode,
@@ -60,7 +96,6 @@ class MSA:
     ) -> np.array:
         self._site_positions_to_trim = self.determine_site_positions_to_trim(mode, gap_threshold)
         self._site_positions_to_keep = np.delete(np.arange(self._original_length), self._site_positions_to_trim)
-
 
     def column_character_frequencies(self):
         column_character_frequencies = []
@@ -156,39 +191,3 @@ class MSA:
             )
 
         return sites_to_trim
-
-    @staticmethod
-    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
-        header_info = [
-            {"id": rec.id, "name": rec.name, "description": rec.description}
-            for rec in alignment
-        ]
-        seq_records = np.array([list(rec) for rec in alignment])
-        return MSA(header_info, seq_records, gap_chars)
-
-    def to_bio_msa(self) -> MultipleSeqAlignment:
-        return self._to_bio_msa(self.sites_kept)
-
-    def complement_to_bio_msa(self) -> MultipleSeqAlignment:
-       return self._to_bio_msa(self.sites_trimmed)
-
-    def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
-        return MultipleSeqAlignment(
-            [
-                SeqRecord(Seq("".join(rec)), **info)
-                for rec, info in zip(sites.tolist(), self.header_info)
-            ]
-        )
-
-    @property
-    def stats(self) -> TrimmingStats:
-        return TrimmingStats(self)
-
-    def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
-        for idx, row in enumerate(self.trimmed):
-            if (
-                np.all(row == row[0]) # all values the same
-                and row[0] in self.gap_chars
-            ):
-                return True, self.header_info[idx].get("id")
-        return False, None 

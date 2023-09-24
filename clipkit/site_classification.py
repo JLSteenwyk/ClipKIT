@@ -1,5 +1,10 @@
-from .modes import SiteClassificationType
+from enum import Enum
 
+class SiteClassificationType(Enum):
+    parsimony_informative = "parsimony-informative"
+    constant = "constant"
+    singleton = "singleton"
+    other = "other"
 
 def determine_site_classification_type(
     character_counts: dict,
