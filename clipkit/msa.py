@@ -86,7 +86,6 @@ class MSA:
 
     def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
         for idx, row in enumerate(self.trimmed):
-            print(f"idx: {idx}, row: {row}")
             if (
                 np.all(row == row[0]) # all values the same
                 and (row[0] in self.gap_chars)
