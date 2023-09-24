@@ -122,3 +122,4 @@ def trim_and_get_stats(
     msa.trim(mode, gap_threshold=gaps)
 
     return trim_run, stats
+    

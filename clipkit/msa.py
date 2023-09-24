@@ -100,7 +100,7 @@ class MSA:
 
     @property
     def column_character_frequencies(self):
-        if self._column_character_frequencies:
+        if self._column_character_frequencies is not None:
             return self._column_character_frequencies
 
         column_character_frequencies = []
@@ -120,7 +120,7 @@ class MSA:
 
     @property
     def site_classification_types(self):
-        if self._site_classification_types:
+        if self._site_classification_types is not None:
             return self._site_classification_types
         
         site_classification_types = np.array(
@@ -191,3 +191,17 @@ class MSA:
             )
 
         return sites_to_trim
+
+
+    def generate_debug_log_info(self):
+        """
+        Returns tuples of site position, keep or trim, site classification type, and gappyness
+        """
+        keep_or_trim_lookup = {}
+        for keep_idx in self._site_positions_to_keep:
+            keep_or_trim_lookup[keep_idx] = "keep"
+        for trim_idx in self._site_positions_to_trim:
+            keep_or_trim_lookup[trim_idx] = "trim"
+
+        for idx, gappyness in enumerate(self.site_gappyness):
+            yield (idx, keep_or_trim_lookup[idx], self.site_classification_types[idx], gappyness)

@@ -8,7 +8,7 @@ from typing import Union
 from Bio.Align import MultipleSeqAlignment
 from .args_processing import process_args
 from .exceptions import InvalidInputFileFormat
-from .files import get_alignment_and_format, FileFormat
+from .files import get_alignment_and_format, FileFormat, write_debug_log_file
 from .helpers import (
     create_msa,
     get_seq_type,
@@ -175,7 +175,7 @@ def execute(
     if use_log:
         warn_if_all_sites_were_trimmed(trim_run.msa)
         warn_if_entry_contains_only_gaps(trim_run.msa)
-        write_debug_log(trim_run.msa)
+        write_debug_log_file(trim_run.msa)
 
     write_msa(trim_run.msa, output_file, trim_run.output_file_format)
 

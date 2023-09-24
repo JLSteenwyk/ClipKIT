@@ -1,13 +1,10 @@
 from enum import Enum
-import logging
+from .logger import log_file_logger
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
 from .exceptions import InvalidInputFileFormat
-
-
-log = logging.getLogger(__name__)
 
 
 class FileFormat(Enum):
@@ -47,3 +44,7 @@ def get_alignment_and_format(
                 continue
 
         raise InvalidInputFileFormat("File could not be read")
+
+def write_debug_log_file(msa):
+    for info in msa.generate_debug_log_info():
+        log_file_logger.debug(f"{str(info[0] + 1)} {info[1]} {info[2].value} {info[3]}")
