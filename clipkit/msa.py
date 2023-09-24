@@ -36,9 +36,10 @@ class MSA:
        return self._to_bio_msa(self.sites_trimmed)
 
     def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
+        # NOTE: we use the description as the id to preserve the full sequence description - see issue #20
         return MultipleSeqAlignment(
             [
-                SeqRecord(Seq("".join(rec)), **info)
+                SeqRecord(Seq("".join(rec)), id=str(info["description"]), description="")
                 for rec, info in zip(sites.tolist(), self.header_info)
             ]
         )
