@@ -102,12 +102,20 @@ class MSA:
 
     def trim(
         self,
-        mode: TrimmingMode,
+        mode: TrimmingMode=TrimmingMode.smart_gap,
         gap_threshold=None,
+        site_positions_to_trim=None,
     ) -> np.array:
-        self._site_positions_to_trim = self.determine_site_positions_to_trim(
-            mode, gap_threshold
-        )
+        if site_positions_to_trim is not None:
+            if isinstance(site_positions_to_trim, list):
+                site_positions_to_trim = np.array(site_positions_to_trim)
+            if not isinstance(site_positions_to_trim, np.ndarray):
+                raise ValueError("site_positions_to_trim must be a list or np array")
+            self._site_positions_to_trim = site_positions_to_trim
+        else:
+            self._site_positions_to_trim = self.determine_site_positions_to_trim(
+                mode, gap_threshold
+            )
         self._site_positions_to_keep = np.delete(
             np.arange(self._original_length), self._site_positions_to_trim
         )
