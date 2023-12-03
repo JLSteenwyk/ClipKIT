@@ -40,10 +40,12 @@
 </p>
 
 
-<center><h1>Run <a href="https://clipkit.genomelybio.com/">ClipKIT in the browser</a> and leave the computing up to <a href="https://www.genomelybio.com/">us</a>!</h1></center>
+<center><h2>Run <a href="https://clipkit.genomelybio.com/">ClipKIT in the browser</a> and leave the computing up to <a href="https://www.genomelybio.com/">us</a>!</h2></center>
 <br />
+
 ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes others.<br /><br />
-If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference*. Steenwyk et al. 2020, PLoS Biology. doi: [10.1371/journal.pbio.3001007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007).
+If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference*. Steenwyk et al. 2020, PLOS Biology. doi: [10.1371/journal.pbio.3001007](https://jlsteenwyk.com/publication_pdfs/2020_Steenwyk_etal_PLOS_Biology.pdf).
+
 <br /><br />
 
 ---
