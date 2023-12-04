@@ -58,9 +58,7 @@ class TestMSA(object):
                 ["A", "G", "-", "T"],
                 ["A", "G", "-", "A"],
                 ["A", "A", "-", "A"],
-                ["A", "a", "-", "T"],
+                ["A", "a", "-", "-"],
             ]
         )
-        msa = msa.to_bio_msa()
-        print(vars(msa))
         np.testing.assert_equal(msa.sites_kept, expected_sites_kept)

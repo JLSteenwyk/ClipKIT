@@ -102,7 +102,7 @@ class MSA:
 
     def trim(
         self,
-        mode: TrimmingMode=TrimmingMode.smart_gap,
+        mode: TrimmingMode = TrimmingMode.smart_gap,
         gap_threshold=None,
         site_positions_to_trim=None,
     ) -> np.array:
@@ -158,7 +158,7 @@ class MSA:
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
-            col_char_freqs = self.column_character_frequencies
+            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
                 site_classification_types
@@ -166,7 +166,7 @@ class MSA:
             )[0]
         elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
             sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
-            col_char_freqs = self.column_character_frequencies
+            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim_classification_based = np.where(
                 site_classification_types
@@ -178,7 +178,7 @@ class MSA:
                 )
             )
         elif mode == TrimmingMode.kpic:
-            col_char_freqs = self.column_character_frequencies
+            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
                 (site_classification_types == SiteClassificationType.other)
@@ -187,7 +187,7 @@ class MSA:
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
             sites_to_trim_gaps_based = np.where(self.site_gappyness >= gap_threshold)[0]
 
-            col_char_freqs = self.column_character_frequencies
+            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim_classification_based = np.where(
                 (site_classification_types == SiteClassificationType.other)
