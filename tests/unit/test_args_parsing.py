@@ -11,6 +11,7 @@ from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 def args():
     kwargs = dict(
         complementary=False,
+        codon=False,
         gaps=None,
         input="tests/integration/samples/simple.fa",
         input_file_format=None,
@@ -100,6 +101,7 @@ class TestArgsProcessing(object):
             "input_file_format",
             "output_file_format",
             "complement",
+            "codon",
             "sequence_type",
             "gaps",
             "mode",

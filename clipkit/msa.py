@@ -25,6 +25,7 @@ class MSA:
         self._site_classification_types = None
         self._column_character_frequencies = None
         self._gap_chars = gap_chars
+        self._codon_size = 3
 
     @staticmethod
     def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
@@ -105,6 +106,7 @@ class MSA:
         mode: TrimmingMode = TrimmingMode.smart_gap,
         gap_threshold=None,
         site_positions_to_trim=None,
+        codon=False,
     ) -> np.array:
         if site_positions_to_trim is not None:
             if isinstance(site_positions_to_trim, list):
@@ -114,7 +116,9 @@ class MSA:
             self._site_positions_to_trim = site_positions_to_trim
         else:
             self._site_positions_to_trim = self.determine_site_positions_to_trim(
-                mode, gap_threshold
+                mode,
+                gap_threshold,
+                codon,
             )
         self._site_positions_to_keep = np.delete(
             np.arange(self._original_length), self._site_positions_to_trim
@@ -154,7 +158,7 @@ class MSA:
         self._site_classification_types = site_classification_types
         return self._site_classification_types
 
-    def determine_site_positions_to_trim(self, mode, gap_threshold):
+    def determine_site_positions_to_trim(self, mode, gap_threshold, codon=False):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
@@ -200,6 +204,16 @@ class MSA:
                 )
             )
 
+        if codon:
+            """
+            For each position in sites_to_trim we need the full triplet of codon positions tuple.
+            Example:
+                [2, 9] -> [1, 2, 3, 7, 8, 9]
+            """
+            sites_to_trim = map(
+                self.determine_codon_triplet_positions, sites_to_trim
+            ).flatten()
+            print(sites_to_trim)
         return sites_to_trim
 
     def generate_debug_log_info(self):
@@ -219,3 +233,11 @@ class MSA:
                 self.site_classification_types[idx],
                 gappyness,
             )
+
+    def determine_codon_triplet_positions(alignment_position):
+        block = alignment_position // 3
+        remainder = alignment_position % 3
+        if remainder:
+            block += 1
+        codon_triplet_index = block * 3
+        return [codon_triplet_index - 2, codon_triplet_index - 1, codon_triplet_index]

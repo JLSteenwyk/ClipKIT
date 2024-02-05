@@ -97,6 +97,8 @@ def create_parser() -> ArgumentParser:
         -c, --complementary                         creates complementary alignment of trimmed sequences
                                                     (input file named with '.log' suffix)
 
+        -co, --codon                                conduct trimming of codons
+
         -q, --quiet                                 disables all logging to stdout
 
         -h, --help                                  help message
@@ -151,6 +153,10 @@ def create_parser() -> ArgumentParser:
 
         Complementary
             Creates an alignment file of only the trimmed sequences
+        
+        Codon
+            Trims codon-based alignments. If one position in a codon should be trimmed, the whole
+            codon will be trimmed.
         """  # noqa
         ),
     )
@@ -250,6 +256,14 @@ def create_parser() -> ArgumentParser:
     optional.add_argument(
         "-c",
         "--complementary",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "-co",
+        "--codon",
         action="store_true",
         required=False,
         help=SUPPRESS,

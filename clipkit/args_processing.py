@@ -26,6 +26,7 @@ def process_args(args) -> dict:
 
     # assign optional arguments
     complement = args.complementary or False
+    codon = args.codon or False
     mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.smart_gap
     gaps = float(args.gaps) if args.gaps is not None else 0.9
     gap_characters = (
@@ -40,6 +41,7 @@ def process_args(args) -> dict:
         output_file=output_file,
         input_file_format=args.input_file_format,
         output_file_format=args.output_file_format,
+        codon=codon,
         sequence_type=sequence_type,
         complement=complement,
         gaps=gaps,
