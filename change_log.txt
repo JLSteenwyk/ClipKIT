@@ -1,5 +1,9 @@
 Major changes to ClipKIT are summarized here.
 
+2.1.2
+Incorporate codon-based trimming. When one position in a codon gets trimmed based on the mode
+being used, the whole codon will get trimmed from the alignment.
+
 2.0.0 through 2.1.0
 Introduce and refactor MSA class. Rely on Numpy functionality to accelerate processes.
 

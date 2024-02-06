@@ -115,6 +115,24 @@ Output file with the suffix '.clipkit.complementary'
 
 |
 
+.. _Codon:
+
+Codon
+-----
+
+Trims codon-based alignments. If one position in a codon should be trimmed, the whole
+codon will be trimmed. To conduct codon-based trimming, use the -co/\\-\\-codon argument.
+
+.. code-block:: shell
+
+	clipkit <input> --codon
+
+    # or
+
+	clipkit <input> --co
+
+|
+
 .. _`Sequence Type`:
 
 Sequence Type
@@ -151,23 +169,25 @@ All options
 +-----------------------------+-------------------------------------------------------------------+
 | Option                      | Usage and meaning                                                 |
 +=============================+===================================================================+
-| -h/\\-\\-help                 | Print help message                                                |
+| -h/\\-\\-help               | Print help message                                                |
 +-----------------------------+-------------------------------------------------------------------+
-| -v/\\-\\-version              | Print software version                                            |
+| -v/\\-\\-version            | Print software version                                            |
 +-----------------------------+-------------------------------------------------------------------+
-| -m/\\-\\-mode                 | Specify trimming mode (default: smart-gap)                        |
+| -m/\\-\\-mode               | Specify trimming mode (default: smart-gap)                        |
 +-----------------------------+-------------------------------------------------------------------+
-| -o/\\-\\-output               | Specify output file name                                          |
+| -o/\\-\\-output             | Specify output file name                                          |
 +-----------------------------+-------------------------------------------------------------------+
-| -g/\\-\\-gaps                 | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
+| -g/\\-\\-gaps               | Specify gappyness threshold (between 0 and 1). *Default: 0.9*     |
 +-----------------------------+-------------------------------------------------------------------+
-| -if/\\-\\-input_file_format   | Specify input file format*. *Default: auto-detect*                |
+| -co/\\-\\-codon             | Codon codon-based trimming. *Default: off*                        |
 +-----------------------------+-------------------------------------------------------------------+
-| -of/\\-\\-output_file_format  | Specify output file format*. *Default: input file type*           |
+| -if/\\-\\-input_file_format | Specify input file format*. *Default: auto-detect*                |
 +-----------------------------+-------------------------------------------------------------------+
-| -l/\\-\\-log                  | Create a log file. *Default: off*                                 |
+| -of/\\-\\-output_file_format| Specify output file format*. *Default: input file type*           |
 +-----------------------------+-------------------------------------------------------------------+
-| -c/\\-\\-complementary          | Create a complementary alignment file. *Default: off*             |
+| -l/\\-\\-log                | Create a log file. *Default: off*                                 |
++-----------------------------+-------------------------------------------------------------------+
+| -c/\\-\\-complementary      | Create a complementary alignment file. *Default: off*             |
 +-----------------------------+-------------------------------------------------------------------+
 
 
