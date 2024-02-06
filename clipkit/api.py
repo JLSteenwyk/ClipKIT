@@ -19,7 +19,7 @@ def clipkit(
     input_file_format=FileFormat.fasta,
     output_file_format=FileFormat.fasta,
     sequence_type=SeqType.aa,
-    codon=bool,
+    codon: bool = False,
 ) -> TextIO:
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
