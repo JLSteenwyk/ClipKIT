@@ -34,6 +34,7 @@ def write_user_args(
     gap_chars: list,
     mode: "TrimmingMode",
     complement: bool,
+    codon: bool,
     use_log: bool,
 ) -> None:
     if seq_type.value == "nt":
@@ -57,6 +58,7 @@ def write_user_args(
     Gap characters: {gap_chars}
     Trimming mode: {mode.value}
     Create complementary output: {complement}
+    Process as codons: {codon}
     Create log file: {use_log}
     """  # noqa
         )
@@ -77,9 +79,9 @@ def write_output_files_message(
         ------------------------
         | Writing output files |
         ------------------------
-        trimmed alignment: {out_file_name}
-        complement file: {out_file_name + '.complement' if complement else False}
-        log file: {out_file_name + '.log' if use_log else False}
+        Trimmed alignment: {out_file_name}
+        Complement file: {out_file_name + '.complement' if complement else False}
+        Log file: {out_file_name + '.log' if use_log else False}
     """
         )
     )

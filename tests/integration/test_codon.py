@@ -26,7 +26,7 @@ class TestCodonOut(object):
             sequence_type=None,
             complement=False,
             codon=True,
-            gaps=0.2,
+            gaps=0.8,
             mode=TrimmingMode.gappy,
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
@@ -37,6 +37,36 @@ class TestCodonOut(object):
 
         with open(f"{here.parent}/expected/simple.fa_gappy_codon", "r") as expected:
             expected_content = expected.read()
+
+        with open(output_file, "r") as out_file:
+            output_content = out_file.read()
+
+        assert expected_content == output_content
+
+    def test_simple_codon_all_trimmed(self):
+        """
+        test codon
+        usage: clipkit simple.fa -co
+        """
+        output_file = "output/simple.fa_gappy_codon"
+        kwargs = dict(
+            input_file=f"{here.parent}/samples/simple.fa",
+            output_file=output_file,
+            input_file_format="fasta",
+            output_file_format="fasta",
+            sequence_type=None,
+            complement=False,
+            codon=True,
+            gaps=0.1,
+            mode=TrimmingMode.gappy,
+            use_log=False,
+            gap_characters=DEFAULT_NT_GAP_CHARS,
+            quiet=True,
+        )
+
+        execute(**kwargs)
+
+        expected_content = ">1\n>2\n>3\n>4\n>5\n"
 
         with open(output_file, "r") as out_file:
             output_content = out_file.read()

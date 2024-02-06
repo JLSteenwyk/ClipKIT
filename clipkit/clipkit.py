@@ -47,6 +47,7 @@ class TrimRun:
     input_file_format: FileFormat
     output_file_format: FileFormat
     gaps: float
+    codon: bool
     version: str = current_version
 
     @property
@@ -67,6 +68,7 @@ def run(
     gaps: float,
     gap_characters: Union[list, None],
     complement: bool,
+    codon: bool,
     mode: TrimmingMode,
     use_log: bool,
     quiet: bool,
@@ -99,7 +101,7 @@ def run(
         gaps = smart_gap_threshold_determination(alignment, gap_characters)
 
     msa = create_msa(alignment, gap_characters)
-    msa.trim(mode, gap_threshold=gaps)
+    msa.trim(mode, gap_threshold=gaps, site_positions_to_trim=None, codon=codon)
 
     trim_run = TrimRun(
         alignment,
@@ -109,6 +111,7 @@ def run(
         input_file_format,
         output_file_format,
         gaps,
+        codon,
     )
 
     return trim_run, msa.stats
@@ -123,6 +126,7 @@ def execute(
     gaps: float,
     gap_characters: Union[list, None],
     complement: bool,
+    codon: bool,
     mode: TrimmingMode,
     use_log: bool,
     quiet: bool,
@@ -151,6 +155,7 @@ def execute(
         gaps,
         gap_characters,
         complement,
+        codon,
         mode,
         use_log,
         quiet,
@@ -168,6 +173,7 @@ def execute(
         trim_run.gap_characters,
         mode,
         complement,
+        codon,
         use_log,
     )
 

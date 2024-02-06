@@ -62,3 +62,75 @@ class TestMSA(object):
             ]
         )
         np.testing.assert_equal(msa.sites_kept, expected_sites_kept)
+
+    @pytest.mark.parametrize(
+        "sites_to_trim, expected",
+        [
+            (
+                [0],
+                np.array(
+                    [
+                        ["T", "A", "T"],
+                        ["-", "A", "T"],
+                        ["-", "T", "A"],
+                        ["-", "T", "A"],
+                        ["-", "T", "-"],
+                    ]
+                ),
+            ),
+            (
+                [2],
+                np.array(
+                    [
+                        ["T", "A", "T"],
+                        ["-", "A", "T"],
+                        ["-", "T", "A"],
+                        ["-", "T", "A"],
+                        ["-", "T", "-"],
+                    ]
+                ),
+            ),
+            (
+                [3],
+                np.array(
+                    [
+                        ["A", "-", "G"],
+                        ["A", "-", "G"],
+                        ["A", "-", "G"],
+                        ["A", "G", "A"],
+                        ["A", "C", "a"],
+                    ]
+                ),
+            ),
+            (
+                [5],
+                np.array(
+                    [
+                        ["A", "-", "G"],
+                        ["A", "-", "G"],
+                        ["A", "-", "G"],
+                        ["A", "G", "A"],
+                        ["A", "C", "a"],
+                    ]
+                ),
+            ),
+            (
+                [0, 1, 2, 3, 4, 5],
+                np.array(
+                    [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                    ],
+                    dtype=object,
+                ),
+            ),
+        ],
+    )
+    def test_trim_codons(self, sites_to_trim, expected):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        msa.trim(site_positions_to_trim=sites_to_trim, codon=True)
+        np.testing.assert_equal(msa.trimmed, expected)

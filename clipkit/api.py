@@ -39,6 +39,7 @@ def clipkit(
 
     # override some options not currently available through programmatic interface
     complement = False
+    codon = False
     use_log = False
     quiet = True
 
@@ -51,6 +52,7 @@ def clipkit(
         gaps,
         gap_characters,
         complement,
+        codon,
         TrimmingMode(mode),
         use_log,
         quiet,

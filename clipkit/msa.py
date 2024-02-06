@@ -2,6 +2,7 @@ from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import numpy as np
+from itertools import chain
 from typing import Union
 
 from .modes import TrimmingMode
@@ -113,7 +114,12 @@ class MSA:
                 site_positions_to_trim = np.array(site_positions_to_trim)
             if not isinstance(site_positions_to_trim, np.ndarray):
                 raise ValueError("site_positions_to_trim must be a list or np array")
-            self._site_positions_to_trim = site_positions_to_trim
+
+            self._site_positions_to_trim = (
+                self.determine_all_codon_sites_to_trim(site_positions_to_trim)
+                if codon is True
+                else site_positions_to_trim
+            )
         else:
             self._site_positions_to_trim = self.determine_site_positions_to_trim(
                 mode,
@@ -210,10 +216,8 @@ class MSA:
             Example:
                 [2, 9] -> [1, 2, 3, 7, 8, 9]
             """
-            sites_to_trim = map(
-                self.determine_codon_triplet_positions, sites_to_trim
-            ).flatten()
-            print(sites_to_trim)
+            return self.determine_all_codon_sites_to_trim(sites_to_trim)
+
         return sites_to_trim
 
     def generate_debug_log_info(self):
@@ -234,10 +238,31 @@ class MSA:
                 gappyness,
             )
 
-    def determine_codon_triplet_positions(alignment_position):
+    def determine_all_codon_sites_to_trim(self, sites_to_trim):
+        """
+        For each position in sites_to_trim we need the full triplet of codon positions.
+
+        Sites to trim -> all codon sites to trim
+        [2, 8] -> [0, 1, 2, 6, 7, 8]
+        """
+        sites_to_trim_codon = [
+            self.determine_codon_triplet_positions(site_pos)
+            for site_pos in sites_to_trim
+        ]
+        flattened_unique_sites = list(set(chain(*sites_to_trim_codon)))
+        return np.array(flattened_unique_sites)
+
+    def determine_codon_triplet_positions(self, alignment_position):
+        """
+        Block 0 -> [0,1,2], block 1 -> [3,4,5]
+
+        We filter to make sure we are not including any positions out of range
+        """
         block = alignment_position // 3
-        remainder = alignment_position % 3
-        if remainder:
-            block += 1
-        codon_triplet_index = block * 3
-        return [codon_triplet_index - 2, codon_triplet_index - 1, codon_triplet_index]
+        codon_triplet_index_start = block * 3
+        sites = [
+            codon_triplet_index_start,
+            codon_triplet_index_start + 1,
+            codon_triplet_index_start + 2,
+        ]
+        return list(filter(lambda x: x <= self._original_length - 1, sites))
