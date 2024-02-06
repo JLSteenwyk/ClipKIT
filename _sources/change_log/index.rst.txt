@@ -8,6 +8,10 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.1.2**
+Incorporate codon-based trimming. When one position in a codon gets trimmed based on the mode
+being used, the whole codon will get trimmed from the alignment.
+
 **1.4.0**
 new argument for specifying if sequences are amino acids or nucleotides
 
