@@ -9,6 +9,7 @@ This section describes the various features and options of ClipKIT.
 - Output_
 - Log_
 - Complementary_
+- Codon_
 - `Sequence Type`_
 - `All options`_
 
