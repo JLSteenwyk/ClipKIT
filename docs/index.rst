@@ -101,9 +101,9 @@ To install via anaconda, execute the following command:
 
 .. code-block:: shell
 
-	conda install -c jlsteenwyk clipkit
+	conda install bioconda::clipkit
 
-Visit here for more information: https://anaconda.org/jlsteenwyk/clipkit
+Visit here for more information: https://anaconda.org/bioconda/clipkit
 
 |
 
