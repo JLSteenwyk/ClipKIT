@@ -111,7 +111,7 @@ deactivate
 
 <br />
 
-To install via anaconda, execute the follwoing command:
+To install via anaconda, execute the following command:
 
 ``` shell
 conda install bioconda::clipkit
