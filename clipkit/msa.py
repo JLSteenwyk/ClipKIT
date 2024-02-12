@@ -209,9 +209,12 @@ class MSA:
                     (sites_to_trim_gaps_based, sites_to_trim_classification_based)
                 )
             )
-
-        if codon:
+        elif mode == TrimmingMode.c3:
+            sites_to_trim = np.arange(3, self._original_length + 1, 3) - 1
+        if codon and mode != TrimmingMode.c3:
             """
+            NOTE: ignoring c3 mode otherwise we would ALWAYS trim the entire file by definition.
+
             For each position in sites_to_trim we need the full triplet of codon positions tuple.
             Example:
                 [2, 9] -> [1, 2, 3, 7, 8, 9]
@@ -258,8 +261,8 @@ class MSA:
 
         We filter to make sure we are not including any positions out of range
         """
-        block = alignment_position // 3
-        codon_triplet_index_start = block * 3
+        block = alignment_position // self._codon_size
+        codon_triplet_index_start = block * self._codon_size
         sites = [
             codon_triplet_index_start,
             codon_triplet_index_start + 1,

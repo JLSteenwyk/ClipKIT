@@ -110,3 +110,9 @@ class TestArgsProcessing(object):
             "quiet",
         ]
         assert sorted(res.keys()) == sorted(expected_keys)
+
+    def test_incompatible_codon_args(self, args):
+        args.codon = True
+        args.mode = TrimmingMode.c3
+        with pytest.raises(SystemExit):
+            process_args(args)

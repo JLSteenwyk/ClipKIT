@@ -36,6 +36,12 @@ def process_args(args) -> dict:
     quiet = args.quiet or False
     sequence_type = SeqType(args.sequence_type.lower()) if args.sequence_type else None
 
+    if codon and mode == TrimmingMode.c3:
+        logger.warning(
+            "C3 and codon-based trimming are incompatible.\nCodon-based trimming removes whole codons while C3 removes every third codon position."
+        )
+        sys.exit()
+
     return dict(
         input_file=input_file,
         output_file=output_file,

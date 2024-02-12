@@ -73,7 +73,8 @@ def create_parser() -> ArgumentParser:
                     kpic-gappy,                
                     kpi,
                     kpi-smart-gap,
-                    kpi-gappy>                      
+                    kpi-gappy,
+                    c3>                      
                                                     
         -g, --gaps <threshold_of_gaps>              specifies gaps threshold
                                                     (default: 0.9)
@@ -116,6 +117,7 @@ def create_parser() -> ArgumentParser:
             kpi: keep only parsimony informative sites
             kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
             kpi-gappy: a combination of kpi- and gappy-based trimming
+            c3: remove every third codon position
 
         Gaps
             Positions with gappyness greater than threshold will be trimmed. 

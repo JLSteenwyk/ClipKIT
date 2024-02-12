@@ -16,3 +16,4 @@ class TrimmingMode(Enum):
     kpic = "kpic"
     kpic_gappy = "kpic-gappy"
     kpic_smart_gap = "kpic-smart-gap"
+    c3 = "c3"
