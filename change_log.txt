@@ -1,5 +1,13 @@
 Major changes to ClipKIT are summarized here.
 
+2.2.1
+Removed "Processing" block from CLI output. Reordered CLI output to 
+put user arguments first followed by outputs. Added original length of
+the alignment to output statistics.
+
+2.2.0
+Incorporated C3 trimming, which can be evoked using the c3 trimming mode.
+
 2.1.2
 Incorporate codon-based trimming. When one position in a codon gets trimmed based on the mode
 being used, the whole codon will get trimmed from the alignment.

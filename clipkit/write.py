@@ -11,19 +11,6 @@ if TYPE_CHECKING:
     from .modes import TrimmingMode
 
 
-def write_processing_aln() -> None:
-    logger.info(
-        textwrap.dedent(
-            """\
-        
-        ------------------------
-        | Processing Alignment |
-        ------------------------
-    """  # noqa
-        )
-    )
-
-
 def write_user_args(
     in_file_name: str,
     in_file_format: "FileFormat",
@@ -75,7 +62,6 @@ def write_output_files_message(
         textwrap.dedent(
             f"""\
 
-
         ------------------------
         | Writing output files |
         ------------------------
@@ -98,9 +84,9 @@ def write_output_stats(stats: "TrimmingStats", start_time: float) -> None:
         ---------------------
         | Output Statistics |
         ---------------------
+        Original length: {stats.alignment_length}
         Number of sites kept: {stats.output_length}
         Number of sites trimmed: {stats.trimmed_length}
-
         Percentage of alignment trimmed: {stats.trimmed_percentage}%
 
         Execution time: {round(time.time() - start_time, 3)}s

@@ -31,7 +31,6 @@ from .warnings import (
 from .write import (
     write_user_args,
     write_output_stats,
-    write_processing_aln,
     write_output_files_message,
 )
 
@@ -145,7 +144,6 @@ def execute(
     # for reporting runtime duration to user
     start_time = time.time()
 
-    write_processing_aln()
     trim_run, stats = run(
         input_file,
         input_file_format,
@@ -160,7 +158,6 @@ def execute(
         use_log,
         quiet,
     )
-    write_output_files_message(output_file, complement, use_log)
 
     # display to user what args are being used in stdout
     write_user_args(
@@ -176,6 +173,8 @@ def execute(
         codon,
         use_log,
     )
+
+    write_output_files_message(output_file, complement, use_log)
 
     if use_log:
         warn_if_all_sites_were_trimmed(trim_run.msa)
