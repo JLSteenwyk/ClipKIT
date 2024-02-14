@@ -34,6 +34,7 @@ ClipKIT can be run with eight different modes, which are specified with the -m/-
 * kpi: keep only parsimony informative sites
 * kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
 * kpi-gappy: a combination of kpi- and gappy-based trimming
+* c3: remove third codon position from alignment
 
 .. code-block:: shell
 
@@ -61,6 +62,9 @@ ClipKIT can be run with eight different modes, which are specified with the -m/-
 
 	# kpi- and gappy-based trimming
 	clipkit <input> -m kpi-gappy
+
+	# remove third codon position
+	clipkit <input> -m c3
 
 .. _Output:
 

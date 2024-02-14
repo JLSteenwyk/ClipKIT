@@ -195,6 +195,7 @@
 <li><p>kpi: keep only parsimony informative sites</p></li>
 <li><p>kpi-smart-gap: a combination of kpi- and smart-gap-based trimming</p></li>
 <li><p>kpi-gappy: a combination of kpi- and gappy-based trimming</p></li>
+<li><p>c3: remove third codon position from alignment</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># smart-gap-based trimming</span>
 clipkit &lt;input&gt;
@@ -220,6 +221,9 @@ clipkit &lt;input&gt; -m kpi-smart-gap
 
 <span class="c1"># kpi- and gappy-based trimming</span>
 clipkit &lt;input&gt; -m kpi-gappy
+
+<span class="c1"># remove third codon position</span>
+clipkit &lt;input&gt; -m c3
 </pre></div>
 </div>
 <div class="line-block" id="output">
