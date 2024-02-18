@@ -15,6 +15,5 @@ pytest-mock==3.0.0
 regex==2020.5.7
 six==1.14.0
 toml==0.10.0
-tqdm==4.45.0
 wcwidth==0.1.9
 zipp==3.1.0
