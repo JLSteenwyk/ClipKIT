@@ -2,7 +2,6 @@ from collections import Counter
 
 from Bio.Align import MultipleSeqAlignment
 import numpy as np
-from tqdm import tqdm
 
 from .logger import logger
 

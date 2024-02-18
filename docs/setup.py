@@ -16,7 +16,7 @@ CLASSIFIERS = [
     "Topic :: Scientific/Engineering",
 ]
 
-REQUIRES = ["biopython==1.76", "numpy==1.21.0", "tqdm==4.45.0"]
+REQUIRES = ["biopython==1.76", "numpy==1.21.0"]
 
 setup(
     name="clipkit",

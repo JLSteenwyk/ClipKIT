@@ -2,7 +2,6 @@ import re
 
 from Bio import SeqIO
 from Bio.Align import MultipleSeqAlignment
-from tqdm import tqdm
 
 from .msa import MSA
 from .modes import TrimmingMode
