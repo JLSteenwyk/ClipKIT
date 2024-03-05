@@ -126,9 +126,10 @@ class MSA:
                 gap_threshold,
                 codon,
             )
-        self._site_positions_to_keep = np.delete(
-            np.arange(self._original_length), self._site_positions_to_trim
-        )
+        if len(self._site_positions_to_trim) > 0:
+            self._site_positions_to_keep = np.delete(
+                np.arange(self._original_length), self._site_positions_to_trim
+            )
 
     @property
     def column_character_frequencies(self):

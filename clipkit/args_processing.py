@@ -32,6 +32,7 @@ def process_args(args) -> dict:
     gap_characters = (
         [c for c in args.gap_characters] if args.gap_characters is not None else None
     )
+    auxiliary_file = args.auxiliary_file
     use_log = args.log or False
     quiet = args.quiet or False
     sequence_type = SeqType(args.sequence_type.lower()) if args.sequence_type else None
@@ -47,6 +48,7 @@ def process_args(args) -> dict:
         output_file=output_file,
         input_file_format=args.input_file_format,
         output_file_format=args.output_file_format,
+        auxiliary_file=auxiliary_file,
         codon=codon,
         sequence_type=sequence_type,
         complement=complement,

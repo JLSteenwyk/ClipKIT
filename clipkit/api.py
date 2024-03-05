@@ -42,12 +42,14 @@ def clipkit(
     complement = False
     use_log = False
     quiet = True
+    auxiliary_file = None  # TODO: implement?
 
     trim_run, stats = run(
         input_temp_file.name if input_temp_file else input_file_path,
         input_file_format,
         output_temp_file.name if output_temp_file else output_file_path,
         output_file_format,
+        auxiliary_file,
         sequence_type,
         gaps,
         gap_characters,

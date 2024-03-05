@@ -10,10 +10,11 @@ if TYPE_CHECKING:
 class TrimmingMode(Enum):
     gappy = "gappy"
     smart_gap = "smart-gap"
-    kpi = "kpi"
+    kpi = "kpi"  # keep parsimony informative sites
     kpi_gappy = "kpi-gappy"
     kpi_smart_gap = "kpi-smart-gap"
-    kpic = "kpic"
+    kpic = "kpic"  # keep parsimony informative and constant sites
     kpic_gappy = "kpic-gappy"
     kpic_smart_gap = "kpic-smart-gap"
+    cst = "cst"  # custom site trimming
     c3 = "c3"

@@ -74,6 +74,7 @@ def create_parser() -> ArgumentParser:
                     kpi,
                     kpi-smart-gap,
                     kpi-gappy,
+                    cst,
                     c3>                      
                                                     
         -g, --gaps <threshold_of_gaps>              specifies gaps threshold
@@ -95,6 +96,9 @@ def create_parser() -> ArgumentParser:
         -l, --log                                   creates a log file
                                                     (input file named with '.log' suffix)
 
+        -a, --auxiliary_file                        auxiliary file with meta-information for various trimming
+                                                    modes (e.g., user-specified)
+
         -c, --complementary                         creates complementary alignment of trimmed sequences
                                                     (input file named with '.log' suffix)
 
@@ -104,6 +108,7 @@ def create_parser() -> ArgumentParser:
 
         -h, --help                                  help message
         -v, --version                               print version
+
 
         -------------------------------------
         | Detailed explanation of arguments | 
@@ -117,6 +122,7 @@ def create_parser() -> ArgumentParser:
             kpi: keep only parsimony informative sites
             kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
             kpi-gappy: a combination of kpi- and gappy-based trimming
+            cst: custom site trimming specified using a tab-delimited text file
             c3: remove every third codon position
 
         Gaps
@@ -245,6 +251,14 @@ def create_parser() -> ArgumentParser:
         choices=file_format_choices,
         help=SUPPRESS,
         metavar="",
+    )
+
+    optional.add_argument(
+        "-a",
+        "--auxiliary_file",
+        type=str,
+        required=False,
+        help=SUPPRESS,
     )
 
     optional.add_argument(

@@ -1,0 +1,6 @@
+1	keep
+2	trim
+3	keep
+4	keep
+5	keep
+6	keep
