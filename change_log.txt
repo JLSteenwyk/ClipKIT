@@ -1,5 +1,9 @@
 Major changes to ClipKIT are summarized here.
 
+2.2.3
+Fixed gap character handling. The help message was incongruent
+with what was happening underneath the hood.
+
 2.2.1
 Removed "Processing" block from CLI output. Reordered CLI output to 
 put user arguments first followed by outputs. Added original length of

@@ -80,8 +80,8 @@ def create_parser() -> ArgumentParser:
                                                     (default: 0.9)
 
         -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
-                                                    (default for aa: "-?*Xx"
-                                                     default for nt: "-?*XxNn")
+                                                    (default for aa: Xx-?*
+                                                     default for nt: XxNn-?*)
 
         -if, --input_file_format <file_format>      specifies input file format
                                                     (default: auto-detect)    
@@ -126,10 +126,10 @@ def create_parser() -> ArgumentParser:
             iteration of trimming that uses smart-gap.
 
         Gap characters
-            Specifies gap characters used in the input file. All gap characters
-            should have a quotes (single or double) surrounding them. For example,
+            Specifies gap characters used in the input file. For example,
             "NnXx-?" would specify that "N", "n", "X", "x", "-", and "?" are
-            gap characters.
+            gap characters. Note, the first gap character cannot be "-" because
+            the parser will interpret the gaps list as a new argument.
 
         Sequence type
             Specifies the type of sequences in the input file. Valid options
