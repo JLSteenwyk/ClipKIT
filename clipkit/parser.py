@@ -80,8 +80,8 @@ def create_parser() -> ArgumentParser:
                                                     (default: 0.9)
 
         -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
-                                                    (default for aa: "-?*XxNn"
-                                                     default for nt: "-?*Xx")
+                                                    (default for aa: "-?*Xx"
+                                                     default for nt: "-?*XxNn")
 
         -if, --input_file_format <file_format>      specifies input file format
                                                     (default: auto-detect)    
