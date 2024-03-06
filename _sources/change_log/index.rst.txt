@@ -8,6 +8,10 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.2.3**
+Fixed gap character handling. The help message was incongruent
+with what was happening underneath the hood.
+
 **2.1.2**
 Incorporate codon-based trimming. When one position in a codon gets trimmed based on the mode
 being used, the whole codon will get trimmed from the alignment.
