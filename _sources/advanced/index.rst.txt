@@ -10,6 +10,7 @@ This section describes the various features and options of ClipKIT.
 - Log_
 - Complementary_
 - Codon_
+- `Custom site trimming (cst mode)`_
 - Gaps_
 - `Gap Characters`_
 - `Sequence Type`_
@@ -37,6 +38,7 @@ ClipKIT can be run with eight different modes, which are specified with the -m/-
 * kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
 * kpi-gappy: a combination of kpi- and gappy-based trimming
 * c3: remove third codon position from alignment
+* cst: custom site trimming (remove sites specified by the user)
 
 .. code-block:: shell
 
@@ -67,6 +69,9 @@ ClipKIT can be run with eight different modes, which are specified with the -m/-
 
 	# remove third codon position
 	clipkit <input> -m c3
+
+	# conduct site-specific trimming
+	clipkit <input> -m cst -a <auxiliary file>
 
 .. _Output:
 
@@ -137,6 +142,63 @@ codon will be trimmed. To conduct codon-based trimming, use the -co/\\-\\-codon 
     # or
 
 	clipkit <input> --co
+
+|
+
+
+.. _`Custom site trimming (cst mode)`:
+
+Custom site trimming (cst mode)
+-------------------------------
+
+Custom site trimming specified using a tab-delimited text file specified using the -a argument.
+
+.. code-block:: shell
+
+	clipkit <input> -m cst -a <auxiliary_file>
+
+|
+
+The `auxiliary_file` is a two column tab-delimited file wherein the first column is the site
+(starting at 1) and the second column specifies if the site should be kept or trimmed using the
+strings "keep" or "trim".
+
+.. code-block:: shell
+
+	cat auxiliary_file.txt
+
+	1	keep
+	2	trim
+	3	keep
+	4	keep
+	5	keep
+	6	keep
+
+|
+
+Alternatively, users can specify sites that are only kept or trimmed using the `auxiliary_file`.
+For example, the following would be equivalent to the auxiliary file described above.
+
+.. code-block:: shell
+
+	cat auxiliary_file.txt
+
+	2	trim
+
+|
+
+Similarly, the following would conduct the trimming, wherein the second site is removed but all
+others are kept. 
+
+.. code-block:: shell
+
+	cat auxiliary_file.txt
+
+	1	keep
+	3	keep
+	4	keep
+	5	keep
+	6	keep
 
 |
 
@@ -211,33 +273,35 @@ All options
 ---------------------
 
 
-+-----------------------------+-----------------------------------------------------------------------+
-| Option                      | Usage and meaning                                                     |
-+=============================+=======================================================================+
-| -h/\\-\\-help               | Print help message                                                    |
-+-----------------------------+-----------------------------------------------------------------------+
-| -v/\\-\\-version            | Print software version                                                |
-+-----------------------------+-----------------------------------------------------------------------+
-| -m/\\-\\-mode               | Specify trimming mode (default: smart-gap)                            |
-+-----------------------------+-----------------------------------------------------------------------+
-| -o/\\-\\-output             | Specify output file name                                              |
-+-----------------------------+-----------------------------------------------------------------------+
-| -g/\\-\\-gaps               | Specify gappyness threshold (between 0 and 1). *Default: 0.9*         |
-+-----------------------------+-----------------------------------------------------------------------+
-| -gc/\\-\\-gap_characters    | Specifies gap characters used in input file (AAs: Xx-?*; NTs: XxNn-?* |
-+-----------------------------+-----------------------------------------------------------------------+
-| -co/\\-\\-codon             | Codon codon-based trimming. *Default: off*                            |
-+-----------------------------+-----------------------------------------------------------------------+
-| -s/\\-\\-sequence           | Specifies sequence type of input file. *Default: auto-detect*         |
-+-----------------------------+-----------------------------------------------------------------------+
-| -if/\\-\\-input_file_format | Specify input file format*. *Default: auto-detect*                    |
-+-----------------------------+-----------------------------------------------------------------------+
-| -of/\\-\\-output_file_format| Specify output file format*. *Default: input file type*               |
-+-----------------------------+-----------------------------------------------------------------------+
-| -l/\\-\\-log                | Create a log file. *Default: off*                                     |
-+-----------------------------+-----------------------------------------------------------------------+
-| -c/\\-\\-complementary      | Create a complementary alignment file. *Default: off*                 |
-+-----------------------------+-----------------------------------------------------------------------+
++-----------------------------+-------------------------------------------------------------------------+
+| Option                      | Usage and meaning                                                       |
++=============================+=========================================================================+
+| -h/\\-\\-help               | Print help message                                                      |
++-----------------------------+-------------------------------------------------------------------------+
+| -v/\\-\\-version            | Print software version                                                  |
++-----------------------------+-------------------------------------------------------------------------+
+| -m/\\-\\-mode               | Specify trimming mode (default: smart-gap)                              |
++-----------------------------+-------------------------------------------------------------------------+
+| -o/\\-\\-output             | Specify output file name                                                |
++-----------------------------+-------------------------------------------------------------------------+
+| -g/\\-\\-gaps               | Specify gappyness threshold (between 0 and 1). *Default: 0.9*           |
++-----------------------------+-------------------------------------------------------------------------+
+| -gc/\\-\\-gap_characters    | Specifies gap characters used in input file (AAs: Xx-?*; NTs: XxNn-?*   |
++-----------------------------+-------------------------------------------------------------------------+
+| -co/\\-\\-codon             | Codon codon-based trimming. *Default: off*                              |
++-----------------------------+-------------------------------------------------------------------------+
+| -s/\\-\\-sequence           | Specifies sequence type of input file. *Default: auto-detect*           |
++-----------------------------+-------------------------------------------------------------------------+
+| -if/\\-\\-input_file_format | Specify input file format*. *Default: auto-detect*                      |
++-----------------------------+-------------------------------------------------------------------------+
+| -of/\\-\\-output_file_format| Specify output file format*. *Default: input file type*                 |
++-----------------------------+-------------------------------------------------------------------------+
+| -l/\\-\\-log                | Create a log file. *Default: off*                                       |
++-----------------------------+-------------------------------------------------------------------------+
+| -c/\\-\\-complementary      | Create a complementary alignment file. *Default: off*                   |
++-----------------------------+-------------------------------------------------------------------------+
+| -a/\\-\\-auxiliary_file     | Auxiliary file. Currently used for specifying sites to trim in cst mode |
++-----------------------------+-------------------------------------------------------------------------+
 
 
 \*Acceptable file formats include: 
