@@ -1,0 +1,2 @@
+1	keep
+6	keep

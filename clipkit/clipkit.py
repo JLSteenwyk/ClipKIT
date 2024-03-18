@@ -8,7 +8,12 @@ from typing import Union
 from Bio.Align import MultipleSeqAlignment
 from .args_processing import process_args
 from .exceptions import InvalidInputFileFormat
-from .files import get_alignment_and_format, FileFormat, write_debug_log_file
+from .files import (
+    get_alignment_and_format,
+    FileFormat,
+    write_debug_log_file,
+    get_custom_sites_to_trim,
+)
 from .helpers import (
     create_msa,
     get_seq_type,
@@ -63,6 +68,7 @@ def run(
     input_file_format: FileFormat,
     output_file: str,
     output_file_format: FileFormat,
+    auxiliary_file: str,
     sequence_type: Union[SeqType, None],
     gaps: float,
     gap_characters: Union[list, None],
@@ -99,8 +105,20 @@ def run(
     }:
         gaps = smart_gap_threshold_determination(alignment, gap_characters)
 
+    site_positions_to_trim = None
+    if mode == TrimmingMode.cst:
+        aln_length = len(alignment)
+        site_positions_to_trim = (
+            get_custom_sites_to_trim(auxiliary_file, aln_length) or []
+        )
+
     msa = create_msa(alignment, gap_characters)
-    msa.trim(mode, gap_threshold=gaps, site_positions_to_trim=None, codon=codon)
+    msa.trim(
+        mode,
+        gap_threshold=gaps,
+        site_positions_to_trim=site_positions_to_trim,
+        codon=codon,
+    )
 
     trim_run = TrimRun(
         alignment,
@@ -129,6 +147,7 @@ def execute(
     mode: TrimmingMode,
     use_log: bool,
     quiet: bool,
+    auxiliary_file: str = None,
     **kwargs,
 ) -> None:
     if use_log:
@@ -149,6 +168,7 @@ def execute(
         input_file_format,
         output_file,
         output_file_format,
+        auxiliary_file,
         sequence_type,
         gaps,
         gap_characters,

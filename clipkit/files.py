@@ -3,6 +3,7 @@ from .logger import log_file_logger
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
+import numpy as np
 
 from .exceptions import InvalidInputFileFormat
 
@@ -44,6 +45,29 @@ def get_alignment_and_format(
                 continue
 
         raise InvalidInputFileFormat("File could not be read")
+
+
+def get_custom_sites_to_trim(file_path: str, aln_length: int) -> list:
+    with open(file_path) as f:
+        lines = f.read().splitlines()
+
+    sites_to_trim = []
+    sites_to_keep = []
+    for line in lines:
+        site = line.split("\t")
+        pos = int(site[0]) - 1
+        if site[1] == "trim":
+            sites_to_trim.append(pos)
+        else:
+            sites_to_keep.append(pos)
+
+    if len(sites_to_trim) == 0:
+        # we only had keeps so treat every other site as a trim
+        sites_to_trim = list(
+            np.setdiff1d(np.arange(aln_length), np.array(sites_to_keep))
+        )
+
+    return sites_to_trim
 
 
 def write_debug_log_file(msa):

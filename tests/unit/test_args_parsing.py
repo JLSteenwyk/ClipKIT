@@ -22,6 +22,7 @@ def args():
         output_file_format=None,
         gap_characters=DEFAULT_NT_GAP_CHARS,
         quiet=True,
+        auxiliary_file=None,
     )
     return Namespace(**kwargs)
 
@@ -108,6 +109,7 @@ class TestArgsProcessing(object):
             "use_log",
             "gap_characters",
             "quiet",
+            "auxiliary_file",
         ]
         assert sorted(res.keys()) == sorted(expected_keys)
 
