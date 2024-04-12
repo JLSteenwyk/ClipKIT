@@ -107,7 +107,7 @@ def run(
 
     site_positions_to_trim = None
     if mode == TrimmingMode.cst:
-        aln_length = len(alignment)
+        aln_length = alignment.get_alignment_length()
         site_positions_to_trim = (
             get_custom_sites_to_trim(auxiliary_file, aln_length) or []
         )
