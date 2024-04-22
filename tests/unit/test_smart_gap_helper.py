@@ -1,5 +1,4 @@
 import pytest
-import pytest_mock
 from pathlib import Path
 
 
