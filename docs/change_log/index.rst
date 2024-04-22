@@ -8,6 +8,9 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.3.0**
+Added support for Python version 3.11
+
 **2.2.3**
 Fixed gap character handling. The help message was incongruent
 with what was happening underneath the hood.
