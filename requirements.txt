@@ -10,7 +10,7 @@ pathspec==0.8.0
 pluggy==0.13.1
 py==1.8.1
 pyparsing==2.4.7
-pytest==7.2.2
+pytest==8.1.1
 pytest-mock==3.0.0
 regex==2020.5.7
 six==1.14.0
