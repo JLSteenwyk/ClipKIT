@@ -15,4 +15,4 @@ Sphinx = "*"
 sphinx_rtd_theme = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.9"
