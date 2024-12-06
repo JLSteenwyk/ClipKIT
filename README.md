@@ -19,9 +19,8 @@
         <a href="https://github.com/jlsteenwyk/clipkit/graphs/contributors" alt="Contributors">
             <img src="https://img.shields.io/github/contributors/jlsteenwyk/clipkit">
         </a>
-        <a href="https://twitter.com/intent/follow?screen_name=jlsteenwyk" alt="Author Twitter">
-            <img src="https://img.shields.io/twitter/follow/jlsteenwyk?style=social&logo=twitter"
-                alt="follow on Twitter">
+        <a href="https://bsky.app/profile/jlsteenwyk.bsky.social" target="_blank" rel="noopener noreferrer">
+          <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff">
         </a>
         <br />
         <a href="https://pepy.tech/badge/clipkit">
