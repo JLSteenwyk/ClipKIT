@@ -41,6 +41,7 @@ class TestCSTOut(object):
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
             auxiliary_file=f"{here.parent}/{aux_file}",
+            ends_only=False,
         )
 
         execute(**kwargs)

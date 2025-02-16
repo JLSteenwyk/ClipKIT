@@ -108,6 +108,7 @@ class MSA:
         gap_threshold=None,
         site_positions_to_trim=None,
         codon=False,
+        ends_only=False,
     ) -> np.array:
         if site_positions_to_trim is not None:
             if isinstance(site_positions_to_trim, list):
@@ -125,6 +126,7 @@ class MSA:
                 mode,
                 gap_threshold,
                 codon,
+                ends_only,
             )
         if len(self._site_positions_to_trim) > 0:
             self._site_positions_to_keep = np.delete(
@@ -165,7 +167,13 @@ class MSA:
         self._site_classification_types = site_classification_types
         return self._site_classification_types
 
-    def determine_site_positions_to_trim(self, mode, gap_threshold, codon=False):
+    def determine_site_positions_to_trim(
+        self,
+        mode,
+        gap_threshold,
+        codon=False,
+        ends_only=False,
+    ):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
@@ -222,6 +230,9 @@ class MSA:
             """
             return self.determine_all_codon_sites_to_trim(sites_to_trim)
 
+        if ends_only:
+            sites_to_trim = self.get_consecutive_from_zero_and_max(sites_to_trim)
+
         return sites_to_trim
 
     def generate_debug_log_info(self):
@@ -270,3 +281,44 @@ class MSA:
             codon_triplet_index_start + 2,
         ]
         return list(filter(lambda x: x <= self._original_length - 1, sites))
+
+    def get_consecutive_starting_from_zero(self, arr):
+        if arr.size == 0:
+            return arr
+
+        zero_locs = np.where(arr == 0)[0]
+        if zero_locs.size == 0:
+            return np.array([], dtype=arr.dtype)
+
+        start_idx = zero_locs[0]
+
+        run = [arr[start_idx]]
+        i = start_idx
+        while i + 1 < len(arr) and arr[i + 1] == arr[i] + 1:
+            run.append(arr[i + 1])
+            i += 1
+
+        return np.array(run, dtype=arr.dtype)
+
+    def get_consecutive_ending_with_max(self, arr):
+        if arr.size == 0:
+            return arr
+
+        max_locs = np.where(arr == (self._original_length - 1))[0]
+        end_idx = max_locs[-1]
+
+        run = [arr[end_idx]]
+        i = end_idx
+        while i - 1 >= 0 and arr[i - 1] == arr[i] - 1:
+            run.append(arr[i - 1])
+            i -= 1
+
+        run.reverse()
+
+        return np.array(run, dtype=arr.dtype)
+
+    def get_consecutive_from_zero_and_max(self, arr):
+        run_from_zero = self.get_consecutive_starting_from_zero(arr)
+        run_with_max = self.get_consecutive_ending_with_max(arr)
+
+        return np.concatenate([run_from_zero, run_with_max])

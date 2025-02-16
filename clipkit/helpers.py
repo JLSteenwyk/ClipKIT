@@ -2,6 +2,7 @@ import re
 
 from Bio import SeqIO
 from Bio.Align import MultipleSeqAlignment
+import numpy as np
 
 from .msa import MSA
 from .modes import TrimmingMode

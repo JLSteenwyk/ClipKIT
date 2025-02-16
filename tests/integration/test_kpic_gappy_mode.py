@@ -32,6 +32,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -65,6 +66,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -99,6 +101,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -134,6 +137,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_AA_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -168,6 +172,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_AA_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -202,6 +207,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -236,6 +242,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_AA_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -270,6 +277,7 @@ class TestKpicGappyMode(object):
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
