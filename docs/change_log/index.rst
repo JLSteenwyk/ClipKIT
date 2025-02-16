@@ -16,6 +16,9 @@ For example, if the sites that should be trimmed include
 length 16, adding the ends_only mode will result in [0, 1, 2, 14, 15, 16]
 being the sites that will be trimmed. Specify this argument with -eo, \-\-ends_only.
 
+**2.3.0**
+Added support for Python version 3.11
+
 **2.2.3**
 Fixed gap character handling. The help message was incongruent
 with what was happening underneath the hood.
