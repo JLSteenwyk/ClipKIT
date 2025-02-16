@@ -57,7 +57,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#gaps">Gaps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gap-characters">Gap Characters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sequence-type">Sequence Type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ends-only">Ends only</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#all-options">All options</a></li>
 </ul>
 </li>
@@ -104,7 +103,6 @@
 <li><p><a class="reference internal" href="#gaps">Gaps</a></p></li>
 <li><p><a class="reference internal" href="#gap-characters">Gap Characters</a></p></li>
 <li><p><a class="reference internal" href="#sequence-type">Sequence Type</a></p></li>
-<li><p><a class="reference internal" href="#ends-only">Ends only</a></p></li>
 <li><p><a class="reference internal" href="#all-options">All options</a></p></li>
 </ul>
 <div class="line-block">
@@ -325,26 +323,56 @@ considered gaps as well as N.</p>
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="ends-only">
-<span id="id10"></span><h2>Ends only<a class="headerlink" href="#ends-only" title="Link to this heading"></a></h2>
-<p>For a given trimming mode, specifies if only sites at the end of an alignment
-should be trimmed. For example, if the sites that should be trimmed include
-[0, 1, 2, 4, 5, 6, 14, 15, 16] for smart-gap mode and an alignment of
-length 16, adding the ends_only mode will result in [0, 1, 2, 14, 15, 16]
-being the sites that will be trimmed. Specify this argument with -eo, --ends_only.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-eo
-
-<span class="c1"># or</span>
-
-clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--ends_only
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-</section>
 <section id="all-options">
-<span id="id11"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
+<span id="id10"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Usage and meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-h/\-\-help</p></td>
+<td><p>Print help message</p></td>
+</tr>
+<tr class="row-odd"><td><p>-v/\-\-version</p></td>
+<td><p>Print software version</p></td>
+</tr>
+<tr class="row-even"><td><p>-m/\-\-mode</p></td>
+<td><p>Specify trimming mode (default: smart-gap)</p></td>
+</tr>
+<tr class="row-odd"><td><p>-o/\-\-output</p></td>
+<td><p>Specify output file name</p></td>
+</tr>
+<tr class="row-even"><td><p>-g/\-\-gaps</p></td>
+<td><p>Specify gappyness threshold (between 0 and 1). <em>Default: 0.9</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>-gc/\-\-gap_characters</p></td>
+<td><p>Specifies gap characters used in input file (AAs: Xx-?*; NTs: XxNn-?*</p></td>
+</tr>
+<tr class="row-even"><td><p>-co/\-\-codon</p></td>
+<td><p>Codon codon-based trimming. <em>Default: off</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>-s/\-\-sequence</p></td>
+<td><p>Specifies sequence type of input file. <em>Default: auto-detect</em></p></td>
+</tr>
+<tr class="row-even"><td><p>-if/\-\-input_file_format</p></td>
+<td><p>Specify input file format*. <em>Default: auto-detect</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>-of/\-\-output_file_format</p></td>
+<td><p>Specify output file format*. <em>Default: input file type</em></p></td>
+</tr>
+<tr class="row-even"><td><p>-l/\-\-log</p></td>
+<td><p>Create a log file. <em>Default: off</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>-c/\-\-complementary</p></td>
+<td><p>Create a complementary alignment file. <em>Default: off</em></p></td>
+</tr>
+<tr class="row-even"><td><p>-a/\-\-auxiliary_file</p></td>
+<td><p>Auxiliary file. Currently used for specifying sites to trim in cst mode</p></td>
+</tr>
+</tbody>
+</table>
 <p>*Acceptable file formats include:
 <a class="reference external" href="https://en.wikipedia.org/wiki/FASTA_format">fasta</a>,
 <a class="reference external" href="http://meme-suite.org/doc/clustalw-format.html">clustal</a>,
