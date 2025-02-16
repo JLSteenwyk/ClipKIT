@@ -77,6 +77,7 @@ def run(
     mode: TrimmingMode,
     use_log: bool,
     quiet: bool,
+    ends_only: bool,
 ):
     try:
         alignment, input_file_format = get_alignment_and_format(
@@ -118,6 +119,7 @@ def run(
         gap_threshold=gaps,
         site_positions_to_trim=site_positions_to_trim,
         codon=codon,
+        ends_only=ends_only,
     )
 
     trim_run = TrimRun(
@@ -144,6 +146,7 @@ def execute(
     gap_characters: Union[list, None],
     complement: bool,
     codon: bool,
+    ends_only: bool,
     mode: TrimmingMode,
     use_log: bool,
     quiet: bool,
@@ -177,6 +180,7 @@ def execute(
         mode,
         use_log,
         quiet,
+        ends_only,
     )
 
     # display to user what args are being used in stdout
@@ -192,6 +196,7 @@ def execute(
         complement,
         codon,
         use_log,
+        ends_only,
     )
 
     write_output_files_message(output_file, complement, use_log)

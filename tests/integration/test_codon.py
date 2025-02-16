@@ -31,6 +31,7 @@ class TestCodonOut(object):
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
 
         execute(**kwargs)
@@ -62,6 +63,7 @@ class TestCodonOut(object):
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
 
         execute(**kwargs)

@@ -32,6 +32,7 @@ class TestOutLog(object):
             use_log=True,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -64,6 +65,7 @@ class TestOutLog(object):
             use_log=True,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -98,6 +100,7 @@ class TestOutLog(object):
             use_log=True,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 
@@ -133,6 +136,7 @@ class TestOutLog(object):
             use_log=True,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
+            ends_only=False,
         )
         execute(**kwargs)
 

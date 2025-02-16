@@ -23,6 +23,7 @@ def args():
         gap_characters=DEFAULT_NT_GAP_CHARS,
         quiet=True,
         auxiliary_file=None,
+        ends_only=False,
     )
     return Namespace(**kwargs)
 
@@ -94,6 +95,15 @@ class TestArgsProcessing(object):
         res = process_args(args)
         assert res["quiet"] is False
 
+    def test_ends_only_default(self, args):
+        res = process_args(args)
+        assert res["ends_only"] is False
+
+    def test_ends_only_true(self, args):
+        args.ends_only = True
+        res = process_args(args)
+        assert res["ends_only"] is True
+
     def test_process_args_expected_keywords(self, args):
         res = process_args(args)
         expected_keys = [
@@ -110,6 +120,7 @@ class TestArgsProcessing(object):
             "gap_characters",
             "quiet",
             "auxiliary_file",
+            "ends_only",
         ]
         assert sorted(res.keys()) == sorted(expected_keys)
 

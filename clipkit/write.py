@@ -23,6 +23,7 @@ def write_user_args(
     complement: bool,
     codon: bool,
     use_log: bool,
+    ends_only: bool,
 ) -> None:
     if seq_type.value == "nt":
         seq_type_name = "Nucleotides"
@@ -46,6 +47,7 @@ def write_user_args(
     Trimming mode: {mode.value}
     Create complementary output: {complement}
     Process as codons: {codon}
+    Trim ends only: {ends_only}
     Create log file: {use_log}
     """  # noqa
         )

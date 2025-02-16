@@ -8,6 +8,14 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.4.0**
+Added a new function called ends_only, which removes sites that would
+be trimmed for a given mode, but only at the ends of the alignment.
+For example, if the sites that should be trimmed include
+[0, 1, 2, 4, 5, 6, 14, 15, 16] for smart-gap mode and an alignment of
+length 16, adding the ends_only mode will result in [0, 1, 2, 14, 15, 16]
+being the sites that will be trimmed. Specify this argument with -eo, \-\-ends_only.
+
 **2.2.3**
 Fixed gap character handling. The help message was incongruent
 with what was happening underneath the hood.

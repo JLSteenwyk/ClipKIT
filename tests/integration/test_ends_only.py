@@ -10,33 +10,35 @@ here = Path(__file__)
 
 
 @pytest.mark.integration
-class TestC3Out(object):
-    def test_simple_c3(self):
+class TestEndsOnly(object):
+    def test_ends_only(self):
         """
-        test codon
-        usage: clipkit simple.fa c3
+        test smart-gap with simple_extra_gap_trim_ends_example.fa
+        usage: clipkit simple_extra_gap_trim_ends_example.fa
         """
-        output_file = "output/simple.fa_c3"
+        input_file = f"{here.parent}/samples/simple_extra_gap_trim_ends_example.fa"
+        output_file = "output/simple_extra_gap_trim_ends_example.fa.clipkit"
 
         kwargs = dict(
-            input_file=f"{here.parent}/samples/simple.fa",
+            input_file=input_file,
             output_file=output_file,
             input_file_format="fasta",
             output_file_format="fasta",
             sequence_type=None,
             complement=False,
             codon=False,
-            gaps=None,
-            mode=TrimmingMode.c3,
+            gaps=0.8,
+            mode=TrimmingMode.smart_gap,
             use_log=False,
             gap_characters=DEFAULT_NT_GAP_CHARS,
             quiet=True,
-            ends_only=False,
+            ends_only=True,
         )
-
         execute(**kwargs)
 
-        with open(f"{here.parent}/expected/simple.fa_c3", "r") as expected:
+        with open(
+            f"{here.parent}/expected/simple_extra_gap_trim_ends_example.fa.clipkit", "r"
+        ) as expected:
             expected_content = expected.read()
 
         with open(output_file, "r") as out_file:

@@ -43,6 +43,8 @@ def process_args(args) -> dict:
         )
         sys.exit()
 
+    ends_only = args.ends_only or False
+
     return dict(
         input_file=input_file,
         output_file=output_file,
@@ -57,4 +59,5 @@ def process_args(args) -> dict:
         mode=mode,
         use_log=use_log,
         quiet=quiet,
+        ends_only=ends_only,
     )

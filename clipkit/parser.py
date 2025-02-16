@@ -104,6 +104,8 @@ def create_parser() -> ArgumentParser:
 
         -co, --codon                                conduct trimming of codons
 
+        -eo, --ends_only                            trim only from the ends of the alignment
+
         -q, --quiet                                 disables all logging to stdout
 
         -h, --help                                  help message
@@ -280,6 +282,14 @@ def create_parser() -> ArgumentParser:
     optional.add_argument(
         "-co",
         "--codon",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "-eo",
+        "--ends_only",
         action="store_true",
         required=False,
         help=SUPPRESS,
