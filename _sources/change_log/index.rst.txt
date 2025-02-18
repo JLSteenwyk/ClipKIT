@@ -8,6 +8,9 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.4.1**
+The ends_only function now handles the case where nothing gets trimmed.
+
 **2.4.0**
 Added a new function called ends_only, which removes sites that would
 be trimmed for a given mode, but only at the ends of the alignment.
