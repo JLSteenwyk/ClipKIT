@@ -305,8 +305,10 @@ class MSA:
             return arr
 
         max_locs = np.where(arr == (self._original_length - 1))[0]
-        end_idx = max_locs[-1]
-
+        try:
+            end_idx = max_locs[-1]
+        except IndexError:
+            return np.array([], dtype=arr.dtype)
         run = [arr[end_idx]]
         i = end_idx
         while i - 1 >= 0 and arr[i - 1] == arr[i] - 1:
