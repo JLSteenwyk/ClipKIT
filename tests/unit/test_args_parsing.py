@@ -24,6 +24,7 @@ def args():
         quiet=True,
         auxiliary_file=None,
         ends_only=False,
+        threads=4,
     )
     return Namespace(**kwargs)
 
