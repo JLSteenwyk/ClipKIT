@@ -1,6 +1,7 @@
 import logging
 import os.path
 import sys
+import multiprocessing
 
 from .helpers import SeqType
 from .modes import TrimmingMode
@@ -8,6 +9,12 @@ from .settings import DEFAULT_AA_GAP_CHARS
 
 logger = logging.getLogger(__name__)
 
+def setup_numpy_threading(num_threads: int):
+    """Set numpy threading before any numpy imports"""
+    os.environ['OMP_NUM_THREADS'] = str(num_threads)
+    os.environ['MKL_NUM_THREADS'] = str(num_threads)
+    os.environ['OPENBLAS_NUM_THREADS'] = str(num_threads)
+    os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
 
 def process_args(args) -> dict:
     """
@@ -44,6 +51,10 @@ def process_args(args) -> dict:
         sys.exit()
 
     ends_only = args.ends_only or False
+
+    # set threads
+    threads = args.threads or multiprocessing.cpu_count()
+    setup_numpy_threading(threads)
 
     return dict(
         input_file=input_file,

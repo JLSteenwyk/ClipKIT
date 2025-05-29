@@ -93,6 +93,9 @@ def create_parser() -> ArgumentParser:
         -of, --output_file_format <file_format>     specifies output file format
                                                     (default: same as input file format)
 
+        -t, --threads <int>                         specifies the number of threads to use
+                                                    (default: the total number of threads available)
+
         -l, --log                                   creates a log file
                                                     (input file named with '.log' suffix)
 
@@ -151,6 +154,10 @@ def create_parser() -> ArgumentParser:
             Supported input and output files include:
             fasta, clustal, maf, mauve, phylip, phylip-sequential, 
             phylip-relaxed, and stockholm
+
+        Threads
+            Specify how many threads to use during execution. The default is
+            to use all available threads.
 
         Log
             Creates a log file that summarizes the characteristics of each position.
@@ -291,6 +298,14 @@ def create_parser() -> ArgumentParser:
         "-eo",
         "--ends_only",
         action="store_true",
+        required=False,
+        help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "-t",
+        "--threads",
+        type=int,
         required=False,
         help=SUPPRESS,
     )
