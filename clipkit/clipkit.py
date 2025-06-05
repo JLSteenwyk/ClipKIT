@@ -3,6 +3,7 @@
 import logging
 import sys
 import time
+import os
 from typing import Union
 
 from Bio.Align import MultipleSeqAlignment
@@ -53,6 +54,7 @@ class TrimRun:
     gaps: float
     codon: bool
     version: str = current_version
+    threads: int = os.cpu_count() or 1
 
     @property
     def complement(self):
@@ -78,6 +80,7 @@ def run(
     use_log: bool,
     quiet: bool,
     ends_only: bool,
+    threads: int | None = None,
 ):
     try:
         alignment, input_file_format = get_alignment_and_format(
@@ -85,8 +88,10 @@ def run(
         )
     except InvalidInputFileFormat:
         return logger.error(
-            f"""Format type could not be read.\nPlease check acceptable input file formats: {", ".join([file_format.value for file_format in FileFormat])}"""
+            f"""Format type could not be read.\nPlease check acceptable input file formats: {', '.join([file_format.value for file_format in FileFormat])}"""
         )
+
+    threads = threads or (os.cpu_count() or 1)
 
     sequence_type = sequence_type or get_seq_type(alignment)
 
@@ -113,7 +118,7 @@ def run(
             get_custom_sites_to_trim(auxiliary_file, aln_length) or []
         )
 
-    msa = create_msa(alignment, gap_characters)
+    msa = create_msa(alignment, gap_characters, threads)
     msa.trim(
         mode,
         gap_threshold=gaps,
@@ -131,6 +136,7 @@ def run(
         output_file_format,
         gaps,
         codon,
+        threads=threads,
     )
 
     return trim_run, msa.stats
@@ -151,8 +157,11 @@ def execute(
     use_log: bool,
     quiet: bool,
     auxiliary_file: str = None,
+    threads: int | None = None,
     **kwargs,
 ) -> None:
+    threads = threads or (os.cpu_count() or 1)
+
     if use_log:
         log_file_logger.setLevel(logging.DEBUG)
         log_file_logger.propagate = False
@@ -181,6 +190,7 @@ def execute(
         use_log,
         quiet,
         ends_only,
+        threads,
     )
 
     # display to user what args are being used in stdout
@@ -197,6 +207,7 @@ def execute(
         codon,
         use_log,
         ends_only,
+        threads,
     )
 
     write_output_files_message(output_file, complement, use_log)

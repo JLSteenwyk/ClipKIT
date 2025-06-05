@@ -4,6 +4,7 @@ from Bio.SeqRecord import SeqRecord
 import numpy as np
 from itertools import chain
 from typing import Union
+import os
 
 from .modes import TrimmingMode
 from .site_classification import (
@@ -16,7 +17,11 @@ from .stats import TrimmingStats
 
 class MSA:
     def __init__(
-        self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS
+        self,
+        header_info,
+        seq_records,
+        gap_chars=DEFAULT_AA_GAP_CHARS,
+        threads: int | None = None,
     ) -> None:
         self.header_info = header_info
         self.seq_records = seq_records
@@ -27,15 +32,20 @@ class MSA:
         self._column_character_frequencies = None
         self._gap_chars = gap_chars
         self._codon_size = 3
+        self._threads = threads or (os.cpu_count() or 1)
 
     @staticmethod
-    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
+    def from_bio_msa(
+        alignment: MultipleSeqAlignment,
+        gap_chars=None,
+        threads: int | None = None,
+    ) -> "MSA":
         header_info = [
             {"id": rec.id, "name": rec.name, "description": rec.description}
             for rec in alignment
         ]
         seq_records = np.array([list(rec) for rec in alignment])
-        return MSA(header_info, seq_records, gap_chars)
+        return MSA(header_info, seq_records, gap_chars, threads)
 
     def to_bio_msa(self) -> MultipleSeqAlignment:
         return self._to_bio_msa(self.sites_kept)
@@ -138,8 +148,7 @@ class MSA:
         if self._column_character_frequencies is not None:
             return self._column_character_frequencies
 
-        column_character_frequencies = []
-        for column in self.seq_records.T:
+        def _freqs(column):
             col_sorted_unique_values_for, col_counts_per_char = np.unique(
                 [char.upper() for char in column], return_counts=True
             )
@@ -149,7 +158,18 @@ class MSA:
                     del freqs[gap_char]
                 except KeyError:
                     continue
-            column_character_frequencies.append(freqs)
+            return freqs
+
+        if self._threads > 1:
+            from concurrent.futures import ThreadPoolExecutor
+
+            with ThreadPoolExecutor(max_workers=self._threads) as executor:
+                column_character_frequencies = list(
+                    executor.map(_freqs, self.seq_records.T)
+                )
+        else:
+            column_character_frequencies = [_freqs(column) for column in self.seq_records.T]
+
         self._column_character_frequencies = column_character_frequencies
         return self._column_character_frequencies
 
@@ -158,12 +178,24 @@ class MSA:
         if self._site_classification_types is not None:
             return self._site_classification_types
 
-        site_classification_types = np.array(
-            [
-                determine_site_classification_type(col_char_freq)
-                for col_char_freq in self.column_character_frequencies
-            ]
-        )
+        if self._threads > 1:
+            from concurrent.futures import ThreadPoolExecutor
+
+            with ThreadPoolExecutor(max_workers=self._threads) as executor:
+                site_classification_types = list(
+                    executor.map(
+                        determine_site_classification_type,
+                        self.column_character_frequencies,
+                    )
+                )
+            site_classification_types = np.array(site_classification_types)
+        else:
+            site_classification_types = np.array(
+                [
+                    determine_site_classification_type(col_char_freq)
+                    for col_char_freq in self.column_character_frequencies
+                ]
+            )
         self._site_classification_types = site_classification_types
         return self._site_classification_types
 

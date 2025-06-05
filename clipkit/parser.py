@@ -295,4 +295,13 @@ def create_parser() -> ArgumentParser:
         help=SUPPRESS,
     )
 
+    optional.add_argument(
+        "-t",
+        "--threads",
+        type=int,
+        required=False,
+        help=SUPPRESS,
+        metavar="",
+    )
+
     return parser

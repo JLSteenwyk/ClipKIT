@@ -179,6 +179,7 @@ Output file with the suffix ".clipkit.complementary"
 | -of/--input_file_format | Specify output file format*. *Default: input file type* |
 | -l/--log      | Create a log file. *Default: off* |
 | -c/--complementary      | Create a complementary alignment file. *Default: off* |
+| -t/--threads | Number of threads to use. *Default: all available cores* |
 
 *Acceptable file formats include: [fasta](https://en.wikipedia.org/wiki/FASTA_format), [clustal](http://meme-suite.org/doc/clustalw-format.html), [maf](http://www.bx.psu.edu/~dcking/man/maf.xhtml), [mauve](http://darlinglab.org/mauve/user-guide/files.html), [phylip](http://scikit-bio.org/docs/0.2.3/generated/skbio.io.phylip.html), [phylip-sequential](http://rosalind.info/glossary/phylip-format/), [phylip-relaxed](https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html), [stockholm](https://en.wikipedia.org/wiki/Stockholm_format)
 <br />
