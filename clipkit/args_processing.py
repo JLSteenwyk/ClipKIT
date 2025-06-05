@@ -1,4 +1,5 @@
 import logging
+import os
 import os.path
 import sys
 
@@ -35,6 +36,11 @@ def process_args(args) -> dict:
     auxiliary_file = args.auxiliary_file
     use_log = args.log or False
     quiet = args.quiet or False
+    threads = (
+        int(args.threads)
+        if args.threads is not None
+        else (os.cpu_count() or 1)
+    )
     sequence_type = SeqType(args.sequence_type.lower()) if args.sequence_type else None
 
     if codon and mode == TrimmingMode.c3:
@@ -60,4 +66,5 @@ def process_args(args) -> dict:
         use_log=use_log,
         quiet=quiet,
         ends_only=ends_only,
+        threads=threads,
     )

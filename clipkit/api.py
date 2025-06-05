@@ -1,5 +1,6 @@
 from typing import TextIO, Union
 from tempfile import NamedTemporaryFile
+import os
 
 from .clipkit import run
 from .files import FileFormat
@@ -21,6 +22,7 @@ def clipkit(
     sequence_type=SeqType.aa,
     codon: bool = False,
     ends_only=False,
+    threads: int | None = None,
 ) -> TextIO:
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
@@ -28,6 +30,7 @@ def clipkit(
     If raw_alignment is given we write it to NamedTemporaryFile and then pass to execute
         * handles when output_file_path is given and also when not given
     """
+    threads = threads or (os.cpu_count() or 1)
     logger.disabled = True
     output_temp_file = None
     input_temp_file = None
@@ -60,6 +63,7 @@ def clipkit(
         use_log,
         quiet,
         ends_only,
+        threads,
     )
 
     if not output_file_path:

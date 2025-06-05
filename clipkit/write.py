@@ -1,5 +1,6 @@
 import textwrap
 import time
+import os
 from .logger import logger
 from .stats import TrimmingStats
 
@@ -24,7 +25,10 @@ def write_user_args(
     codon: bool,
     use_log: bool,
     ends_only: bool,
+    threads: int | None = None,
 ) -> None:
+    threads = threads or (os.cpu_count() or 1)
+
     if seq_type.value == "nt":
         seq_type_name = "Nucleotides"
     else:
@@ -48,6 +52,7 @@ def write_user_args(
     Create complementary output: {complement}
     Process as codons: {codon}
     Trim ends only: {ends_only}
+    Threads: {threads}
     Create log file: {use_log}
     """  # noqa
         )
