@@ -327,6 +327,8 @@ All options
 +-----------------------------+------------------------------------------------------------------------------------------------------+
 | -eo/\\-\\-ends_only         | Ends only mode, which trims sites that should be removed at the end of an alignment *Default: false* |
 +-----------------------------+------------------------------------------------------------------------------------------------------+
+| -t/\-\-threads           | Number of threads to use. *Default: all available cores* |
++-----------------------------+-----------------------------------------------------+
 
 \*Acceptable file formats include: 
 `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_,
