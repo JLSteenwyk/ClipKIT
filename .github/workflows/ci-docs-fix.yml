@@ -1,0 +1,87 @@
+name: CI
+on: push
+jobs:
+  test-fast:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@master
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        # make clipkit CLI available for tests 
+        make install
+        # install deps for tests
+        pip install pytest
+        pip install pytest-cov
+    - name: Run tests
+      run: |
+        make test.fast
+  test-full:
+    runs-on: macos-latest
+    env:
+      PYTHON: '3.9'
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup Python
+      uses: actions/setup-python@master
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        # make clipkit CLI available for tests 
+        make install
+        # install test dependencies
+        pip install pytest
+        pip install pytest-cov
+    - name: Generate coverage report
+      run: |
+        make test.coverage
+    - name: Upload unit test coverage to Codecov
+      uses: codecov/codecov-action@v1.0.7
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./unit.coverage.xml
+        flags: unit
+        env_vars: PYTHON
+        name: codecov-unit
+        fail_ci_if_error: false
+    - name: Upload integration test coverage to Codecov
+      uses: codecov/codecov-action@v1.0.7
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./integration.coverage.xml
+        flags: integration
+        env_vars: PYTHON
+        name: codecov-integration
+        fail_ci_if_error: false
+  docs:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.9
+      - name: Build docs with pip
+        run: |
+          cd docs
+          pip install sphinx sphinx_rtd_theme Pygments
+          sphinx-build -b html . _build/html
+          cd ..
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: docs/_build/html
