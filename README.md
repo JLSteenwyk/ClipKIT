@@ -26,9 +26,13 @@
         <a href="https://pepy.tech/badge/clipkit">
           <img src="https://static.pepy.tech/personalized-badge/clipkit?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPi%20Downloads">
         </a>
+        <a href="https://anaconda.org/bioconda/clipkit">
+          <img src="https://img.shields.io/conda/dn/bioconda/clipkit?label=bioconda%20downloads" alt="Bioconda Downloads">
+        </a>
         <a href="https://lbesson.mit-license.org/" alt="License">
             <img src="https://img.shields.io/badge/License-MIT-blue.svg">
         </a>
+        <br />
         <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
             <img src="https://img.shields.io/pypi/pyversions/clipkit">
         </a>
