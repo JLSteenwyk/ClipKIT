@@ -1,10 +1,13 @@
 appdirs==1.4.3
 attrs==19.3.0
-biopython==1.82
+biopython>=1.82,<1.84; python_version < '3.13'
+biopython>=1.84; python_version >= '3.13'
 click==7.1.2
 importlib-metadata==1.6.0
 more-itertools==8.2.0
-numpy==1.24.0
+numpy>=1.24.0,<2.0; python_version < '3.12'
+numpy>=1.26.0,<2.1; python_version == '3.12'
+numpy>=2.0.0,<2.2; python_version >= '3.13'
 packaging==20.3
 pathspec==0.8.0
 pluggy==1.5.0

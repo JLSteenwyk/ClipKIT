@@ -15,10 +15,19 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
 ]
 
-REQUIRES = ["biopython>=1.82", "numpy>=1.24.0", "cython"]
+REQUIRES = [
+    "biopython>=1.82; python_version < '3.13'",
+    "biopython>=1.84; python_version >= '3.13'",
+    "numpy>=1.24.0,<2.0; python_version < '3.12'",
+    "numpy>=1.26.0,<2.1; python_version == '3.12'",
+    "numpy>=2.0.0,<2.2; python_version >= '3.13'",
+    "cython"
+]
 
 setup(
     name="clipkit",
