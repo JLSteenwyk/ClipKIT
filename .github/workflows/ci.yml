@@ -79,7 +79,7 @@ jobs:
         run: |
           cd docs
           pipenv install
-          pipenv run make html
+          pipenv run sphinx-build -b html . _build/html
           cd ..
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
