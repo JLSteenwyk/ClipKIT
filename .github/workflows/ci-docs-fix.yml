@@ -73,14 +73,11 @@ jobs:
         uses: actions/setup-python@master
         with:
           python-version: 3.9
-      - name: Install pipenv
-        uses: dschep/install-pipenv-action@v1
-      - name: Build docs
+      - name: Build docs with pip
         run: |
           cd docs
-          pipenv install || true
-          pipenv run pip install sphinx sphinx_rtd_theme Pygments
-          pipenv run sphinx-build -b html . _build/html
+          pip install sphinx sphinx_rtd_theme Pygments
+          sphinx-build -b html . _build/html
           cd ..
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3

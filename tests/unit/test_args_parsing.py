@@ -121,6 +121,7 @@ class TestArgsProcessing(object):
             "quiet",
             "auxiliary_file",
             "ends_only",
+            "threads",
         ]
         assert sorted(res.keys()) == sorted(expected_keys)
 

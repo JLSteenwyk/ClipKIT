@@ -45,11 +45,11 @@ def get_gap_chars(seq_type: SeqType) -> list[str]:
         return DEFAULT_AA_GAP_CHARS
 
 
-def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str] = None) -> MSA:
+def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str] = None, threads: int = 1) -> MSA:
     """
     Create MSA class
     """
-    return MSA.from_bio_msa(alignment, gap_chars)
+    return MSA.from_bio_msa(alignment, gap_chars, threads)
 
 
 def write_msa(msa: MSA, out_file_name: str, out_file_format: FileFormat) -> None:

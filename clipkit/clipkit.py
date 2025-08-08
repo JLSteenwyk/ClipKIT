@@ -78,6 +78,7 @@ def run(
     use_log: bool,
     quiet: bool,
     ends_only: bool,
+    threads: int = 1,
 ):
     try:
         alignment, input_file_format = get_alignment_and_format(
@@ -113,7 +114,7 @@ def run(
             get_custom_sites_to_trim(auxiliary_file, aln_length) or []
         )
 
-    msa = create_msa(alignment, gap_characters)
+    msa = create_msa(alignment, gap_characters, threads)
     msa.trim(
         mode,
         gap_threshold=gaps,
@@ -151,6 +152,7 @@ def execute(
     use_log: bool,
     quiet: bool,
     auxiliary_file: str = None,
+    threads: int = 1,
     **kwargs,
 ) -> None:
     if use_log:
@@ -181,6 +183,7 @@ def execute(
         use_log,
         quiet,
         ends_only,
+        threads,
     )
 
     # display to user what args are being used in stdout

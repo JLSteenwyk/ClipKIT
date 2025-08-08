@@ -21,6 +21,7 @@ def clipkit(
     sequence_type=SeqType.aa,
     codon: bool = False,
     ends_only=False,
+    threads: int = 1,
 ) -> TextIO:
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
@@ -60,6 +61,7 @@ def clipkit(
         use_log,
         quiet,
         ends_only,
+        threads,
     )
 
     if not output_file_path:
