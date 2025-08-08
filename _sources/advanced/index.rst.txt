@@ -15,6 +15,7 @@ This section describes the various features and options of ClipKIT.
 - `Gap Characters`_
 - `Sequence Type`_
 - `Ends only`_
+- Threads_
 - `All options`_
 
 |
@@ -290,6 +291,38 @@ being the sites that will be trimmed. Specify this argument with -eo, \-\-ends_o
 
 |
 
+.. _Threads:
+
+Threads
+-------
+
+ClipKIT supports parallel processing for site classification and character frequency
+calculations when working with large alignments. This can significantly speed up
+processing for alignments with many sites (>5000 positions).
+
+The number of threads can be specified using the -t/\\-\\-threads argument.
+*Default: 1*
+
+.. code-block:: shell
+
+	# Single-threaded processing (default)
+	clipkit <input>
+
+	# Multi-threaded processing with 4 threads
+	clipkit <input> -t 4
+
+	# or
+	clipkit <input> --threads 4
+
+**Performance Notes:**
+
+* Parallel processing is automatically enabled only for alignments with >5000 sites
+* For smaller alignments, single-threaded mode is typically faster due to multiprocessing overhead
+* The optimal number of threads depends on your system and alignment size
+* Results are identical regardless of the number of threads used (fully reproducible)
+
+|
+
 .. _`All options`:
 
 All options
@@ -327,8 +360,8 @@ All options
 +-----------------------------+------------------------------------------------------------------------------------------------------+
 | -eo/\\-\\-ends_only         | Ends only mode, which trims sites that should be removed at the end of an alignment *Default: false* |
 +-----------------------------+------------------------------------------------------------------------------------------------------+
-| -t/\-\-threads           | Number of threads to use. *Default: all available cores* |
-+-----------------------------+-----------------------------------------------------+
+| -t/\\-\\-threads            | Number of threads for parallel processing (for large alignments >5000 sites). *Default: 1*           |
++-----------------------------+------------------------------------------------------------------------------------------------------+
 
 \*Acceptable file formats include: 
 `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_,

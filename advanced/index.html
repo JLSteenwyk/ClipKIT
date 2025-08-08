@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#gap-characters">Gap Characters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sequence-type">Sequence Type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ends-only">Ends only</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#threads">Threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#all-options">All options</a></li>
 </ul>
 </li>
@@ -105,6 +106,7 @@
 <li><p><a class="reference internal" href="#gap-characters">Gap Characters</a></p></li>
 <li><p><a class="reference internal" href="#sequence-type">Sequence Type</a></p></li>
 <li><p><a class="reference internal" href="#ends-only">Ends only</a></p></li>
+<li><p><a class="reference internal" href="#threads">Threads</a></p></li>
 <li><p><a class="reference internal" href="#all-options">All options</a></p></li>
 </ul>
 <div class="line-block">
@@ -343,8 +345,36 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--ends_only
 <div class="line"><br /></div>
 </div>
 </section>
+<section id="threads">
+<span id="id11"></span><h2>Threads<a class="headerlink" href="#threads" title="Link to this heading"></a></h2>
+<p>ClipKIT supports parallel processing for site classification and character frequency
+calculations when working with large alignments. This can significantly speed up
+processing for alignments with many sites (&gt;5000 positions).</p>
+<p>The number of threads can be specified using the -t/\-\-threads argument.
+<em>Default: 1</em></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Single-threaded processing (default)</span>
+clipkit<span class="w"> </span>&lt;input&gt;
+
+<span class="c1"># Multi-threaded processing with 4 threads</span>
+clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-t<span class="w"> </span><span class="m">4</span>
+
+<span class="c1"># or</span>
+clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--threads<span class="w"> </span><span class="m">4</span>
+</pre></div>
+</div>
+<p><strong>Performance Notes:</strong></p>
+<ul class="simple">
+<li><p>Parallel processing is automatically enabled only for alignments with &gt;5000 sites</p></li>
+<li><p>For smaller alignments, single-threaded mode is typically faster due to multiprocessing overhead</p></li>
+<li><p>The optimal number of threads depends on your system and alignment size</p></li>
+<li><p>Results are identical regardless of the number of threads used (fully reproducible)</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 <section id="all-options">
-<span id="id11"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
+<span id="id12"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
 <p>*Acceptable file formats include:
 <a class="reference external" href="https://en.wikipedia.org/wiki/FASTA_format">fasta</a>,
 <a class="reference external" href="http://meme-suite.org/doc/clustalw-format.html">clustal</a>,
