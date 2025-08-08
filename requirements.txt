@@ -9,7 +9,8 @@ more-itertools==8.2.0
 numpy>=1.24.0,<2.0; python_version < '3.12'
 numpy>=1.26.0,<2.1; python_version == '3.12'
 numpy>=2.0.0,<2.2; python_version >= '3.13'
-packaging==20.3
+packaging==20.3; python_version < '3.13'
+packaging>=23.0; python_version >= '3.13'
 pathspec==0.8.0
 pluggy==1.5.0
 pyparsing==2.4.7
@@ -19,7 +20,8 @@ pytest-mock>=3.0.0; python_version < '3.13'
 pytest-mock>=3.14.0; python_version >= '3.13'
 regex>=2020.5.7; python_version < '3.13'
 regex>=2024.0.0; python_version >= '3.13'
-six==1.14.0
+six==1.14.0; python_version < '3.13'
+six>=1.16.0; python_version >= '3.13'
 toml==0.10.0
 wcwidth==0.1.9
 zipp==3.1.0; python_version < '3.13'
