@@ -4,6 +4,8 @@ from Bio.SeqRecord import SeqRecord
 import numpy as np
 from itertools import chain
 from typing import Union
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+from multiprocessing import Pool, cpu_count
 
 from .modes import TrimmingMode
 from .site_classification import (
@@ -14,9 +16,25 @@ from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
 
 
+# Module-level helper functions for parallel processing
+def _calculate_column_frequency_helper(args):
+    """Helper function for parallel processing of column frequencies"""
+    column, gap_chars = args
+    col_sorted_unique_values_for, col_counts_per_char = np.unique(
+        [char.upper() for char in column], return_counts=True
+    )
+    freqs = dict(zip(col_sorted_unique_values_for, col_counts_per_char))
+    for gap_char in gap_chars:
+        try:
+            del freqs[gap_char]
+        except KeyError:
+            continue
+    return freqs
+
+
 class MSA:
     def __init__(
-        self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS
+        self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS, threads=1
     ) -> None:
         self.header_info = header_info
         self.seq_records = seq_records
@@ -27,15 +45,16 @@ class MSA:
         self._column_character_frequencies = None
         self._gap_chars = gap_chars
         self._codon_size = 3
+        self._threads = threads
 
     @staticmethod
-    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None) -> "MSA":
+    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None, threads=1) -> "MSA":
         header_info = [
             {"id": rec.id, "name": rec.name, "description": rec.description}
             for rec in alignment
         ]
         seq_records = np.array([list(rec) for rec in alignment])
-        return MSA(header_info, seq_records, gap_chars)
+        return MSA(header_info, seq_records, gap_chars, threads)
 
     def to_bio_msa(self) -> MultipleSeqAlignment:
         return self._to_bio_msa(self.sites_kept)
@@ -138,18 +157,30 @@ class MSA:
         if self._column_character_frequencies is not None:
             return self._column_character_frequencies
 
-        column_character_frequencies = []
-        for column in self.seq_records.T:
-            col_sorted_unique_values_for, col_counts_per_char = np.unique(
-                [char.upper() for char in column], return_counts=True
-            )
-            freqs = dict(zip(col_sorted_unique_values_for, col_counts_per_char))
-            for gap_char in self.gap_chars:
-                try:
-                    del freqs[gap_char]
-                except KeyError:
-                    continue
-            column_character_frequencies.append(freqs)
+        # Only use parallel processing for very large alignments where benefit outweighs overhead
+        if self._threads > 1 and self._original_length > 5000:
+            # Parallel processing using ProcessPoolExecutor for better performance
+            columns = self.seq_records.T
+            
+            # Use min to avoid creating more processes than needed
+            n_workers = min(self._threads, min(self._original_length // 1000, 8))
+            
+            # Prepare arguments for parallel processing
+            args_list = [(column, self.gap_chars) for column in columns]
+            
+            with ProcessPoolExecutor(max_workers=n_workers) as executor:
+                column_character_frequencies = list(executor.map(
+                    _calculate_column_frequency_helper, 
+                    args_list,
+                    chunksize=max(1, len(args_list) // (n_workers * 4))
+                ))
+        else:
+            # Original single-threaded implementation (faster for smaller alignments)
+            column_character_frequencies = []
+            for column in self.seq_records.T:
+                freqs = _calculate_column_frequency_helper((column, self.gap_chars))
+                column_character_frequencies.append(freqs)
+                
         self._column_character_frequencies = column_character_frequencies
         return self._column_character_frequencies
 
@@ -158,12 +189,27 @@ class MSA:
         if self._site_classification_types is not None:
             return self._site_classification_types
 
-        site_classification_types = np.array(
-            [
-                determine_site_classification_type(col_char_freq)
-                for col_char_freq in self.column_character_frequencies
-            ]
-        )
+        col_char_freqs = self.column_character_frequencies
+        
+        # Only use parallel processing for very large alignments
+        if self._threads > 1 and len(col_char_freqs) > 5000:
+            n_workers = min(self._threads, min(len(col_char_freqs) // 1000, 8))
+            
+            with ProcessPoolExecutor(max_workers=n_workers) as executor:
+                site_classification_types = list(executor.map(
+                    determine_site_classification_type,
+                    col_char_freqs,
+                    chunksize=max(1, len(col_char_freqs) // (n_workers * 4))
+                ))
+            site_classification_types = np.array(site_classification_types)
+        else:
+            # Original single-threaded implementation (faster for smaller alignments)
+            site_classification_types = np.array(
+                [
+                    determine_site_classification_type(col_char_freq)
+                    for col_char_freq in col_char_freqs
+                ]
+            )
         self._site_classification_types = site_classification_types
         return self._site_classification_types
 

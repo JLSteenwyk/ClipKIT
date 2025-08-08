@@ -44,6 +44,7 @@ def process_args(args) -> dict:
         sys.exit()
 
     ends_only = args.ends_only or False
+    threads = args.threads if hasattr(args, 'threads') else 1
 
     return dict(
         input_file=input_file,
@@ -60,4 +61,5 @@ def process_args(args) -> dict:
         use_log=use_log,
         quiet=quiet,
         ends_only=ends_only,
+        threads=threads,
     )

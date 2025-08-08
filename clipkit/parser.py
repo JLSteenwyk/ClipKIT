@@ -106,6 +106,9 @@ def create_parser() -> ArgumentParser:
 
         -eo, --ends_only                            trim only from the ends of the alignment
 
+        -t, --threads <number_of_threads>           number of threads to use for parallel processing
+                                                    (default: 1)
+
         -q, --quiet                                 disables all logging to stdout
 
         -h, --help                                  help message
@@ -167,6 +170,11 @@ def create_parser() -> ArgumentParser:
         Codon
             Trims codon-based alignments. If one position in a codon should be trimmed, the whole
             codon will be trimmed.
+        
+        Threads
+            Number of threads to use for parallel processing of site classification and
+            character frequency calculations. Using multiple threads can significantly
+            speed up processing for large alignments. (Default: 1)
         """  # noqa
         ),
     )
@@ -293,6 +301,16 @@ def create_parser() -> ArgumentParser:
         action="store_true",
         required=False,
         help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "-t",
+        "--threads",
+        type=int,
+        required=False,
+        default=1,
+        help=SUPPRESS,
+        metavar="number of threads",
     )
 
     return parser
