@@ -10,9 +10,10 @@ serve = "sphinx-autobuild . _build/html"
 sphinx-autobuild = "*"
 
 [packages]
-Pygments = "*"
-Sphinx = "*"
-sphinx_rtd_theme = "*"
+Pygments = ">=2.0"
+Sphinx = ">=4.0,<8.0"
+sphinx_rtd_theme = ">=1.0"
+alabaster = ">=0.7,<1.0"
 
 [requires]
 python_version = "3.9"
