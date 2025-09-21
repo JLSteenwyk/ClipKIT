@@ -25,8 +25,7 @@ REQUIRES = [
     "biopython>=1.84; python_version >= '3.13'",
     "numpy>=1.24.0,<2.0; python_version < '3.12'",
     "numpy>=1.26.0,<2.1; python_version == '3.12'",
-    "numpy>=2.0.0,<2.2; python_version >= '3.13'",
-    "cython"
+    "numpy>=2.0.0,<2.2; python_version >= '3.13'"
 ]
 
 setup(
@@ -43,6 +42,7 @@ setup(
     version=__version__,
     include_package_data=True,
     install_requires=REQUIRES,
+    python_requires=">=3.9",
 )
 
 ## push new version to pypi
