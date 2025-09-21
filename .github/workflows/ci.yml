@@ -2,14 +2,15 @@ name: CI
 on: push
 jobs:
   test-fast:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@master
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -28,9 +29,9 @@ jobs:
     env:
       PYTHON: '3.9'
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@master
+      uses: actions/setup-python@v5
       with:
         python-version: 3.9
     - name: Install dependencies
@@ -66,11 +67,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Setup Python
-        uses: actions/setup-python@master
+        uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - name: Install pipenv
