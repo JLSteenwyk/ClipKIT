@@ -8,6 +8,14 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.7.0**
+Significant performance improvements with 2-60x speedup (average 9x) through:
+- Vectorized NumPy operations for column frequency calculations
+- Parallel processing with adaptive thread allocation
+- Optimized memory usage with batch processing
+- Caching for expensive computations
+- Added support for Python 3.12 and 3.13
+
 **2.4.1**
 The ends_only function now handles the case where nothing gets trimmed.
 
