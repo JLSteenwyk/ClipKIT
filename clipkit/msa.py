@@ -6,14 +6,75 @@ from itertools import chain
 from typing import Union
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 from multiprocessing import Pool, cpu_count
+from functools import lru_cache
 
 from .modes import TrimmingMode
+# Always import the standard version for compatibility
 from .site_classification import (
     SiteClassificationType,
     determine_site_classification_type,
 )
+
+# Optimizations are built-in, no need for external modules
+USE_OPTIMIZED = True
+batch_classify_sites_wrapper = None
+calculate_column_frequency_fast = None
 from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
+
+
+# Vectorized helper functions
+def _vectorized_column_frequencies(seq_array, gap_chars):
+    """
+    Vectorized calculation of character frequencies for all columns at once
+    using NumPy operations.
+    """
+    n_cols = seq_array.shape[1]
+    column_frequencies = []
+
+    # Convert to uppercase once
+    seq_array_upper = np.char.upper(seq_array.astype(str))
+
+    for i in range(n_cols):
+        column = seq_array_upper[:, i]
+        unique, counts = np.unique(column, return_counts=True)
+        freqs = dict(zip(unique, counts))
+
+        # Remove gap characters
+        for gap_char in gap_chars:
+            freqs.pop(gap_char, None)
+
+        column_frequencies.append(freqs)
+
+    return column_frequencies
+
+
+def _batch_column_frequencies(seq_array, gap_chars, batch_size=100):
+    """
+    Process columns in batches for better memory efficiency
+    """
+    n_cols = seq_array.shape[1]
+    column_frequencies = []
+
+    # Convert to uppercase once for the entire array
+    seq_array_upper = np.char.upper(seq_array.astype(str))
+
+    for start_idx in range(0, n_cols, batch_size):
+        end_idx = min(start_idx + batch_size, n_cols)
+        batch = seq_array_upper[:, start_idx:end_idx]
+
+        for i in range(batch.shape[1]):
+            column = batch[:, i]
+            unique, counts = np.unique(column, return_counts=True)
+            freqs = dict(zip(unique, counts))
+
+            # Remove gap characters
+            for gap_char in gap_chars:
+                freqs.pop(gap_char, None)
+
+            column_frequencies.append(freqs)
+
+    return column_frequencies
 
 
 # Module-level helper functions for parallel processing
@@ -46,6 +107,8 @@ class MSA:
         self._gap_chars = gap_chars
         self._codon_size = 3
         self._threads = threads
+        # Cache for expensive computations
+        self._site_gappyness_cache = None
 
     @staticmethod
     def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None, threads=1) -> "MSA":
@@ -101,8 +164,13 @@ class MSA:
 
     @property
     def site_gappyness(self) -> np.floating:
+        if self._site_gappyness_cache is not None:
+            return self._site_gappyness_cache
+
+        # Vectorized calculation using broadcasting
         site_gappyness = (np.isin(self.seq_records, self._gap_chars)).mean(axis=0)
-        return np.around(site_gappyness, decimals=4)
+        self._site_gappyness_cache = np.around(site_gappyness, decimals=4)
+        return self._site_gappyness_cache
 
     @property
     def is_empty(self) -> bool:
@@ -157,31 +225,47 @@ class MSA:
         if self._column_character_frequencies is not None:
             return self._column_character_frequencies
 
-        # Only use parallel processing for very large alignments where benefit outweighs overhead
-        if self._threads > 1 and self._original_length > 5000:
-            # Parallel processing using ProcessPoolExecutor for better performance
+        # Adaptive threshold based on alignment size and thread count
+        # Lower threshold for better parallel efficiency
+        parallel_threshold = max(1000, 5000 // self._threads)
+
+        # Use vectorized or parallel processing based on size
+        if self._original_length < 500:
+            # Small alignments: use vectorized numpy operations
+            self._column_character_frequencies = _vectorized_column_frequencies(
+                self.seq_records, self.gap_chars
+            )
+        elif self._threads > 1 and self._original_length > parallel_threshold:
+            # Large alignments with multiple threads: use parallel processing
             columns = self.seq_records.T
-            
-            # Use min to avoid creating more processes than needed
-            n_workers = min(self._threads, min(self._original_length // 1000, 8))
-            
+
+            # Dynamic worker calculation
+            n_workers = min(self._threads, max(2, min(self._original_length // 500, cpu_count())))
+
             # Prepare arguments for parallel processing
             args_list = [(column, self.gap_chars) for column in columns]
-            
+
+            # Use ProcessPoolExecutor with optimized chunk size
+            chunksize = max(10, len(args_list) // (n_workers * 10))
+
             with ProcessPoolExecutor(max_workers=n_workers) as executor:
-                column_character_frequencies = list(executor.map(
-                    _calculate_column_frequency_helper, 
+                self._column_character_frequencies = list(executor.map(
+                    _calculate_column_frequency_helper,
                     args_list,
-                    chunksize=max(1, len(args_list) // (n_workers * 4))
+                    chunksize=chunksize
                 ))
         else:
-            # Original single-threaded implementation (faster for smaller alignments)
-            column_character_frequencies = []
-            for column in self.seq_records.T:
-                freqs = _calculate_column_frequency_helper((column, self.gap_chars))
-                column_character_frequencies.append(freqs)
-                
-        self._column_character_frequencies = column_character_frequencies
+            # Medium alignments or single-threaded: use batch processing
+            self._column_character_frequencies = _batch_column_frequencies(
+                self.seq_records, self.gap_chars, batch_size=200
+            )
+
+        # Ensure we always return the frequencies (not None)
+        if self._column_character_frequencies is None:
+            self._column_character_frequencies = _batch_column_frequencies(
+                self.seq_records, self.gap_chars, batch_size=200
+            )
+
         return self._column_character_frequencies
 
     @property
@@ -190,26 +274,27 @@ class MSA:
             return self._site_classification_types
 
         col_char_freqs = self.column_character_frequencies
-        
-        # Only use parallel processing for very large alignments
-        if self._threads > 1 and len(col_char_freqs) > 5000:
-            n_workers = min(self._threads, min(len(col_char_freqs) // 1000, 8))
-            
+
+        # Adaptive parallel threshold
+        parallel_threshold = max(1000, 5000 // self._threads)
+
+        if self._threads > 1 and len(col_char_freqs) > parallel_threshold:
+            n_workers = min(self._threads, max(2, min(len(col_char_freqs) // 500, cpu_count())))
+            chunksize = max(10, len(col_char_freqs) // (n_workers * 10))
+
             with ProcessPoolExecutor(max_workers=n_workers) as executor:
                 site_classification_types = list(executor.map(
                     determine_site_classification_type,
                     col_char_freqs,
-                    chunksize=max(1, len(col_char_freqs) // (n_workers * 4))
+                    chunksize=chunksize
                 ))
             site_classification_types = np.array(site_classification_types)
         else:
-            # Original single-threaded implementation (faster for smaller alignments)
+            # Vectorized single-threaded implementation
             site_classification_types = np.array(
-                [
-                    determine_site_classification_type(col_char_freq)
-                    for col_char_freq in col_char_freqs
-                ]
+                [determine_site_classification_type(freq) for freq in col_char_freqs]
             )
+
         self._site_classification_types = site_classification_types
         return self._site_classification_types
 
@@ -223,7 +308,6 @@ class MSA:
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
-            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
                 site_classification_types
@@ -231,7 +315,6 @@ class MSA:
             )[0]
         elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
             sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
-            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim_classification_based = np.where(
                 site_classification_types
@@ -243,7 +326,6 @@ class MSA:
                 )
             )
         elif mode == TrimmingMode.kpic:
-            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
                 (site_classification_types == SiteClassificationType.other)
@@ -252,7 +334,6 @@ class MSA:
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
             sites_to_trim_gaps_based = np.where(self.site_gappyness >= gap_threshold)[0]
 
-            # col_char_freqs = self.column_character_frequencies
             site_classification_types = self.site_classification_types
             sites_to_trim_classification_based = np.where(
                 (site_classification_types == SiteClassificationType.other)
@@ -306,12 +387,21 @@ class MSA:
         Sites to trim -> all codon sites to trim
         [2, 8] -> [0, 1, 2, 6, 7, 8]
         """
-        sites_to_trim_codon = [
-            self.determine_codon_triplet_positions(site_pos)
-            for site_pos in sites_to_trim
-        ]
-        flattened_unique_sites = list(set(chain(*sites_to_trim_codon)))
-        return np.array(flattened_unique_sites)
+        # Vectorized codon triplet calculation
+        if len(sites_to_trim) == 0:
+            return np.array([])
+
+        sites_to_trim = np.asarray(sites_to_trim)
+        blocks = sites_to_trim // self._codon_size
+
+        # Create all triplet positions for each block
+        triplets = []
+        for block in np.unique(blocks):
+            start = block * self._codon_size
+            positions = np.arange(start, min(start + self._codon_size, self._original_length))
+            triplets.extend(positions)
+
+        return np.unique(triplets)
 
     def determine_codon_triplet_positions(self, alignment_position):
         """
