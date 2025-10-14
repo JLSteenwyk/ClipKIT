@@ -3,6 +3,7 @@ import re
 from Bio import SeqIO
 from Bio.Align import MultipleSeqAlignment
 import numpy as np
+from typing import Optional
 
 from .msa import MSA
 from .modes import TrimmingMode
@@ -57,7 +58,7 @@ def write_msa(
     msa: MSA,
     out_file_name: str,
     out_file_format: FileFormat,
-    base_metadata: dict[str, object] | None = None,
+    base_metadata: Optional[dict[str, object]] = None,
 ) -> None:
     """
     msa is populated with sites that are kept after trimming is finished
@@ -78,7 +79,7 @@ def write_complement(
     msa: MSA,
     out_file: str,
     out_file_format: FileFormat,
-    base_metadata: dict[str, object] | None = None,
+    base_metadata: Optional[dict[str, object]] = None,
 ) -> None:
     """
     msa is populated with sites that are trimmed after trimming is finished

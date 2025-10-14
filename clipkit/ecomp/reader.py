@@ -13,7 +13,7 @@ import zlib
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Iterable, Optional, Sequence, Tuple, Union
 
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
@@ -56,10 +56,10 @@ class RunLengthBlock:
 
 
 def read_ecomp(
-    path: str | Path,
+    path: Union[str, Path],
     *,
-    metadata_path: str | Path | None = None,
-) -> tuple[MultipleSeqAlignment, dict[str, object]]:
+    metadata_path: Optional[Union[str, Path]] = None,
+) -> Tuple[MultipleSeqAlignment, dict[str, object]]:
     """Return ``(alignment, metadata)`` decoded from an `.ecomp` archive."""
 
     payload, metadata, version = _read_archive(
@@ -72,10 +72,10 @@ def read_ecomp(
 
 
 def _read_archive(
-    path: str | Path,
+    path: Union[str, Path],
     *,
-    metadata_path: str | Path | None = None,
-) -> tuple[bytes, dict[str, object], tuple[int, int, int]]:
+    metadata_path: Optional[Union[str, Path]] = None,
+) -> Tuple[bytes, dict[str, object], Tuple[int, int, int]]:
     file_path = Path(path)
     data = file_path.read_bytes()
     legacy_size = struct.calcsize(LEGACY_HEADER_STRUCT)
@@ -92,7 +92,7 @@ def _read_archive(
     version = (major, minor, patch)
     cursor = legacy_size
 
-    metadata_len: int | None = None
+    metadata_len: Optional[int] = None
     if version >= INLINE_METADATA_VERSION:
         extended_size = struct.calcsize(HEADER_STRUCT)
         if len(data) < extended_size:
@@ -204,7 +204,7 @@ def _decompress_alignment(
     else:
         raise EcompDecodeError(f"Unsupported payload encoding: {encoding}")
 
-    permutation: list[int] | None = None
+    permutation: Optional[list[int]] = None
     perm_meta = metadata.get("sequence_permutation")
     if isinstance(perm_meta, dict) and perm_meta.get("encoding") == "payload":
         payload_bytes, permutation = _extract_permutation_chunk(
@@ -306,11 +306,11 @@ def _validate_checksum(sequences: Iterable[str], checksum: object) -> None:
 
 
 def _alignment_from_fasta_bytes(
-    data: bytes, source_format: str | None
+    data: bytes, source_format: Optional[str]
 ) -> MultipleSeqAlignment:
     buffer = io.StringIO(data.decode("utf-8"))
     records: list[SeqRecord] = []
-    current_id: str | None = None
+    current_id: Optional[str] = None
     current_seq: list[str] = []
     for line in buffer:
         stripped = line.strip()
@@ -723,7 +723,7 @@ def _popcount(data: bytes) -> int:
     return sum(bin(byte).count("1") for byte in data)
 
 
-def _decode_sequence_ids(buffer: bytes) -> tuple[list[str], bytes]:
+def _decode_sequence_ids(buffer: bytes) -> Tuple[list[str], bytes]:
     view = memoryview(buffer)
     if len(view) < len(SEQ_ID_MAGIC) + 1:
         raise EcompDecodeError("Sequence ID block truncated")
@@ -795,7 +795,7 @@ def _decode_sequence_ids(buffer: bytes) -> tuple[list[str], bytes]:
     return ids, remaining
 
 
-def _decode_varint(buffer: memoryview, cursor: int) -> tuple[int, int]:
+def _decode_varint(buffer: memoryview, cursor: int) -> Tuple[int, int]:
     shift = 0
     result = 0
     while True:
@@ -815,7 +815,7 @@ def _decode_varint(buffer: memoryview, cursor: int) -> tuple[int, int]:
 
 def _extract_permutation_chunk(
     payload: bytes, metadata: dict[str, object]
-) -> tuple[bytes, list[int]]:
+) -> Tuple[bytes, list[int]]:
     length = metadata.get("length")
     if not isinstance(length, int) or length <= 0:
         raise EcompDecodeError("Invalid permutation metadata length")

@@ -10,7 +10,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional, Tuple, Union
 
 from Bio.Align import MultipleSeqAlignment
 
@@ -37,8 +37,8 @@ class EncodedArchive:
 
 def write_ecomp(
     alignment: MultipleSeqAlignment,
-    output_path: str | Path,
-    base_metadata: dict[str, object] | None = None,
+    output_path: Union[str, Path],
+    base_metadata: Optional[dict[str, object]] = None,
 ) -> dict[str, object]:
     """Serialize *alignment* to ``output_path`` as an `.ecomp` archive.
 
@@ -68,7 +68,7 @@ def write_ecomp(
 
 def _build_archive(
     alignment: MultipleSeqAlignment,
-    base_metadata: dict[str, object] | None,
+    base_metadata: Optional[dict[str, object]],
 ) -> EncodedArchive:
     fasta_bytes = _alignment_to_fasta_bytes(alignment)
     payload = gzip.compress(fasta_bytes)
@@ -89,7 +89,7 @@ def _alignment_to_fasta_bytes(alignment: MultipleSeqAlignment) -> bytes:
 
 def _prepare_metadata(
     alignment: MultipleSeqAlignment,
-    base_metadata: dict[str, object] | None,
+    base_metadata: Optional[dict[str, object]],
     payload: bytes,
     fasta_bytes: bytes,
 ) -> dict[str, object]:

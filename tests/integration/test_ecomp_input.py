@@ -1,5 +1,6 @@
 import pytest
 from pathlib import Path
+from typing import Optional
 
 from clipkit.clipkit import execute
 from clipkit.ecomp import read_ecomp
@@ -82,7 +83,7 @@ class TestEcompInputs(object):
 
 def _parse_fasta(path: Path) -> dict[str, str]:
     sequences: dict[str, str] = {}
-    current_id: str | None = None
+    current_id: Optional[str] = None
     current_seq: list[str] = []
     with path.open("r") as handle:
         for raw_line in handle:
