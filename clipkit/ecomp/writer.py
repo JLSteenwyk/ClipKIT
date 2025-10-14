@@ -27,7 +27,7 @@ class EcompEncodeError(RuntimeError):
     """Raised when `.ecomp` encoding encounters invalid data."""
 
 
-@dataclass(slots=True)
+@dataclass
 class EncodedArchive:
     payload: bytes
     metadata_bytes: bytes

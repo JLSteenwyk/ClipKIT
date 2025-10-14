@@ -45,7 +45,7 @@ class EcompDecodeError(RuntimeError):
     """Raised when `.ecomp` parsing encounters invalid data."""
 
 
-@dataclass(slots=True)
+@dataclass
 class RunLengthBlock:
     """A run of identical consensus columns encoded with bitmasks."""
 
