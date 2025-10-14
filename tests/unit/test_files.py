@@ -5,6 +5,7 @@ from Bio import AlignIO
 from clipkit.files import get_alignment_and_format, FileFormat
 
 here = Path(__file__)
+SAMPLES_DIR = here.parent.parent / "integration" / "samples"
 
 
 class TestAutomaticFileTypeDetermination(object):
@@ -49,3 +50,22 @@ class TestAutomaticFileTypeDetermination(object):
         with pytest.raises(Exception) as excinfo:
             get_alignment_and_format(in_file, file_format)
         assert "File could not be read" in str(excinfo.value)
+
+    def test_get_alignment_and_format_detects_ecomp(self):
+        in_file = SAMPLES_DIR / "12_YIL115C_Anc_2.253_aa_aln.ecomp"
+
+        alignment, in_file_format = get_alignment_and_format(str(in_file), None)
+
+        assert in_file_format == FileFormat.ecomp
+        assert alignment.get_alignment_length() > 0
+        assert alignment.annotations.get("ecomp_metadata")
+
+    def test_get_alignment_and_format_supports_explicit_ecomp(self):
+        in_file = SAMPLES_DIR / "12_YIL115C_Anc_2.253_aa_aln.ecomp"
+
+        alignment, in_file_format = get_alignment_and_format(
+            str(in_file), FileFormat.ecomp.value
+        )
+
+        assert in_file_format == FileFormat.ecomp
+        assert alignment.get_alignment_length() > 0

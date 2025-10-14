@@ -209,11 +209,23 @@ def execute(
         warn_if_entry_contains_only_gaps(trim_run.msa)
         write_debug_log_file(trim_run.msa)
 
-    write_msa(trim_run.msa, output_file, trim_run.output_file_format)
+    base_metadata = trim_run.alignment.annotations.get("ecomp_metadata")
+
+    write_msa(
+        trim_run.msa,
+        output_file,
+        trim_run.output_file_format,
+        base_metadata=base_metadata,
+    )
 
     # if the -c/--complementary argument was used, create an alignment of the trimmed sequences
     if complement:
-        write_complement(trim_run.msa, output_file, trim_run.output_file_format)
+        write_complement(
+            trim_run.msa,
+            output_file,
+            trim_run.output_file_format,
+            base_metadata=base_metadata,
+        )
 
     write_output_stats(stats, start_time)
 

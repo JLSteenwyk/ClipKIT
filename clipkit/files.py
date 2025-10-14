@@ -6,6 +6,8 @@ from Bio.Align import MultipleSeqAlignment
 import numpy as np
 
 from .exceptions import InvalidInputFileFormat
+from .ecomp import read_ecomp
+from .ecomp.reader import HEADER_MAGIC, EcompDecodeError
 
 
 class FileFormat(Enum):
@@ -17,6 +19,7 @@ class FileFormat(Enum):
     phylip_sequential = "phylip_sequential"
     phylip_relaxed = "phylip_relaxed"
     stockholm = "stockholm"
+    ecomp = "ecomp"
 
 
 def get_alignment_and_format(
@@ -29,11 +32,22 @@ def get_alignment_and_format(
 
     if file_format:
         file_format = FileFormat(file_format)
+        if file_format == FileFormat.ecomp:
+            alignment, _ = read_ecomp(input_file_name)
+            return alignment, file_format
         alignment = AlignIO.read(open(input_file_name), file_format.value)
         return alignment, file_format
     else:
         # attempt to auto-detect file format
+        if _looks_like_ecomp(input_file_name):
+            try:
+                alignment, _ = read_ecomp(input_file_name)
+                return alignment, FileFormat.ecomp
+            except (EcompDecodeError, OSError):
+                pass
         for fileFormat in FileFormat:
+            if fileFormat == FileFormat.ecomp:
+                continue
             try:
                 alignment = AlignIO.read(open(input_file_name), fileFormat.value)
                 return alignment, fileFormat
@@ -73,3 +87,12 @@ def get_custom_sites_to_trim(file_path: str, aln_length: int) -> list:
 def write_debug_log_file(msa):
     for info in msa.generate_debug_log_info():
         log_file_logger.debug(f"{str(info[0] + 1)} {info[1]} {info[2].value} {info[3]}")
+
+
+def _looks_like_ecomp(path: str) -> bool:
+    try:
+        with open(path, "rb") as handle:
+            header = handle.read(len(HEADER_MAGIC))
+    except OSError:
+        return False
+    return header == HEADER_MAGIC

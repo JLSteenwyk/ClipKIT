@@ -9,6 +9,7 @@ from .modes import TrimmingMode
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
 from .stats import TrimmingStats
+from .ecomp import write_ecomp
 
 from enum import Enum
 
@@ -52,11 +53,19 @@ def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str] = None, thr
     return MSA.from_bio_msa(alignment, gap_chars, threads)
 
 
-def write_msa(msa: MSA, out_file_name: str, out_file_format: FileFormat) -> None:
+def write_msa(
+    msa: MSA,
+    out_file_name: str,
+    out_file_format: FileFormat,
+    base_metadata: dict[str, object] | None = None,
+) -> None:
     """
     msa is populated with sites that are kept after trimming is finished
     """
     output_msa = msa.to_bio_msa()
+    if out_file_format == FileFormat.ecomp:
+        write_ecomp(output_msa, out_file_name, base_metadata)
+        return
     if out_file_format.value == "phylip_relaxed":
         SeqIO.write(output_msa, out_file_name, "phylip-relaxed")
     elif out_file_format.value == "phylip_sequential":
@@ -65,12 +74,21 @@ def write_msa(msa: MSA, out_file_name: str, out_file_format: FileFormat) -> None
         SeqIO.write(output_msa, out_file_name, out_file_format.value)
 
 
-def write_complement(msa: MSA, out_file: str, out_file_format: FileFormat) -> None:
+def write_complement(
+    msa: MSA,
+    out_file: str,
+    out_file_format: FileFormat,
+    base_metadata: dict[str, object] | None = None,
+) -> None:
     """
     msa is populated with sites that are trimmed after trimming is finished
     """
     output_msa = msa.complement_to_bio_msa()
     completmentOut = str(out_file) + ".complement"
+    if out_file_format == FileFormat.ecomp:
+        write_ecomp(output_msa, out_file, base_metadata)
+        write_ecomp(output_msa, completmentOut, base_metadata)
+        return
     if out_file_format.value == "phylip_relaxed":
         SeqIO.write(output_msa, out_file, "phylip-relaxed")
     elif out_file_format.value == "phylip_sequential":

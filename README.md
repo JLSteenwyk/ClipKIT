@@ -68,6 +68,16 @@ pip install clipkit
 clipkit input.fa
 ```
 
+**eComp archives**
+
+ClipKIT can trim Evolutionary Compression (`.ecomp`) archives directly. Simply
+pass the `.ecomp` file to the CLI, and ClipKIT will unpack its metadata sidecar
+and native payload before trimming the alignment. Archives encoded with zstd
+require the optional [`zstandard`](https://pypi.org/project/zstandard/) module;
+all other payload encodings work out of the box. By default the trimmed
+alignment is written back as an `.ecomp` archive (with a gzip fallback payload);
+specify `-of fasta` if you prefer a text format.
+
 <br />
 
 **Installation**
