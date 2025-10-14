@@ -146,5 +146,9 @@ submitting_to_conda.txt
 # mac specific files
 .DS_Store
 
-# claude
+# AI
 CLAUDE.md
+AGENTS.md
+
+# ecomp environment
+venv_ecomp/

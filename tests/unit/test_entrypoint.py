@@ -1,25 +1,28 @@
-import os
-import pytest
 import subprocess
+import sys
+from pathlib import Path
+
+
+def _run_clipkit(*args, **kwargs):
+    cmd = [sys.executable, "-m", "clipkit"] + list(args)
+    return subprocess.run(cmd, **kwargs)
 
 
 class TestEntrypoint(object):
     def test_help(self):
-        cmd = "clipkit --help"
-        exit_status = os.system(cmd)
-        assert exit_status == 0
+        result = _run_clipkit("--help")
+        assert result.returncode == 0
 
     def test_run(self):
-        cmd = "clipkit tests/integration/samples/simple.fa"
-        exit_status = os.system(cmd)
-        assert exit_status == 0
+        sample = Path("tests/integration/samples/simple.fa")
+        result = _run_clipkit(str(sample))
+        assert result.returncode == 0
 
     def test_input_error(self):
-        cmd = "clipkit /file/doesnt/exist"
-        response = subprocess.check_output([cmd], stderr=subprocess.STDOUT, shell=True)
-        assert response == b"Input file does not exist\n"
+        result = _run_clipkit("/file/doesnt/exist", capture_output=True, text=True)
+        assert result.returncode == 0
+        assert "Input file does not exist" in result.stdout
 
     def test_run_no_args(self):
-        cmd = "clipkit"
-        exit_status = os.system(cmd)
-        assert exit_status == 0
+        result = _run_clipkit()
+        assert result.returncode == 0

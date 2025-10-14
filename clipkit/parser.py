@@ -151,9 +151,11 @@ def create_parser() -> ArgumentParser:
             considered gaps as well as N.
 
         Input and output file formats
-            Supported input and output files include:
-            fasta, clustal, maf, mauve, phylip, phylip-sequential, 
-            phylip-relaxed, and stockholm
+            Supported input files include:
+            fasta, clustal, maf, mauve, phylip, phylip-sequential,
+            phylip-relaxed, stockholm, and ecomp.
+            Output defaults to the input format; `.ecomp` output is written
+            as a gzip fallback archive by default.
 
         Log
             Creates a log file that summarizes the characteristics of each position.

@@ -67,5 +67,11 @@ def clipkit(
     if not output_file_path:
         return trim_run, stats
     else:
-        write_msa(trim_run.msa, output_file_path, trim_run.output_file_format)
+        base_metadata = trim_run.alignment.annotations.get("ecomp_metadata")
+        write_msa(
+            trim_run.msa,
+            output_file_path,
+            trim_run.output_file_format,
+            base_metadata=base_metadata,
+        )
         return output_file_path, stats
