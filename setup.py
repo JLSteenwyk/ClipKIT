@@ -1,5 +1,5 @@
 from os import path
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from clipkit.version import __version__
 
@@ -36,7 +36,7 @@ setup(
     author="Jacob L. Steenwyk",
     author_email="jlsteenwyk@gmail.com",
     url="https://github.com/jlsteenwyk/clipkit",
-    packages=["clipkit"],
+    packages=find_packages(),
     classifiers=CLASSIFIERS,
     entry_points={"console_scripts": ["clipkit = clipkit.clipkit:main"]},
     version=__version__,
