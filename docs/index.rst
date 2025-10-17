@@ -26,6 +26,15 @@ These two lines represent the simpliest method to rapidly install and run ClipKI
 	# run
 	clipkit input.fa
 
+.. note::
+
+	ClipKIT can read and write Evolutionary Compression (``.ecomp``)
+	archives. Provide the archive directly (for example,
+	``clipkit alignment.ecomp``) to trim it. Unless ``-of`` is supplied, the
+	trimmed alignment is written back as an ``.ecomp`` archive that contains a
+	gzip fallback payload for broad compatibility. Install the optional
+	``zstandard`` package if you need to decode payloads compressed with zstd.
+
 Below are more detailed instructions, including alternative installation methods.
 
 **1) Installation**
@@ -132,4 +141,3 @@ Output file with the suffix ".clipkit"
 	frequently_asked_questions/index
 
 ^^^^
-
