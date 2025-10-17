@@ -90,6 +90,15 @@ pip<span class="w"> </span>install<span class="w"> </span>clipkit
 clipkit<span class="w"> </span>input.fa
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ClipKIT can read and write Evolutionary Compression (<code class="docutils literal notranslate"><span class="pre">.ecomp</span></code>)
+archives. Provide the archive directly (for example,
+<code class="docutils literal notranslate"><span class="pre">clipkit</span> <span class="pre">alignment.ecomp</span></code>) to trim it. Unless <code class="docutils literal notranslate"><span class="pre">-of</span></code> is supplied, the
+trimmed alignment is written back as an <code class="docutils literal notranslate"><span class="pre">.ecomp</span></code> archive that contains a
+gzip fallback payload for broad compatibility. Install the optional
+<code class="docutils literal notranslate"><span class="pre">zstandard</span></code> package if you need to decode payloads compressed with zstd.</p>
+</div>
 <p>Below are more detailed instructions, including alternative installation methods.</p>
 <p><strong>1) Installation</strong></p>
 <p>To help ensure ClipKIT can be installed using your favorite workflow, we have made ClipKIT available from pip, source, and the anaconda cloud.</p>
