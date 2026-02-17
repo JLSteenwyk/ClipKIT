@@ -1,3 +1,5 @@
+from multiprocessing import cpu_count
+
 from clipkit.clipkit import determine_effective_threads
 from clipkit.modes import TrimmingMode
 
@@ -44,10 +46,11 @@ def test_effective_threads_limits_kpi_large_workload():
 
 
 def test_effective_threads_keeps_requested_for_non_kpi_modes():
+    requested_threads = 4
     effective = determine_effective_threads(
-        requested_threads=4,
+        requested_threads=requested_threads,
         mode=TrimmingMode.gappy,
         n_sequences=1500,
         alignment_length=30000,
     )
-    assert effective == 4
+    assert effective == min(requested_threads, max(1, cpu_count() or 1))
