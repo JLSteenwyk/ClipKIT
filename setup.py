@@ -1,12 +1,17 @@
 from os import path
 from setuptools import setup, find_packages
 
-from clipkit.version import __version__
-
 here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
+
+
+def _read_version():
+    version_ns = {}
+    with open(path.join(here, "clipkit", "version.py"), encoding="utf-8") as f:
+        exec(f.read(), version_ns)
+    return version_ns["__version__"]
 
 CLASSIFIERS = [
     "Operating System :: OS Independent",
@@ -38,7 +43,7 @@ setup(
     packages=find_packages(),
     classifiers=CLASSIFIERS,
     entry_points={"console_scripts": ["clipkit = clipkit.clipkit:main"]},
-    version=__version__,
+    version=_read_version(),
     include_package_data=True,
     install_requires=REQUIRES,
     python_requires=">=3.10",
