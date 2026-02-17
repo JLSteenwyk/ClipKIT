@@ -28,6 +28,7 @@ from .logger import logger, log_file_logger
 from .modes import TrimmingMode
 from .msa import MSA
 from .parser import create_parser
+from .plot_report import write_trim_plot_report
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .smart_gap_helper import smart_gap_threshold_determination
 from .version import __version__ as current_version
@@ -210,6 +211,7 @@ def execute(
     dry_run: bool = False,
     validate_only: bool = False,
     report_json: Union[str, None] = None,
+    plot_trim_report: Union[str, None] = None,
     auxiliary_file: str = None,
     threads: int = 1,
     **kwargs,
@@ -375,6 +377,16 @@ def execute(
                     runtime_seconds=round(time.time() - start_time, 6),
                 ),
             )
+
+        if plot_trim_report:
+            write_trim_plot_report(
+                plot_trim_report,
+                trim_run.msa,
+                mode=mode.value,
+                gaps=trim_run.gaps,
+                sequence_type=trim_run.sequence_type.value,
+            )
+            logger.info(f"Wrote trim plot report to {plot_trim_report}")
 
         write_output_stats(stats, start_time)
     finally:

@@ -47,6 +47,7 @@ print(f"Sites trimmed: {stats.trimmed_length}")
 - `ends_only`: Trim only alignment ends (default: `False`)
 - `threads`: Requested number of threads for parallel processing (default: `1`)
   - **Note**: ClipKIT may use fewer threads for KPI/KPIC-family modes when that is expected to be faster
+- `plot_trim_report_path`: Optional HTML report path with per-site tracks and trimmed-site highlighting
 
 ## Examples
 
@@ -84,6 +85,14 @@ trim_run, stats = clipkit(
 trim_run, stats = clipkit(
     input_file_path="alignment.fasta",
     mode=TrimmingMode.gappyout,
+)
+
+# Write an interactive trim report
+trim_run, stats = clipkit(
+    input_file_path="alignment.fasta",
+    mode=TrimmingMode.gappy,
+    gaps=0.5,
+    plot_trim_report_path="alignment.trim_report.html",
 )
 ```
 

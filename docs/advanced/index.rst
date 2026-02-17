@@ -14,6 +14,7 @@ This section describes the various features and options of ClipKIT.
 - `Sequence Type`_
 - `Ends only`_
 - Threads_
+- `Plot trim report`_
 - `All options`_
 
 |
@@ -373,6 +374,37 @@ Write a machine-readable JSON report with run configuration and outcome details.
 
 	# default report path: <output>.report.json
 	clipkit <input> --report_json
+
+|
+
+.. _`Plot trim report`:
+
+Plot trim report
+----------------
+
+Write an interactive HTML report with per-site tracks and trimmed-column highlighting.
+
+.. code-block:: shell
+
+	# explicit report path
+	clipkit <input> --plot_trim_report run_plot.html
+
+	# default report path: <output>.trim_report.html
+	clipkit <input> --plot_trim_report
+
+The report includes:
+
+* Per-site gappyness bars and entropy line plot
+* Highlighting of trimmed columns in both tracks and alignment preview
+* Amino-acid or nucleotide coloring in the alignment preview (auto-detected)
+* Export buttons for saving per-site tracks and alignment preview as PNG files
+
+Example preview:
+
+.. image:: ../_static/img/trim_report_preview.png
+   :alt: ClipKIT trim report preview
+   :align: center
+   :width: 95%
 
 |
 

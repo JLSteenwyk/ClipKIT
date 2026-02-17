@@ -56,6 +56,9 @@ def process_args(args) -> dict:
     report_json = getattr(args, "report_json", None)
     if report_json == "":
         report_json = f"{output_file}.report.json"
+    plot_trim_report = getattr(args, "plot_trim_report", None)
+    if plot_trim_report == "":
+        plot_trim_report = f"{output_file}.trim_report.html"
 
     threads = args.threads if hasattr(args, "threads") else 1
     if threads < 1:
@@ -88,5 +91,6 @@ def process_args(args) -> dict:
         dry_run=dry_run,
         validate_only=validate_only,
         report_json=report_json,
+        plot_trim_report=plot_trim_report,
         threads=threads,
     )

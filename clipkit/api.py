@@ -6,6 +6,7 @@ from .files import FileFormat
 from .helpers import SeqType, write_msa
 from .logger import logger
 from .modes import TrimmingMode
+from .plot_report import write_trim_plot_report
 
 if TYPE_CHECKING:
     from .clipkit import TrimRun
@@ -29,6 +30,7 @@ def clipkit(
     codon: bool = False,
     ends_only=False,
     threads: int = 1,
+    plot_trim_report_path: Union[str, None] = None,
 ) -> ClipkitReturn:
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
@@ -93,6 +95,15 @@ def clipkit(
             ends_only,
             threads,
         )
+
+        if plot_trim_report_path:
+            write_trim_plot_report(
+                plot_trim_report_path,
+                trim_run.msa,
+                mode=TrimmingMode(mode).value,
+                gaps=trim_run.gaps,
+                sequence_type=trim_run.sequence_type.value,
+            )
 
         if not output_file_path:
             return trim_run, stats

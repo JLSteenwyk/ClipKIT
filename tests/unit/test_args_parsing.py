@@ -27,6 +27,7 @@ def args():
         dry_run=False,
         validate_only=False,
         report_json=None,
+        plot_trim_report=None,
         threads=1,
     )
     return Namespace(**kwargs)
@@ -134,6 +135,7 @@ class TestArgsProcessing(object):
             "dry_run",
             "validate_only",
             "report_json",
+            "plot_trim_report",
             "threads",
         ]
         assert sorted(res.keys()) == sorted(expected_keys)
@@ -159,6 +161,20 @@ class TestArgsProcessing(object):
         args.report_json = ""
         res = process_args(args)
         assert res["report_json"] == f"{args.output}.report.json"
+
+    def test_plot_trim_report_default_none(self, args):
+        res = process_args(args)
+        assert res["plot_trim_report"] is None
+
+    def test_plot_trim_report_explicit_path(self, args):
+        args.plot_trim_report = "some/path/trim_report.html"
+        res = process_args(args)
+        assert res["plot_trim_report"] == "some/path/trim_report.html"
+
+    def test_plot_trim_report_default_path_when_flag_has_no_value(self, args):
+        args.plot_trim_report = ""
+        res = process_args(args)
+        assert res["plot_trim_report"] == f"{args.output}.trim_report.html"
 
     def test_incompatible_codon_args(self, args):
         args.codon = True

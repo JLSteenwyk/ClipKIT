@@ -97,3 +97,16 @@ class TestApiInvocation(object):
                 input_file_path="tests/integration/samples/simple.fa",
                 sequence_type="protein",
             )
+
+    def test_plot_trim_report_path_writes_html(self, tmp_path):
+        report_path = tmp_path / "api_trim_report.html"
+        trim_run, stats = clipkit(
+            input_file_path="tests/integration/samples/simple.fa",
+            mode=TrimmingMode.gappy,
+            gaps=0.3,
+            sequence_type="nt",
+            plot_trim_report_path=str(report_path),
+        )
+        assert stats.summary["trimmed_length"] == 2
+        assert isinstance(trim_run.trimmed, MultipleSeqAlignment)
+        assert report_path.exists()

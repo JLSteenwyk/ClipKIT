@@ -91,6 +91,9 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
 --report_json [<report_json_file>]         write run summary as JSON
                                             (default path: <output>.report.json when flag is used without value)
 
+--plot_trim_report [<plot_report_file>]    write HTML trim plot report
+                                            (default path: <output>.trim_report.html when flag is used without value)
+
 -q, --quiet                                 disables all logging to stdout
 
 -h, --help                                  help message
@@ -177,6 +180,12 @@ Validate only
 Report JSON
     Writes a machine-readable JSON report with run configuration and
     outcome details.
+
+Plot trim report
+    Writes an interactive HTML report with per-site gappyness/entropy
+    tracks and an alignment preview where trimmed columns are highlighted.
+    The report includes built-in export buttons to save the per-site
+    tracks and alignment preview as PNG images.
 """
 
 
@@ -362,6 +371,15 @@ def create_parser() -> ArgumentParser:
         const="",
         required=False,
         metavar="report_json",
+        help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "--plot_trim_report",
+        nargs="?",
+        const="",
+        required=False,
+        metavar="plot_trim_report",
         help=SUPPRESS,
     )
 
