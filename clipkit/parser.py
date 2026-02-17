@@ -11,43 +11,190 @@ from .files import FileFormat
 from .modes import TrimmingMode
 from .version import __version__
 
+_MAIN_DESCRIPTION_TEMPLATE = r"""\
+  _____ _ _       _  _______ _______  
+ / ____| (_)     | |/ /_   _|__   __|
+| |    | |_ _ __ | ' /  | |    | |   
+| |    | | | '_ \|  <   | |    | |   
+| |____| | | |_) | . \ _| |_   | |   
+ \_____|_|_| .__/|_|\_\_____|  |_|   
+           | |                       
+           |_|  
+
+Version: {version}
+Citation: Steenwyk et al. 2020, PLOS Biology. doi: 10.1371/journal.pbio.3001007
+https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007
+
+ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
+
+Usage: clipkit <input> [optional arguments]
+"""
+
+_REQUIRED_ARGUMENTS_DESCRIPTION = """\
+<input>                                     input file
+                                            (must be the first argument)
+"""
+
+_OPTIONAL_ARGUMENTS_DESCRIPTION = """\
+-o, --output <output_file_name>             output file name 
+                                            (default: input file named with '.clipkit' suffix)
+
+-m, --mode <smart-gap,                      trimming mode 
+            entropy,                        (default: smart-gap)
+            gappy,                          (default: smart-gap)
+            kpic,
+            kpic-smart-gap,           
+            kpic-gappy,                
+            kpi,
+            kpi-smart-gap,
+            kpi-gappy,
+            cst,
+            c3>                      
+                                            
+-g, --gaps <threshold_of_gaps>              specifies gaps threshold
+                                            (default: 0.9)
+
+-gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
+                                            (default for aa: Xx-?*
+                                             default for nt: XxNn-?*)
+
+-if, --input_file_format <file_format>      specifies input file format
+                                            (default: auto-detect)    
+
+-s, --sequence_type <nt, aa>                specifies sequence type of input file
+                                            (default: auto-detect)
+
+-of, --output_file_format <file_format>     specifies output file format
+                                            (default: same as input file format)
+
+-l, --log                                   creates a log file
+                                            (input file named with '.log' suffix)
+
+-a, --auxiliary_file                        auxiliary file with meta-information for various trimming
+                                            modes (e.g., user-specified)
+
+-c, --complementary                         creates complementary alignment of trimmed sequences
+                                            (input file named with '.complement' suffix)
+
+-co, --codon                                conduct trimming of codons
+
+-eo, --ends_only                            trim only from the ends of the alignment
+
+-t, --threads <number_of_threads>           requested number of threads to use for parallel processing
+                                            (default: 1)
+
+--dry_run                                  run trimming and report stats without writing output files
+
+--validate_only                            validate input/settings and exit without trimming
+
+--report_json [<report_json_file>]         write run summary as JSON
+                                            (default path: <output>.report.json when flag is used without value)
+
+-q, --quiet                                 disables all logging to stdout
+
+-h, --help                                  help message
+-v, --version                               print version
+
+
+-------------------------------------
+| Detailed explanation of arguments | 
+-------------------------------------
+Modes
+    smart-gap: dynamic determination of gaps threshold
+    entropy: trim sites with normalized Shannon entropy >= threshold
+    gappy: trim sites that are greater than the gaps threshold
+    kpic: keeps parsimony informative and constant sites
+    kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
+    kpic-gappy: a combination of kpic- and gappy-based trimming
+    kpi: keep only parsimony informative sites
+    kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
+    kpi-gappy: a combination of kpi- and gappy-based trimming
+    cst: custom site trimming specified using a tab-delimited text file
+    c3: remove every third codon position
+
+Gaps
+    Positions with gappyness greater than threshold will be trimmed. 
+    Must be between 0 and 1. (Default: 0.9). This argument is ignored
+    when using the kpi and kpic modes of trimming as well as an 
+    iteration of trimming that uses smart-gap. For entropy mode,
+    this threshold is interpreted as normalized Shannon entropy
+    (default: 0.8).
+
+Gap characters
+    Specifies gap characters used in the input file. For example,
+    "NnXx-?" would specify that "N", "n", "X", "x", "-", and "?" are
+    gap characters. Note, the first gap character cannot be "-" because
+    the parser will interpret the gaps list as a new argument.
+
+Sequence type
+    Specifies the type of sequences in the input file. Valid options
+    include aa or nt for amino acids and nucleotides. This argument
+    is case insensitive. This matters for what characters are
+    considered gaps. For amino acids, -, ?, *, and X are considered
+    gaps. For nucleotide sequences, the same characters are
+    considered gaps as well as N.
+
+Input and output file formats
+    Supported input files include:
+    fasta, clustal, maf, mauve, phylip, phylip-sequential,
+    phylip-relaxed, stockholm, and ecomp.
+    Output defaults to the input format; `.ecomp` output is written
+    as a gzip fallback archive by default.
+
+Log
+    Creates a log file that summarizes the characteristics of each position.
+    The log file has four columns.
+    - Column 1 is the position in the alignment (starting at 1), 
+    - Column 2 reports if the site was trimmed or kept (trim and keep, respectively),
+    - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), or
+      a constant site or not (Const and nConst, respectively), or neither (nConst, nPI)
+    - Column 4 reports the gappyness of the position (number of gaps / entries in alignment)
+
+Complementary
+    Creates an alignment file of only the trimmed sequences
+
+Codon
+    Trims codon-based alignments. If one position in a codon should be trimmed, the whole
+    codon will be trimmed.
+
+Threads
+    Requested number of threads to use for parallel processing.
+    For kpi/kpic family modes, ClipKIT may automatically use fewer
+    threads when that is expected to be faster for the current workload.
+    Results are identical regardless of thread count used. (Default: 1)
+
+Dry run
+    Executes trimming logic and reports statistics, but does not write
+    alignment, complementary, or log files.
+
+Validate only
+    Validates input format and arguments (including cst auxiliary-file
+    integrity) and exits without trimming.
+
+Report JSON
+    Writes a machine-readable JSON report with run configuration and
+    outcome details.
+"""
+
+
+def _main_description() -> str:
+    return textwrap.dedent(
+        _MAIN_DESCRIPTION_TEMPLATE.format(version=__version__)
+    )
+
 
 def create_parser() -> ArgumentParser:
     parser = ArgumentParser(
         add_help=False,
         formatter_class=RawDescriptionHelpFormatter,
         usage=SUPPRESS,
-        description=textwrap.dedent(
-            rf"""\
-              _____ _ _       _  _______ _______  
-             / ____| (_)     | |/ /_   _|__   __|
-            | |    | |_ _ __ | ' /  | |    | |   
-            | |    | | | '_ \|  <   | |    | |   
-            | |____| | | |_) | . \ _| |_   | |   
-             \_____|_|_| .__/|_|\_\_____|  |_|   
-                       | |                       
-                       |_|  
-
-        Version: {__version__}
-        Citation: Steenwyk et al. 2020, PLOS Biology. doi: 10.1371/journal.pbio.3001007
-        https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007
-
-        ClipKIT trims multiple sequence alignments and maintains phylogenetically informative sites.
-
-        Usage: clipkit <input> [optional arguments]
-        """  # noqa
-        ),
+        description=_main_description(),
     )
 
     # required arguments
     required = parser.add_argument_group(
         "required arguments",
-        description=textwrap.dedent(
-            """\
-        <input>                                     input file
-                                                    (must be the first argument)
-        """
-        ),
+        description=textwrap.dedent(_REQUIRED_ARGUMENTS_DESCRIPTION),
     )
 
     required.add_argument("input", type=str, help=SUPPRESS)
@@ -55,148 +202,7 @@ def create_parser() -> ArgumentParser:
     # optional arguments
     optional = parser.add_argument_group(
         "optional arguments",
-        description=textwrap.dedent(
-            """\
-        -o, --output <output_file_name>             output file name 
-                                                    (default: input file named with '.clipkit' suffix)
-
-        -m, --mode <smart-gap,                      trimming mode 
-                    entropy,                        (default: smart-gap)
-                    gappy,                          (default: smart-gap)
-                    kpic,
-                    kpic-smart-gap,           
-                    kpic-gappy,                
-                    kpi,
-                    kpi-smart-gap,
-                    kpi-gappy,
-                    cst,
-                    c3>                      
-                                                    
-        -g, --gaps <threshold_of_gaps>              specifies gaps threshold
-                                                    (default: 0.9)
-
-        -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
-                                                    (default for aa: Xx-?*
-                                                     default for nt: XxNn-?*)
-
-        -if, --input_file_format <file_format>      specifies input file format
-                                                    (default: auto-detect)    
-
-        -s, --sequence_type <nt, aa>                specifies sequence type of input file
-                                                    (default: auto-detect)
-
-        -of, --output_file_format <file_format>     specifies output file format
-                                                    (default: same as input file format)
-
-        -l, --log                                   creates a log file
-                                                    (input file named with '.log' suffix)
-
-        -a, --auxiliary_file                        auxiliary file with meta-information for various trimming
-                                                    modes (e.g., user-specified)
-
-        -c, --complementary                         creates complementary alignment of trimmed sequences
-                                                    (input file named with '.complement' suffix)
-
-        -co, --codon                                conduct trimming of codons
-
-        -eo, --ends_only                            trim only from the ends of the alignment
-
-        -t, --threads <number_of_threads>           requested number of threads to use for parallel processing
-                                                    (default: 1)
-
-        --dry_run                                  run trimming and report stats without writing output files
-
-        --validate_only                            validate input/settings and exit without trimming
-
-        --report_json [<report_json_file>]         write run summary as JSON
-                                                    (default path: <output>.report.json when flag is used without value)
-
-        -q, --quiet                                 disables all logging to stdout
-
-        -h, --help                                  help message
-        -v, --version                               print version
-
-
-        -------------------------------------
-        | Detailed explanation of arguments | 
-        -------------------------------------
-        Modes
-            smart-gap: dynamic determination of gaps threshold
-            entropy: trim sites with normalized Shannon entropy >= threshold
-            gappy: trim sites that are greater than the gaps threshold
-            kpic: keeps parsimony informative and constant sites
-            kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
-            kpic-gappy: a combination of kpic- and gappy-based trimming
-            kpi: keep only parsimony informative sites
-            kpi-smart-gap: a combination of kpi- and smart-gap-based trimming
-            kpi-gappy: a combination of kpi- and gappy-based trimming
-            cst: custom site trimming specified using a tab-delimited text file
-            c3: remove every third codon position
-
-        Gaps
-            Positions with gappyness greater than threshold will be trimmed. 
-            Must be between 0 and 1. (Default: 0.9). This argument is ignored
-            when using the kpi and kpic modes of trimming as well as an 
-            iteration of trimming that uses smart-gap. For entropy mode,
-            this threshold is interpreted as normalized Shannon entropy
-            (default: 0.8).
-
-        Gap characters
-            Specifies gap characters used in the input file. For example,
-            "NnXx-?" would specify that "N", "n", "X", "x", "-", and "?" are
-            gap characters. Note, the first gap character cannot be "-" because
-            the parser will interpret the gaps list as a new argument.
-
-        Sequence type
-            Specifies the type of sequences in the input file. Valid options
-            include aa or nt for amino acids and nucleotides. This argument
-            is case insensitive. This matters for what characters are
-            considered gaps. For amino acids, -, ?, *, and X are considered
-            gaps. For nucleotide sequences, the same characters are
-            considered gaps as well as N.
-
-        Input and output file formats
-            Supported input files include:
-            fasta, clustal, maf, mauve, phylip, phylip-sequential,
-            phylip-relaxed, stockholm, and ecomp.
-            Output defaults to the input format; `.ecomp` output is written
-            as a gzip fallback archive by default.
-
-        Log
-            Creates a log file that summarizes the characteristics of each position.
-            The log file has four columns.
-            - Column 1 is the position in the alignment (starting at 1), 
-            - Column 2 reports if the site was trimmed or kept (trim and keep, respectively),
-            - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), or
-              a constant site or not (Const and nConst, respectively), or neither (nConst, nPI)
-            - Column 4 reports the gappyness of the position (number of gaps / entries in alignment)
-
-        Complementary
-            Creates an alignment file of only the trimmed sequences
-        
-        Codon
-            Trims codon-based alignments. If one position in a codon should be trimmed, the whole
-            codon will be trimmed.
-        
-        Threads
-            Requested number of threads to use for parallel processing.
-            For kpi/kpic family modes, ClipKIT may automatically use fewer
-            threads when that is expected to be faster for the current workload.
-            Results are identical regardless of thread count used. (Default: 1)
-
-        Dry run
-            Executes trimming logic and reports statistics, but does not write
-            alignment, complementary, or log files.
-
-        Validate only
-            Validates input format and arguments (including cst auxiliary-file
-            integrity) and exits without trimming.
-
-        Report JSON
-            Writes a machine-readable JSON report with run configuration and
-            outcome details.
-        """  # noqa
-        ),
+        description=textwrap.dedent(_OPTIONAL_ARGUMENTS_DESCRIPTION),
     )
 
     optional.add_argument(
