@@ -1,18 +1,8 @@
 from collections import Counter
-from functools import lru_cache
 from typing import Optional
 
 from Bio.Align import MultipleSeqAlignment
 import numpy as np
-
-from .logger import logger
-
-
-@lru_cache(maxsize=128)
-def _cached_gap_slope(gap_tuple, alignment_length):
-    """Cached calculation of gap-to-gap slope for a specific gap distribution"""
-    gaps_arr = np.array(gap_tuple)
-    return gap_to_gap_slope(gaps_arr, alignment_length)
 
 
 def smart_gap_threshold_determination(

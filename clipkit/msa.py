@@ -5,9 +5,8 @@ import numpy as np
 import math
 from itertools import chain
 from typing import Union
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
-from multiprocessing import Pool, cpu_count
-from functools import lru_cache
+from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import cpu_count
 
 from .modes import TrimmingMode
 # Always import the standard version for compatibility
@@ -16,10 +15,6 @@ from .site_classification import (
     determine_site_classification_type,
 )
 
-# Optimizations are built-in, no need for external modules
-USE_OPTIMIZED = True
-batch_classify_sites_wrapper = None
-calculate_column_frequency_fast = None
 from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
 
@@ -76,22 +71,6 @@ def _batch_column_frequencies(seq_array, gap_chars, batch_size=100, normalize_ca
             column_frequencies.append(freqs)
 
     return column_frequencies
-
-
-# Module-level helper functions for parallel processing
-def _calculate_column_frequency_helper(args):
-    """Helper function for parallel processing of column frequencies"""
-    column, gap_chars = args
-    col_sorted_unique_values_for, col_counts_per_char = np.unique(
-        column, return_counts=True
-    )
-    freqs = dict(zip(col_sorted_unique_values_for, col_counts_per_char))
-    for gap_char in gap_chars:
-        try:
-            del freqs[gap_char]
-        except KeyError:
-            continue
-    return freqs
 
 
 def _calculate_column_frequency_batch_helper(args):
