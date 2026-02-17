@@ -80,12 +80,13 @@
   <section id="change-log">
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
 <p>Major changes to ClipKIT are summarized here.</p>
-<p><strong>2.10.2</strong>
+<p><strong>2.10.3</strong>
 Improved performance and usability through:
 - KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism
 - Additional performance optimizations in hot alignment-processing paths
 - Updated CLI/documentation text clarifying <cite>–threads</cite> behavior as a requested value
 - Added CLI safety/reporting options: <code class="docutils literal notranslate"><span class="pre">--dry_run</span></code>, <code class="docutils literal notranslate"><span class="pre">--validate_only</span></code>, and <code class="docutils literal notranslate"><span class="pre">--report_json</span></code>
+- Added a <code class="docutils literal notranslate"><span class="pre">gappyout</span></code> trimming mode with automatic, gap-distribution-based threshold selection
 - Dropped Python 3.9 support and raised the minimum supported version to Python 3.10
 - Robustness improvements for repeated in-process execution and logging behavior</p>
 <p><strong>2.7.0</strong>

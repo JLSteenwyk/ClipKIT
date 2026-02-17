@@ -118,12 +118,14 @@
 <span id="id1"></span><h2>Modes<a class="headerlink" href="#modes" title="Link to this heading"></a></h2>
 <p>This section describes the trimming modes implemented in ClipKIT. If you are unsure which is appropriate for you,
 <strong>we recommend using the default smart-gap trimming mode</strong>.</p>
-<p>ClipKIT can be run with eleven different modes, which are specified with the -m/–mode argument.
+<p>ClipKIT can be run with twelve different modes, which are specified with the -m/–mode argument.
 <em>Default: ‘smart-gap’</em></p>
 <ul class="simple">
 <li><p>smart-gap: dynamic determination of gaps threshold</p></li>
 <li><p>entropy: trim sites above a normalized Shannon entropy threshold (default: 0.8)</p></li>
 <li><p>gappy: trim all sites that are above a threshold of gappyness (default: 0.9)</p></li>
+<li><p>gappyout: infer a gap threshold from alignment-wide gap distribution and trim above it
+(gappyout-inspired behavior; not strict trimAl compatibility)</p></li>
 <li><p>kpic: keep only parsimony informative and constant sites</p></li>
 <li><p>kpic-smart-gap: a combination of kpic- and smart-gap-based trimming</p></li>
 <li><p>kpic-gappy: a combination of kpic- and gappy-based trimming</p></li>
@@ -139,6 +141,9 @@ clipkit<span class="w"> </span>-m<span class="w"> </span>smart-gap
 
 <span class="c1"># gappy-based trimming</span>
 clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-m<span class="w"> </span>gappy
+
+<span class="c1"># gappyout-style trimming</span>
+clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-m<span class="w"> </span>gappyout
 
 <span class="c1"># entropy-based trimming</span>
 clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-m<span class="w"> </span>entropy
@@ -286,7 +291,7 @@ others are kept.</p>
 <p>Positions with gappyness greater than threshold will be trimmed.
 Must be between 0 and 1. (Default: 0.9). This argument is ignored
 when using the kpi and kpic modes of trimming as well as an
-iteration of trimming that uses smart-gap. In entropy mode, this value
+iteration of trimming that uses smart-gap or gappyout. In entropy mode, this value
 is treated as a normalized Shannon entropy threshold (default: 0.8).</p>
 <p>To specify a gaps threshold, use the -g/\-\-gaps argument.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--gaps<span class="w"> </span><span class="m">0</span>.4
