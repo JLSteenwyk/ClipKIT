@@ -1,5 +1,6 @@
 from collections import Counter
 from functools import lru_cache
+from typing import Optional
 
 from Bio.Align import MultipleSeqAlignment
 import numpy as np
@@ -17,7 +18,7 @@ def _cached_gap_slope(gap_tuple, alignment_length):
 def smart_gap_threshold_determination(
     alignment: MultipleSeqAlignment,
     gap_chars: list,
-    seq_records: np.ndarray | None = None,
+    seq_records: Optional[np.ndarray] = None,
 ) -> float:
     alignment_length = (
         seq_records.shape[1]
@@ -101,7 +102,7 @@ def gap_to_gap_slope(gaps_arr: np.array, alignment_length: int) -> list[float]:
 def get_gaps_distribution_optimized(
     alignment: MultipleSeqAlignment,
     gap_chars: list,
-    seq_records: np.ndarray | None = None,
+    seq_records: Optional[np.ndarray] = None,
 ) -> np.ndarray:
     """Optimized gap distribution calculation using numpy broadcasting"""
     # Reuse precomputed sequence matrix when available.
