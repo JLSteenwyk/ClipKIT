@@ -90,3 +90,10 @@ class TestApiInvocation(object):
     def test_empty_input_file_path_rejected(self):
         with pytest.raises(ValueError, match="input_file_path cannot be empty."):
             clipkit(input_file_path="")
+
+    def test_invalid_sequence_type_rejected(self):
+        with pytest.raises(ValueError, match="sequence_type must be one of"):
+            clipkit(
+                input_file_path="tests/integration/samples/simple.fa",
+                sequence_type="protein",
+            )

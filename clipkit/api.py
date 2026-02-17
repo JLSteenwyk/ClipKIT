@@ -25,7 +25,7 @@ def clipkit(
     gap_characters=None,
     input_file_format=FileFormat.fasta,
     output_file_format=FileFormat.fasta,
-    sequence_type=SeqType.aa,
+    sequence_type: Union[SeqType, str, None] = None,
     codon: bool = False,
     ends_only=False,
     threads: int = 1,
@@ -62,11 +62,19 @@ def clipkit(
         if not output_file_path:
             output_temp_file = NamedTemporaryFile()
 
-        # override some options not currently available through programmatic interface
+        if isinstance(sequence_type, str):
+            try:
+                sequence_type = SeqType(sequence_type.lower())
+            except ValueError as exc:
+                raise ValueError(
+                    "sequence_type must be one of: 'aa', 'nt', SeqType.aa, SeqType.nt, or None."
+                ) from exc
+
+        # override options not currently available through programmatic interface
         complement = False
         use_log = False
         quiet = True
-        auxiliary_file = None  # TODO: implement?
+        auxiliary_file = None
 
         trim_run, stats = run(
             input_temp_file.name if input_temp_file else input_file_path,
