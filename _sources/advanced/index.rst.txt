@@ -392,7 +392,7 @@ All options
    * - ``-o/--output``
      - Specify output file name.
    * - ``-g/--gaps``
-     - Specify gappyness threshold (between 0 and 1). *Default: 0.9*.
+     - Specify threshold (between 0 and 1): gappyness for most modes, normalized entropy for ``entropy`` mode. *Default: 0.9* (or *0.8* for ``entropy``).
    * - ``-gc/--gap_characters``
      - Specify gap characters used in input file (AAs: ``Xx-?*``; NTs: ``XxNn-?*``).
    * - ``-co/--codon``
