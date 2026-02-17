@@ -1,4 +1,3 @@
-import sys
 import textwrap
 
 from argparse import (
@@ -39,11 +38,6 @@ def create_parser() -> ArgumentParser:
         """  # noqa
         ),
     )
-
-    # if no arguments are given, print help and exit
-    if len(sys.argv) == 1:
-        parser.print_help(sys.stderr)
-        sys.exit()
 
     # required arguments
     required = parser.add_argument_group(

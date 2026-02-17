@@ -394,7 +394,13 @@ def main(argv=None):
     Function that parses and collects arguments
     """
     parser = create_parser()
-    args = parser.parse_args()
+    argv = sys.argv[1:] if argv is None else argv
+
+    if len(argv) == 0:
+        parser.print_help(sys.stderr)
+        return
+
+    args = parser.parse_args(argv)
 
     execute(**process_args(args))
 
