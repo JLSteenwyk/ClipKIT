@@ -1,8 +1,6 @@
 Advanced Usage
 ==============
 
-^^^^^
-
 This section describes the various features and options of ClipKIT.
 
 - Modes_
@@ -25,15 +23,15 @@ This section describes the various features and options of ClipKIT.
 Modes
 -----
 
-Herein, we describe the various trimming modes implemented in ClipKIT. If you are unsure which is appropriate for you,
+This section describes the trimming modes implemented in ClipKIT. If you are unsure which is appropriate for you,
 **we recommend using the default smart-gap trimming mode**. 
 
-ClipKIT can be run with eight different modes, which are specified with the -m/--mode argument.
+ClipKIT can be run with ten different modes, which are specified with the -m/--mode argument.
 *Default: 'smart-gap'*
 
 * smart-gap: dynamic determination of gaps threshold
 * gappy: trim all sites that are above a threshold of gappyness (default: 0.9)
-* kpic: keep only parismony informative and constant sites
+* kpic: keep only parsimony informative and constant sites
 * kpic-smart-gap: a combination of kpic- and smart-gap-based trimming 
 * kpic-gappy: a combination of kpic- and gappy-based trimming
 * kpi: keep only parsimony informative sites
@@ -96,10 +94,10 @@ appended to the name. Users can specify output file names with the -o option.
 
 Log
 ---
-It can be very useful to have information about the each position in an alignment. For
+It can be useful to have information about each position in an alignment. For
 example, this information could be used in alignment diagnostics, fine-tuning of trimming
 parameters, etc. To create the log file, use the -l/\\-\\-log option. Using this option
-will create a four column file with the suffix 'clipkit.log'. *Default: off*
+will create a four-column file with the suffix 'clipkit.log'. *Default: off*
 
 * col1: position in the alignment (starting at 1)
 * col2: reports if site was trimmed or kept (trim or keep, respectively)
@@ -125,7 +123,7 @@ option.
 
 	clipkit <input> -c
 
-Output file with the suffix '.clipkit.complementary'
+Output file with the suffix '.clipkit.complement'
 
 |
 
@@ -143,7 +141,7 @@ codon will be trimmed. To conduct codon-based trimming, use the -co/\\-\\-codon 
 
     # or
 
-	clipkit <input> --co
+	clipkit <input> -co
 
 |
 
@@ -211,7 +209,7 @@ Gaps
 
 Positions with gappyness greater than threshold will be trimmed. 
 Must be between 0 and 1. (Default: 0.9). This argument is ignored
-when using the kpi and kpic mdoes of trimming as well as an 
+when using the kpi and kpic modes of trimming as well as an 
 iteration of trimming that uses smart-gap.
 
 To specify a gaps threshold, use the -g/\\-\\-gaps argument.
@@ -222,7 +220,7 @@ To specify a gaps threshold, use the -g/\\-\\-gaps argument.
 
     # or
 
-	clipkit <input> --g 0.4
+	clipkit <input> -g 0.4
 
 |
 
@@ -259,13 +257,13 @@ considered gaps as well as N.
 
 	clipkit <input> -s aa
 
-Specify input sequences are amino acids
+Use this option to specify that input sequences are amino acids.
 
 .. code-block:: shell
 
 	clipkit <input> -s nt
 
-Specify input sequences are nucleotides 
+Use this option to specify that input sequences are nucleotides.
 
 |
 
@@ -274,11 +272,11 @@ Specify input sequences are nucleotides
 Ends only
 ---------
 
-For a given trimming mode, specifies if only sites at the end of an alignment
-should be trimmed. For example, if the sites that should be trimmed include
+For a given trimming mode, this option trims only sites at the ends of an alignment.
+For example, if the sites that should be trimmed include
 [0, 1, 2, 4, 5, 6, 14, 15, 16] for smart-gap mode and an alignment of
 length 16, adding the ends_only mode will result in [0, 1, 2, 14, 15, 16]
-being the sites that will be trimmed. Specify this argument with -eo, \-\-ends_only.
+being the sites that will be trimmed. Use this argument with -eo, \-\-ends_only.
 
 
 .. code-block:: shell
@@ -297,8 +295,7 @@ Threads
 -------
 
 ClipKIT supports parallel processing for site classification and character frequency
-calculations when working with large alignments. This can significantly speed up
-processing for alignments with many sites (>5000 positions).
+calculations. For larger alignments, this can significantly speed up processing.
 
 The number of threads can be specified using the -t/\\-\\-threads argument.
 *Default: 1*
@@ -316,10 +313,56 @@ The number of threads can be specified using the -t/\\-\\-threads argument.
 
 **Performance Notes:**
 
-* Parallel processing is automatically enabled only for alignments with >5000 sites
+* Parallel processing is activated adaptively based on alignment size and requested threads
 * For smaller alignments, single-threaded mode is typically faster due to multiprocessing overhead
 * The optimal number of threads depends on your system and alignment size
+* For KPI/KPIC family modes (kpi, kpi-gappy, kpi-smart-gap, kpic, kpic-gappy, kpic-smart-gap), ClipKIT may automatically use fewer threads than requested when that is expected to be faster
 * Results are identical regardless of the number of threads used (fully reproducible)
+
+|
+
+.. _`Dry run`:
+
+Dry run
+-------
+
+Use dry run mode to execute trimming and compute summary statistics without
+writing alignment, complementary, or log output files.
+
+.. code-block:: shell
+
+	clipkit <input> --dry_run
+
+|
+
+.. _`Validate only`:
+
+Validate only
+-------------
+
+Use validate-only mode to check input format and argument consistency (including
+auxiliary file checks for ``cst`` mode) and then exit without trimming.
+
+.. code-block:: shell
+
+	clipkit <input> --validate_only
+
+|
+
+.. _`Report JSON`:
+
+Report JSON
+-----------
+
+Write a machine-readable JSON report with run configuration and outcome details.
+
+.. code-block:: shell
+
+	# explicit report path
+	clipkit <input> --report_json run_report.json
+
+	# default report path: <output>.report.json
+	clipkit <input> --report_json
 
 |
 
@@ -329,39 +372,50 @@ All options
 ---------------------
 
 
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| Option                      | Usage and meaning                                                                                    |
-+=============================+======================================================================================================+
-| -h/\\-\\-help               | Print help message                                                                                   |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -v/\\-\\-version            | Print software version                                                                              |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -m/\\-\\-mode               | Specify trimming mode (default: smart-gap)                                                           |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -o/\\-\\-output             | Specify output file name                                                                             |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -g/\\-\\-gaps               | Specify gappyness threshold (between 0 and 1). *Default: 0.9*                                        |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -gc/\\-\\-gap_characters    | Specifies gap characters used in input file (AAs: Xx-?*; NTs: XxNn-?*                                |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -co/\\-\\-codon             | Codon codon-based trimming. *Default: off*                                                           |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -s/\\-\\-sequence           | Specifies sequence type of input file. *Default: auto-detect*                                        |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -if/\\-\\-input_file_format | Specify input file format*. *Default: auto-detect*                                                   |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -of/\\-\\-output_file_format| Specify output file format*. *Default: input file type*                                              |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -l/\\-\\-log                | Create a log file. *Default: off*                                                                    |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -c/\\-\\-complementary      | Create a complementary alignment file. *Default: off*                                                |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -a/\\-\\-auxiliary_file     | Auxiliary file. Currently used for specifying sites to trim in cst mode                              |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -eo/\\-\\-ends_only         | Ends only mode, which trims sites that should be removed at the end of an alignment *Default: false* |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
-| -t/\\-\\-threads            | Number of threads for parallel processing (for large alignments >5000 sites). *Default: 1*           |
-+-----------------------------+------------------------------------------------------------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 28 72
+
+   * - Option
+     - Usage and meaning
+   * - ``-h/--help``
+     - Print help message.
+   * - ``-v/--version``
+     - Print software version.
+   * - ``-m/--mode``
+     - Specify trimming mode. *Default: smart-gap*.
+   * - ``-o/--output``
+     - Specify output file name.
+   * - ``-g/--gaps``
+     - Specify gappyness threshold (between 0 and 1). *Default: 0.9*.
+   * - ``-gc/--gap_characters``
+     - Specify gap characters used in input file (AAs: ``Xx-?*``; NTs: ``XxNn-?*``).
+   * - ``-co/--codon``
+     - Conduct codon-based trimming. *Default: off*.
+   * - ``-s/--sequence_type``
+     - Specify sequence type of input file (``aa`` or ``nt``). *Default: auto-detect*.
+   * - ``-if/--input_file_format``
+     - Specify input file format*. *Default: auto-detect*.
+   * - ``-of/--output_file_format``
+     - Specify output file format*. *Default: input file type*.
+   * - ``-l/--log``
+     - Create a log file. *Default: off*.
+   * - ``-c/--complementary``
+     - Create a complementary alignment file. *Default: off*.
+   * - ``-a/--auxiliary_file``
+     - Auxiliary file used for specifying sites to trim in ``cst`` mode.
+   * - ``-eo/--ends_only``
+     - Trim only sites at alignment ends that would otherwise be removed. *Default: off*.
+   * - ``-q/--quiet``
+     - Disable logging to stdout. *Default: off*.
+   * - ``-t/--threads``
+     - Requested threads for parallel processing; KPI/KPIC modes may auto-tune lower. *Default: 1*.
+   * - ``--dry_run``
+     - Run trimming/stat calculations but skip writing output files. *Default: off*.
+   * - ``--validate_only``
+     - Validate inputs/arguments and exit without trimming. *Default: off*.
+   * - ``--report_json [path]``
+     - Write a JSON run report; if no path is given, uses ``<output>.report.json``.
 
 \*Acceptable file formats include: 
 `fasta <https://en.wikipedia.org/wiki/FASTA_format>`_,
@@ -372,4 +426,3 @@ All options
 `phylip-sequential <http://rosalind.info/glossary/phylip-format/>`_,
 `phylip-relaxed <https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html>`_,
 `stockholm <https://en.wikipedia.org/wiki/Stockholm_format>`_
-

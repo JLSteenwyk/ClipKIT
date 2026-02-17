@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Start &mdash; clipkit  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b745eb55" />
 
   
@@ -79,11 +79,11 @@
   <a class="reference external image-reference" href="https://jlsteenwyk.com/ClipKIT"><img alt="_images/ClipKIT_logo_top_only_v1.jpg" class="align-center" src="_images/ClipKIT_logo_top_only_v1.jpg" style="width: 55%;" />
 </a>
 <hr class="docutils" />
-<p>ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes those that display characteristics poor phylogenetic signal.</p>
+<p>ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes those with poor phylogenetic signal.</p>
 <p>If you found clipkit useful, please cite <em>ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference</em>. Steenwyk et al. 2020, PLoS Biology. doi: <a class="reference external" href="https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007">10.1371/journal.pbio.3001007</a>.</p>
 <section id="quick-start">
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h1>
-<p>These two lines represent the simpliest method to rapidly install and run ClipKIT.</p>
+<p>These two lines represent the simplest method to rapidly install and run ClipKIT.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># install</span>
 pip<span class="w"> </span>install<span class="w"> </span>clipkit
 <span class="c1"># run</span>
@@ -112,7 +112,7 @@ python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </s
 pip<span class="w"> </span>install<span class="w"> </span>clipkit
 </pre></div>
 </div>
-<p><strong>Note, the virtual environment must be activated to use clipkit.</strong></p>
+<p><strong>Note: the virtual environment must be activated to use clipkit.</strong></p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -134,14 +134,9 @@ make<span class="w"> </span>install
 deactivate
 </pre></div>
 </div>
-<p><strong>Note, the virtual environment must be activated to use clipkit.</strong></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/JLSteenwyk/ClipKIT.git
-<span class="nb">cd</span><span class="w"> </span>ClipKIT/
-make<span class="w"> </span>install
-</pre></div>
-</div>
+<p><strong>Note: the virtual environment must be activated to use clipkit.</strong></p>
 <p>If you run into permission errors when executing <em>make install</em>, create a
-virtual environemnt for your installation:</p>
+virtual environment for your installation:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/JLSteenwyk/ClipKIT.git
 <span class="nb">cd</span><span class="w"> </span>ClipKIT/
 python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
@@ -149,7 +144,7 @@ python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </s
 make<span class="w"> </span>install
 </pre></div>
 </div>
-<p>Note, the virtual environment must be activated to use clipkit.</p>
+<p>Note: the virtual environment must be activated to use clipkit.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -163,7 +158,7 @@ make<span class="w"> </span>install
 <div class="line"><br /></div>
 </div>
 <p><strong>2) Usage</strong></p>
-<p>To use ClipKIT in its simpliest form, execute the following command:</p>
+<p>To use ClipKIT in its simplest form, execute the following command:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;
 </pre></div>
 </div>
@@ -191,6 +186,9 @@ make<span class="w"> </span>install
 <li class="toctree-l2"><a class="reference internal" href="advanced/index.html#sequence-type">Sequence Type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/index.html#ends-only">Ends only</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/index.html#threads">Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#dry-run">Dry run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#validate-only">Validate only</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced/index.html#report-json">Report JSON</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/index.html#all-options">All options</a></li>
 </ul>
 </li>

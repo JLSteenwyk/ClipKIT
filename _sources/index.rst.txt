@@ -6,7 +6,7 @@
 ^^^^^
 
 
-ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes those that display characteristics poor phylogenetic signal.
+ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes those with poor phylogenetic signal.
 
 
 If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference*. Steenwyk et al. 2020, PLoS Biology. doi: |doiLink|_.
@@ -17,7 +17,7 @@ If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment
 
 Quick Start
 -----------
-These two lines represent the simpliest method to rapidly install and run ClipKIT.
+These two lines represent the simplest method to rapidly install and run ClipKIT.
 
 .. code-block:: shell
 
@@ -54,7 +54,7 @@ To install from pip, use the following commands:
 	# install clipkit
 	pip install clipkit
 
-**Note, the virtual environment must be activated to use clipkit.**
+**Note: the virtual environment must be activated to use clipkit.**
 
 |
 
@@ -81,16 +81,10 @@ To deactivate your virtual environment, use the following command:
 	# deactivate virtual environment
 	deactivate
 
-**Note, the virtual environment must be activated to use clipkit.**
+**Note: the virtual environment must be activated to use clipkit.**
 
-.. code-block:: shell
-
-	git clone https://github.com/JLSteenwyk/ClipKIT.git
-	cd ClipKIT/
-	make install
-
-If you run into permission errors when executing *make install*, create a 
-virtual environemnt for your installation:
+If you run into permission errors when executing *make install*, create a
+virtual environment for your installation:
 
 .. code-block:: shell
 
@@ -100,7 +94,7 @@ virtual environemnt for your installation:
 	source venv/bin/activate
 	make install
 
-Note, the virtual environment must be activated to use clipkit.
+Note: the virtual environment must be activated to use clipkit.
 
 |
 
@@ -118,7 +112,7 @@ Visit here for more information: https://anaconda.org/bioconda/clipkit
 
 **2) Usage**
 
-To use ClipKIT in its simpliest form, execute the following command:
+To use ClipKIT in its simplest form, execute the following command:
 
 .. code-block:: shell
 

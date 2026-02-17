@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Change log &mdash; clipkit  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b745eb55" />
 
   
@@ -79,8 +79,14 @@
              
   <section id="change-log">
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
-<hr class="docutils" />
 <p>Major changes to ClipKIT are summarized here.</p>
+<p><strong>2.10.0</strong>
+Improved performance and usability through:
+- KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism
+- Additional performance optimizations in hot alignment-processing paths
+- Updated CLI/documentation text clarifying <cite>–threads</cite> behavior as a requested value
+- Added CLI safety/reporting options: <code class="docutils literal notranslate"><span class="pre">--dry_run</span></code>, <code class="docutils literal notranslate"><span class="pre">--validate_only</span></code>, and <code class="docutils literal notranslate"><span class="pre">--report_json</span></code>
+- Robustness improvements for repeated in-process execution and logging behavior</p>
 <p><strong>2.7.0</strong>
 Significant performance improvements with 2-60x speedup (average 9x) through:
 - Vectorized NumPy operations for column frequency calculations
