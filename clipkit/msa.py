@@ -2,6 +2,7 @@ from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import numpy as np
+import math
 from itertools import chain
 from typing import Union
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
@@ -123,12 +124,13 @@ class MSA:
         self._site_positions_to_trim = np.array([])
         self._site_classification_types = None
         self._column_character_frequencies = None
-        self._gap_chars = gap_chars
+        self._gap_chars = gap_chars or DEFAULT_AA_GAP_CHARS
         self._codon_size = 3
         self._threads = threads
         self._requires_uppercase_normalization = requires_uppercase_normalization
         # Cache for expensive computations
         self._site_gappyness_cache = None
+        self._site_entropy_cache = None
 
     @staticmethod
     def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None, threads=1) -> "MSA":
@@ -210,6 +212,46 @@ class MSA:
     def is_empty(self) -> bool:
         all_zeros = np.all(self.sites_kept[0] == "")
         return all_zeros
+
+    @property
+    def site_entropy(self) -> np.ndarray:
+        """
+        Normalized Shannon entropy per site, excluding gap characters.
+        Values are in [0, 1], where 0 means no diversity.
+        """
+        if self._site_entropy_cache is not None:
+            return self._site_entropy_cache
+
+        seq_array = (
+            np.char.upper(self.seq_records)
+            if self._requires_uppercase_normalization
+            else self.seq_records
+        )
+        n_cols = seq_array.shape[1]
+        entropies = np.zeros(n_cols, dtype=float)
+        gap_chars_upper = {gap.upper() for gap in self._gap_chars}
+
+        for col_idx in range(n_cols):
+            column = seq_array[:, col_idx]
+            unique, counts = np.unique(column, return_counts=True)
+
+            non_gap_counts = [
+                count
+                for char, count in zip(unique, counts)
+                if char.upper() not in gap_chars_upper
+            ]
+
+            if len(non_gap_counts) <= 1:
+                continue
+
+            total = float(sum(non_gap_counts))
+            probs = [count / total for count in non_gap_counts]
+            raw_entropy = -sum(p * math.log2(p) for p in probs if p > 0.0)
+            max_entropy = math.log2(len(non_gap_counts))
+            entropies[col_idx] = raw_entropy / max_entropy if max_entropy > 0 else 0.0
+
+        self._site_entropy_cache = np.around(entropies, decimals=4)
+        return self._site_entropy_cache
 
     @property
     def stats(self) -> TrimmingStats:
@@ -344,6 +386,8 @@ class MSA:
     ):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
+        elif mode == TrimmingMode.entropy:
+            sites_to_trim = np.where(self.site_entropy >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(

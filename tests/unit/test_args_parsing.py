@@ -56,6 +56,12 @@ class TestArgsProcessing(object):
         res = process_args(args)
         assert res["gaps"] == 0.9
 
+    def test_process_args_default_entropy_threshold(self, args):
+        args.mode = TrimmingMode.entropy
+        args.gaps = None
+        res = process_args(args)
+        assert res["gaps"] == 0.8
+
     def test_process_args_default_use_logs(self, args):
         args.log = None
         res = process_args(args)

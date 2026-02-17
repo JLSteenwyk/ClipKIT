@@ -28,7 +28,14 @@ def process_args(args) -> dict:
     complement = args.complementary or False
     codon = args.codon or False
     mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.smart_gap
-    gaps = float(args.gaps) if args.gaps is not None else 0.9
+    if args.gaps is not None:
+        gaps = float(args.gaps)
+    elif mode == TrimmingMode.entropy:
+        # Entropy thresholds are normalized to [0, 1], where larger values
+        # indicate higher per-site character diversity.
+        gaps = 0.8
+    else:
+        gaps = 0.9
     gap_characters = (
         [c for c in args.gap_characters] if args.gap_characters is not None else None
     )

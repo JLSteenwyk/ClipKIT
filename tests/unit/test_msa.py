@@ -3,6 +3,7 @@ import numpy as np
 
 from Bio import AlignIO
 from clipkit.msa import MSA
+from clipkit.modes import TrimmingMode
 
 
 def get_biopython_msa(file_path, file_format="fasta"):
@@ -134,3 +135,9 @@ class TestMSA(object):
         msa = MSA.from_bio_msa(bio_msa)
         msa.trim(site_positions_to_trim=sites_to_trim, codon=True)
         np.testing.assert_equal(msa.trimmed, expected)
+
+    def test_entropy_mode_trims_high_entropy_sites(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        msa.trim(mode=TrimmingMode.entropy, gap_threshold=0.95)
+        np.testing.assert_equal(msa._site_positions_to_trim, np.array([1, 2, 4, 5]))

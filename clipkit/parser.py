@@ -67,6 +67,7 @@ def create_parser() -> ArgumentParser:
                                                     (default: input file named with '.clipkit' suffix)
 
         -m, --mode <smart-gap,                      trimming mode 
+                    entropy,                        (default: smart-gap)
                     gappy,                          (default: smart-gap)
                     kpic,
                     kpic-smart-gap,           
@@ -127,6 +128,7 @@ def create_parser() -> ArgumentParser:
         -------------------------------------
         Modes
             smart-gap: dynamic determination of gaps threshold
+            entropy: trim sites with normalized Shannon entropy >= threshold
             gappy: trim sites that are greater than the gaps threshold
             kpic: keeps parsimony informative and constant sites
             kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
@@ -141,7 +143,9 @@ def create_parser() -> ArgumentParser:
             Positions with gappyness greater than threshold will be trimmed. 
             Must be between 0 and 1. (Default: 0.9). This argument is ignored
             when using the kpi and kpic modes of trimming as well as an 
-            iteration of trimming that uses smart-gap.
+            iteration of trimming that uses smart-gap. For entropy mode,
+            this threshold is interpreted as normalized Shannon entropy
+            (default: 0.8).
 
         Gap characters
             Specifies gap characters used in the input file. For example,
