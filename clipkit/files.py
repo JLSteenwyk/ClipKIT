@@ -35,7 +35,8 @@ def get_alignment_and_format(
         if file_format == FileFormat.ecomp:
             alignment, _ = read_ecomp(input_file_name)
             return alignment, file_format
-        alignment = AlignIO.read(open(input_file_name), file_format.value)
+        with open(input_file_name) as handle:
+            alignment = AlignIO.read(handle, file_format.value)
         return alignment, file_format
     else:
         # attempt to auto-detect file format
@@ -49,7 +50,8 @@ def get_alignment_and_format(
             if fileFormat == FileFormat.ecomp:
                 continue
             try:
-                alignment = AlignIO.read(open(input_file_name), fileFormat.value)
+                with open(input_file_name) as handle:
+                    alignment = AlignIO.read(handle, fileFormat.value)
                 return alignment, fileFormat
             # the following exceptions refer to skipping over errors
             # associated with reading the wrong input file
@@ -67,13 +69,37 @@ def get_custom_sites_to_trim(file_path: str, aln_length: int) -> list:
 
     sites_to_trim = []
     sites_to_keep = []
-    for line in lines:
+    for line_number, line in enumerate(lines, start=1):
+        if not line.strip():
+            continue
+
         site = line.split("\t")
-        pos = int(site[0]) - 1
-        if site[1] == "trim":
+        if len(site) != 2:
+            raise ValueError(
+                f"Invalid CST format on line {line_number}: expected '<position>\\t<trim|keep>'"
+            )
+
+        try:
+            pos = int(site[0]) - 1
+        except ValueError as exc:
+            raise ValueError(
+                f"Invalid CST position on line {line_number}: '{site[0]}'"
+            ) from exc
+
+        if pos < 0 or pos >= aln_length:
+            raise ValueError(
+                f"CST position out of range on line {line_number}: {pos + 1} (alignment length: {aln_length})"
+            )
+
+        action = site[1].strip().lower()
+        if action == "trim":
             sites_to_trim.append(pos)
-        else:
+        elif action == "keep":
             sites_to_keep.append(pos)
+        else:
+            raise ValueError(
+                f"Invalid CST action on line {line_number}: '{site[1]}'. Expected 'trim' or 'keep'."
+            )
 
     if len(sites_to_trim) == 0:
         # we only had keeps so treat every other site as a trim

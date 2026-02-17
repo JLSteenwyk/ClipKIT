@@ -15,12 +15,20 @@ def _cached_gap_slope(gap_tuple, alignment_length):
 
 
 def smart_gap_threshold_determination(
-    alignment: MultipleSeqAlignment, gap_chars: list
+    alignment: MultipleSeqAlignment,
+    gap_chars: list,
+    seq_records: np.ndarray | None = None,
 ) -> float:
-    alignment_length = alignment.get_alignment_length()
+    alignment_length = (
+        seq_records.shape[1]
+        if seq_records is not None
+        else alignment.get_alignment_length()
+    )
 
     # get distribution of gaps rounded to the fourth decimal place
-    gaps_dist = get_gaps_distribution_optimized(alignment, gap_chars)
+    gaps_dist = get_gaps_distribution_optimized(
+        alignment, gap_chars, seq_records=seq_records
+    )
 
     # count freq of gaps and convert to sorted np array
     gaps_arr = count_and_sort_gaps_optimized(gaps_dist)
@@ -91,11 +99,17 @@ def gap_to_gap_slope(gaps_arr: np.array, alignment_length: int) -> list[float]:
 
 
 def get_gaps_distribution_optimized(
-    alignment: MultipleSeqAlignment, gap_chars: list
+    alignment: MultipleSeqAlignment,
+    gap_chars: list,
+    seq_records: np.ndarray | None = None,
 ) -> np.ndarray:
     """Optimized gap distribution calculation using numpy broadcasting"""
-    # Convert alignment to numpy array once
-    msa_array = np.array([list(rec) for rec in alignment], dtype='U1')
+    # Reuse precomputed sequence matrix when available.
+    msa_array = (
+        seq_records
+        if seq_records is not None
+        else np.array([list(rec) for rec in alignment], dtype="U1")
+    )
 
     # Use broadcasting for gap checking
     gap_mask = np.zeros(msa_array.shape, dtype=bool)

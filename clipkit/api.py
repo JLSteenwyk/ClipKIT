@@ -29,44 +29,49 @@ def clipkit(
     If raw_alignment is given we write it to NamedTemporaryFile and then pass to execute
         * handles when output_file_path is given and also when not given
     """
+    if threads < 1:
+        raise ValueError("threads must be an integer >= 1")
+
+    original_logger_disabled = logger.disabled
     logger.disabled = True
     output_temp_file = None
     input_temp_file = None
-    if raw_alignment:
-        input_temp_file = NamedTemporaryFile()
-        input_temp_file.write(bytes(raw_alignment, "utf-8"))
-        input_temp_file.flush()
+    try:
+        if raw_alignment:
+            input_temp_file = NamedTemporaryFile()
+            input_temp_file.write(bytes(raw_alignment, "utf-8"))
+            input_temp_file.flush()
 
-    if not output_file_path:
-        output_temp_file = NamedTemporaryFile()
+        if not output_file_path:
+            output_temp_file = NamedTemporaryFile()
 
-    # override some options not currently available through programmatic interface
-    complement = False
-    use_log = False
-    quiet = True
-    auxiliary_file = None  # TODO: implement?
+        # override some options not currently available through programmatic interface
+        complement = False
+        use_log = False
+        quiet = True
+        auxiliary_file = None  # TODO: implement?
 
-    trim_run, stats = run(
-        input_temp_file.name if input_temp_file else input_file_path,
-        input_file_format,
-        output_temp_file.name if output_temp_file else output_file_path,
-        output_file_format,
-        auxiliary_file,
-        sequence_type,
-        gaps,
-        gap_characters,
-        complement,
-        codon,
-        TrimmingMode(mode),
-        use_log,
-        quiet,
-        ends_only,
-        threads,
-    )
+        trim_run, stats = run(
+            input_temp_file.name if input_temp_file else input_file_path,
+            input_file_format,
+            output_temp_file.name if output_temp_file else output_file_path,
+            output_file_format,
+            auxiliary_file,
+            sequence_type,
+            gaps,
+            gap_characters,
+            complement,
+            codon,
+            TrimmingMode(mode),
+            use_log,
+            quiet,
+            ends_only,
+            threads,
+        )
 
-    if not output_file_path:
-        return trim_run, stats
-    else:
+        if not output_file_path:
+            return trim_run, stats
+
         base_metadata = trim_run.alignment.annotations.get("ecomp_metadata")
         write_msa(
             trim_run.msa,
@@ -75,3 +80,9 @@ def clipkit(
             base_metadata=base_metadata,
         )
         return output_file_path, stats
+    finally:
+        logger.disabled = original_logger_disabled
+        if input_temp_file is not None:
+            input_temp_file.close()
+        if output_temp_file is not None:
+            output_temp_file.close()

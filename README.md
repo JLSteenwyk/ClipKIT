@@ -47,7 +47,7 @@
 <br />
 
 ClipKIT is a fast and flexible alignment trimming tool that keeps phylogenetically informative sites and removes others.<br /><br />
-If you found clipkit useful, please cite *ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference*. Steenwyk et al. 2020, PLOS Biology. doi: [10.1371/journal.pbio.3001007](https://jlsteenwyk.com/publication_pdfs/2020_Steenwyk_etal_PLOS_Biology.pdf).
+If you found ClipKIT useful, please cite *ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference*. Steenwyk et al. 2020, PLOS Biology. doi: [10.1371/journal.pbio.3001007](https://jlsteenwyk.com/publication_pdfs/2020_Steenwyk_etal_PLOS_Biology.pdf).
 
 <br /><br />
 
@@ -93,7 +93,7 @@ source venv/bin/activate
 # install clipkit
 pip install clipkit
 ```
-**Note, the virtual environment must be activated to use *clipkit*.**
+**Note: the virtual environment must be activated to use *clipkit*.**
 
 After using ClipKIT, you may wish to deactivate your virtual environment and can do so using the following command:
 ```shell
@@ -120,7 +120,7 @@ To deactivate your virtual environment, use the following command:
 # deactivate virtual environment
 deactivate
 ```
-**Note, the virtual environment must be activated to use *clipkit*.**
+**Note: the virtual environment must be activated to use *clipkit*.**
 
 <br />
 

@@ -4,9 +4,15 @@
 Change log
 ==========
 
-^^^^^
-
 Major changes to ClipKIT are summarized here.
+
+**2.10.0**
+Improved performance and usability through:
+- KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism
+- Additional performance optimizations in hot alignment-processing paths
+- Updated CLI/documentation text clarifying `--threads` behavior as a requested value
+- Added CLI safety/reporting options: ``--dry_run``, ``--validate_only``, and ``--report_json``
+- Robustness improvements for repeated in-process execution and logging behavior
 
 **2.7.0**
 Significant performance improvements with 2-60x speedup (average 9x) through:

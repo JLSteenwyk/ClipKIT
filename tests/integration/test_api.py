@@ -56,3 +56,13 @@ class TestApiInvocation(object):
             "trimmed_percentage": 50.0,
         }
         assert isinstance(trim_run.version, str)
+
+    def test_threads_must_be_positive(self):
+        with pytest.raises(ValueError, match="threads must be an integer >= 1"):
+            clipkit(
+                input_file_path="tests/integration/samples/simple.fa",
+                mode=TrimmingMode.gappy,
+                gaps=0.3,
+                sequence_type="nt",
+                threads=0,
+            )

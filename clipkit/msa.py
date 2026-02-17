@@ -24,7 +24,7 @@ from .stats import TrimmingStats
 
 
 # Vectorized helper functions
-def _vectorized_column_frequencies(seq_array, gap_chars):
+def _vectorized_column_frequencies(seq_array, gap_chars, normalize_case=True):
     """
     Vectorized calculation of character frequencies for all columns at once
     using NumPy operations.
@@ -33,7 +33,7 @@ def _vectorized_column_frequencies(seq_array, gap_chars):
     column_frequencies = []
 
     # Convert to uppercase once
-    seq_array_upper = np.char.upper(seq_array.astype(str))
+    seq_array_upper = np.char.upper(seq_array) if normalize_case else seq_array
 
     for i in range(n_cols):
         column = seq_array_upper[:, i]
@@ -49,7 +49,7 @@ def _vectorized_column_frequencies(seq_array, gap_chars):
     return column_frequencies
 
 
-def _batch_column_frequencies(seq_array, gap_chars, batch_size=100):
+def _batch_column_frequencies(seq_array, gap_chars, batch_size=100, normalize_case=True):
     """
     Process columns in batches for better memory efficiency
     """
@@ -57,7 +57,7 @@ def _batch_column_frequencies(seq_array, gap_chars, batch_size=100):
     column_frequencies = []
 
     # Convert to uppercase once for the entire array
-    seq_array_upper = np.char.upper(seq_array.astype(str))
+    seq_array_upper = np.char.upper(seq_array) if normalize_case else seq_array
 
     for start_idx in range(0, n_cols, batch_size):
         end_idx = min(start_idx + batch_size, n_cols)
@@ -82,7 +82,7 @@ def _calculate_column_frequency_helper(args):
     """Helper function for parallel processing of column frequencies"""
     column, gap_chars = args
     col_sorted_unique_values_for, col_counts_per_char = np.unique(
-        [char.upper() for char in column], return_counts=True
+        column, return_counts=True
     )
     freqs = dict(zip(col_sorted_unique_values_for, col_counts_per_char))
     for gap_char in gap_chars:
@@ -93,9 +93,28 @@ def _calculate_column_frequency_helper(args):
     return freqs
 
 
+def _calculate_column_frequency_batch_helper(args):
+    """Batch helper for threaded frequency calculation."""
+    columns, gap_chars = args
+    frequencies = []
+    for i in range(columns.shape[1]):
+        column = columns[:, i]
+        unique, counts = np.unique(column, return_counts=True)
+        freqs = dict(zip(unique, counts))
+        for gap_char in gap_chars:
+            freqs.pop(gap_char, None)
+        frequencies.append(freqs)
+    return frequencies
+
+
 class MSA:
     def __init__(
-        self, header_info, seq_records, gap_chars=DEFAULT_AA_GAP_CHARS, threads=1
+        self,
+        header_info,
+        seq_records,
+        gap_chars=DEFAULT_AA_GAP_CHARS,
+        threads=1,
+        requires_uppercase_normalization=False,
     ) -> None:
         self.header_info = header_info
         self.seq_records = seq_records
@@ -107,17 +126,32 @@ class MSA:
         self._gap_chars = gap_chars
         self._codon_size = 3
         self._threads = threads
+        self._requires_uppercase_normalization = requires_uppercase_normalization
         # Cache for expensive computations
         self._site_gappyness_cache = None
 
     @staticmethod
     def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None, threads=1) -> "MSA":
-        header_info = [
-            {"id": rec.id, "name": rec.name, "description": rec.description}
-            for rec in alignment
-        ]
-        seq_records = np.array([list(rec) for rec in alignment])
-        return MSA(header_info, seq_records, gap_chars, threads)
+        header_info = []
+        sequence_rows = []
+        requires_uppercase_normalization = False
+        for rec in alignment:
+            header_info.append(
+                {"id": rec.id, "name": rec.name, "description": rec.description}
+            )
+            seq = str(rec.seq)
+            sequence_rows.append(list(seq))
+            if not requires_uppercase_normalization and seq != seq.upper():
+                requires_uppercase_normalization = True
+
+        seq_records = np.array(sequence_rows)
+        return MSA(
+            header_info,
+            seq_records,
+            gap_chars,
+            threads,
+            requires_uppercase_normalization=requires_uppercase_normalization,
+        )
 
     def to_bio_msa(self) -> MultipleSeqAlignment:
         return self._to_bio_msa(self.sites_kept)
@@ -233,37 +267,55 @@ class MSA:
         if self._original_length < 500:
             # Small alignments: use vectorized numpy operations
             self._column_character_frequencies = _vectorized_column_frequencies(
-                self.seq_records, self.gap_chars
+                self.seq_records,
+                self.gap_chars,
+                normalize_case=self._requires_uppercase_normalization,
             )
         elif self._threads > 1 and self._original_length > parallel_threshold:
-            # Large alignments with multiple threads: use parallel processing
-            columns = self.seq_records.T
+            # Large alignments with multiple threads: use thread-level parallelism
+            # to avoid process-pool serialization overhead.
+            seq_array_upper = (
+                np.char.upper(self.seq_records)
+                if self._requires_uppercase_normalization
+                else self.seq_records
+            )
 
             # Dynamic worker calculation
             n_workers = min(self._threads, max(2, min(self._original_length // 500, cpu_count())))
 
-            # Prepare arguments for parallel processing
-            args_list = [(column, self.gap_chars) for column in columns]
+            # Batch columns to avoid creating one task per column.
+            batch_size = max(200, self._original_length // (n_workers * 8))
+            args_list = [
+                (seq_array_upper[:, start_idx:min(start_idx + batch_size, self._original_length)], self.gap_chars)
+                for start_idx in range(0, self._original_length, batch_size)
+            ]
 
-            # Use ProcessPoolExecutor with optimized chunk size
-            chunksize = max(10, len(args_list) // (n_workers * 10))
-
-            with ProcessPoolExecutor(max_workers=n_workers) as executor:
-                self._column_character_frequencies = list(executor.map(
-                    _calculate_column_frequency_helper,
-                    args_list,
-                    chunksize=chunksize
-                ))
+            with ThreadPoolExecutor(max_workers=n_workers) as executor:
+                batch_results = list(
+                    executor.map(
+                        _calculate_column_frequency_batch_helper,
+                        args_list,
+                    )
+                )
+                self._column_character_frequencies = list(
+                    chain.from_iterable(batch_results)
+                )
         else:
             # Medium alignments or single-threaded: use batch processing
             self._column_character_frequencies = _batch_column_frequencies(
-                self.seq_records, self.gap_chars, batch_size=200
+                self.seq_records,
+                self.gap_chars,
+                batch_size=200,
+                normalize_case=self._requires_uppercase_normalization,
             )
 
         # Ensure we always return the frequencies (not None)
         if self._column_character_frequencies is None:
             self._column_character_frequencies = _batch_column_frequencies(
-                self.seq_records, self.gap_chars, batch_size=200
+                self.seq_records,
+                self.gap_chars,
+                batch_size=200,
+                normalize_case=self._requires_uppercase_normalization,
             )
 
         return self._column_character_frequencies
@@ -274,26 +326,11 @@ class MSA:
             return self._site_classification_types
 
         col_char_freqs = self.column_character_frequencies
-
-        # Adaptive parallel threshold
-        parallel_threshold = max(1000, 5000 // self._threads)
-
-        if self._threads > 1 and len(col_char_freqs) > parallel_threshold:
-            n_workers = min(self._threads, max(2, min(len(col_char_freqs) // 500, cpu_count())))
-            chunksize = max(10, len(col_char_freqs) // (n_workers * 10))
-
-            with ProcessPoolExecutor(max_workers=n_workers) as executor:
-                site_classification_types = list(executor.map(
-                    determine_site_classification_type,
-                    col_char_freqs,
-                    chunksize=chunksize
-                ))
-            site_classification_types = np.array(site_classification_types)
-        else:
-            # Vectorized single-threaded implementation
-            site_classification_types = np.array(
-                [determine_site_classification_type(freq) for freq in col_char_freqs]
-            )
+        # Local classification avoids high process-pool overhead from pickling
+        # tens of thousands of per-column dict objects.
+        site_classification_types = np.array(
+            [determine_site_classification_type(freq) for freq in col_char_freqs]
+        )
 
         self._site_classification_types = site_classification_types
         return self._site_classification_types

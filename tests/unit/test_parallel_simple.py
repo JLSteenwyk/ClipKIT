@@ -60,7 +60,7 @@ def test_parallel_frequency_calculation():
         print("   ✓ Results are identical - parallel processing preserves correctness")
     else:
         print("   ✗ Results differ - there may be an issue")
-        return False
+        assert results_match
     
     # Report speedup
     print("\n" + "-" * 50)
@@ -70,8 +70,6 @@ def test_parallel_frequency_calculation():
     else:
         print("Note: Parallel version was slower (overhead for small dataset)")
     
-    return True
-
 def test_site_classification():
     """Test site classification (from site_classification.py)"""
     from clipkit.site_classification import determine_site_classification_type, SiteClassificationType
@@ -109,26 +107,21 @@ def test_site_classification():
         print("   ✓ Results are identical")
     else:
         print("   ✗ Results differ")
-        return False
+        assert results_match
     
     print("-" * 50)
     if multi_time < single_time:
         speedup = single_time / multi_time
         print(f"Speedup with 4 threads: {speedup:.2f}x")
     
-    return True
-
 if __name__ == "__main__":
     print("=" * 50)
     print("CLIPKIT PARALLEL PROCESSING TEST")
     print("=" * 50)
     
-    success1 = test_parallel_frequency_calculation()
-    success2 = test_site_classification()
+    test_parallel_frequency_calculation()
+    test_site_classification()
     
     print("\n" + "=" * 50)
-    if success1 and success2:
-        print("All tests passed!")
-    else:
-        print("Some tests failed")
+    print("All tests passed!")
     print("=" * 50)

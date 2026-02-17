@@ -85,13 +85,13 @@ def write_complement(
     msa is populated with sites that are trimmed after trimming is finished
     """
     output_msa = msa.complement_to_bio_msa()
-    completmentOut = str(out_file) + ".complement"
+    complement_out = f"{out_file}.complement"
     if out_file_format == FileFormat.ecomp:
-        write_ecomp(output_msa, out_file, base_metadata)
-        write_ecomp(output_msa, completmentOut, base_metadata)
+        write_ecomp(output_msa, complement_out, base_metadata)
         return
     if out_file_format.value == "phylip_relaxed":
-        SeqIO.write(output_msa, out_file, "phylip-relaxed")
+        SeqIO.write(output_msa, complement_out, "phylip-relaxed")
     elif out_file_format.value == "phylip_sequential":
-        SeqIO.write(output_msa, out_file, "phylip-sequential")
-    SeqIO.write(output_msa, completmentOut, out_file_format.value)
+        SeqIO.write(output_msa, complement_out, "phylip-sequential")
+    else:
+        SeqIO.write(output_msa, complement_out, out_file_format.value)

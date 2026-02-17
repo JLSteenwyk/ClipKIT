@@ -19,7 +19,7 @@ def create_parser() -> ArgumentParser:
         formatter_class=RawDescriptionHelpFormatter,
         usage=SUPPRESS,
         description=textwrap.dedent(
-            f"""\
+            rf"""\
               _____ _ _       _  _______ _______  
              / ____| (_)     | |/ /_   _|__   __|
             | |    | |_ _ __ | ' /  | |    | |   
@@ -100,14 +100,21 @@ def create_parser() -> ArgumentParser:
                                                     modes (e.g., user-specified)
 
         -c, --complementary                         creates complementary alignment of trimmed sequences
-                                                    (input file named with '.log' suffix)
+                                                    (input file named with '.complement' suffix)
 
         -co, --codon                                conduct trimming of codons
 
         -eo, --ends_only                            trim only from the ends of the alignment
 
-        -t, --threads <number_of_threads>           number of threads to use for parallel processing
+        -t, --threads <number_of_threads>           requested number of threads to use for parallel processing
                                                     (default: 1)
+
+        --dry_run                                  run trimming and report stats without writing output files
+
+        --validate_only                            validate input/settings and exit without trimming
+
+        --report_json [<report_json_file>]         write run summary as JSON
+                                                    (default path: <output>.report.json when flag is used without value)
 
         -q, --quiet                                 disables all logging to stdout
 
@@ -121,7 +128,7 @@ def create_parser() -> ArgumentParser:
         Modes
             smart-gap: dynamic determination of gaps threshold
             gappy: trim sites that are greater than the gaps threshold
-            kpic: keeps parismony informative and constant sites
+            kpic: keeps parsimony informative and constant sites
             kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
             kpic-gappy: a combination of kpic- and gappy-based trimming
             kpi: keep only parsimony informative sites
@@ -133,7 +140,7 @@ def create_parser() -> ArgumentParser:
         Gaps
             Positions with gappyness greater than threshold will be trimmed. 
             Must be between 0 and 1. (Default: 0.9). This argument is ignored
-            when using the kpi and kpic mdoes of trimming as well as an 
+            when using the kpi and kpic modes of trimming as well as an 
             iteration of trimming that uses smart-gap.
 
         Gap characters
@@ -164,7 +171,7 @@ def create_parser() -> ArgumentParser:
             - Column 2 reports if the site was trimmed or kept (trim and keep, respectively),
             - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), or
               a constant site or not (Const and nConst, respectively), or neither (nConst, nPI)
-            - Column 4 reports the gappyness of the the position (number of gaps / entries in alignment)
+            - Column 4 reports the gappyness of the position (number of gaps / entries in alignment)
 
         Complementary
             Creates an alignment file of only the trimmed sequences
@@ -174,9 +181,22 @@ def create_parser() -> ArgumentParser:
             codon will be trimmed.
         
         Threads
-            Number of threads to use for parallel processing of site classification and
-            character frequency calculations. Using multiple threads can significantly
-            speed up processing for large alignments. (Default: 1)
+            Requested number of threads to use for parallel processing.
+            For kpi/kpic family modes, ClipKIT may automatically use fewer
+            threads when that is expected to be faster for the current workload.
+            Results are identical regardless of thread count used. (Default: 1)
+
+        Dry run
+            Executes trimming logic and reports statistics, but does not write
+            alignment, complementary, or log files.
+
+        Validate only
+            Validates input format and arguments (including cst auxiliary-file
+            integrity) and exits without trimming.
+
+        Report JSON
+            Writes a machine-readable JSON report with run configuration and
+            outcome details.
         """  # noqa
         ),
     )
@@ -313,6 +333,29 @@ def create_parser() -> ArgumentParser:
         default=1,
         help=SUPPRESS,
         metavar="number of threads",
+    )
+
+    optional.add_argument(
+        "--dry_run",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "--validate_only",
+        action="store_true",
+        required=False,
+        help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "--report_json",
+        nargs="?",
+        const="",
+        required=False,
+        metavar="report_json",
+        help=SUPPRESS,
     )
 
     return parser

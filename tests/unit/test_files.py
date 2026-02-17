@@ -3,6 +3,7 @@ from pathlib import Path
 
 from Bio import AlignIO
 from clipkit.files import get_alignment_and_format, FileFormat
+from clipkit.files import get_custom_sites_to_trim
 
 here = Path(__file__)
 SAMPLES_DIR = here.parent.parent / "integration" / "samples"
@@ -69,3 +70,19 @@ class TestAutomaticFileTypeDetermination(object):
 
         assert in_file_format == FileFormat.ecomp
         assert alignment.get_alignment_length() > 0
+
+
+class TestCustomSitesParsing(object):
+    def test_get_custom_sites_to_trim_invalid_format(self, tmp_path):
+        cst_file = tmp_path / "bad.cst"
+        cst_file.write_text("1\n")
+
+        with pytest.raises(ValueError, match="Invalid CST format"):
+            get_custom_sites_to_trim(str(cst_file), aln_length=10)
+
+    def test_get_custom_sites_to_trim_out_of_range(self, tmp_path):
+        cst_file = tmp_path / "bad.cst"
+        cst_file.write_text("11\ttrim\n")
+
+        with pytest.raises(ValueError, match="out of range"):
+            get_custom_sites_to_trim(str(cst_file), aln_length=10)

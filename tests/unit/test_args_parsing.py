@@ -24,6 +24,10 @@ def args():
         quiet=True,
         auxiliary_file=None,
         ends_only=False,
+        dry_run=False,
+        validate_only=False,
+        report_json=None,
+        threads=1,
     )
     return Namespace(**kwargs)
 
@@ -121,12 +125,54 @@ class TestArgsProcessing(object):
             "quiet",
             "auxiliary_file",
             "ends_only",
+            "dry_run",
+            "validate_only",
+            "report_json",
             "threads",
         ]
         assert sorted(res.keys()) == sorted(expected_keys)
 
+    def test_dry_run_default_false(self, args):
+        res = process_args(args)
+        assert res["dry_run"] is False
+
+    def test_validate_only_default_false(self, args):
+        res = process_args(args)
+        assert res["validate_only"] is False
+
+    def test_report_json_default_none(self, args):
+        res = process_args(args)
+        assert res["report_json"] is None
+
+    def test_report_json_explicit_path(self, args):
+        args.report_json = "some/path/report.json"
+        res = process_args(args)
+        assert res["report_json"] == "some/path/report.json"
+
+    def test_report_json_default_path_when_flag_has_no_value(self, args):
+        args.report_json = ""
+        res = process_args(args)
+        assert res["report_json"] == f"{args.output}.report.json"
+
     def test_incompatible_codon_args(self, args):
         args.codon = True
         args.mode = TrimmingMode.c3
+        with pytest.raises(SystemExit):
+            process_args(args)
+
+    def test_threads_less_than_one_raises(self, args):
+        args.threads = 0
+        with pytest.raises(SystemExit):
+            process_args(args)
+
+    def test_cst_mode_requires_auxiliary_file(self, args):
+        args.mode = TrimmingMode.cst
+        args.auxiliary_file = None
+        with pytest.raises(SystemExit):
+            process_args(args)
+
+    def test_cst_mode_requires_existing_auxiliary_file(self, args):
+        args.mode = TrimmingMode.cst
+        args.auxiliary_file = "does-not-exist.txt"
         with pytest.raises(SystemExit):
             process_args(args)

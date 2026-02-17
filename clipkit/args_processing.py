@@ -44,7 +44,24 @@ def process_args(args) -> dict:
         sys.exit()
 
     ends_only = args.ends_only or False
-    threads = args.threads if hasattr(args, 'threads') else 1
+    dry_run = getattr(args, "dry_run", False) or False
+    validate_only = getattr(args, "validate_only", False) or False
+    report_json = getattr(args, "report_json", None)
+    if report_json == "":
+        report_json = f"{output_file}.report.json"
+
+    threads = args.threads if hasattr(args, "threads") else 1
+    if threads < 1:
+        logger.warning("Threads must be an integer greater than or equal to 1.")
+        sys.exit()
+
+    if mode == TrimmingMode.cst:
+        if not auxiliary_file:
+            logger.warning("CST mode requires an auxiliary file via -a/--auxiliary_file.")
+            sys.exit()
+        if not os.path.isfile(auxiliary_file):
+            logger.warning("Auxiliary file does not exist.")
+            sys.exit()
 
     return dict(
         input_file=input_file,
@@ -61,5 +78,8 @@ def process_args(args) -> dict:
         use_log=use_log,
         quiet=quiet,
         ends_only=ends_only,
+        dry_run=dry_run,
+        validate_only=validate_only,
+        report_json=report_json,
         threads=threads,
     )
