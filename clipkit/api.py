@@ -1,4 +1,4 @@
-from typing import TextIO, Union
+from typing import TYPE_CHECKING, Union
 from tempfile import NamedTemporaryFile
 
 from .clipkit import run
@@ -6,6 +6,13 @@ from .files import FileFormat
 from .helpers import SeqType, write_msa
 from .logger import logger
 from .modes import TrimmingMode
+
+if TYPE_CHECKING:
+    from .clipkit import TrimRun
+    from .stats import TrimmingStats
+
+
+ClipkitReturn = Union[tuple["TrimRun", "TrimmingStats"], tuple[str, "TrimmingStats"]]
 
 
 def clipkit(
@@ -22,7 +29,7 @@ def clipkit(
     codon: bool = False,
     ends_only=False,
     threads: int = 1,
-) -> TextIO:
+) -> ClipkitReturn:
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
     If input_file_path is given and output_file_path is given -> write to output file
@@ -31,6 +38,16 @@ def clipkit(
     """
     if threads < 1:
         raise ValueError("threads must be an integer >= 1")
+    has_raw_alignment = raw_alignment is not None
+    has_input_path = input_file_path is not None
+    if has_raw_alignment == has_input_path:
+        raise ValueError(
+            "Provide exactly one of raw_alignment or input_file_path."
+        )
+    if has_raw_alignment and raw_alignment == "":
+        raise ValueError("raw_alignment cannot be empty.")
+    if has_input_path and input_file_path == "":
+        raise ValueError("input_file_path cannot be empty.")
 
     original_logger_disabled = logger.disabled
     logger.disabled = True

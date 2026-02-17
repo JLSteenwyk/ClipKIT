@@ -66,3 +66,27 @@ class TestApiInvocation(object):
                 sequence_type="nt",
                 threads=0,
             )
+
+    def test_requires_exactly_one_input_source(self):
+        with pytest.raises(
+            ValueError,
+            match="Provide exactly one of raw_alignment or input_file_path.",
+        ):
+            clipkit(
+                raw_alignment=">1\nA\n>2\nA\n",
+                input_file_path="tests/integration/samples/simple.fa",
+            )
+
+        with pytest.raises(
+            ValueError,
+            match="Provide exactly one of raw_alignment or input_file_path.",
+        ):
+            clipkit()
+
+    def test_empty_raw_alignment_rejected(self):
+        with pytest.raises(ValueError, match="raw_alignment cannot be empty."):
+            clipkit(raw_alignment="")
+
+    def test_empty_input_file_path_rejected(self):
+        with pytest.raises(ValueError, match="input_file_path cannot be empty."):
+            clipkit(input_file_path="")
