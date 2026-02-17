@@ -168,6 +168,8 @@ def run(
             gap_characters,
             seq_records=msa.seq_records,
         )
+    elif mode == TrimmingMode.gappyout:
+        gaps = msa.determine_gappyout_gap_threshold()
 
     msa.trim(
         mode,

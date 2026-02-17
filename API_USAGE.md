@@ -36,8 +36,8 @@ print(f"Sites trimmed: {stats.trimmed_length}")
 ### Optional Parameters
 - `output_file_path`: Output file path (if not specified, returns `trim_run` + `stats`)
 - `mode`: Trimming mode (default: `TrimmingMode.smart_gap`)
-  - Options: `smart_gap`, `entropy`, `gappy`, `kpic`, `kpic_smart_gap`, `kpic_gappy`, `kpi`, `kpi_smart_gap`, `kpi_gappy`, `c3`
-- `gaps`: Threshold in `[0,1]` (default: `0.9`; auto-calculated for `smart_gap`; default `0.8` for `entropy`)
+  - Options: `smart_gap`, `entropy`, `gappy`, `gappyout`, `kpic`, `kpic_smart_gap`, `kpic_gappy`, `kpi`, `kpi_smart_gap`, `kpi_gappy`, `c3`
+- `gaps`: Threshold in `[0,1]` (default: `0.9`; auto-calculated for `smart_gap` and `gappyout`; default `0.8` for `entropy`)
   - Interpreted as gappyness for most modes, and normalized Shannon entropy for `entropy`
 - `gap_characters`: List of gap characters (default: auto-detect based on sequence type)
 - `input_file_format`: Input format (default: `FileFormat.fasta`)
@@ -78,6 +78,12 @@ trim_run, stats = clipkit(
     input_file_path="alignment.fasta",
     mode=TrimmingMode.gappy,
     gaps=0.5,  # Remove sites with >50% gaps
+)
+
+# Gappyout-inspired mode with automatic threshold selection
+trim_run, stats = clipkit(
+    input_file_path="alignment.fasta",
+    mode=TrimmingMode.gappyout,
 )
 ```
 

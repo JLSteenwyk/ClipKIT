@@ -25,3 +25,9 @@ class TestParser(object):
         mode = "entropy"
         parsed = parser.parse_args([input_path, "-m", mode])
         assert parsed.mode == mode
+
+    def test_mode_gappyout(self, parser):
+        input_path = "my/input/file.fa"
+        mode = "gappyout"
+        parsed = parser.parse_args([input_path, "-m", mode])
+        assert parsed.mode == mode

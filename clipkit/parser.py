@@ -42,6 +42,7 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
 -m, --mode <smart-gap,                      trimming mode 
             entropy,
             gappy,
+            gappyout,
             kpic,
             kpic-smart-gap,           
             kpic-gappy,                
@@ -103,6 +104,8 @@ Modes
     smart-gap: dynamic determination of gaps threshold
     entropy: trim sites with normalized Shannon entropy >= threshold
     gappy: trim sites that are greater than the gaps threshold
+    gappyout: infer a threshold from the alignment's gap distribution
+              (gappyout-inspired; not strict trimAl compatibility)
     kpic: keeps parsimony informative and constant sites
     kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
     kpic-gappy: a combination of kpic- and gappy-based trimming
@@ -116,7 +119,7 @@ Gaps
     Positions with gappyness greater than threshold will be trimmed. 
     Must be between 0 and 1. (Default: 0.9). This argument is ignored
     when using the kpi and kpic modes of trimming as well as an 
-    iteration of trimming that uses smart-gap. For entropy mode,
+    iteration of trimming that uses smart-gap or gappyout. For entropy mode,
     this threshold is interpreted as normalized Shannon entropy
     (default: 0.8).
 

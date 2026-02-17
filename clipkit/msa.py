@@ -365,6 +365,9 @@ class MSA:
     ):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
+        elif mode == TrimmingMode.gappyout:
+            # Keep sites at the inferred boundary and trim strictly above it.
+            sites_to_trim = np.where(self.site_gappyness > gap_threshold)[0]
         elif mode == TrimmingMode.entropy:
             sites_to_trim = np.where(self.site_entropy >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
@@ -421,6 +424,37 @@ class MSA:
             sites_to_trim = self.get_consecutive_from_zero_and_max(sites_to_trim)
 
         return sites_to_trim
+
+    def determine_gappyout_gap_threshold(self) -> float:
+        """
+        Infer a gap threshold from the empirical gappyness distribution.
+
+        This gappyout-inspired heuristic finds the largest jump between
+        sorted per-site gappyness values and sets the threshold to the
+        midpoint of that jump. If no clear jump exists, it falls back to
+        a conservative high-quantile threshold.
+        """
+        gappyness = np.sort(self.site_gappyness.astype(float))
+        if gappyness.size == 0:
+            return 1.0
+
+        # Uniform distributions do not expose a natural split.
+        if np.allclose(gappyness, gappyness[0]):
+            return 1.0
+
+        jumps = np.diff(gappyness)
+        max_jump_idx = int(np.argmax(jumps))
+        max_jump = float(jumps[max_jump_idx])
+
+        if max_jump >= 0.1:
+            lower = float(gappyness[max_jump_idx])
+            upper = float(gappyness[max_jump_idx + 1])
+            threshold = (lower + upper) / 2.0
+        else:
+            threshold = float(np.quantile(gappyness, 0.95))
+            threshold = max(threshold, 0.9)
+
+        return round(max(0.0, min(1.0, threshold)), 4)
 
     def generate_debug_log_info(self):
         """

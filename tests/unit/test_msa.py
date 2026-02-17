@@ -141,3 +141,24 @@ class TestMSA(object):
         msa = MSA.from_bio_msa(bio_msa)
         msa.trim(mode=TrimmingMode.entropy, gap_threshold=0.95)
         np.testing.assert_equal(msa._site_positions_to_trim, np.array([1, 2, 4, 5]))
+
+    def test_gappyout_threshold_on_simple_alignment(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        assert msa.determine_gappyout_gap_threshold() == 0.4
+
+    def test_gappyout_mode_trims_high_gap_outliers(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        msa.trim(mode=TrimmingMode.gappyout, gap_threshold=0.4)
+
+        expected_sites_kept = np.array(
+            [
+                ["A", "G", "A", "T"],
+                ["A", "G", "A", "T"],
+                ["A", "G", "T", "A"],
+                ["A", "A", "T", "A"],
+                ["A", "a", "T", "-"],
+            ]
+        )
+        np.testing.assert_equal(msa.sites_kept, expected_sites_kept)
