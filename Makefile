@@ -9,11 +9,11 @@ run.simple:
 
 install:
 	# install so clipkit command is available in terminal
-	python3 setup.py install
+	python3 -m pip install .
 
 develop:
-	# https://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode
-	python3 setup.py develop
+	# install in editable/development mode
+	python3 -m pip install -e .
 
 test: test.unit test.integration
 
