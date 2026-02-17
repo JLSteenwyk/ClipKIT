@@ -16,4 +16,4 @@ sphinx_rtd_theme = ">=1.0"
 alabaster = ">=0.7,<1.0"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"

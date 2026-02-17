@@ -12,7 +12,6 @@ CLASSIFIERS = [
     "Operating System :: OS Independent",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -42,7 +41,7 @@ setup(
     version=__version__,
     include_package_data=True,
     install_requires=REQUIRES,
-    python_requires=">=3.9",
+    python_requires=">=3.10",
 )
 
 ## push new version to pypi
