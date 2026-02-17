@@ -62,6 +62,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#dry-run">Dry run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#validate-only">Validate only</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#report-json">Report JSON</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-trim-report">Plot trim report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#all-options">All options</a></li>
 </ul>
 </li>
@@ -109,6 +110,7 @@
 <li><p><a class="reference internal" href="#sequence-type">Sequence Type</a></p></li>
 <li><p><a class="reference internal" href="#ends-only">Ends only</a></p></li>
 <li><p><a class="reference internal" href="#threads">Threads</a></p></li>
+<li><p><a class="reference internal" href="#plot-trim-report">Plot trim report</a></p></li>
 <li><p><a class="reference internal" href="#all-options">All options</a></p></li>
 </ul>
 <div class="line-block">
@@ -421,8 +423,32 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--report_jso
 <div class="line"><br /></div>
 </div>
 </section>
+<section id="plot-trim-report">
+<span id="id15"></span><h2>Plot trim report<a class="headerlink" href="#plot-trim-report" title="Link to this heading"></a></h2>
+<p>Write an interactive HTML report with per-site tracks and trimmed-column highlighting.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># explicit report path</span>
+clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_report<span class="w"> </span>run_plot.html
+
+<span class="c1"># default report path: &lt;output&gt;.trim_report.html</span>
+clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_report
+</pre></div>
+</div>
+<p>The report includes:</p>
+<ul class="simple">
+<li><p>Per-site gappyness bars and entropy line plot</p></li>
+<li><p>Highlighting of trimmed columns in both tracks and alignment preview</p></li>
+<li><p>Amino-acid or nucleotide coloring in the alignment preview (auto-detected)</p></li>
+<li><p>Export buttons for saving per-site tracks and alignment preview as PNG files</p></li>
+</ul>
+<p>Example preview:</p>
+<a class="reference internal image-reference" href="../_images/trim_report_preview.png"><img alt="ClipKIT trim report preview" class="align-center" src="../_images/trim_report_preview.png" style="width: 95%;" />
+</a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 <section id="all-options">
-<span id="id15"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
+<span id="id16"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 28.0%" />

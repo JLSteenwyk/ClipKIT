@@ -12,6 +12,8 @@ Improved performance and usability through:
 - Additional performance optimizations in hot alignment-processing paths
 - Updated CLI/documentation text clarifying `--threads` behavior as a requested value
 - Added CLI safety/reporting options: ``--dry_run``, ``--validate_only``, and ``--report_json``
+- Added ``--plot_trim_report`` for interactive HTML visualization of per-site metrics and trimmed columns
+- Added trim-report export controls for saving per-site tracks and alignment preview as PNG files
 - Added a ``gappyout`` trimming mode with automatic, gap-distribution-based threshold selection
 - Dropped Python 3.9 support and raised the minimum supported version to Python 3.10
 - Robustness improvements for repeated in-process execution and logging behavior
