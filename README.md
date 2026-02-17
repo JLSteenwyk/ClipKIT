@@ -56,6 +56,7 @@ If you found ClipKIT useful, please cite *ClipKIT: a multiple sequence alignment
 <br />
 
 This documentation covers downloading and installing ClipKIT. Details about each function as well as tutorials for using ClipKIT are available in the [online documentation](https://jlsteenwyk.com/ClipKIT/).
+Release automation details are documented in [RELEASE.md](RELEASE.md).
 
 <br />
 

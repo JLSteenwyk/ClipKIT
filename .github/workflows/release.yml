@@ -53,6 +53,9 @@ jobs:
           echo "FILE_VERSION=$FILE_VERSION" >> "$GITHUB_ENV"
           echo "TAG_VERSION=${TAG_VERSION:-$FILE_VERSION}" >> "$GITHUB_ENV"
 
+      - name: Validate changelog/version sync
+        run: python scripts/check_version_sync.py
+
       - name: Build distribution
         run: python -m build
 
