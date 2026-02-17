@@ -40,8 +40,8 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
                                             (default: input file named with '.clipkit' suffix)
 
 -m, --mode <smart-gap,                      trimming mode 
-            entropy,                        (default: smart-gap)
-            gappy,                          (default: smart-gap)
+            entropy,
+            gappy,
             kpic,
             kpic-smart-gap,           
             kpic-gappy,                
@@ -52,7 +52,7 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
             c3>                      
                                             
 -g, --gaps <threshold_of_gaps>              specifies gaps threshold
-                                            (default: 0.9)
+                                            (default: 0.9; entropy mode default: 0.8)
 
 -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
                                             (default for aa: Xx-?*

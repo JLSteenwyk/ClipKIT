@@ -81,7 +81,7 @@ jobs:
           make -C docs html
       - name: Deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages

@@ -38,6 +38,7 @@ print(f"Sites trimmed: {stats.trimmed_length}")
 - `mode`: Trimming mode (default: `TrimmingMode.smart_gap`)
   - Options: `smart_gap`, `entropy`, `gappy`, `kpic`, `kpic_smart_gap`, `kpic_gappy`, `kpi`, `kpi_smart_gap`, `kpi_gappy`, `c3`
 - `gaps`: Threshold in `[0,1]` (default: `0.9`; auto-calculated for `smart_gap`; default `0.8` for `entropy`)
+  - Interpreted as gappyness for most modes, and normalized Shannon entropy for `entropy`
 - `gap_characters`: List of gap characters (default: auto-detect based on sequence type)
 - `input_file_format`: Input format (default: `FileFormat.fasta`)
 - `output_file_format`: Output format (default: `FileFormat.fasta` for API usage)
