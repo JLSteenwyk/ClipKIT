@@ -1,5 +1,9 @@
 name: CI
-on: push
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 jobs:
   test-fast:
     runs-on: macos-latest
@@ -76,11 +80,12 @@ jobs:
       - name: Build docs
         run: |
           cd docs
-          pipenv install || true
+          pipenv install
           pipenv run pip install sphinx sphinx_rtd_theme Pygments
           pipenv run sphinx-build -b html . _build/html
           cd ..
       - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
