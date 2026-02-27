@@ -13,6 +13,7 @@ class TrimmingMode(Enum):
     gappyout = "gappyout"
     entropy = "entropy"
     composition_bias = "composition-bias"
+    heterotachy = "heterotachy"
     smart_gap = "smart-gap"
     kpi = "kpi"  # keep parsimony informative sites
     kpi_gappy = "kpi-gappy"

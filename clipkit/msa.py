@@ -7,6 +7,7 @@ from itertools import chain
 from typing import Union
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
+from Bio.Phylo.BaseTree import Tree
 
 from .modes import TrimmingMode
 # Always import the standard version for compatibility
@@ -283,6 +284,7 @@ class MSA:
         mode: TrimmingMode = TrimmingMode.smart_gap,
         gap_threshold=None,
         site_positions_to_trim=None,
+        guide_tree: Union[Tree, None] = None,
         codon=False,
         ends_only=False,
     ) -> np.array:
@@ -301,8 +303,9 @@ class MSA:
             self._site_positions_to_trim = self.determine_site_positions_to_trim(
                 mode,
                 gap_threshold,
-                codon,
-                ends_only,
+                guide_tree=guide_tree,
+                codon=codon,
+                ends_only=ends_only,
             )
         if len(self._site_positions_to_trim) > 0:
             self._site_positions_to_keep = np.delete(
@@ -394,6 +397,7 @@ class MSA:
         self,
         mode,
         gap_threshold,
+        guide_tree=None,
         codon=False,
         ends_only=False,
     ):
@@ -409,6 +413,11 @@ class MSA:
             sites_to_trim = np.where(self.site_entropy >= gap_threshold)[0]
         elif mode == TrimmingMode.composition_bias:
             sites_to_trim = np.where(self.site_composition_bias >= gap_threshold)[0]
+        elif mode == TrimmingMode.heterotachy:
+            if guide_tree is None:
+                raise ValueError("heterotachy mode requires a guide tree")
+            site_heterotachy = self.determine_site_heterotachy(guide_tree)
+            sites_to_trim = np.where(site_heterotachy >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
@@ -463,6 +472,82 @@ class MSA:
             sites_to_trim = self.get_consecutive_from_zero_and_max(sites_to_trim)
 
         return sites_to_trim
+
+    def determine_site_heterotachy(self, guide_tree: Tree) -> np.ndarray:
+        """
+        Per-site heterotachy score in [0, 1] based on variation in clade-wise
+        normalized entropy across internal clades of a guide tree.
+        """
+        clade_indices = self._get_internal_clade_indices(guide_tree)
+        n_sites = self.seq_records.shape[1]
+        if not clade_indices:
+            return np.zeros(n_sites, dtype=float)
+
+        site_scores = np.zeros(n_sites, dtype=float)
+        for site_idx in range(n_sites):
+            clade_entropies = [
+                self._normalized_entropy_for_clade_site(indices, site_idx)
+                for indices in clade_indices
+            ]
+            if len(clade_entropies) < 2:
+                site_scores[site_idx] = 0.0
+                continue
+
+            # Standard deviation of values in [0, 1] is bounded by 0.5.
+            site_scores[site_idx] = min(1.0, float(np.std(clade_entropies) * 2.0))
+
+        return np.around(site_scores, decimals=4)
+
+    def _get_internal_clade_indices(self, guide_tree: Tree) -> list[list[int]]:
+        n_seqs = self.seq_records.shape[0]
+        if n_seqs < 3:
+            return []
+
+        terminal_to_index = {
+            str(info["id"]): idx for idx, info in enumerate(self.header_info)
+        }
+        clade_indices = []
+        seen = set()
+        for clade in guide_tree.find_clades(order="level"):
+            if clade.is_terminal():
+                continue
+
+            taxa_names = [str(t.name) for t in clade.get_terminals() if t.name is not None]
+            indices = sorted(
+                terminal_to_index[name]
+                for name in taxa_names
+                if name in terminal_to_index
+            )
+            if len(indices) < 2 or len(indices) >= n_seqs:
+                continue
+
+            key = tuple(indices)
+            if key in seen:
+                continue
+            seen.add(key)
+            clade_indices.append(indices)
+        return clade_indices
+
+    def _normalized_entropy_for_clade_site(
+        self,
+        clade_indices: list[int],
+        site_idx: int,
+    ) -> float:
+        column = self.seq_records[clade_indices, site_idx]
+        gap_chars_upper = {char.upper() for char in self._gap_chars}
+        non_gap = [char for char in column if char.upper() not in gap_chars_upper]
+
+        if len(non_gap) <= 1:
+            return 0.0
+
+        unique, counts = np.unique(non_gap, return_counts=True)
+        if len(unique) <= 1:
+            return 0.0
+
+        probs = counts.astype(float) / float(np.sum(counts))
+        raw_entropy = -float(np.sum(probs * np.log2(probs)))
+        max_entropy = math.log2(len(unique))
+        return raw_entropy / max_entropy if max_entropy > 0 else 0.0
 
     @staticmethod
     def _retain_contiguous_sites(

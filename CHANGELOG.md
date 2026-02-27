@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.10.4
+## 2.11.0
 
 - Added performance-focused thread auto-tuning for KPI/KPIC-family modes to reduce overhead on workloads where fewer threads are faster.
 - Updated CLI help text to clarify that `--threads` is a requested thread count and may be tuned downward in KPI/KPIC-family modes.
@@ -11,6 +11,7 @@
 - Added a new `gappyout` trimming mode with automatic, gap-distribution-based threshold selection (gappyout-inspired behavior).
 - Added a new `block-gappy` trimming mode for trimming contiguous runs of high-gappyness sites.
 - Added a new `composition-bias` trimming mode for trimming sites with strong compositional skew.
+- Added a new `heterotachy` trimming mode that infers a parsimony guide tree and trims sites with high clade-level entropy variation.
 - Dropped Python 3.9 support and set the minimum supported version to Python 3.10.
 - Improved runtime performance by reducing duplicate alignment matrix construction and optimizing frequency/classification hot paths.
 - Hardened CLI/API execution behavior and logging lifecycle for repeated in-process runs.

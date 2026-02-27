@@ -30,7 +30,11 @@ def process_args(args) -> dict:
     mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.smart_gap
     if args.gaps is not None:
         gaps = float(args.gaps)
-    elif mode in {TrimmingMode.entropy, TrimmingMode.composition_bias}:
+    elif mode in {
+        TrimmingMode.entropy,
+        TrimmingMode.composition_bias,
+        TrimmingMode.heterotachy,
+    }:
         # Entropy thresholds are normalized to [0, 1], where larger values
         # indicate stronger per-site signal (diversity or compositional skew).
         gaps = 0.8

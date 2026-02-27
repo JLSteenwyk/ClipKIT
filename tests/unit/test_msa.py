@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from Bio import AlignIO
+from clipkit.guide_tree import build_parsimony_guide_tree
 from clipkit.msa import MSA
 from clipkit.modes import TrimmingMode
 
@@ -174,3 +175,14 @@ class TestMSA(object):
         msa = MSA.from_bio_msa(bio_msa)
         msa.trim(mode=TrimmingMode.composition_bias, gap_threshold=0.9)
         np.testing.assert_equal(msa._site_positions_to_trim, np.array([0, 3]))
+
+    def test_heterotachy_mode_trims_sites_with_high_clade_entropy_variation(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        guide_tree = build_parsimony_guide_tree(bio_msa)
+        msa.trim(
+            mode=TrimmingMode.heterotachy,
+            gap_threshold=0.8,
+            guide_tree=guide_tree,
+        )
+        np.testing.assert_equal(msa._site_positions_to_trim, np.array([1, 2]))

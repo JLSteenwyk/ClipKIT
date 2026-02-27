@@ -110,3 +110,19 @@ class TestApiInvocation(object):
         assert stats.summary["trimmed_length"] == 2
         assert isinstance(trim_run.trimmed, MultipleSeqAlignment)
         assert report_path.exists()
+
+    def test_heterotachy_mode(self):
+        trim_run, stats = clipkit(
+            input_file_path="tests/integration/samples/simple.fa",
+            mode=TrimmingMode.heterotachy,
+            gaps=0.8,
+            sequence_type="nt",
+        )
+
+        assert stats.summary == {
+            "alignment_length": 6,
+            "output_length": 4,
+            "trimmed_length": 2,
+            "trimmed_percentage": 33.333,
+        }
+        assert isinstance(trim_run.version, str)

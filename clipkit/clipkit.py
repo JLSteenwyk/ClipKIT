@@ -24,6 +24,7 @@ from .helpers import (
     write_complement,
     SeqType,
 )
+from .guide_tree import build_parsimony_guide_tree
 from .logger import logger, log_file_logger
 from .modes import TrimmingMode
 from .msa import MSA
@@ -143,17 +144,24 @@ def run(
         output_file_format = FileFormat(output_file_format)
 
     if gaps is None:
-        if mode in {TrimmingMode.entropy, TrimmingMode.composition_bias}:
+        if mode in {
+            TrimmingMode.entropy,
+            TrimmingMode.composition_bias,
+            TrimmingMode.heterotachy,
+        }:
             gaps = 0.8
         else:
             gaps = 0.9
 
     site_positions_to_trim = None
+    guide_tree = None
     if mode == TrimmingMode.cst:
         aln_length = alignment.get_alignment_length()
         site_positions_to_trim = (
             get_custom_sites_to_trim(auxiliary_file, aln_length) or []
         )
+    elif mode == TrimmingMode.heterotachy:
+        guide_tree = build_parsimony_guide_tree(alignment)
 
     effective_threads = determine_effective_threads(
         threads,
@@ -182,6 +190,7 @@ def run(
         mode,
         gap_threshold=gaps,
         site_positions_to_trim=site_positions_to_trim,
+        guide_tree=guide_tree,
         codon=codon,
         ends_only=ends_only,
     )

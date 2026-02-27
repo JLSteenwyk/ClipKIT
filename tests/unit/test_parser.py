@@ -44,6 +44,12 @@ class TestParser(object):
         parsed = parser.parse_args([input_path, "-m", mode])
         assert parsed.mode == mode
 
+    def test_mode_heterotachy(self, parser):
+        input_path = "my/input/file.fa"
+        mode = "heterotachy"
+        parsed = parser.parse_args([input_path, "-m", mode])
+        assert parsed.mode == mode
+
     def test_plot_trim_report_with_no_value(self, parser):
         input_path = "my/input/file.fa"
         parsed = parser.parse_args([input_path, "--plot_trim_report"])

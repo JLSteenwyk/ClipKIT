@@ -45,6 +45,7 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
             block-gappy,
             gappyout,
             composition-bias,
+            heterotachy,
             kpic,
             kpic-smart-gap,           
             kpic-gappy,                
@@ -55,7 +56,7 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
             c3>                      
                                             
 -g, --gaps <threshold_of_gaps>              specifies gaps threshold
-                                            (default: 0.9; entropy/composition-bias default: 0.8)
+                                            (default: 0.9; entropy/composition-bias/heterotachy default: 0.8)
 
 -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
                                             (default for aa: Xx-?*
@@ -113,6 +114,8 @@ Modes
     gappyout: infer a threshold from the alignment's gap distribution
               (gappyout-inspired; not strict trimAl compatibility)
     composition-bias: trim sites with composition-bias score >= threshold
+    heterotachy: infer a parsimony guide tree and trim sites with high
+                 clade-to-clade entropy variation
     kpic: keeps parsimony informative and constant sites
     kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
     kpic-gappy: a combination of kpic- and gappy-based trimming
@@ -130,6 +133,8 @@ Gaps
     this threshold is interpreted as normalized Shannon entropy (default: 0.8).
     For composition-bias mode, this threshold is interpreted as a normalized
     per-site composition-bias score (default: 0.8).
+    For heterotachy mode, this threshold is interpreted as a normalized
+    clade-entropy variation score based on a parsimony guide tree (default: 0.8).
 
 Gap characters
     Specifies gap characters used in the input file. For example,

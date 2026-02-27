@@ -6,7 +6,7 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
-**2.10.4**
+**2.11.0**
 Improved performance and usability through:
 - KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism
 - Additional performance optimizations in hot alignment-processing paths
@@ -17,6 +17,7 @@ Improved performance and usability through:
 - Added a ``gappyout`` trimming mode with automatic, gap-distribution-based threshold selection
 - Added a ``block-gappy`` trimming mode for contiguous runs of high-gappyness sites
 - Added a ``composition-bias`` trimming mode for sites with strong compositional skew
+- Added a ``heterotachy`` trimming mode using a parsimony guide tree and clade-level entropy variation
 - Dropped Python 3.9 support and raised the minimum supported version to Python 3.10
 - Robustness improvements for repeated in-process execution and logging behavior
 
