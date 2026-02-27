@@ -80,7 +80,7 @@
   <section id="change-log">
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
 <p>Major changes to ClipKIT are summarized here.</p>
-<p><strong>2.11.0</strong>
+<p><strong>2.11.1</strong>
 Improved performance and usability through:
 - KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism
 - Additional performance optimizations in hot alignment-processing paths
@@ -93,7 +93,8 @@ Improved performance and usability through:
 - Added a <code class="docutils literal notranslate"><span class="pre">composition-bias</span></code> trimming mode for sites with strong compositional skew
 - Added a <code class="docutils literal notranslate"><span class="pre">heterotachy</span></code> trimming mode using a parsimony guide tree and clade-level entropy variation
 - Dropped Python 3.9 support and raised the minimum supported version to Python 3.10
-- Robustness improvements for repeated in-process execution and logging behavior</p>
+- Robustness improvements for repeated in-process execution and logging behavior
+- Fixed release workflow trusted-publishing environment claim (<code class="docutils literal notranslate"><span class="pre">environment:</span> <span class="pre">pypi</span></code>) for PyPI publishing</p>
 <p><strong>2.7.0</strong>
 Significant performance improvements with 2-60x speedup (average 9x) through:
 - Vectorized NumPy operations for column frequency calculations
