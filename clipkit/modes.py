@@ -9,8 +9,10 @@ if TYPE_CHECKING:
 
 class TrimmingMode(Enum):
     gappy = "gappy"
+    block_gappy = "block-gappy"
     gappyout = "gappyout"
     entropy = "entropy"
+    composition_bias = "composition-bias"
     smart_gap = "smart-gap"
     kpi = "kpi"  # keep parsimony informative sites
     kpi_gappy = "kpi-gappy"

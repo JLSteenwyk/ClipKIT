@@ -42,7 +42,9 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
 -m, --mode <smart-gap,                      trimming mode 
             entropy,
             gappy,
+            block-gappy,
             gappyout,
+            composition-bias,
             kpic,
             kpic-smart-gap,           
             kpic-gappy,                
@@ -53,7 +55,7 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
             c3>                      
                                             
 -g, --gaps <threshold_of_gaps>              specifies gaps threshold
-                                            (default: 0.9; entropy mode default: 0.8)
+                                            (default: 0.9; entropy/composition-bias default: 0.8)
 
 -gc, --gap_characters <string_of_gap_chars> specifies gap characters used in input file
                                             (default for aa: Xx-?*
@@ -107,8 +109,10 @@ Modes
     smart-gap: dynamic determination of gaps threshold
     entropy: trim sites with normalized Shannon entropy >= threshold
     gappy: trim sites that are greater than the gaps threshold
+    block-gappy: trim contiguous runs of sites that are greater than the gaps threshold
     gappyout: infer a threshold from the alignment's gap distribution
               (gappyout-inspired; not strict trimAl compatibility)
+    composition-bias: trim sites with composition-bias score >= threshold
     kpic: keeps parsimony informative and constant sites
     kpic-smart-gap: a combination of kpic- and smart-gap-based trimming
     kpic-gappy: a combination of kpic- and gappy-based trimming
@@ -121,10 +125,11 @@ Modes
 Gaps
     Positions with gappyness greater than threshold will be trimmed. 
     Must be between 0 and 1. (Default: 0.9). This argument is ignored
-    when using the kpi and kpic modes of trimming as well as an 
+    when using the kpi and kpic modes of trimming as well as an
     iteration of trimming that uses smart-gap or gappyout. For entropy mode,
-    this threshold is interpreted as normalized Shannon entropy
-    (default: 0.8).
+    this threshold is interpreted as normalized Shannon entropy (default: 0.8).
+    For composition-bias mode, this threshold is interpreted as a normalized
+    per-site composition-bias score (default: 0.8).
 
 Gap characters
     Specifies gap characters used in the input file. For example,

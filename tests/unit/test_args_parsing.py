@@ -63,6 +63,12 @@ class TestArgsProcessing(object):
         res = process_args(args)
         assert res["gaps"] == 0.8
 
+    def test_process_args_default_composition_bias_threshold(self, args):
+        args.mode = TrimmingMode.composition_bias
+        args.gaps = None
+        res = process_args(args)
+        assert res["gaps"] == 0.8
+
     def test_process_args_default_use_logs(self, args):
         args.log = None
         res = process_args(args)

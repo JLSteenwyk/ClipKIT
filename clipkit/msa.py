@@ -110,6 +110,7 @@ class MSA:
         # Cache for expensive computations
         self._site_gappyness_cache = None
         self._site_entropy_cache = None
+        self._site_composition_bias_cache = None
 
     @staticmethod
     def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None, threads=1) -> "MSA":
@@ -231,6 +232,39 @@ class MSA:
 
         self._site_entropy_cache = np.around(entropies, decimals=4)
         return self._site_entropy_cache
+
+    @property
+    def site_composition_bias(self) -> np.ndarray:
+        """
+        Per-site composition bias score in [0, 1], excluding gap characters.
+        Higher values indicate stronger dominance by one/few character states.
+        """
+        if self._site_composition_bias_cache is not None:
+            return self._site_composition_bias_cache
+
+        col_char_freqs = self.column_character_frequencies
+        bias_scores = np.zeros(len(col_char_freqs), dtype=float)
+
+        for idx, char_freqs in enumerate(col_char_freqs):
+            counts = np.array(list(char_freqs.values()), dtype=float)
+            total = counts.sum()
+
+            if total == 0:
+                bias_scores[idx] = 0.0
+                continue
+
+            n_states = len(counts)
+            if n_states == 1:
+                bias_scores[idx] = 1.0
+                continue
+
+            probs = counts / total
+            dominance = float(np.sum(np.square(probs)))
+            min_dominance = 1.0 / float(n_states)
+            bias_scores[idx] = (dominance - min_dominance) / (1.0 - min_dominance)
+
+        self._site_composition_bias_cache = np.around(bias_scores, decimals=4)
+        return self._site_composition_bias_cache
 
     @property
     def stats(self) -> TrimmingStats:
@@ -365,11 +399,16 @@ class MSA:
     ):
         if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
+        elif mode == TrimmingMode.block_gappy:
+            high_gap_sites = np.where(self.site_gappyness >= gap_threshold)[0]
+            sites_to_trim = self._retain_contiguous_sites(high_gap_sites, min_block_size=2)
         elif mode == TrimmingMode.gappyout:
             # Keep sites at the inferred boundary and trim strictly above it.
             sites_to_trim = np.where(self.site_gappyness > gap_threshold)[0]
         elif mode == TrimmingMode.entropy:
             sites_to_trim = np.where(self.site_entropy >= gap_threshold)[0]
+        elif mode == TrimmingMode.composition_bias:
+            sites_to_trim = np.where(self.site_composition_bias >= gap_threshold)[0]
         elif mode == TrimmingMode.kpi:
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
@@ -424,6 +463,32 @@ class MSA:
             sites_to_trim = self.get_consecutive_from_zero_and_max(sites_to_trim)
 
         return sites_to_trim
+
+    @staticmethod
+    def _retain_contiguous_sites(
+        positions: np.ndarray,
+        min_block_size: int = 2,
+    ) -> np.ndarray:
+        if positions.size == 0:
+            return positions
+
+        contiguous_blocks = []
+        start = 0
+
+        for idx in range(1, len(positions) + 1):
+            is_break = idx == len(positions) or positions[idx] != positions[idx - 1] + 1
+            if not is_break:
+                continue
+
+            block = positions[start:idx]
+            if len(block) >= min_block_size:
+                contiguous_blocks.append(block)
+            start = idx
+
+        if not contiguous_blocks:
+            return np.array([], dtype=positions.dtype)
+
+        return np.concatenate(contiguous_blocks)
 
     def determine_gappyout_gap_threshold(self) -> float:
         """

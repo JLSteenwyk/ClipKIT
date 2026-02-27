@@ -27,14 +27,16 @@ Modes
 This section describes the trimming modes implemented in ClipKIT. If you are unsure which is appropriate for you,
 **we recommend using the default smart-gap trimming mode**. 
 
-ClipKIT can be run with twelve different modes, which are specified with the -m/--mode argument.
+ClipKIT can be run with fourteen different modes, which are specified with the -m/--mode argument.
 *Default: 'smart-gap'*
 
 * smart-gap: dynamic determination of gaps threshold
 * entropy: trim sites above a normalized Shannon entropy threshold (default: 0.8)
 * gappy: trim all sites that are above a threshold of gappyness (default: 0.9)
+* block-gappy: trim contiguous runs of sites above a threshold of gappyness (default: 0.9)
 * gappyout: infer a gap threshold from alignment-wide gap distribution and trim above it
   (gappyout-inspired behavior; not strict trimAl compatibility)
+* composition-bias: trim sites above a normalized composition-bias threshold (default: 0.8)
 * kpic: keep only parsimony informative and constant sites
 * kpic-smart-gap: a combination of kpic- and smart-gap-based trimming 
 * kpic-gappy: a combination of kpic- and gappy-based trimming
@@ -53,11 +55,17 @@ ClipKIT can be run with twelve different modes, which are specified with the -m/
 	# gappy-based trimming
 	clipkit <input> -m gappy
 
+	# block-gappy trimming
+	clipkit <input> -m block-gappy
+
 	# gappyout-style trimming
 	clipkit <input> -m gappyout
 
 	# entropy-based trimming
 	clipkit <input> -m entropy
+
+	# composition-bias trimming
+	clipkit <input> -m composition-bias
 
 	# kpic-based trimming
 	clipkit <input> -m kpic

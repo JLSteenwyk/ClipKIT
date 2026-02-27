@@ -9,6 +9,8 @@
 - Added `--plot_trim_report` to generate an interactive HTML report with per-site tracks and trimmed-column highlighting.
 - Added export controls in the trim report to save per-site tracks and alignment preview as PNG images.
 - Added a new `gappyout` trimming mode with automatic, gap-distribution-based threshold selection (gappyout-inspired behavior).
+- Added a new `block-gappy` trimming mode for trimming contiguous runs of high-gappyness sites.
+- Added a new `composition-bias` trimming mode for trimming sites with strong compositional skew.
 - Dropped Python 3.9 support and set the minimum supported version to Python 3.10.
 - Improved runtime performance by reducing duplicate alignment matrix construction and optimizing frequency/classification hot paths.
 - Hardened CLI/API execution behavior and logging lifecycle for repeated in-process runs.

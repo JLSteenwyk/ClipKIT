@@ -162,3 +162,15 @@ class TestMSA(object):
             ]
         )
         np.testing.assert_equal(msa.sites_kept, expected_sites_kept)
+
+    def test_block_gappy_mode_trims_only_contiguous_high_gap_sites(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        msa.trim(mode=TrimmingMode.block_gappy, gap_threshold=0.6)
+        np.testing.assert_equal(msa._site_positions_to_trim, np.array([], dtype=int))
+
+    def test_composition_bias_mode_trims_strongly_dominated_sites(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        msa.trim(mode=TrimmingMode.composition_bias, gap_threshold=0.9)
+        np.testing.assert_equal(msa._site_positions_to_trim, np.array([0, 3]))

@@ -142,6 +142,12 @@ def run(
     else:
         output_file_format = FileFormat(output_file_format)
 
+    if gaps is None:
+        if mode in {TrimmingMode.entropy, TrimmingMode.composition_bias}:
+            gaps = 0.8
+        else:
+            gaps = 0.9
+
     site_positions_to_trim = None
     if mode == TrimmingMode.cst:
         aln_length = alignment.get_alignment_length()
