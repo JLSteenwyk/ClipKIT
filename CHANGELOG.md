@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.11.3
+## 2.11.4
 
 - Added performance-focused thread auto-tuning for KPI/KPIC-family modes to reduce overhead on workloads where fewer threads are faster.
 - Updated CLI help text to clarify that `--threads` is a requested thread count and may be tuned downward in KPI/KPIC-family modes.
