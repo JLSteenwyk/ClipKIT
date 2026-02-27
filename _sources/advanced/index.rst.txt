@@ -27,7 +27,7 @@ Modes
 This section describes the trimming modes implemented in ClipKIT. If you are unsure which is appropriate for you,
 **we recommend using the default smart-gap trimming mode**. 
 
-ClipKIT can be run with fourteen different modes, which are specified with the -m/--mode argument.
+ClipKIT can be run with fifteen different modes, which are specified with the -m/--mode argument.
 *Default: 'smart-gap'*
 
 * smart-gap: dynamic determination of gaps threshold
@@ -37,6 +37,7 @@ ClipKIT can be run with fourteen different modes, which are specified with the -
 * gappyout: infer a gap threshold from alignment-wide gap distribution and trim above it
   (gappyout-inspired behavior; not strict trimAl compatibility)
 * composition-bias: trim sites above a normalized composition-bias threshold (default: 0.8)
+* heterotachy: infer a parsimony guide tree and trim sites with high clade-to-clade entropy variation (default: 0.8)
 * kpic: keep only parsimony informative and constant sites
 * kpic-smart-gap: a combination of kpic- and smart-gap-based trimming 
 * kpic-gappy: a combination of kpic- and gappy-based trimming
@@ -66,6 +67,9 @@ ClipKIT can be run with fourteen different modes, which are specified with the -
 
 	# composition-bias trimming
 	clipkit <input> -m composition-bias
+
+	# heterotachy trimming (parsimony guide tree based)
+	clipkit <input> -m heterotachy
 
 	# kpic-based trimming
 	clipkit <input> -m kpic
