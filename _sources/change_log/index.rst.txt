@@ -6,7 +6,7 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
-**2.11.2**
+**2.11.3**
 Improved performance and usability through:
 - KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism
 - Additional performance optimizations in hot alignment-processing paths
