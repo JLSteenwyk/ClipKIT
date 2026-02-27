@@ -46,6 +46,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+*.coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
@@ -152,3 +153,6 @@ AGENTS.md
 
 # ecomp environment
 venv_ecomp/
+
+# temporary output generated during manual/API testing
+programmatic-temp.phylip
