@@ -121,7 +121,7 @@
 <p>This section describes the trimming modes implemented in ClipKIT. If you are unsure which is appropriate for you,
 <strong>we recommend using the default smart-gap trimming mode</strong>.</p>
 <p>ClipKIT can be run with fifteen different modes, which are specified with the -m/–mode argument.
-<em>Default: ‘smart-gap’</em></p>
+<em>Default: ‘smart-gap’ (or ‘gappy’ when -g/–gaps is provided without -m)</em></p>
 <ul class="simple">
 <li><p>smart-gap: dynamic determination of gaps threshold</p></li>
 <li><p>entropy: trim sites above a normalized Shannon entropy threshold (default: 0.8)</p></li>
@@ -303,10 +303,14 @@ others are kept.</p>
 <section id="gaps">
 <span id="id7"></span><h2>Gaps<a class="headerlink" href="#gaps" title="Link to this heading"></a></h2>
 <p>Positions with gappyness greater than threshold will be trimmed.
-Must be between 0 and 1. (Default: 0.9). This argument is ignored
-when using the kpi and kpic modes of trimming as well as an
-iteration of trimming that uses smart-gap or gappyout. In entropy mode, this value
-is treated as a normalized Shannon entropy threshold (default: 0.8).</p>
+Must be between 0 and 1. (Default: 0.9). When <code class="docutils literal notranslate"><span class="pre">-g</span></code> is provided without
+<code class="docutils literal notranslate"><span class="pre">-m</span></code>, the trimming mode automatically switches from <code class="docutils literal notranslate"><span class="pre">smart-gap</span></code> to <code class="docutils literal notranslate"><span class="pre">gappy</span></code>
+so that the threshold is honoured. If <code class="docutils literal notranslate"><span class="pre">-m</span></code> is explicitly set to a mode that
+dynamically determines its own threshold (<code class="docutils literal notranslate"><span class="pre">smart-gap</span></code>, <code class="docutils literal notranslate"><span class="pre">kpi-smart-gap</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kpic-smart-gap</span></code>, or <code class="docutils literal notranslate"><span class="pre">gappyout</span></code>), the <code class="docutils literal notranslate"><span class="pre">-g</span></code> value is ignored and a warning
+is printed. This argument is also ignored when using the <code class="docutils literal notranslate"><span class="pre">kpi</span></code> and <code class="docutils literal notranslate"><span class="pre">kpic</span></code> modes.
+In entropy mode, this value is treated as a normalized Shannon entropy threshold
+(default: 0.8).</p>
 <p>To specify a gaps threshold, use the -g/\-\-gaps argument.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--gaps<span class="w"> </span><span class="m">0</span>.4
 
@@ -479,7 +483,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_
 <td><p>Print software version.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-m/--mode</span></code></p></td>
-<td><p>Specify trimming mode (including <code class="docutils literal notranslate"><span class="pre">entropy</span></code>). <em>Default: smart-gap</em>.</p></td>
+<td><p>Specify trimming mode (including <code class="docutils literal notranslate"><span class="pre">entropy</span></code>). <em>Default: smart-gap (or gappy when -g is provided)</em>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-o/--output</span></code></p></td>
 <td><p>Specify output file name.</p></td>

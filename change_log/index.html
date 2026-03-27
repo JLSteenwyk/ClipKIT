@@ -80,6 +80,13 @@
   <section id="change-log">
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
 <p>Major changes to ClipKIT are summarized here.</p>
+<p><strong>2.12.0</strong>
+Improved <code class="docutils literal notranslate"><span class="pre">-g</span></code>/<code class="docutils literal notranslate"><span class="pre">-m</span></code> argument interaction:</p>
+<ul class="simple">
+<li><p>When <code class="docutils literal notranslate"><span class="pre">-g</span></code>/<code class="docutils literal notranslate"><span class="pre">--gaps</span></code> is provided without <code class="docutils literal notranslate"><span class="pre">-m</span></code>/<code class="docutils literal notranslate"><span class="pre">--mode</span></code>, the default mode is now <code class="docutils literal notranslate"><span class="pre">gappy</span></code> instead of <code class="docutils literal notranslate"><span class="pre">smart-gap</span></code>, so user-specified gap thresholds are honoured rather than silently overridden.</p></li>
+<li><p>A warning is now emitted when <code class="docutils literal notranslate"><span class="pre">-g</span></code>/<code class="docutils literal notranslate"><span class="pre">--gaps</span></code> is explicitly combined with a mode that ignores it (<code class="docutils literal notranslate"><span class="pre">smart-gap</span></code>, <code class="docutils literal notranslate"><span class="pre">kpi-smart-gap</span></code>, <code class="docutils literal notranslate"><span class="pre">kpic-smart-gap</span></code>, or <code class="docutils literal notranslate"><span class="pre">gappyout</span></code>).</p></li>
+<li><p>Updated documentation to reflect the new <code class="docutils literal notranslate"><span class="pre">-g</span></code>/<code class="docutils literal notranslate"><span class="pre">-m</span></code> interaction behaviour.</p></li>
+</ul>
 <p><strong>2.11.4</strong>
 Improved performance and usability through:
 - KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism
