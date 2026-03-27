@@ -126,13 +126,16 @@ Modes
     c3: remove every third codon position
 
 Gaps
-    Positions with gappyness greater than threshold will be trimmed. 
-    Must be between 0 and 1. (Default: 0.9). This argument is ignored
-    when using the kpi and kpic modes of trimming as well as an
-    iteration of trimming that uses smart-gap or gappyout. For entropy mode,
-    this threshold is interpreted as normalized Shannon entropy (default: 0.8).
-    For composition-bias mode, this threshold is interpreted as a normalized
-    per-site composition-bias score (default: 0.8).
+    Positions with gappyness greater than threshold will be trimmed.
+    Must be between 0 and 1. (Default: 0.9). When -g is provided without
+    -m, the trimming mode automatically switches from smart-gap to gappy
+    so that the threshold is honoured. If -m is explicitly set to a mode
+    that dynamically determines its own threshold (smart-gap, kpi-smart-gap,
+    kpic-smart-gap, or gappyout), the -g value is ignored and a warning is
+    printed. This argument is also ignored when using the kpi and kpic modes.
+    For entropy mode, this threshold is interpreted as normalized Shannon
+    entropy (default: 0.8). For composition-bias mode, this threshold is
+    interpreted as a normalized per-site composition-bias score (default: 0.8).
     For heterotachy mode, this threshold is interpreted as a normalized
     clade-entropy variation score based on a parsimony guide tree (default: 0.8).
 

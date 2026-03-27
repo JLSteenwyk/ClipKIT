@@ -48,6 +48,37 @@ class TestArgsProcessing(object):
         res = process_args(args)
         assert res["mode"] == TrimmingMode.smart_gap
 
+    def test_process_args_gaps_without_mode_defaults_to_gappy(self, args):
+        args.gaps = 0.2
+        args.mode = None
+        res = process_args(args)
+        assert res["mode"] == TrimmingMode.gappy
+        assert res["gaps"] == 0.2
+
+    def test_process_args_explicit_mode_preserved_with_gaps(self, args):
+        args.gaps = 0.5
+        args.mode = TrimmingMode.smart_gap
+        res = process_args(args)
+        assert res["mode"] == TrimmingMode.smart_gap
+
+    def test_process_args_warns_gaps_with_smart_gap(self, args, caplog):
+        args.gaps = 0.2
+        args.mode = TrimmingMode.smart_gap
+        process_args(args)
+        assert "will be ignored" in caplog.text
+
+    def test_process_args_warns_gaps_with_gappyout(self, args, caplog):
+        args.gaps = 0.2
+        args.mode = TrimmingMode.gappyout
+        process_args(args)
+        assert "will be ignored" in caplog.text
+
+    def test_process_args_no_warn_gaps_with_gappy(self, args, caplog):
+        args.gaps = 0.2
+        args.mode = TrimmingMode.gappy
+        process_args(args)
+        assert "will be ignored" not in caplog.text
+
     def test_process_args_default_complementary(self, args):
         args.complementary = None
         res = process_args(args)

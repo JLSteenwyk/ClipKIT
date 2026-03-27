@@ -27,7 +27,30 @@ def process_args(args) -> dict:
     # assign optional arguments
     complement = args.complementary or False
     codon = args.codon or False
-    mode = TrimmingMode(args.mode) if args.mode else TrimmingMode.smart_gap
+
+    # Modes that dynamically compute their own gap threshold and ignore -g
+    _GAP_OVERRIDE_MODES = {
+        TrimmingMode.smart_gap,
+        TrimmingMode.kpi_smart_gap,
+        TrimmingMode.kpic_smart_gap,
+        TrimmingMode.gappyout,
+    }
+
+    if args.mode:
+        mode = TrimmingMode(args.mode)
+    elif args.gaps is not None:
+        # User explicitly provided a gap threshold but no mode — default to
+        # gappy so the threshold is actually honoured (smart-gap would ignore it).
+        mode = TrimmingMode.gappy
+    else:
+        mode = TrimmingMode.smart_gap
+
+    if args.gaps is not None and args.mode and mode in _GAP_OVERRIDE_MODES:
+        logger.warning(
+            f"The gap threshold (-g {args.gaps}) will be ignored because "
+            f"{mode.value} mode dynamically determines its own threshold."
+        )
+
     if args.gaps is not None:
         gaps = float(args.gaps)
     elif mode in {

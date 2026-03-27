@@ -6,6 +6,13 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.12.0**
+Improved ``-g``/``-m`` argument interaction:
+
+- When ``-g``/``--gaps`` is provided without ``-m``/``--mode``, the default mode is now ``gappy`` instead of ``smart-gap``, so user-specified gap thresholds are honoured rather than silently overridden.
+- A warning is now emitted when ``-g``/``--gaps`` is explicitly combined with a mode that ignores it (``smart-gap``, ``kpi-smart-gap``, ``kpic-smart-gap``, or ``gappyout``).
+- Updated documentation to reflect the new ``-g``/``-m`` interaction behaviour.
+
 **2.11.4**
 Improved performance and usability through:
 - KPI/KPIC-family thread auto-tuning to avoid slowdowns from excessive parallelism

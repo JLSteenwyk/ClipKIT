@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.12.0
+
+- When `-g`/`--gaps` is provided without `-m`/`--mode`, the default mode is now `gappy` instead of `smart-gap`. This ensures user-specified gap thresholds are honoured rather than silently overridden by dynamic threshold calculation.
+- A warning is now emitted when `-g`/`--gaps` is explicitly combined with a mode that ignores it (`smart-gap`, `kpi-smart-gap`, `kpic-smart-gap`, or `gappyout`).
+- Updated documentation to reflect the new `-g`/`-m` interaction behaviour.
+
 ## 2.11.4
 
 - Added performance-focused thread auto-tuning for KPI/KPIC-family modes to reduce overhead on workloads where fewer threads are faster.
