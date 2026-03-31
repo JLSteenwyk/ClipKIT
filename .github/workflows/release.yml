@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
 
     steps:
       - name: Checkout
@@ -66,18 +64,6 @@ jobs:
         with:
           name: dist-${{ env.TAG_VERSION }}
           path: dist/*
-
-      - name: Ensure PYPI_API_TOKEN is configured
-        if: ${{ env.PYPI_API_TOKEN == '' }}
-        run: |
-          echo "PYPI_API_TOKEN is not configured. Add it as a repository secret."
-          exit 1
-
-      - name: Publish to PyPI (token)
-        if: ${{ env.PYPI_API_TOKEN != '' }}
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ env.PYPI_API_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

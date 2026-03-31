@@ -150,6 +150,7 @@ submitting_to_conda.txt
 # AI
 CLAUDE.md
 AGENTS.md
+claude_resume.sh
 
 # ecomp environment
 venv_ecomp/
