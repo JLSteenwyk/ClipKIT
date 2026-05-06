@@ -9,22 +9,22 @@
     <command detect_errors="exit_code"><![CDATA[
 clipkit '$input'
     -o '$output'
-    #if str($mode) != "":
+    #if str($mode) and str($mode) != "None":
         -m '$mode'
     #end if
-    #if str($gaps).strip() != "":
+    #if str($gaps).strip() and str($gaps) != "None":
         -g $gaps
     #end if
-    #if str($sequence_type) != "":
+    #if str($sequence_type) and str($sequence_type) != "None":
         -s '$sequence_type'
     #end if
-    #if str($input_file_format) != "":
+    #if str($input_file_format) and str($input_file_format) != "None":
         -if '$input_file_format'
     #end if
-    #if str($output_file_format) != "":
+    #if str($output_file_format) and str($output_file_format) != "None":
         -of '$output_file_format'
     #end if
-    #if str($gap_characters).strip() != "":
+    #if str($gap_characters).strip():
         -gc '$gap_characters'
     #end if
     #if $auxiliary_file:
@@ -43,6 +43,12 @@ clipkit '$input'
         --plot_trim_report '$plot_report'
     #end if
     -t \${GALAXY_SLOTS:-1}
+    #if $log_out:
+        && cp '${output}.log' '$log'
+    #end if
+    #if str($complementary) == "-c":
+        && cp '${output}.complement' '$complement'
+    #end if
     ]]></command>
     <inputs>
         <param argument="--input" type="data"
@@ -150,12 +156,10 @@ clipkit '$input'
             </change_format>
         </data>
         <data name="log" format="tabular"
-              from_work_dir="*.clipkit.log"
               label="${tool.name} on ${on_string}: log">
             <filter>log_out</filter>
         </data>
         <data name="complement" format_source="input"
-              from_work_dir="*.complement"
               label="${tool.name} on ${on_string}: complementary alignment">
             <filter>complementary == "-c"</filter>
         </data>
@@ -187,7 +191,7 @@ clipkit '$input'
             </output>
             <output name="log" ftype="tabular">
                 <assert_contents>
-                    <has_n_columns n="4"/>
+                    <has_line_matching expression="^\d+ (keep|trim) \S+ [0-9.]+$"/>
                 </assert_contents>
             </output>
         </test>

@@ -39,4 +39,9 @@ jobs:
         run: python -m pip install --upgrade pip planemo
       - name: Run tests
         working-directory: galaxy
-        run: planemo test --no_dependency_resolution --conda_dependency_resolution clipkit.xml
+        run: |
+          planemo test \
+            --conda_dependency_resolution \
+            --conda_auto_install \
+            --conda_auto_init \
+            clipkit.xml
