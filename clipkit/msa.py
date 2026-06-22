@@ -116,18 +116,26 @@ class MSA:
     @staticmethod
     def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None, threads=1) -> "MSA":
         header_info = []
-        sequence_rows = []
+        sequences = []
         requires_uppercase_normalization = False
         for rec in alignment:
             header_info.append(
                 {"id": rec.id, "name": rec.name, "description": rec.description}
             )
             seq = str(rec.seq)
-            sequence_rows.append(list(seq))
+            sequences.append(seq)
             if not requires_uppercase_normalization and seq != seq.upper():
                 requires_uppercase_normalization = True
 
-        seq_records = np.array(sequence_rows)
+        alignment_length = len(sequences[0])
+        if alignment_length == 0:
+            seq_records = np.empty((len(sequences), 0), dtype="U1")
+        else:
+            seq_records = (
+                np.array(sequences, dtype=f"U{alignment_length}")
+                .view("U1")
+                .reshape(len(sequences), alignment_length)
+            )
         return MSA(
             header_info,
             seq_records,
