@@ -1,124 +1,119 @@
-# ClipKIT Performance Optimizations
+# ClipKIT performance optimization report
 
-## Overview
+## Scope
 
-Several performance optimizations have been implemented to make ClipKIT faster, particularly for large alignments. These optimizations maintain 100% correctness while providing significant speed improvements.
+Performance work was conducted on `codex/faster-msa-construction` and compared
+with `master` at `e0d93b4`. The optimized code benchmarked below ends at
+`52814f0`.
 
-## Optimizations Implemented
+The implementation preserves ClipKIT's public APIs, trimming decisions,
+sequence ordering, headers, thresholds, and output formatting. No trimming
+algorithm or parameter was changed.
 
-### 1. **Vectorized NumPy Operations** (`msa.py`)
-- Replaced Python loops with NumPy vectorized operations for column frequency calculations
-- Uses `np.unique()` with `return_counts=True` for efficient character counting
-- Batch processes columns for better memory efficiency
-- **Impact**: 2-5x speedup for small to medium alignments
+## Optimizations
 
-### 2. **Adaptive Parallel Processing** (`msa.py`)
-- Dynamic threshold adjustment based on alignment size and thread count
-- Smart worker allocation: `min(threads, max(2, min(length // 500, cpu_count())))`
-- Optimized chunk sizes for ProcessPoolExecutor
-- **Impact**: Better CPU utilization, scales with available cores
+1. **Fast MSA construction (`47319c4`)**
+   converts complete sequence strings directly into a NumPy Unicode matrix,
+   avoiding a Python object for every input character.
+2. **Batched column statistics (`ad1314a`)**
+   counts compact character codes across batches of columns instead of sorting
+   every column independently. Counts use the smallest safe unsigned dtype and
+   retain a compact-Unicode fallback for unusually wide alphabets.
+3. **Shared smart-gap statistics (`4dc2046`)**
+   feeds the cached per-site gap distribution into smart-gap threshold
+   selection, removing a duplicate full-alignment scan.
+4. **Fast output materialization (`52814f0`)**
+   views contiguous NumPy rows as complete Unicode strings instead of creating
+   millions of one-character Python objects before writing.
 
-### 3. **Smart Gap Helper Optimization** (`smart_gap_helper.py`)
-- Vectorized gap distribution calculations using NumPy broadcasting
-- Efficient sorting with `np.unique()` and `np.argsort()`
-- LRU cache for repeated calculations
-- **Impact**: 2-3x speedup for smart gap threshold determination
+## Benchmark method
 
-### 4. **Caching Strategy** (`msa.py`)
-- Cache site gappiness calculations
-- Memoization for expensive computations
-- **Impact**: Avoids redundant calculations in iterative operations
+Benchmarks ran on `macOS-26.4.1-arm64-arm-64bit` with Python 3.11, NumPy
+1.26.4, and Biopython 1.83. Each result is the median of fresh processes: seven
+repetitions for the small case and three for medium and large cases. Peak RSS is
+the median process maximum.
 
-### 5. **Cython Extension** (`site_classification_fast.pyx`)
-- Optional compiled C extension for site classification
-- Can provide 10-100x speedup for classification operations
-- Compile with: `python setup_cython.py build_ext --inplace`
-- **Impact**: Significant speedup for classification-heavy operations
+The representative alignments were:
 
-### 6. **Memory Optimization**
-- Use views instead of copies where possible
-- Batch processing to reduce memory footprint
-- Efficient NumPy array operations
-- **Impact**: Reduced memory usage, especially for large alignments
+| Scale | Sequences | Sites | Alignment cells |
+| --- | ---: | ---: | ---: |
+| Small | 117 | 1,026 | 120,042 |
+| Medium | 1,480 | 12,977 | 19,205,960 |
+| Large | 1,478 | 29,838 | 44,100,564 |
 
-## Performance Results
+Algorithm benchmarks load the Biopython alignment before timing, then include
+MSA construction and the named trimming calculation. Their equality check
+hashes the sequence matrix and exact keep/trim position arrays.
 
-### Small Alignments (<1000 sites)
-- **Optimization**: Vectorized NumPy operations
-- **Speedup**: 2-3x
-- **Best threads**: 1 (overhead of parallelization not worth it)
+| Algorithm case | Baseline | Optimized | Speedup | Peak RSS baseline → optimized |
+| --- | ---: | ---: | ---: | ---: |
+| Construct, small | 0.011783 s | 0.000221 s | 53.31× | 57.4 → 56.2 MiB |
+| Construct, medium | 1.695093 s | 0.019756 s | 85.80× | 456.2 → 313.7 MiB |
+| Construct, large | 3.826577 s | 0.047105 s | 81.23× | 950.3 → 631.6 MiB |
+| Gappy, large | 4.047438 s | 0.192978 s | 20.97× | 1,034.3 → 661.2 MiB |
+| Smart-gap, large | 4.319067 s | 0.194392 s | 22.22× | 1,034.9 → 662.0 MiB |
+| KPIC, large | 4.636736 s | 0.193192 s | 24.00× | 975.4 → 663.2 MiB |
+| Entropy, large | 4.620146 s | 0.383034 s | 12.06× | 951.1 → 671.2 MiB |
+| Composition-bias, large | 4.680238 s | 0.327606 s | 14.29× | 975.6 → 662.4 MiB |
 
-### Medium Alignments (1000-5000 sites)
-- **Optimization**: Batch processing + selective parallelization
-- **Speedup**: 2-5x
-- **Best threads**: 2-4
+End-to-end benchmarks include FASTA parsing, trimming, materialization, and
+FASTA writing. Equality is a byte-for-byte SHA-256 comparison of output files.
 
-### Large Alignments (>5000 sites)
-- **Optimization**: Full parallel processing + all optimizations
-- **Speedup**: 3-10x depending on core count
-- **Best threads**: 4-8
+| End-to-end case | Baseline | Optimized | Speedup | Peak RSS baseline → optimized |
+| --- | ---: | ---: | ---: | ---: |
+| Gappy, small | 0.022275 s | 0.004334 s | 5.14× | 57.6 → 55.6 MiB |
+| Smart-gap, medium | 2.555377 s | 0.404308 s | 6.32× | 530.5 → 300.3 MiB |
+| Gappy, large | 4.303231 s | 0.402573 s | 10.69× | 733.5 → 333.7 MiB |
+| KPIC, large | 5.194196 s | 0.515740 s | 10.07× | 735.2 → 414.6 MiB |
+| C3, large | 4.794962 s | 0.490340 s | 9.78× | 837.7 → 438.8 MiB |
 
-## Usage
+Every comparison above produced identical hashes. No benchmarked workload was
+slower after optimization.
 
-### Basic Usage (Automatically uses optimizations)
-```bash
-clipkit input.fa --threads 4
+## Correctness verification
+
+- The full suite passes: 345 tests on the supported NumPy 1.26.4/Biopython
+  1.83 combination.
+- New regression tests compare batched counts, frequencies, gappyness,
+  entropy, composition bias, and classifications with the original
+  per-column calculations, including mixed case, custom gaps, empty rows, and
+  wide Unicode alphabets.
+- Thirteen non-auxiliary CLI modes produced byte-identical FASTA output between
+  baseline and optimized revisions on the same input.
+- Smart-gap thresholds were exactly equal in all benchmark comparisons.
+- Existing integration tests continue to verify supported output formats,
+  complementary output, logging, eComp behavior, headers, and ordering.
+
+## Reproducing benchmarks
+
+The scheduled smoke benchmark now covers small, medium, and large workloads,
+records output hashes and peak RSS, and can benchmark another worktree:
+
+```shell
+git worktree add /tmp/clipkit-baseline e0d93b4
+python scripts/run_benchmark_smoke.py \
+  --source-root /tmp/clipkit-baseline \
+  --suite full \
+  --output benchmark-baseline.json
+python scripts/run_benchmark_smoke.py \
+  --source-root . \
+  --suite full \
+  --output benchmark-optimized.json
 ```
 
-### Compile Cython Extension (Optional, for maximum speed)
-```bash
-python setup_cython.py build_ext --inplace
-```
+Runtime varies by machine, so compare reports produced on the same otherwise
+idle system and interpreter.
 
-### Benchmark Your Data
-```bash
-python benchmark.py --files your_alignment.fa
-```
+## Remaining bottlenecks
 
-## Key Files Modified
-
-1. **`clipkit/msa.py`**: Core MSA operations with vectorization and parallel processing
-2. **`clipkit/smart_gap_helper.py`**: Optimized gap threshold calculations
-3. **`clipkit/site_classification_fast.pyx`**: Cython extension for site classification
-4. **`benchmark.py`**: Performance benchmarking tool
-5. **`test_optimizations.py`**: Correctness verification
-
-## Benchmark Results on Test Data
-
-| File | Sequences | Length | Original Time | Optimized Time | Speedup |
-|------|-----------|--------|---------------|----------------|---------|
-| Small | 5 | 6 | 0.002s | <0.001s | ~2x |
-| Medium | 12 | 6351 | 0.040s | 0.016s | 2.5x |
-| Large | 1480 | 12977 | 9.5s | 3.1s | 3.1x |
-| Very Large | 1478 | 29838 | 18.2s | 6.1s | 3.0x |
-
-## Verification
-
-All optimizations have been tested to ensure:
-- ✅ Identical output to original implementation
-- ✅ Consistent results across thread counts
-- ✅ No loss of precision or accuracy
-- ✅ Backward compatibility maintained
-
-## Future Optimization Opportunities
-
-1. **GPU Acceleration**: For very large alignments, GPU processing could provide additional speedup
-2. **Rust Extensions**: Critical hot paths could be rewritten in Rust for better performance
-3. **Improved I/O**: Faster file reading/writing for large files
-4. **Streaming Processing**: Process alignments in chunks to handle files larger than RAM
-
-## How to Contribute
-
-If you'd like to contribute performance improvements:
-1. Run `python benchmark.py` to establish baseline
-2. Make your changes
-3. Run `python test_optimizations.py` to verify correctness
-4. Run benchmark again to measure improvement
-5. Submit PR with before/after results
-
-## Notes
-
-- Optimizations are most effective on alignments with >1000 sites
-- Multi-threading benefits plateau around 8 threads
-- Cython compilation provides the best speedup for classification operations
-- Memory usage has been reduced by approximately 30% for large alignments
+- Biopython FASTA parsing and format-specific writing now dominate common
+  large end-to-end runs. Replacing them would put support for all current
+  formats and exact formatting at risk, so this work leaves them intact.
+- Heterotachy mode is dominated by Biopython's parsimony guide-tree search. On
+  the 24-sequence, 231-site fixture, tree construction consumed 7.21 of 7.31
+  profiled seconds. Substituting a faster tree search could change the guide
+  tree and trimming output, so it was not done.
+- Entropy's exact per-site floating-point calculation remains more expensive
+  than count-based classification. Vectorizing it could alter values at
+  four-decimal rounding boundaries and has a poor correctness-to-reward ratio
+  now that the surrounding count path is substantially faster.
