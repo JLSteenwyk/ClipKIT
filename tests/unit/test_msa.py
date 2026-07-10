@@ -1,10 +1,12 @@
 import pytest
 import numpy as np
+import math
 
 from Bio import AlignIO
 from clipkit.guide_tree import build_parsimony_guide_tree
-from clipkit.msa import MSA
+from clipkit.msa import MSA, _column_character_counts
 from clipkit.modes import TrimmingMode
+from clipkit.site_classification import determine_site_classification_type
 
 
 def get_biopython_msa(file_path, file_format="fasta"):
@@ -186,3 +188,105 @@ class TestMSA(object):
             guide_tree=guide_tree,
         )
         np.testing.assert_equal(msa._site_positions_to_trim, np.array([1, 2]))
+
+
+@pytest.mark.parametrize(
+    "seq_records",
+    [
+        np.array([list("Aa-?X"), list("AA--x"), list("C?-ax")], dtype="U1"),
+        np.array(
+            [["A", "Ā", "😀"], ["Ω", "A", "😀"], ["Ā", "Ω", "A"]],
+            dtype="U1",
+        ),
+    ],
+)
+def test_column_character_counts_match_per_column_unique(seq_records):
+    states, counts = _column_character_counts(seq_records)
+    expected_states = np.unique(seq_records)
+    expected_counts = np.array(
+        [np.count_nonzero(seq_records == state, axis=0) for state in expected_states]
+    )
+
+    np.testing.assert_equal(states, expected_states)
+    np.testing.assert_equal(counts, expected_counts)
+
+
+def test_count_backed_properties_match_per_column_reference():
+    seq_records = np.array(
+        [
+            list("Aa-?XZ"),
+            list("AA--xZ"),
+            list("C?-axZ"),
+            list("CA?aXZ"),
+        ],
+        dtype="U1",
+    )
+    gap_chars = ["-", "?", "X", "x"]
+    msa = MSA(
+        [{"id": str(idx)} for idx in range(len(seq_records))],
+        seq_records,
+        gap_chars=gap_chars,
+        requires_uppercase_normalization=True,
+    )
+
+    normalized = np.char.upper(seq_records)
+    expected_frequencies = []
+    expected_entropy = []
+    expected_bias = []
+    gap_chars_upper = {gap.upper() for gap in gap_chars}
+    for column in normalized.T:
+        states, counts = np.unique(column, return_counts=True)
+        frequencies = dict(zip(states, counts))
+        for gap_char in gap_chars:
+            frequencies.pop(gap_char, None)
+        expected_frequencies.append(frequencies)
+
+        entropy_counts = [
+            count
+            for state, count in zip(states, counts)
+            if state.upper() not in gap_chars_upper
+        ]
+        if len(entropy_counts) <= 1:
+            expected_entropy.append(0.0)
+        else:
+            total = float(sum(entropy_counts))
+            probabilities = [count / total for count in entropy_counts]
+            raw_entropy = -sum(
+                probability * math.log2(probability)
+                for probability in probabilities
+                if probability > 0.0
+            )
+            expected_entropy.append(raw_entropy / math.log2(len(entropy_counts)))
+
+        bias_counts = np.array(list(frequencies.values()), dtype=float)
+        total = bias_counts.sum()
+        if total == 0:
+            expected_bias.append(0.0)
+        elif len(bias_counts) == 1:
+            expected_bias.append(1.0)
+        else:
+            probabilities = bias_counts / total
+            dominance = float(np.sum(np.square(probabilities)))
+            min_dominance = 1.0 / float(len(bias_counts))
+            expected_bias.append(
+                (dominance - min_dominance) / (1.0 - min_dominance)
+            )
+
+    assert msa.column_character_frequencies == expected_frequencies
+    np.testing.assert_equal(
+        msa.site_classification_types,
+        np.array(
+            [
+                determine_site_classification_type(frequencies)
+                for frequencies in expected_frequencies
+            ]
+        ),
+    )
+    np.testing.assert_equal(
+        msa.site_gappyness,
+        np.around(np.isin(seq_records, gap_chars).mean(axis=0), decimals=4),
+    )
+    np.testing.assert_equal(msa.site_entropy, np.around(expected_entropy, decimals=4))
+    np.testing.assert_equal(
+        msa.site_composition_bias, np.around(expected_bias, decimals=4)
+    )
