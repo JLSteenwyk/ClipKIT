@@ -35,6 +35,28 @@ class TestMSA(object):
         )
         np.testing.assert_equal(msa.seq_records, expected_seq_records)
 
+    def test_to_bio_msa_preserves_sequences_and_descriptions(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+
+        converted = msa.to_bio_msa()
+
+        assert [str(record.seq) for record in converted] == [
+            str(record.seq) for record in bio_msa
+        ]
+        assert [record.id for record in converted] == [
+            record.description for record in bio_msa
+        ]
+
+    def test_to_bio_msa_handles_empty_sequence_rows(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        msa.trim(site_positions_to_trim=np.arange(msa.original_length))
+
+        converted = msa.to_bio_msa()
+
+        assert [str(record.seq) for record in converted] == [""] * len(bio_msa)
+
     def test_trim_by_provided_site_positions_np_array(self):
         bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
         msa = MSA.from_bio_msa(bio_msa)

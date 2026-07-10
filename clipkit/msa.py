@@ -146,12 +146,22 @@ class MSA:
 
     def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
         # NOTE: we use the description as the id to preserve the full sequence description - see issue #20
+        if sites.shape[1] == 0:
+            sequence_rows = [""] * sites.shape[0]
+        elif sites.dtype.kind == "U" and sites.dtype.itemsize == np.dtype("U1").itemsize:
+            contiguous_sites = np.ascontiguousarray(sites)
+            sequence_rows = (
+                contiguous_sites.view(f"U{sites.shape[1]}").reshape(-1).tolist()
+            )
+        else:
+            sequence_rows = ["".join(rec) for rec in sites.tolist()]
+
         return MultipleSeqAlignment(
             [
                 SeqRecord(
-                    Seq("".join(rec)), id=str(info["description"]), description=""
+                    Seq(rec), id=str(info["description"]), description=""
                 )
-                for rec, info in zip(sites.tolist(), self.header_info)
+                for rec, info in zip(sequence_rows, self.header_info)
             ]
         )
 
