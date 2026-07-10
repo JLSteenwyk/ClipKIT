@@ -182,6 +182,7 @@ def run(
             alignment,
             gap_characters,
             seq_records=msa.seq_records,
+            gaps_dist=msa.site_gappyness,
         )
     elif mode == TrimmingMode.gappyout:
         gaps = msa.determine_gappyout_gap_threshold()
