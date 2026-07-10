@@ -80,6 +80,31 @@
   <section id="change-log">
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
 <p>Major changes to ClipKIT are summarized here.</p>
+<p><strong>2.12.2</strong>
+Improved trimming and output performance while preserving exact results:</p>
+<ul class="simple">
+<li><p>Replaced per-column character sorting with batched compact counting for
+faster KPI/KPIC, entropy, composition-bias, and gap-based trimming.</p></li>
+<li><p>Reused cached per-site gap statistics during smart-gap threshold selection.</p></li>
+<li><p>Materialized complete NumPy rows directly as sequence strings during output
+instead of allocating one Python object per character.</p></li>
+<li><p>Expanded benchmarks to cover small, medium, and large workloads with output
+hashes and peak-memory measurements.</p></li>
+</ul>
+<p><strong>2.12.1</strong>
+Improved performance and packaging release behavior:</p>
+<ul class="simple">
+<li><p>Faster MSA construction from BioPython alignments by converting sequence
+strings directly into a NumPy character matrix instead of first building
+per-character Python lists.</p></li>
+<li><p>Bumped the package and Galaxy wrapper version to <code class="docutils literal notranslate"><span class="pre">2.12.1</span></code> because
+<code class="docutils literal notranslate"><span class="pre">2.12.0</span></code> already exists on PyPI and PyPI release files are immutable.</p></li>
+<li><p>Updated manual release instructions to use <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">build</span></code> and
+<code class="docutils literal notranslate"><span class="pre">twine</span> <span class="pre">check</span></code> before upload.</p></li>
+<li><p>Removed the stale <code class="docutils literal notranslate"><span class="pre">bdist_wheel</span> <span class="pre">--universal</span></code> release command so ClipKIT
+publishes Python 3-only wheels for its supported Python 3.10+ range.</p></li>
+<li><p>Excluded test modules from installable wheel packages.</p></li>
+</ul>
 <p><strong>2.12.0</strong>
 Improved <code class="docutils literal notranslate"><span class="pre">-g</span></code>/<code class="docutils literal notranslate"><span class="pre">-m</span></code> argument interaction:</p>
 <ul class="simple">
