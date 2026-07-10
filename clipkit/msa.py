@@ -3,10 +3,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import numpy as np
 import math
-from itertools import chain
 from typing import Union
-from concurrent.futures import ThreadPoolExecutor
-from multiprocessing import cpu_count
 from Bio.Phylo.BaseTree import Tree
 
 from .modes import TrimmingMode
@@ -20,72 +17,68 @@ from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
 
 
-# Vectorized helper functions
-def _vectorized_column_frequencies(seq_array, gap_chars, normalize_case=True):
-    """
-    Vectorized calculation of character frequencies for all columns at once
-    using NumPy operations.
-    """
-    n_cols = seq_array.shape[1]
-    column_frequencies = []
-
-    # Convert to uppercase once
-    seq_array_upper = np.char.upper(seq_array) if normalize_case else seq_array
-
-    for i in range(n_cols):
-        column = seq_array_upper[:, i]
-        unique, counts = np.unique(column, return_counts=True)
-        freqs = dict(zip(unique, counts))
-
-        # Remove gap characters
-        for gap_char in gap_chars:
-            freqs.pop(gap_char, None)
-
-        column_frequencies.append(freqs)
-
-    return column_frequencies
+# Counting a batch at a time bounds the temporary integer matrix while still
+# letting np.bincount process many columns in one compiled operation.
+_COLUMN_COUNT_BATCH_SIZE = 1024
+_MAX_DENSE_CODE_SPAN = 512
+_MIN_CELLS_FOR_COLUMN_COUNTING = 1_000_000
 
 
-def _batch_column_frequencies(seq_array, gap_chars, batch_size=100, normalize_case=True):
-    """
-    Process columns in batches for better memory efficiency
-    """
-    n_cols = seq_array.shape[1]
-    column_frequencies = []
+def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Return sorted character states and their counts in every column."""
+    n_rows, n_cols = seq_array.shape
+    if n_rows == 0 or n_cols == 0:
+        return np.empty(0, dtype="U1"), np.empty((0, n_cols), dtype=np.int64)
 
-    # Convert to uppercase once for the entire array
-    seq_array_upper = np.char.upper(seq_array) if normalize_case else seq_array
+    if n_rows <= np.iinfo(np.uint8).max:
+        count_dtype = np.uint8
+    elif n_rows <= np.iinfo(np.uint16).max:
+        count_dtype = np.uint16
+    elif n_rows <= np.iinfo(np.uint32).max:
+        count_dtype = np.uint32
+    else:
+        count_dtype = np.uint64
 
-    for start_idx in range(0, n_cols, batch_size):
-        end_idx = min(start_idx + batch_size, n_cols)
-        batch = seq_array_upper[:, start_idx:end_idx]
+    code_points = seq_array.view(np.uint32).reshape(seq_array.shape)
+    min_code = int(code_points.min())
+    max_code = int(code_points.max())
+    code_span = max_code - min_code + 1
 
-        for i in range(batch.shape[1]):
-            column = batch[:, i]
-            unique, counts = np.unique(column, return_counts=True)
-            freqs = dict(zip(unique, counts))
+    if code_span <= _MAX_DENSE_CODE_SPAN:
+        counts = np.empty((code_span, n_cols), dtype=count_dtype)
+        offsets = np.arange(_COLUMN_COUNT_BATCH_SIZE, dtype=np.int64) * code_span
 
-            # Remove gap characters
-            for gap_char in gap_chars:
-                freqs.pop(gap_char, None)
+        for start_idx in range(0, n_cols, _COLUMN_COUNT_BATCH_SIZE):
+            end_idx = min(start_idx + _COLUMN_COUNT_BATCH_SIZE, n_cols)
+            width = end_idx - start_idx
+            encoded = code_points[:, start_idx:end_idx].astype(np.int64)
+            encoded -= min_code
+            encoded += offsets[:width]
+            counts[:, start_idx:end_idx] = np.bincount(
+                encoded.ravel(), minlength=width * code_span
+            ).reshape(width, code_span).T
 
-            column_frequencies.append(freqs)
+        present = np.any(counts, axis=1)
+        states = np.array(
+            [chr(min_code + offset) for offset in np.flatnonzero(present)],
+            dtype="U1",
+        )
+        return states, counts[present]
 
-    return column_frequencies
-
-
-def _calculate_column_frequency_batch_helper(args):
-    """Batch helper for threaded frequency calculation."""
-    columns, gap_chars = args
-    frequencies = []
-    for i in range(columns.shape[1]):
-        column = columns[:, i]
-        unique, counts = np.unique(column, return_counts=True)
-        freqs = dict(zip(unique, counts))
-        for gap_char in gap_chars:
-            freqs.pop(gap_char, None)
-        frequencies.append(freqs)
-    return frequencies
+    # Unusually wide Unicode alphabets would make the dense code-point table
+    # wasteful. Compact them to their observed, sorted states instead.
+    states = np.unique(seq_array)
+    counts = np.empty((len(states), n_cols), dtype=count_dtype)
+    offsets = np.arange(_COLUMN_COUNT_BATCH_SIZE, dtype=np.int64) * len(states)
+    for start_idx in range(0, n_cols, _COLUMN_COUNT_BATCH_SIZE):
+        end_idx = min(start_idx + _COLUMN_COUNT_BATCH_SIZE, n_cols)
+        width = end_idx - start_idx
+        encoded = np.searchsorted(states, seq_array[:, start_idx:end_idx])
+        encoded += offsets[:width]
+        counts[:, start_idx:end_idx] = np.bincount(
+            encoded.ravel(), minlength=width * len(states)
+        ).reshape(width, len(states)).T
+    return states, counts
 
 
 class MSA:
@@ -104,6 +97,7 @@ class MSA:
         self._site_positions_to_trim = np.array([])
         self._site_classification_types = None
         self._column_character_frequencies = None
+        self._column_character_count_cache = {}
         self._gap_chars = gap_chars or DEFAULT_AA_GAP_CHARS
         self._codon_size = 3
         self._threads = threads
@@ -152,12 +146,22 @@ class MSA:
 
     def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
         # NOTE: we use the description as the id to preserve the full sequence description - see issue #20
+        if sites.shape[1] == 0:
+            sequence_rows = [""] * sites.shape[0]
+        elif sites.dtype.kind == "U" and sites.dtype.itemsize == np.dtype("U1").itemsize:
+            contiguous_sites = np.ascontiguousarray(sites)
+            sequence_rows = (
+                contiguous_sites.view(f"U{sites.shape[1]}").reshape(-1).tolist()
+            )
+        else:
+            sequence_rows = ["".join(rec) for rec in sites.tolist()]
+
         return MultipleSeqAlignment(
             [
                 SeqRecord(
-                    Seq("".join(rec)), id=str(info["description"]), description=""
+                    Seq(rec), id=str(info["description"]), description=""
                 )
-                for rec, info in zip(sites.tolist(), self.header_info)
+                for rec, info in zip(sequence_rows, self.header_info)
             ]
         )
 
@@ -192,9 +196,16 @@ class MSA:
         if self._site_gappyness_cache is not None:
             return self._site_gappyness_cache
 
-        # Vectorized calculation using broadcasting
-        site_gappyness = (np.isin(self.seq_records, self._gap_chars)).mean(axis=0)
+        if self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING:
+            site_gappyness = np.isin(self.seq_records, self._gap_chars).mean(axis=0)
+        else:
+            states, counts = self._get_column_character_counts(
+                normalize_case=False, cache_key="gappyness"
+            )
+            gap_counts = counts[np.isin(states, self._gap_chars)].sum(axis=0)
+            site_gappyness = gap_counts / self.seq_records.shape[0]
         self._site_gappyness_cache = np.around(site_gappyness, decimals=4)
+        self._column_character_count_cache.pop(("gappyness", False), None)
         return self._site_gappyness_cache
 
     @property
@@ -211,24 +222,15 @@ class MSA:
         if self._site_entropy_cache is not None:
             return self._site_entropy_cache
 
-        seq_array = (
-            np.char.upper(self.seq_records)
-            if self._requires_uppercase_normalization
-            else self.seq_records
+        _, counts_by_state = self._get_non_gap_character_counts(
+            normalize_gap_chars=True, cache_key="entropy"
         )
-        n_cols = seq_array.shape[1]
+        n_cols = counts_by_state.shape[1]
         entropies = np.zeros(n_cols, dtype=float)
-        gap_chars_upper = {gap.upper() for gap in self._gap_chars}
 
         for col_idx in range(n_cols):
-            column = seq_array[:, col_idx]
-            unique, counts = np.unique(column, return_counts=True)
-
-            non_gap_counts = [
-                count
-                for char, count in zip(unique, counts)
-                if char.upper() not in gap_chars_upper
-            ]
+            non_gap_counts = counts_by_state[:, col_idx]
+            non_gap_counts = non_gap_counts[non_gap_counts > 0]
 
             if len(non_gap_counts) <= 1:
                 continue
@@ -240,6 +242,9 @@ class MSA:
             entropies[col_idx] = raw_entropy / max_entropy if max_entropy > 0 else 0.0
 
         self._site_entropy_cache = np.around(entropies, decimals=4)
+        self._column_character_count_cache.pop(
+            ("entropy", self._requires_uppercase_normalization), None
+        )
         return self._site_entropy_cache
 
     @property
@@ -251,11 +256,12 @@ class MSA:
         if self._site_composition_bias_cache is not None:
             return self._site_composition_bias_cache
 
-        col_char_freqs = self.column_character_frequencies
-        bias_scores = np.zeros(len(col_char_freqs), dtype=float)
+        _, counts_by_state = self._get_non_gap_character_counts()
+        bias_scores = np.zeros(counts_by_state.shape[1], dtype=float)
 
-        for idx, char_freqs in enumerate(col_char_freqs):
-            counts = np.array(list(char_freqs.values()), dtype=float)
+        for idx in range(counts_by_state.shape[1]):
+            counts = counts_by_state[:, idx]
+            counts = counts[counts > 0].astype(float)
             total = counts.sum()
 
             if total == 0:
@@ -325,77 +331,76 @@ class MSA:
         if self._column_character_frequencies is not None:
             return self._column_character_frequencies
 
-        # Adaptive threshold based on alignment size and thread count
-        # Lower threshold for better parallel efficiency
-        parallel_threshold = max(1000, 5000 // self._threads)
-
-        # Use vectorized or parallel processing based on size
-        if self._original_length < 500:
-            # Small alignments: use vectorized numpy operations
-            self._column_character_frequencies = _vectorized_column_frequencies(
-                self.seq_records,
-                self.gap_chars,
-                normalize_case=self._requires_uppercase_normalization,
-            )
-        elif self._threads > 1 and self._original_length > parallel_threshold:
-            # Large alignments with multiple threads: use thread-level parallelism
-            # to avoid process-pool serialization overhead.
-            seq_array_upper = (
-                np.char.upper(self.seq_records)
-                if self._requires_uppercase_normalization
-                else self.seq_records
-            )
-
-            # Dynamic worker calculation
-            n_workers = min(self._threads, max(2, min(self._original_length // 500, cpu_count())))
-
-            # Batch columns to avoid creating one task per column.
-            batch_size = max(200, self._original_length // (n_workers * 8))
-            args_list = [
-                (seq_array_upper[:, start_idx:min(start_idx + batch_size, self._original_length)], self.gap_chars)
-                for start_idx in range(0, self._original_length, batch_size)
-            ]
-
-            with ThreadPoolExecutor(max_workers=n_workers) as executor:
-                batch_results = list(
-                    executor.map(
-                        _calculate_column_frequency_batch_helper,
-                        args_list,
+        states, counts_by_state = self._get_non_gap_character_counts()
+        self._column_character_frequencies = []
+        for col_idx in range(counts_by_state.shape[1]):
+            present = counts_by_state[:, col_idx] > 0
+            self._column_character_frequencies.append(
+                dict(
+                    zip(
+                        states[present],
+                        counts_by_state[present, col_idx].astype(np.int64),
                     )
                 )
-                self._column_character_frequencies = list(
-                    chain.from_iterable(batch_results)
-                )
-        else:
-            # Medium alignments or single-threaded: use batch processing
-            self._column_character_frequencies = _batch_column_frequencies(
-                self.seq_records,
-                self.gap_chars,
-                batch_size=200,
-                normalize_case=self._requires_uppercase_normalization,
-            )
-
-        # Ensure we always return the frequencies (not None)
-        if self._column_character_frequencies is None:
-            self._column_character_frequencies = _batch_column_frequencies(
-                self.seq_records,
-                self.gap_chars,
-                batch_size=200,
-                normalize_case=self._requires_uppercase_normalization,
             )
 
         return self._column_character_frequencies
+
+    def _get_column_character_counts(
+        self, normalize_case: bool, cache_key: str = "frequencies"
+    ) -> tuple[np.ndarray, np.ndarray]:
+        normalize_case = normalize_case and self._requires_uppercase_normalization
+        key = (cache_key, normalize_case)
+        if key not in self._column_character_count_cache:
+            seq_array = (
+                np.char.upper(self.seq_records)
+                if normalize_case
+                else self.seq_records
+            )
+            self._column_character_count_cache[key] = _column_character_counts(seq_array)
+        return self._column_character_count_cache[key]
+
+    def _get_non_gap_character_counts(
+        self,
+        normalize_gap_chars: bool = False,
+        cache_key: str = "frequencies",
+    ) -> tuple[np.ndarray, np.ndarray]:
+        states, counts = self._get_column_character_counts(
+            normalize_case=True, cache_key=cache_key
+        )
+        gap_chars = (
+            [gap.upper() for gap in self._gap_chars]
+            if normalize_gap_chars
+            else self._gap_chars
+        )
+        non_gap_states = ~np.isin(states, gap_chars)
+        return states[non_gap_states], counts[non_gap_states]
 
     @property
     def site_classification_types(self):
         if self._site_classification_types is not None:
             return self._site_classification_types
 
-        col_char_freqs = self.column_character_frequencies
-        # Local classification avoids high process-pool overhead from pickling
-        # tens of thousands of per-column dict objects.
-        site_classification_types = np.array(
-            [determine_site_classification_type(freq) for freq in col_char_freqs]
+        if self._original_length == 0:
+            self._site_classification_types = np.array([])
+            return self._site_classification_types
+
+        _, counts_by_state = self._get_non_gap_character_counts()
+        observed_states = np.count_nonzero(counts_by_state, axis=0)
+        states_occurring_at_least_twice = np.count_nonzero(
+            counts_by_state >= 2, axis=0
+        )
+
+        site_classification_types = np.empty(self._original_length, dtype=object)
+        site_classification_types.fill(SiteClassificationType.other)
+        site_classification_types[
+            (states_occurring_at_least_twice == 1) & (observed_states > 1)
+        ] = SiteClassificationType.singleton
+        site_classification_types[
+            (states_occurring_at_least_twice == 1) & (observed_states == 1)
+        ] = SiteClassificationType.constant
+        site_classification_types[states_occurring_at_least_twice >= 2] = (
+            SiteClassificationType.parsimony_informative
         )
 
         self._site_classification_types = site_classification_types

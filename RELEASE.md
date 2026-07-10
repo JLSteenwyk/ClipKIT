@@ -17,6 +17,24 @@ The workflow will:
 4. Publish to PyPI.
 5. Create a GitHub Release and attach `dist/*` artifacts.
 
+## Manual PyPI release
+
+PyPI versions and filenames are immutable. Before uploading, bump
+`clipkit/version.py` and the changelog files to a version that does not already
+exist on PyPI.
+
+```shell
+source venv/bin/activate
+python -m pip install --upgrade build twine
+rm -rf dist build *.egg-info
+python -m build
+twine check dist/*
+twine upload dist/* -r pypi
+```
+
+Do not pass `--universal`; ClipKIT supports Python 3.10+ and should publish a
+`py3-none-any` wheel.
+
 ## PyPI authentication
 
 Preferred: configure PyPI Trusted Publishing for this repository.

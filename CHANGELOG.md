@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.12.2
+
+- Replaced per-column character sorting with batched compact counting, substantially accelerating KPI/KPIC, entropy, composition-bias, and gap-based trimming while preserving exact trimming decisions.
+- Reused cached per-site gap statistics during smart-gap threshold selection instead of scanning the alignment twice.
+- Accelerated alignment output by materializing complete NumPy rows directly as sequence strings instead of allocating one Python object per character.
+- Expanded the benchmark suite to cover representative small, medium, and large workloads with output hashes and peak-memory measurements.
+
+## 2.12.1
+
+- Improved MSA construction from BioPython alignments by converting sequence strings directly into a NumPy character matrix instead of first building per-character Python lists.
+- Bumped the package and Galaxy wrapper version to `2.12.1` because `2.12.0` already exists on PyPI and PyPI release files are immutable.
+- Updated manual release instructions to use `python -m build` and `twine check` before upload.
+- Removed the stale `bdist_wheel --universal` release command so ClipKIT publishes Python 3-only wheels for its supported Python 3.10+ range.
+- Excluded test modules from installable wheel packages.
+
 ## 2.12.0
 
 - When `-g`/`--gaps` is provided without `-m`/`--mode`, the default mode is now `gappy` instead of `smart-gap`. This ensures user-specified gap thresholds are honoured rather than silently overridden by dynamic threshold calculation.

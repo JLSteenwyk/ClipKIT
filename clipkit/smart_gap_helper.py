@@ -9,6 +9,7 @@ def smart_gap_threshold_determination(
     alignment: MultipleSeqAlignment,
     gap_chars: list,
     seq_records: Optional[np.ndarray] = None,
+    gaps_dist: Optional[np.ndarray] = None,
 ) -> float:
     alignment_length = (
         seq_records.shape[1]
@@ -17,9 +18,10 @@ def smart_gap_threshold_determination(
     )
 
     # get distribution of gaps rounded to the fourth decimal place
-    gaps_dist = get_gaps_distribution_optimized(
-        alignment, gap_chars, seq_records=seq_records
-    )
+    if gaps_dist is None:
+        gaps_dist = get_gaps_distribution_optimized(
+            alignment, gap_chars, seq_records=seq_records
+        )
 
     # count freq of gaps and convert to sorted np array
     gaps_arr = count_and_sort_gaps_optimized(gaps_dist)

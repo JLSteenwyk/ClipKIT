@@ -48,6 +48,22 @@ class TestSmartGapsHelper(object):
         ## check results
         assert expected_gaps == gaps
 
+    def test_smart_gap_threshold_uses_precomputed_gap_distribution(self, mocker):
+        alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
+        gaps_dist = np.array([0.0, 0.6, 0.0, 0.8, 0.0, 0.2])
+        calculate_distribution = mocker.patch(
+            "clipkit.smart_gap_helper.get_gaps_distribution_optimized"
+        )
+
+        gaps = smart_gap_threshold_determination(
+            alignment,
+            DEFAULT_AA_GAP_CHARS,
+            gaps_dist=gaps_dist,
+        )
+
+        assert gaps == 0.8
+        calculate_distribution.assert_not_called()
+
     def test_greatest_diff_in_slopes_simple_case(self):
         ## set up
         slopes = [0.833333333333333]
