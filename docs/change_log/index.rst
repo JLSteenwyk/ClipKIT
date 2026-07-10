@@ -6,6 +6,31 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
+**2.12.2**
+Improved trimming and output performance while preserving exact results:
+
+- Replaced per-column character sorting with batched compact counting for
+  faster KPI/KPIC, entropy, composition-bias, and gap-based trimming.
+- Reused cached per-site gap statistics during smart-gap threshold selection.
+- Materialized complete NumPy rows directly as sequence strings during output
+  instead of allocating one Python object per character.
+- Expanded benchmarks to cover small, medium, and large workloads with output
+  hashes and peak-memory measurements.
+
+**2.12.1**
+Improved performance and packaging release behavior:
+
+- Faster MSA construction from BioPython alignments by converting sequence
+  strings directly into a NumPy character matrix instead of first building
+  per-character Python lists.
+- Bumped the package and Galaxy wrapper version to ``2.12.1`` because
+  ``2.12.0`` already exists on PyPI and PyPI release files are immutable.
+- Updated manual release instructions to use ``python -m build`` and
+  ``twine check`` before upload.
+- Removed the stale ``bdist_wheel --universal`` release command so ClipKIT
+  publishes Python 3-only wheels for its supported Python 3.10+ range.
+- Excluded test modules from installable wheel packages.
+
 **2.12.0**
 Improved ``-g``/``-m`` argument interaction:
 

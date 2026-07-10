@@ -40,7 +40,7 @@ setup(
     author="Jacob L. Steenwyk",
     author_email="jlsteenwyk@gmail.com",
     url="https://github.com/jlsteenwyk/clipkit",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests", "tests.*"]),
     classifiers=CLASSIFIERS,
     entry_points={"console_scripts": ["clipkit = clipkit.clipkit:main"]},
     version=_read_version(),
@@ -50,6 +50,7 @@ setup(
 )
 
 ## push new version to pypi
-# rm -rf dist
-# python3 setup.py sdist bdist_wheel --universal
+# rm -rf dist build *.egg-info
+# python -m build
+# twine check dist/*
 # twine upload dist/* -r pypi
