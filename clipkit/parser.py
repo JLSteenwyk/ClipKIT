@@ -12,14 +12,14 @@ from .modes import StopCodonMode, TrimmingMode
 from .version import __version__
 
 _MAIN_DESCRIPTION_TEMPLATE = r"""\
-  _____ _ _       _  _______ _______  
+  _____ _ _       _  _______ _______
  / ____| (_)     | |/ /_   _|__   __|
-| |    | |_ _ __ | ' /  | |    | |   
-| |    | | | '_ \|  <   | |    | |   
-| |____| | | |_) | . \ _| |_   | |   
- \_____|_|_| .__/|_|\_\_____|  |_|   
-           | |                       
-           |_|  
+| |    | |_ _ __ | ' /  | |    | |
+| |    | | | '_ \|  <   | |    | |
+| |____| | | |_) | . \ _| |_   | |
+ \_____|_|_| .__/|_|\_\_____|  |_|
+           | |
+           |_|
 
 Version: {version}
 Citation: Steenwyk et al. 2020, PLOS Biology. doi: 10.1371/journal.pbio.3001007
@@ -36,10 +36,10 @@ _REQUIRED_ARGUMENTS_DESCRIPTION = """\
 """
 
 _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
--o, --output <output_file_name>             output file name 
+-o, --output <output_file_name>             output file name
                                             (default: input file named with '.clipkit' suffix)
 
--m, --mode <smart-gap,                      trimming mode 
+-m, --mode <smart-gap,                      trimming mode
             entropy,
             gappy,
             block-gappy,
@@ -47,14 +47,14 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
             composition-bias,
             heterotachy,
             kpic,
-            kpic-smart-gap,           
-            kpic-gappy,                
+            kpic-smart-gap,
+            kpic-gappy,
             kpi,
             kpi-smart-gap,
             kpi-gappy,
             cst,
-            c3>                      
-                                            
+            c3>
+
 -g, --gaps <threshold_of_gaps>              specifies gaps threshold
                                             (default: 0.9; entropy/composition-bias/heterotachy default: 0.8)
 
@@ -63,7 +63,7 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
                                              default for nt: XxNn-?*)
 
 -if, --input_file_format <file_format>      specifies input file format
-                                            (default: auto-detect)    
+                                            (default: auto-detect)
 
 -s, --sequence_type <nt, aa>                specifies sequence type of input file
                                             (default: auto-detect)
@@ -108,7 +108,7 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
 
 
 -------------------------------------
-| Detailed explanation of arguments | 
+| Detailed explanation of arguments |
 -------------------------------------
 Modes
     smart-gap: dynamic determination of gaps threshold
@@ -167,7 +167,7 @@ Input and output file formats
 Log
     Creates a log file that summarizes the characteristics of each position.
     The log file has four columns.
-    - Column 1 is the position in the alignment (starting at 1), 
+    - Column 1 is the position in the alignment (starting at 1),
     - Column 2 reports if the site was trimmed or kept (trim and keep, respectively),
     - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), or
       a constant site or not (Const and nConst, respectively), or neither (nConst, nPI)
@@ -214,9 +214,7 @@ Plot trim report
 
 
 def _main_description() -> str:
-    return textwrap.dedent(
-        _MAIN_DESCRIPTION_TEMPLATE.format(version=__version__)
-    )
+    return textwrap.dedent(_MAIN_DESCRIPTION_TEMPLATE.format(version=__version__))
 
 
 def create_parser() -> ArgumentParser:

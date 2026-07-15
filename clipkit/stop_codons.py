@@ -4,7 +4,6 @@ from typing import Optional, Union
 from .exceptions import StopCodonValidationError
 from .modes import StopCodonMode
 
-
 STOP_CODONS = frozenset({"TAA", "TAG", "TGA", "UAA", "UAG", "UGA"})
 
 

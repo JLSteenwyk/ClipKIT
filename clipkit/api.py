@@ -44,9 +44,7 @@ def clipkit(
     has_raw_alignment = raw_alignment is not None
     has_input_path = input_file_path is not None
     if has_raw_alignment == has_input_path:
-        raise ValueError(
-            "Provide exactly one of raw_alignment or input_file_path."
-        )
+        raise ValueError("Provide exactly one of raw_alignment or input_file_path.")
     if has_raw_alignment and raw_alignment == "":
         raise ValueError("raw_alignment cannot be empty.")
     if has_input_path and input_file_path == "":

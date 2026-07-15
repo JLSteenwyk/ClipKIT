@@ -137,7 +137,9 @@ def run(
     threads: int = 1,
     remove_stop_codons: Union[StopCodonMode, str, None] = None,
 ):
-    alignment, input_file_format = get_alignment_and_format(input_file, input_file_format)
+    alignment, input_file_format = get_alignment_and_format(
+        input_file, input_file_format
+    )
 
     if threads < 1:
         raise ValueError("threads must be an integer >= 1")

@@ -207,9 +207,7 @@ def test_execute_writes_report_json_for_validate_only(tmp_path):
 
 def test_execute_reports_stop_codon_mode_and_counts(tmp_path):
     input_file = tmp_path / "stops.fa"
-    input_file.write_text(
-        ">stop\nATGTAACCTTGA\n>control\nATGCAACCTCAA\n"
-    )
+    input_file.write_text(">stop\nATGTAACCTTGA\n>control\nATGCAACCTCAA\n")
     output_file = tmp_path / "stops.out.fa"
     report_file = tmp_path / "stops.report.json"
 

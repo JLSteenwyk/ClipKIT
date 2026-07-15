@@ -3,7 +3,7 @@ import time
 from .logger import logger
 from .stats import TrimmingStats
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from .files import FileFormat
@@ -25,7 +25,7 @@ def write_user_args(
     codon: bool,
     use_log: bool,
     ends_only: bool,
-    stop_codon_masking: "StopCodonMaskingStats" = None,
+    stop_codon_masking: "Optional[StopCodonMaskingStats]" = None,
 ) -> None:
     if seq_type.value == "nt":
         seq_type_name = "Nucleotides"
@@ -40,9 +40,7 @@ def write_user_args(
             f"    Stop codon masking mode: {stop_codon_masking.mode.value}\n"
         )
 
-    logger.info(
-        textwrap.dedent(
-            f"""\
+    logger.info(textwrap.dedent(f"""\
 
     -------------
     | Arguments |
@@ -58,9 +56,7 @@ def write_user_args(
 {stop_codon_summary}\
     Trim ends only: {ends_only}
     Create log file: {use_log}
-    """  # noqa
-        )
-    )
+    """))  # noqa
 
 
 def write_output_files_message(
@@ -69,9 +65,7 @@ def write_output_files_message(
     """
     Function to print out that the output files are being written
     """
-    logger.info(
-        textwrap.dedent(
-            f"""\
+    logger.info(textwrap.dedent(f"""\
 
         ------------------------
         | Writing output files |
@@ -79,15 +73,13 @@ def write_output_files_message(
         Trimmed alignment: {out_file_name}
         Complement file: {out_file_name + '.complement' if complement else False}
         Log file: {out_file_name + '.log' if use_log else False}
-    """
-        )
-    )
+    """))
 
 
 def write_output_stats(
     stats: "TrimmingStats",
     start_time: float,
-    stop_codon_masking: "StopCodonMaskingStats" = None,
+    stop_codon_masking: "Optional[StopCodonMaskingStats]" = None,
 ) -> None:
     """
     Function to print out output statistics
@@ -103,9 +95,7 @@ def write_output_stats(
             f"        Total stop codons masked: {stop_codon_masking.total_masked}\n\n"
         )
 
-    logger.info(
-        textwrap.dedent(
-            f"""\
+    logger.info(textwrap.dedent(f"""\
 
         ---------------------
         | Output Statistics |
@@ -117,6 +107,4 @@ def write_output_stats(
 
 {stop_codon_summary}\
         Execution time: {round(time.time() - start_time, 3)}s
-    """
-        )
-    )
+    """))

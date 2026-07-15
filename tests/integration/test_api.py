@@ -40,7 +40,7 @@ class TestApiInvocation(object):
             "trimmed_percentage": 16.667,
         }
         assert isinstance(trim_run.version, str)
-        
+
     def test_codon_setting(self):
         trim_run, stats = clipkit(
             raw_alignment=">1\nA-GTAT\n>2\nA-G-AT\n>3\nA-G-TA\n>4\nAGA-TA\n>5\nACa-T-\n",

@@ -52,17 +52,13 @@ class TestParser(object):
 
     @pytest.mark.parametrize("mode", ["terminal", "internal", "all"])
     def test_remove_stop_codons(self, parser, mode):
-        parsed = parser.parse_args(
-            ["my/input/file.fa", "--remove_stop_codons", mode]
-        )
+        parsed = parser.parse_args(["my/input/file.fa", "--remove_stop_codons", mode])
 
         assert parsed.remove_stop_codons == mode
 
     def test_remove_stop_codons_rejects_unknown_mode(self, parser):
         with pytest.raises(SystemExit):
-            parser.parse_args(
-                ["my/input/file.fa", "--remove_stop_codons", "unknown"]
-            )
+            parser.parse_args(["my/input/file.fa", "--remove_stop_codons", "unknown"])
 
     def test_plot_trim_report_with_no_value(self, parser):
         input_path = "my/input/file.fa"

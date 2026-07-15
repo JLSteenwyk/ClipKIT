@@ -7,6 +7,7 @@ from typing import Union
 from Bio.Phylo.BaseTree import Tree
 
 from .modes import StopCodonMode, TrimmingMode
+
 # Always import the standard version for compatibility
 from .site_classification import (
     SiteClassificationType,
@@ -16,7 +17,6 @@ from .site_classification import (
 from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
 from .stop_codons import STOP_CODONS, StopCodonMaskingStats
-
 
 # Counting a batch at a time bounds the temporary integer matrix while still
 # letting np.bincount process many columns in one compiled operation.
@@ -55,9 +55,11 @@ def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndar
             encoded = code_points[:, start_idx:end_idx].astype(np.int64)
             encoded -= min_code
             encoded += offsets[:width]
-            counts[:, start_idx:end_idx] = np.bincount(
-                encoded.ravel(), minlength=width * code_span
-            ).reshape(width, code_span).T
+            counts[:, start_idx:end_idx] = (
+                np.bincount(encoded.ravel(), minlength=width * code_span)
+                .reshape(width, code_span)
+                .T
+            )
 
         present = np.any(counts, axis=1)
         states = np.array(
@@ -76,9 +78,11 @@ def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndar
         width = end_idx - start_idx
         encoded = np.searchsorted(states, seq_array[:, start_idx:end_idx])
         encoded += offsets[:width]
-        counts[:, start_idx:end_idx] = np.bincount(
-            encoded.ravel(), minlength=width * len(states)
-        ).reshape(width, len(states)).T
+        counts[:, start_idx:end_idx] = (
+            np.bincount(encoded.ravel(), minlength=width * len(states))
+            .reshape(width, len(states))
+            .T
+        )
     return states, counts
 
 
@@ -109,7 +113,9 @@ class MSA:
         self._site_composition_bias_cache = None
 
     @staticmethod
-    def from_bio_msa(alignment: MultipleSeqAlignment, gap_chars=None, threads=1) -> "MSA":
+    def from_bio_msa(
+        alignment: MultipleSeqAlignment, gap_chars=None, threads=1
+    ) -> "MSA":
         header_info = []
         sequences = []
         requires_uppercase_normalization = False
@@ -145,9 +151,7 @@ class MSA:
     def complement_to_bio_msa(self) -> MultipleSeqAlignment:
         return self._to_bio_msa(self.sites_trimmed)
 
-    def mask_stop_codons(
-        self, mode: StopCodonMode
-    ) -> StopCodonMaskingStats:
+    def mask_stop_codons(self, mode: StopCodonMode) -> StopCodonMaskingStats:
         """Replace selected in-frame stop codons with gap characters."""
         if not isinstance(mode, StopCodonMode):
             mode = StopCodonMode(mode)
@@ -215,7 +219,9 @@ class MSA:
         # NOTE: we use the description as the id to preserve the full sequence description - see issue #20
         if sites.shape[1] == 0:
             sequence_rows = [""] * sites.shape[0]
-        elif sites.dtype.kind == "U" and sites.dtype.itemsize == np.dtype("U1").itemsize:
+        elif (
+            sites.dtype.kind == "U" and sites.dtype.itemsize == np.dtype("U1").itemsize
+        ):
             contiguous_sites = np.ascontiguousarray(sites)
             sequence_rows = (
                 contiguous_sites.view(f"U{sites.shape[1]}").reshape(-1).tolist()
@@ -225,9 +231,7 @@ class MSA:
 
         return MultipleSeqAlignment(
             [
-                SeqRecord(
-                    Seq(rec), id=str(info["description"]), description=""
-                )
+                SeqRecord(Seq(rec), id=str(info["description"]), description="")
                 for rec, info in zip(sequence_rows, self.header_info)
             ]
         )
@@ -420,11 +424,11 @@ class MSA:
         key = (cache_key, normalize_case)
         if key not in self._column_character_count_cache:
             seq_array = (
-                np.char.upper(self.seq_records)
-                if normalize_case
-                else self.seq_records
+                np.char.upper(self.seq_records) if normalize_case else self.seq_records
             )
-            self._column_character_count_cache[key] = _column_character_counts(seq_array)
+            self._column_character_count_cache[key] = _column_character_counts(
+                seq_array
+            )
         return self._column_character_count_cache[key]
 
     def _get_non_gap_character_counts(
@@ -454,9 +458,7 @@ class MSA:
 
         _, counts_by_state = self._get_non_gap_character_counts()
         observed_states = np.count_nonzero(counts_by_state, axis=0)
-        states_occurring_at_least_twice = np.count_nonzero(
-            counts_by_state >= 2, axis=0
-        )
+        states_occurring_at_least_twice = np.count_nonzero(counts_by_state >= 2, axis=0)
 
         site_classification_types = np.empty(self._original_length, dtype=object)
         site_classification_types.fill(SiteClassificationType.other)
@@ -485,7 +487,9 @@ class MSA:
             sites_to_trim = np.where(self.site_gappyness >= gap_threshold)[0]
         elif mode == TrimmingMode.block_gappy:
             high_gap_sites = np.where(self.site_gappyness >= gap_threshold)[0]
-            sites_to_trim = self._retain_contiguous_sites(high_gap_sites, min_block_size=2)
+            sites_to_trim = self._retain_contiguous_sites(
+                high_gap_sites, min_block_size=2
+            )
         elif mode == TrimmingMode.gappyout:
             # Keep sites at the inferred boundary and trim strictly above it.
             sites_to_trim = np.where(self.site_gappyness > gap_threshold)[0]
@@ -592,7 +596,9 @@ class MSA:
             if clade.is_terminal():
                 continue
 
-            taxa_names = [str(t.name) for t in clade.get_terminals() if t.name is not None]
+            taxa_names = [
+                str(t.name) for t in clade.get_terminals() if t.name is not None
+            ]
             indices = sorted(
                 terminal_to_index[name]
                 for name in taxa_names
@@ -722,7 +728,9 @@ class MSA:
         triplets = []
         for block in np.unique(blocks):
             start = block * self._codon_size
-            positions = np.arange(start, min(start + self._codon_size, self._original_length))
+            positions = np.arange(
+                start, min(start + self._codon_size, self._original_length)
+            )
             triplets.extend(positions)
 
         return np.unique(triplets)

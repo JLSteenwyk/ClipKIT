@@ -106,7 +106,9 @@ def process_args(args) -> dict:
 
     if mode == TrimmingMode.cst:
         if not auxiliary_file:
-            logger.warning("CST mode requires an auxiliary file via -a/--auxiliary_file.")
+            logger.warning(
+                "CST mode requires an auxiliary file via -a/--auxiliary_file."
+            )
             sys.exit()
         if not os.path.isfile(auxiliary_file):
             logger.warning("Auxiliary file does not exist.")
