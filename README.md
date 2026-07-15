@@ -67,6 +67,9 @@ Release automation details are documented in [RELEASE.md](RELEASE.md).
 pip install clipkit
 # run
 clipkit input.fa
+
+# mask all in-frame stops in a codon-aligned nucleotide MSA
+clipkit coding.fa --codon --sequence_type nt --remove_stop_codons all
 ```
 
 **eComp archives**

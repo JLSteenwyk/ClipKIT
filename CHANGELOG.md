@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added `--remove_stop_codons {terminal,internal,all}` for masking selected in-frame DNA or RNA stop codons as gaps before alignment statistics and codon-aware trimming.
+- Added the same stop-codon masking modes to the public Python API, with validation for nucleotide input, codon mode, and triplet alignment lengths.
+- Added human-readable and JSON masking summaries with separate terminal and internal stop-codon counts.
+
 ## 2.12.2
 
 - Replaced per-column character sorting with batched compact counting, substantially accelerating KPI/KPIC, entropy, composition-bias, and gap-based trimming while preserving exact trimming decisions.
