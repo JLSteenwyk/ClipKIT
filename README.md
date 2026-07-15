@@ -72,6 +72,22 @@ clipkit input.fa
 clipkit coding.fa --codon --sequence_type nt --remove_stop_codons all
 ```
 
+The same operation is available through the Python API:
+
+```python
+from clipkit import clipkit
+
+trim_run, stats = clipkit(
+    input_file_path="coding.fa",
+    mode="gappy",
+    gaps=0.9,
+    sequence_type="nt",
+    codon=True,
+    remove_stop_codons="all",
+)
+print(trim_run.stop_codon_masking.summary)
+```
+
 **eComp archives**
 
 ClipKIT can trim Evolutionary Compression (`.ecomp`) archives directly. Simply

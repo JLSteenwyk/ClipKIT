@@ -209,6 +209,20 @@ reports created with ``--report_json`` contain the selected mode and the same
 counts under ``stop_codon_masking``. The Python API accepts ``terminal``,
 ``internal``, or ``all`` through its ``remove_stop_codons`` argument.
 
+.. code-block:: python
+
+   from clipkit import clipkit
+
+   trim_run, stats = clipkit(
+       input_file_path="coding.fa",
+       mode="gappy",
+       gaps=0.9,
+       sequence_type="nt",
+       codon=True,
+       remove_stop_codons="all",
+   )
+   print(trim_run.stop_codon_masking.summary)
+
 |
 
 
