@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.13.0
 
 - Added `--remove_stop_codons {terminal,internal,all}` for masking selected in-frame DNA or RNA stop codons as gaps before alignment statistics and codon-aware trimming.
 - Added the same stop-codon masking modes to the public Python API, with validation for nucleotide input, codon mode, and triplet alignment lengths.

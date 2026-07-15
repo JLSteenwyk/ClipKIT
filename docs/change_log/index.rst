@@ -6,7 +6,7 @@ Change log
 
 Major changes to ClipKIT are summarized here.
 
-**Unreleased**
+**2.13.0**
 
 - Added ``--remove_stop_codons {terminal,internal,all}`` to mask selected
   in-frame DNA or RNA stop codons before gap statistics and codon-aware
