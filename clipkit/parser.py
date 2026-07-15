@@ -8,7 +8,7 @@ from argparse import (
 
 from .helpers import SeqType
 from .files import FileFormat
-from .modes import TrimmingMode
+from .modes import StopCodonMode, TrimmingMode
 from .version import __version__
 
 _MAIN_DESCRIPTION_TEMPLATE = r"""\
@@ -81,6 +81,10 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
                                             (input file named with '.complement' suffix)
 
 -co, --codon                                conduct trimming of codons
+
+--remove_stop_codons <terminal,             mask selected in-frame stop codons as gaps
+                      internal,
+                      all>                  (requires nucleotide input and --codon)
 
 -eo, --ends_only                            trim only from the ends of the alignment
 
@@ -175,6 +179,13 @@ Complementary
 Codon
     Trims codon-based alignments. If one position in a codon should be trimmed, the whole
     codon will be trimmed.
+
+Remove stop codons
+    Masks in-frame stop codons with "---" before gap statistics and trimming.
+    "terminal" masks only a stop at the final complete non-gap codon in each
+    sequence, "internal" masks all other stop codons, and "all" masks both.
+    DNA and RNA stops are recognized case-insensitively. This option requires
+    nucleotide input, --codon, and an alignment length divisible by three.
 
 Threads
     Requested number of threads to use for parallel processing.
@@ -342,6 +353,13 @@ def create_parser() -> ArgumentParser:
         "-co",
         "--codon",
         action="store_true",
+        required=False,
+        help=SUPPRESS,
+    )
+
+    optional.add_argument(
+        "--remove_stop_codons",
+        choices=[mode.value for mode in StopCodonMode],
         required=False,
         help=SUPPRESS,
     )

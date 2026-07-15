@@ -5,7 +5,7 @@ from .clipkit import run
 from .files import FileFormat
 from .helpers import SeqType, write_msa
 from .logger import logger
-from .modes import TrimmingMode
+from .modes import StopCodonMode, TrimmingMode
 from .plot_report import write_trim_plot_report
 
 if TYPE_CHECKING:
@@ -28,6 +28,7 @@ def clipkit(
     output_file_format=FileFormat.fasta,
     sequence_type: Union[SeqType, str, None] = None,
     codon: bool = False,
+    remove_stop_codons: Union[StopCodonMode, str, None] = None,
     ends_only=False,
     threads: int = 1,
     plot_trim_report_path: Union[str, None] = None,
@@ -94,6 +95,7 @@ def clipkit(
             quiet,
             ends_only,
             threads,
+            remove_stop_codons,
         )
 
         if plot_trim_report_path:

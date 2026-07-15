@@ -4,3 +4,7 @@ class ClipKITException(Exception):
 
 class InvalidInputFileFormat(ClipKITException):
     pass
+
+
+class StopCodonValidationError(ValueError):
+    pass

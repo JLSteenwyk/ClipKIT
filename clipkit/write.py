@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from .files import FileFormat
     from .helpers import SeqType
     from .modes import TrimmingMode
+    from .stop_codons import StopCodonMaskingStats
 
 
 def write_user_args(
@@ -24,6 +25,7 @@ def write_user_args(
     codon: bool,
     use_log: bool,
     ends_only: bool,
+    stop_codon_masking: "StopCodonMaskingStats" = None,
 ) -> None:
     if seq_type.value == "nt":
         seq_type_name = "Nucleotides"
@@ -32,6 +34,12 @@ def write_user_args(
     """
     Function to print user arguments to stdout
     """
+    stop_codon_summary = ""
+    if stop_codon_masking is not None and stop_codon_masking.mode is not None:
+        stop_codon_summary = (
+            f"    Stop codon masking mode: {stop_codon_masking.mode.value}\n"
+        )
+
     logger.info(
         textwrap.dedent(
             f"""\
@@ -47,6 +55,7 @@ def write_user_args(
     Trimming mode: {mode.value}
     Create complementary output: {complement}
     Process as codons: {codon}
+{stop_codon_summary}\
     Trim ends only: {ends_only}
     Create log file: {use_log}
     """  # noqa
@@ -75,10 +84,25 @@ def write_output_files_message(
     )
 
 
-def write_output_stats(stats: "TrimmingStats", start_time: float) -> None:
+def write_output_stats(
+    stats: "TrimmingStats",
+    start_time: float,
+    stop_codon_masking: "StopCodonMaskingStats" = None,
+) -> None:
     """
     Function to print out output statistics
     """
+    stop_codon_summary = ""
+    if stop_codon_masking is not None and stop_codon_masking.mode is not None:
+        stop_codon_summary = (
+            f"        Stop codon masking mode: {stop_codon_masking.mode.value}\n"
+            "        Terminal stop codons masked: "
+            f"{stop_codon_masking.terminal_masked}\n"
+            "        Internal stop codons masked: "
+            f"{stop_codon_masking.internal_masked}\n"
+            f"        Total stop codons masked: {stop_codon_masking.total_masked}\n\n"
+        )
+
     logger.info(
         textwrap.dedent(
             f"""\
@@ -91,6 +115,7 @@ def write_output_stats(stats: "TrimmingStats", start_time: float) -> None:
         Number of sites trimmed: {stats.trimmed_length}
         Percentage of alignment trimmed: {stats.trimmed_percentage}%
 
+{stop_codon_summary}\
         Execution time: {round(time.time() - start_time, 3)}s
     """
         )

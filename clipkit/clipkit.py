@@ -9,7 +9,7 @@ from multiprocessing import cpu_count
 
 from Bio.Align import MultipleSeqAlignment
 from .args_processing import process_args
-from .exceptions import InvalidInputFileFormat
+from .exceptions import InvalidInputFileFormat, StopCodonValidationError
 from .files import (
     get_alignment_and_format,
     FileFormat,
@@ -26,12 +26,17 @@ from .helpers import (
 )
 from .guide_tree import build_parsimony_guide_tree
 from .logger import logger, log_file_logger
-from .modes import TrimmingMode
+from .modes import StopCodonMode, TrimmingMode
 from .msa import MSA
 from .parser import create_parser
 from .plot_report import write_trim_plot_report
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .smart_gap_helper import smart_gap_threshold_determination
+from .stop_codons import (
+    StopCodonMaskingStats,
+    normalize_stop_codon_mode,
+    validate_stop_codon_configuration,
+)
 from .version import __version__ as current_version
 from .warnings import (
     warn_if_all_sites_were_trimmed,
@@ -43,7 +48,7 @@ from .write import (
     write_output_files_message,
 )
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -56,6 +61,9 @@ class TrimRun:
     output_file_format: FileFormat
     gaps: float
     codon: bool
+    stop_codon_masking: StopCodonMaskingStats = field(
+        default_factory=StopCodonMaskingStats
+    )
     version: str = current_version
 
     @property
@@ -127,6 +135,7 @@ def run(
     quiet: bool,
     ends_only: bool,
     threads: int = 1,
+    remove_stop_codons: Union[StopCodonMode, str, None] = None,
 ):
     alignment, input_file_format = get_alignment_and_format(input_file, input_file_format)
 
@@ -134,6 +143,13 @@ def run(
         raise ValueError("threads must be an integer >= 1")
 
     sequence_type = sequence_type or get_seq_type(alignment)
+    remove_stop_codons = normalize_stop_codon_mode(remove_stop_codons)
+    validate_stop_codon_configuration(
+        remove_stop_codons,
+        codon=codon,
+        sequence_type=sequence_type,
+        alignment_length=alignment.get_alignment_length(),
+    )
 
     if not gap_characters:
         gap_characters = get_gap_chars(sequence_type)
@@ -171,6 +187,12 @@ def run(
     )
 
     msa = create_msa(alignment, gap_characters, effective_threads)
+    stop_codon_masking = (
+        msa.mask_stop_codons(remove_stop_codons)
+        if remove_stop_codons is not None
+        else StopCodonMaskingStats()
+    )
+    gap_characters = msa.gap_chars
 
     # determine smart_gap threshold
     if mode in {
@@ -197,14 +219,15 @@ def run(
     )
 
     trim_run = TrimRun(
-        alignment,
-        msa,
-        gap_characters,
-        sequence_type,
-        input_file_format,
-        output_file_format,
-        gaps,
-        codon,
+        alignment=alignment,
+        msa=msa,
+        gap_characters=gap_characters,
+        sequence_type=sequence_type,
+        input_file_format=input_file_format,
+        output_file_format=output_file_format,
+        gaps=gaps,
+        codon=codon,
+        stop_codon_masking=stop_codon_masking,
     )
 
     return trim_run, msa.stats
@@ -230,6 +253,7 @@ def execute(
     plot_trim_report: Union[str, None] = None,
     auxiliary_file: str = None,
     threads: int = 1,
+    remove_stop_codons: Union[StopCodonMode, str, None] = None,
     **kwargs,
 ) -> None:
     fh = None
@@ -248,6 +272,7 @@ def execute(
             logger.disabled = True
 
         start_time = time.time()
+        remove_stop_codons = normalize_stop_codon_mode(remove_stop_codons)
 
         if validate_only:
             try:
@@ -261,6 +286,12 @@ def execute(
                 return
 
             validated_sequence_type = sequence_type or get_seq_type(alignment)
+            validate_stop_codon_configuration(
+                remove_stop_codons,
+                codon=codon,
+                sequence_type=validated_sequence_type,
+                alignment_length=alignment.get_alignment_length(),
+            )
             validated_gap_characters = gap_characters or get_gap_chars(
                 validated_sequence_type
             )
@@ -292,6 +323,9 @@ def execute(
                         gap_characters=validated_gap_characters,
                         mode=mode.value,
                         codon=codon,
+                        stop_codon_masking=StopCodonMaskingStats(
+                            mode=remove_stop_codons
+                        ).summary,
                         complement=complement,
                         ends_only=ends_only,
                         threads_requested=threads,
@@ -317,6 +351,7 @@ def execute(
                 quiet,
                 ends_only,
                 threads,
+                remove_stop_codons,
             )
         except InvalidInputFileFormat:
             logger.error(
@@ -338,6 +373,7 @@ def execute(
             codon,
             use_log,
             ends_only,
+            trim_run.stop_codon_masking,
         )
 
         if dry_run:
@@ -385,6 +421,7 @@ def execute(
                     gap_characters=trim_run.gap_characters,
                     mode=mode.value,
                     codon=codon,
+                    stop_codon_masking=trim_run.stop_codon_masking.summary,
                     complement=complement,
                     ends_only=ends_only,
                     threads_requested=threads,
@@ -404,7 +441,11 @@ def execute(
             )
             logger.info(f"Wrote trim plot report to {plot_trim_report}")
 
-        write_output_stats(stats, start_time)
+        write_output_stats(
+            stats,
+            start_time,
+            stop_codon_masking=trim_run.stop_codon_masking,
+        )
     finally:
         if fh is not None:
             log_file_logger.removeHandler(fh)
@@ -432,7 +473,10 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
 
-    execute(**process_args(args))
+    try:
+        execute(**process_args(args))
+    except StopCodonValidationError as exc:
+        parser.error(str(exc))
 
 
 if __name__ == "__main__":

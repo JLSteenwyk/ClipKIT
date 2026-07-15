@@ -3,7 +3,7 @@ import pytest
 from Bio.Align import MultipleSeqAlignment
 from clipkit import clipkit
 from clipkit.files import FileFormat
-from clipkit.modes import TrimmingMode
+from clipkit.modes import StopCodonMode, TrimmingMode
 from clipkit.msa import MSA
 
 
@@ -56,6 +56,106 @@ class TestApiInvocation(object):
             "trimmed_percentage": 50.0,
         }
         assert isinstance(trim_run.version, str)
+
+    @pytest.mark.parametrize(
+        "remove_stop_codons, expected_first_sequence, terminal, internal",
+        [
+            (StopCodonMode.terminal, "ATGTAAACC---", 1, 0),
+            ("internal", "ATG---ACCTGA", 0, 1),
+            (StopCodonMode.all, "ATG---ACC---", 1, 1),
+        ],
+    )
+    def test_stop_codon_masking_api(
+        self,
+        remove_stop_codons,
+        expected_first_sequence,
+        terminal,
+        internal,
+    ):
+        trim_run, _ = clipkit(
+            raw_alignment=">dna\nATGTAAACCTGA\n>control\nATGCAAACCCAA\n",
+            mode=TrimmingMode.gappy,
+            gaps=0.9,
+            codon=True,
+            sequence_type="nt",
+            remove_stop_codons=remove_stop_codons,
+        )
+
+        assert str(trim_run.trimmed[0].seq) == expected_first_sequence
+        assert trim_run.stop_codon_masking.terminal_masked == terminal
+        assert trim_run.stop_codon_masking.internal_masked == internal
+
+    def test_stop_codon_masking_precedes_codon_gap_trimming(self):
+        trim_run, stats = clipkit(
+            raw_alignment=">stop\nATGTAA\n>control\nATGCAA\n",
+            mode=TrimmingMode.gappy,
+            gaps=0.5,
+            codon=True,
+            sequence_type="nt",
+            remove_stop_codons="terminal",
+        )
+
+        assert [str(record.seq) for record in trim_run.trimmed] == ["ATG", "ATG"]
+        assert stats.output_length == 3
+        assert trim_run.stop_codon_masking.terminal_masked == 1
+
+    def test_omitting_stop_codon_option_preserves_existing_behavior(self):
+        trim_run, _ = clipkit(
+            raw_alignment=">stop\nATGTAA\n>control\nATGCAA\n",
+            mode=TrimmingMode.gappy,
+            gaps=0.9,
+            codon=True,
+            sequence_type="nt",
+        )
+
+        assert [str(record.seq) for record in trim_run.trimmed] == [
+            "ATGTAA",
+            "ATGCAA",
+        ]
+        assert trim_run.stop_codon_masking.summary == {
+            "mode": None,
+            "terminal_masked": 0,
+            "internal_masked": 0,
+            "total_masked": 0,
+        }
+
+    @pytest.mark.parametrize(
+        "kwargs, message",
+        [
+            ({"remove_stop_codons": "terminal"}, "codon-aware trimming"),
+            (
+                {
+                    "codon": True,
+                    "sequence_type": "aa",
+                    "remove_stop_codons": "terminal",
+                },
+                "nucleotide input",
+            ),
+            (
+                {
+                    "raw_alignment": ">one\nATGTA\n>two\nATGCA\n",
+                    "codon": True,
+                    "remove_stop_codons": "terminal",
+                },
+                "alignment length divisible by 3",
+            ),
+            (
+                {"codon": True, "remove_stop_codons": "unsupported"},
+                "remove_stop_codons must be one of",
+            ),
+        ],
+    )
+    def test_stop_codon_masking_validation(self, kwargs, message):
+        options = {
+            "raw_alignment": ">one\nATGTAA\n>two\nATGCAA\n",
+            "mode": TrimmingMode.gappy,
+            "gaps": 0.9,
+            "sequence_type": "nt",
+        }
+        options.update(kwargs)
+
+        with pytest.raises(ValueError, match=message):
+            clipkit(**options)
 
     def test_threads_must_be_positive(self):
         with pytest.raises(ValueError, match="threads must be an integer >= 1"):

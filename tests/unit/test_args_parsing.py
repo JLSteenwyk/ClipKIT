@@ -3,7 +3,8 @@ import pytest
 
 from clipkit.args_processing import process_args
 from clipkit.helpers import SeqType
-from clipkit.modes import TrimmingMode
+from clipkit.exceptions import StopCodonValidationError
+from clipkit.modes import StopCodonMode, TrimmingMode
 from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 
 
@@ -28,6 +29,7 @@ def args():
         validate_only=False,
         report_json=None,
         plot_trim_report=None,
+        remove_stop_codons=None,
         threads=1,
     )
     return Namespace(**kwargs)
@@ -167,6 +169,7 @@ class TestArgsProcessing(object):
             "output_file_format",
             "complement",
             "codon",
+            "remove_stop_codons",
             "sequence_type",
             "gaps",
             "mode",
@@ -223,6 +226,28 @@ class TestArgsProcessing(object):
         args.codon = True
         args.mode = TrimmingMode.c3
         with pytest.raises(SystemExit):
+            process_args(args)
+
+    def test_processes_stop_codon_mode(self, args):
+        args.codon = True
+        args.remove_stop_codons = "internal"
+
+        res = process_args(args)
+
+        assert res["remove_stop_codons"] is StopCodonMode.internal
+
+    def test_stop_codon_mode_requires_codon_processing(self, args):
+        args.remove_stop_codons = "terminal"
+
+        with pytest.raises(StopCodonValidationError, match="requires --codon"):
+            process_args(args)
+
+    def test_stop_codon_mode_rejects_explicit_protein_input(self, args):
+        args.codon = True
+        args.sequence_type = "aa"
+        args.remove_stop_codons = "all"
+
+        with pytest.raises(StopCodonValidationError, match="nucleotide input"):
             process_args(args)
 
     def test_threads_less_than_one_raises(self, args):

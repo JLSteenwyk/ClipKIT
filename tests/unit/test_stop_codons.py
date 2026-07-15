@@ -92,6 +92,24 @@ def test_masking_invalidates_cached_gap_statistics():
     np.testing.assert_equal(msa.site_gappyness, np.array([0, 0, 0, 0.5, 0.5, 0.5]))
 
 
+def test_mask_character_becomes_an_effective_gap_when_not_configured():
+    alignment = MultipleSeqAlignment(
+        [
+            SeqRecord(Seq("ATGTAA---"), id="stop"),
+            SeqRecord(Seq("ATGCAA---"), id="control"),
+        ]
+    )
+    msa = MSA.from_bio_msa(alignment, gap_chars=["?"])
+
+    stats = msa.mask_stop_codons(StopCodonMode.terminal)
+
+    assert stats.terminal_masked == 1
+    assert "-" in msa.gap_chars
+    np.testing.assert_equal(
+        msa.site_gappyness[3:], np.array([0.5, 0.5, 0.5, 1, 1, 1])
+    )
+
+
 def test_requires_complete_codon_columns():
     msa = make_msa("ATGTA")
 

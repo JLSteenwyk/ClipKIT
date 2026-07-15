@@ -4,7 +4,8 @@ from clipkit.api import clipkit
 from clipkit.clipkit import execute
 from clipkit.files import FileFormat
 from clipkit.logger import logger, log_file_logger
-from clipkit.modes import TrimmingMode
+from clipkit.helpers import SeqType
+from clipkit.modes import StopCodonMode, TrimmingMode
 
 
 def test_execute_invalid_input_format_does_not_crash(tmp_path):
@@ -202,3 +203,72 @@ def test_execute_writes_report_json_for_validate_only(tmp_path):
     assert payload["validate_only"] is True
     assert payload["dry_run"] is False
     assert "stats" not in payload
+
+
+def test_execute_reports_stop_codon_mode_and_counts(tmp_path):
+    input_file = tmp_path / "stops.fa"
+    input_file.write_text(
+        ">stop\nATGTAACCTTGA\n>control\nATGCAACCTCAA\n"
+    )
+    output_file = tmp_path / "stops.out.fa"
+    report_file = tmp_path / "stops.report.json"
+
+    execute(
+        input_file=str(input_file),
+        input_file_format=FileFormat.fasta,
+        output_file=str(output_file),
+        output_file_format=FileFormat.fasta,
+        sequence_type=SeqType.nt,
+        gaps=0.9,
+        gap_characters=None,
+        complement=False,
+        codon=True,
+        remove_stop_codons=StopCodonMode.all,
+        ends_only=False,
+        mode=TrimmingMode.gappy,
+        use_log=False,
+        quiet=False,
+        dry_run=True,
+        report_json=str(report_file),
+    )
+
+    payload = json.loads(report_file.read_text())
+    assert payload["stop_codon_masking"] == {
+        "mode": "all",
+        "terminal_masked": 1,
+        "internal_masked": 1,
+        "total_masked": 2,
+    }
+
+
+def test_validate_only_report_includes_stop_codon_configuration(tmp_path):
+    input_file = tmp_path / "stops.fa"
+    input_file.write_text(">stop\nATGTAA\n>control\nATGCAA\n")
+    report_file = tmp_path / "validate.report.json"
+
+    execute(
+        input_file=str(input_file),
+        input_file_format=FileFormat.fasta,
+        output_file=str(tmp_path / "unused.fa"),
+        output_file_format=FileFormat.fasta,
+        sequence_type=SeqType.nt,
+        gaps=0.9,
+        gap_characters=None,
+        complement=False,
+        codon=True,
+        remove_stop_codons="terminal",
+        ends_only=False,
+        mode=TrimmingMode.gappy,
+        use_log=False,
+        quiet=True,
+        validate_only=True,
+        report_json=str(report_file),
+    )
+
+    payload = json.loads(report_file.read_text())
+    assert payload["stop_codon_masking"] == {
+        "mode": "terminal",
+        "terminal_masked": 0,
+        "internal_masked": 0,
+        "total_masked": 0,
+    }

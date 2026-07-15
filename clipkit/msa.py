@@ -156,6 +156,11 @@ class MSA:
             raise ValueError(
                 "Stop codon masking requires an alignment length divisible by 3."
             )
+        if self._original_length == 0:
+            return StopCodonMaskingStats(mode=mode)
+
+        if "-" not in self._gap_chars:
+            self._gap_chars = [*self._gap_chars, "-"]
 
         codons = np.char.upper(self.seq_records).reshape(
             self.seq_records.shape[0], -1, self._codon_size
