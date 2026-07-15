@@ -3,7 +3,8 @@ import os.path
 import sys
 
 from .helpers import SeqType
-from .modes import TrimmingMode
+from .exceptions import StopCodonValidationError
+from .modes import StopCodonMode, TrimmingMode
 from .settings import DEFAULT_AA_GAP_CHARS
 
 logger = logging.getLogger(__name__)
@@ -70,6 +71,17 @@ def process_args(args) -> dict:
     use_log = args.log or False
     quiet = args.quiet or False
     sequence_type = SeqType(args.sequence_type.lower()) if args.sequence_type else None
+    remove_stop_codons_arg = getattr(args, "remove_stop_codons", None)
+    remove_stop_codons = (
+        StopCodonMode(remove_stop_codons_arg) if remove_stop_codons_arg else None
+    )
+
+    if remove_stop_codons is not None and not codon:
+        raise StopCodonValidationError("Stop codon masking requires --codon.")
+    if remove_stop_codons is not None and sequence_type == SeqType.aa:
+        raise StopCodonValidationError(
+            "Stop codon masking requires nucleotide input (--sequence_type nt)."
+        )
 
     if codon and mode == TrimmingMode.c3:
         logger.warning(
@@ -94,7 +106,9 @@ def process_args(args) -> dict:
 
     if mode == TrimmingMode.cst:
         if not auxiliary_file:
-            logger.warning("CST mode requires an auxiliary file via -a/--auxiliary_file.")
+            logger.warning(
+                "CST mode requires an auxiliary file via -a/--auxiliary_file."
+            )
             sys.exit()
         if not os.path.isfile(auxiliary_file):
             logger.warning("Auxiliary file does not exist.")
@@ -107,6 +121,7 @@ def process_args(args) -> dict:
         output_file_format=args.output_file_format,
         auxiliary_file=auxiliary_file,
         codon=codon,
+        remove_stop_codons=remove_stop_codons,
         sequence_type=sequence_type,
         complement=complement,
         gaps=gaps,

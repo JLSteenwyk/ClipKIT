@@ -67,6 +67,25 @@ Release automation details are documented in [RELEASE.md](RELEASE.md).
 pip install clipkit
 # run
 clipkit input.fa
+
+# mask all in-frame stops in a codon-aligned nucleotide MSA
+clipkit coding.fa --codon --sequence_type nt --remove_stop_codons all
+```
+
+The same operation is available through the Python API:
+
+```python
+from clipkit import clipkit
+
+trim_run, stats = clipkit(
+    input_file_path="coding.fa",
+    mode="gappy",
+    gaps=0.9,
+    sequence_type="nt",
+    codon=True,
+    remove_stop_codons="all",
+)
+print(trim_run.stop_codon_masking.summary)
 ```
 
 **eComp archives**
