@@ -6,7 +6,7 @@ import math
 from typing import Union
 from Bio.Phylo.BaseTree import Tree
 
-from .modes import TrimmingMode
+from .modes import StopCodonMode, TrimmingMode
 # Always import the standard version for compatibility
 from .site_classification import (
     SiteClassificationType,
@@ -15,6 +15,7 @@ from .site_classification import (
 
 from .settings import DEFAULT_AA_GAP_CHARS
 from .stats import TrimmingStats
+from .stop_codons import STOP_CODONS, StopCodonMaskingStats
 
 
 # Counting a batch at a time bounds the temporary integer matrix while still
@@ -143,6 +144,67 @@ class MSA:
 
     def complement_to_bio_msa(self) -> MultipleSeqAlignment:
         return self._to_bio_msa(self.sites_trimmed)
+
+    def mask_stop_codons(
+        self, mode: StopCodonMode
+    ) -> StopCodonMaskingStats:
+        """Replace selected in-frame stop codons with gap characters."""
+        if not isinstance(mode, StopCodonMode):
+            mode = StopCodonMode(mode)
+
+        if self._original_length % self._codon_size != 0:
+            raise ValueError(
+                "Stop codon masking requires an alignment length divisible by 3."
+            )
+
+        codons = np.char.upper(self.seq_records).reshape(
+            self.seq_records.shape[0], -1, self._codon_size
+        )
+        gap_chars = np.char.upper(np.asarray(self._gap_chars, dtype="U1"))
+        complete_codons = ~np.any(np.isin(codons, gap_chars), axis=2)
+        codon_strings = (
+            np.ascontiguousarray(codons).view("U3").reshape(codons.shape[:2])
+        )
+        stop_codons = np.isin(codon_strings, tuple(STOP_CODONS)) & complete_codons
+
+        terminal_to_mask = np.zeros(stop_codons.shape, dtype=bool)
+        internal_to_mask = np.zeros(stop_codons.shape, dtype=bool)
+
+        for sequence_index in range(self.seq_records.shape[0]):
+            complete_positions = np.flatnonzero(complete_codons[sequence_index])
+            if complete_positions.size == 0:
+                continue
+
+            terminal_position = complete_positions[-1]
+            terminal_to_mask[sequence_index, terminal_position] = stop_codons[
+                sequence_index, terminal_position
+            ]
+            internal_to_mask[sequence_index] = stop_codons[sequence_index]
+            internal_to_mask[sequence_index, terminal_position] = False
+
+        selected = np.zeros(stop_codons.shape, dtype=bool)
+        if mode in (StopCodonMode.terminal, StopCodonMode.all):
+            selected |= terminal_to_mask
+        if mode in (StopCodonMode.internal, StopCodonMode.all):
+            selected |= internal_to_mask
+
+        selected_sites = np.repeat(selected, self._codon_size, axis=1)
+        self.seq_records[selected_sites] = "-"
+        self._reset_analysis_caches()
+
+        return StopCodonMaskingStats(
+            mode=mode,
+            terminal_masked=int(np.count_nonzero(terminal_to_mask & selected)),
+            internal_masked=int(np.count_nonzero(internal_to_mask & selected)),
+        )
+
+    def _reset_analysis_caches(self) -> None:
+        self._site_classification_types = None
+        self._column_character_frequencies = None
+        self._column_character_count_cache = {}
+        self._site_gappyness_cache = None
+        self._site_entropy_cache = None
+        self._site_composition_bias_cache = None
 
     def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
         # NOTE: we use the description as the id to preserve the full sequence description - see issue #20

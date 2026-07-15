@@ -23,3 +23,9 @@ class TrimmingMode(Enum):
     kpic_smart_gap = "kpic-smart-gap"
     cst = "cst"  # custom site trimming
     c3 = "c3"
+
+
+class StopCodonMode(Enum):
+    terminal = "terminal"
+    internal = "internal"
+    all = "all"
