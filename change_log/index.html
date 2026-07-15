@@ -80,6 +80,15 @@
   <section id="change-log">
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
 <p>Major changes to ClipKIT are summarized here.</p>
+<p><strong>2.13.0</strong></p>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">--remove_stop_codons</span> <span class="pre">{terminal,internal,all}</span></code> to mask selected
+in-frame DNA or RNA stop codons before gap statistics and codon-aware
+trimming.</p></li>
+<li><p>Added equivalent public Python API support and validation for nucleotide,
+codon-mode, and triplet-length requirements.</p></li>
+<li><p>Added terminal/internal masking counts to human-readable and JSON reports.</p></li>
+</ul>
 <p><strong>2.12.2</strong>
 Improved trimming and output performance while preserving exact results:</p>
 <ul class="simple">

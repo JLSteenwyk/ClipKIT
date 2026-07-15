@@ -6,7 +6,10 @@ FAQ
 
 **Does ClipKIT trim amino acids, nucleotides, or codons?**
 
-ClipKIT trims amino acid and nucleotide alignments. Currently, ClipKIT does not trim codons. 
+ClipKIT trims amino acid and nucleotide alignments. For codon-aligned nucleotide
+MSAs, ``--codon`` keeps trimming decisions in whole codons. The optional
+``--remove_stop_codons`` mode can first mask terminal, internal, or all in-frame
+stop codons as gaps.
 
 |
 

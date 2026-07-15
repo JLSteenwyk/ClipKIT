@@ -8,6 +8,7 @@ This section describes the various features and options of ClipKIT.
 - Log_
 - Complementary_
 - Codon_
+- `Stop codon masking`_
 - `Custom site trimming (cst mode)`_
 - Gaps_
 - `Gap Characters`_
@@ -164,6 +165,63 @@ codon will be trimmed. To conduct codon-based trimming, use the -co/\\-\\-codon 
     # or
 
 	clipkit <input> -co
+
+|
+
+
+.. _`Stop codon masking`:
+
+Stop codon masking
+------------------
+
+For codon-aligned nucleotide MSAs, ClipKIT can replace selected in-frame stop
+codons with ``---`` before calculating gap statistics or choosing columns to
+trim. Masking preserves sequence lengths and alignment rectangularity. DNA
+stops (``TAA``, ``TAG``, and ``TGA``) and their RNA equivalents are recognized
+case-insensitively.
+
+The ``--remove_stop_codons`` modes are:
+
+* ``terminal``: mask a stop only when it is the final complete, non-gap codon
+  in a sequence. Trailing gap codons are allowed.
+* ``internal``: mask all in-frame stops other than a terminal stop.
+* ``all``: mask both terminal and internal stops.
+
+This option requires ``--codon`` and nucleotide input. The alignment length
+must be divisible by three. Gapped or incomplete codons are not interpreted as
+stops. Because masking occurs first, the new gaps participate in gap-based
+trimming; when a masked codon column reaches the selected gap threshold,
+codon-aware trimming can remove that column from every sequence.
+
+.. code-block:: shell
+
+	# mask terminal stops only
+	clipkit coding.fa --codon --sequence_type nt --remove_stop_codons terminal
+
+	# mask internal stops only
+	clipkit coding.fa --codon --sequence_type nt --remove_stop_codons internal
+
+	# mask terminal and internal stops, then apply a gap threshold
+	clipkit coding.fa --codon --sequence_type nt --remove_stop_codons all -m gappy -g 0.5
+
+Execution output reports separate terminal and internal masking counts. JSON
+reports created with ``--report_json`` contain the selected mode and the same
+counts under ``stop_codon_masking``. The Python API accepts ``terminal``,
+``internal``, or ``all`` through its ``remove_stop_codons`` argument.
+
+.. code-block:: python
+
+   from clipkit import clipkit
+
+   trim_run, stats = clipkit(
+       input_file_path="coding.fa",
+       mode="gappy",
+       gaps=0.9,
+       sequence_type="nt",
+       codon=True,
+       remove_stop_codons="all",
+   )
+   print(trim_run.stop_codon_masking.summary)
 
 |
 
@@ -450,6 +508,8 @@ All options
      - Specify gap characters used in input file (AAs: ``Xx-?*``; NTs: ``XxNn-?*``).
    * - ``-co/--codon``
      - Conduct codon-based trimming. *Default: off*.
+   * - ``--remove_stop_codons {terminal,internal,all}``
+     - Mask selected in-frame stop codons as gaps before trimming. Requires nucleotide input and ``--codon``. *Default: off*.
    * - ``-s/--sequence_type``
      - Specify sequence type of input file (``aa`` or ``nt``). *Default: auto-detect*.
    * - ``-if/--input_file_format``

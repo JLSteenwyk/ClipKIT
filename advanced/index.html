@@ -53,6 +53,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#log">Log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#complementary">Complementary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#codon">Codon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stop-codon-masking">Stop codon masking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-site-trimming-cst-mode">Custom site trimming (cst mode)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gaps">Gaps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gap-characters">Gap Characters</a></li>
@@ -104,6 +105,7 @@
 <li><p><a class="reference internal" href="#log">Log</a></p></li>
 <li><p><a class="reference internal" href="#complementary">Complementary</a></p></li>
 <li><p><a class="reference internal" href="#codon">Codon</a></p></li>
+<li><p><a class="reference internal" href="#stop-codon-masking">Stop codon masking</a></p></li>
 <li><p><a class="reference internal" href="#custom-site-trimming-cst-mode">Custom site trimming (cst mode)</a></p></li>
 <li><p><a class="reference internal" href="#gaps">Gaps</a></p></li>
 <li><p><a class="reference internal" href="#gap-characters">Gap Characters</a></p></li>
@@ -250,8 +252,58 @@ codon will be trimmed. To conduct codon-based trimming, use the -co/\-\-codon ar
 <div class="line"><br /></div>
 </div>
 </section>
+<section id="stop-codon-masking">
+<span id="id6"></span><h2>Stop codon masking<a class="headerlink" href="#stop-codon-masking" title="Link to this heading"></a></h2>
+<p>For codon-aligned nucleotide MSAs, ClipKIT can replace selected in-frame stop
+codons with <code class="docutils literal notranslate"><span class="pre">---</span></code> before calculating gap statistics or choosing columns to
+trim. Masking preserves sequence lengths and alignment rectangularity. DNA
+stops (<code class="docutils literal notranslate"><span class="pre">TAA</span></code>, <code class="docutils literal notranslate"><span class="pre">TAG</span></code>, and <code class="docutils literal notranslate"><span class="pre">TGA</span></code>) and their RNA equivalents are recognized
+case-insensitively.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--remove_stop_codons</span></code> modes are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">terminal</span></code>: mask a stop only when it is the final complete, non-gap codon
+in a sequence. Trailing gap codons are allowed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">internal</span></code>: mask all in-frame stops other than a terminal stop.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code>: mask both terminal and internal stops.</p></li>
+</ul>
+<p>This option requires <code class="docutils literal notranslate"><span class="pre">--codon</span></code> and nucleotide input. The alignment length
+must be divisible by three. Gapped or incomplete codons are not interpreted as
+stops. Because masking occurs first, the new gaps participate in gap-based
+trimming; when a masked codon column reaches the selected gap threshold,
+codon-aware trimming can remove that column from every sequence.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># mask terminal stops only</span>
+clipkit<span class="w"> </span>coding.fa<span class="w"> </span>--codon<span class="w"> </span>--sequence_type<span class="w"> </span>nt<span class="w"> </span>--remove_stop_codons<span class="w"> </span>terminal
+
+<span class="c1"># mask internal stops only</span>
+clipkit<span class="w"> </span>coding.fa<span class="w"> </span>--codon<span class="w"> </span>--sequence_type<span class="w"> </span>nt<span class="w"> </span>--remove_stop_codons<span class="w"> </span>internal
+
+<span class="c1"># mask terminal and internal stops, then apply a gap threshold</span>
+clipkit<span class="w"> </span>coding.fa<span class="w"> </span>--codon<span class="w"> </span>--sequence_type<span class="w"> </span>nt<span class="w"> </span>--remove_stop_codons<span class="w"> </span>all<span class="w"> </span>-m<span class="w"> </span>gappy<span class="w"> </span>-g<span class="w"> </span><span class="m">0</span>.5
+</pre></div>
+</div>
+<p>Execution output reports separate terminal and internal masking counts. JSON
+reports created with <code class="docutils literal notranslate"><span class="pre">--report_json</span></code> contain the selected mode and the same
+counts under <code class="docutils literal notranslate"><span class="pre">stop_codon_masking</span></code>. The Python API accepts <code class="docutils literal notranslate"><span class="pre">terminal</span></code>,
+<code class="docutils literal notranslate"><span class="pre">internal</span></code>, or <code class="docutils literal notranslate"><span class="pre">all</span></code> through its <code class="docutils literal notranslate"><span class="pre">remove_stop_codons</span></code> argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clipkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">clipkit</span>
+
+<span class="n">trim_run</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">clipkit</span><span class="p">(</span>
+    <span class="n">input_file_path</span><span class="o">=</span><span class="s2">&quot;coding.fa&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;gappy&quot;</span><span class="p">,</span>
+    <span class="n">gaps</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">sequence_type</span><span class="o">=</span><span class="s2">&quot;nt&quot;</span><span class="p">,</span>
+    <span class="n">codon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">remove_stop_codons</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trim_run</span><span class="o">.</span><span class="n">stop_codon_masking</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 <section id="custom-site-trimming-cst-mode">
-<span id="id6"></span><h2>Custom site trimming (cst mode)<a class="headerlink" href="#custom-site-trimming-cst-mode" title="Link to this heading"></a></h2>
+<span id="id7"></span><h2>Custom site trimming (cst mode)<a class="headerlink" href="#custom-site-trimming-cst-mode" title="Link to this heading"></a></h2>
 <p>Custom site trimming specified using a tab-delimited text file specified using the -a argument.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-m<span class="w"> </span>cst<span class="w"> </span>-a<span class="w"> </span>&lt;auxiliary_file&gt;
 </pre></div>
@@ -301,7 +353,7 @@ others are kept.</p>
 </div>
 </section>
 <section id="gaps">
-<span id="id7"></span><h2>Gaps<a class="headerlink" href="#gaps" title="Link to this heading"></a></h2>
+<span id="id8"></span><h2>Gaps<a class="headerlink" href="#gaps" title="Link to this heading"></a></h2>
 <p>Positions with gappyness greater than threshold will be trimmed.
 Must be between 0 and 1. (Default: 0.9). When <code class="docutils literal notranslate"><span class="pre">-g</span></code> is provided without
 <code class="docutils literal notranslate"><span class="pre">-m</span></code>, the trimming mode automatically switches from <code class="docutils literal notranslate"><span class="pre">smart-gap</span></code> to <code class="docutils literal notranslate"><span class="pre">gappy</span></code>
@@ -324,7 +376,7 @@ In entropy mode, this value is treated as a normalized Shannon entropy threshold
 </div>
 </section>
 <section id="gap-characters">
-<span id="id8"></span><h2>Gap Characters<a class="headerlink" href="#gap-characters" title="Link to this heading"></a></h2>
+<span id="id9"></span><h2>Gap Characters<a class="headerlink" href="#gap-characters" title="Link to this heading"></a></h2>
 <p>Specifies gap characters used in the input file. For example,
 “NnXx-?” would specify that “N”, “n”, “X”, “x”, “-”, and “?” are
 gap characters. Note, the first gap character cannot be “-” because
@@ -337,7 +389,7 @@ the parser will interpret the gaps list as a new argument.</p>
 </div>
 </section>
 <section id="sequence-type">
-<span id="id9"></span><h2>Sequence Type<a class="headerlink" href="#sequence-type" title="Link to this heading"></a></h2>
+<span id="id10"></span><h2>Sequence Type<a class="headerlink" href="#sequence-type" title="Link to this heading"></a></h2>
 <p>Specifies the type of sequences in the input file. The default
 is auto-detection of sequence type. Valid options
 include aa or nt for amino acids and nucleotides. This argument
@@ -358,7 +410,7 @@ considered gaps as well as N.</p>
 </div>
 </section>
 <section id="ends-only">
-<span id="id10"></span><h2>Ends only<a class="headerlink" href="#ends-only" title="Link to this heading"></a></h2>
+<span id="id11"></span><h2>Ends only<a class="headerlink" href="#ends-only" title="Link to this heading"></a></h2>
 <p>For a given trimming mode, this option trims only sites at the ends of an alignment.
 For example, if the sites that should be trimmed include
 [0, 1, 2, 4, 5, 6, 14, 15, 16] for smart-gap mode and an alignment of
@@ -376,7 +428,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--ends_only
 </div>
 </section>
 <section id="threads">
-<span id="id11"></span><h2>Threads<a class="headerlink" href="#threads" title="Link to this heading"></a></h2>
+<span id="id12"></span><h2>Threads<a class="headerlink" href="#threads" title="Link to this heading"></a></h2>
 <p>ClipKIT supports parallel processing for site classification and character frequency
 calculations. For larger alignments, this can significantly speed up processing.</p>
 <p>The number of threads can be specified using the -t/\-\-threads argument.
@@ -404,7 +456,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--threads<sp
 </div>
 </section>
 <section id="dry-run">
-<span id="id12"></span><h2>Dry run<a class="headerlink" href="#dry-run" title="Link to this heading"></a></h2>
+<span id="id13"></span><h2>Dry run<a class="headerlink" href="#dry-run" title="Link to this heading"></a></h2>
 <p>Use dry run mode to execute trimming and compute summary statistics without
 writing alignment, complementary, or log output files.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--dry_run
@@ -415,7 +467,7 @@ writing alignment, complementary, or log output files.</p>
 </div>
 </section>
 <section id="validate-only">
-<span id="id13"></span><h2>Validate only<a class="headerlink" href="#validate-only" title="Link to this heading"></a></h2>
+<span id="id14"></span><h2>Validate only<a class="headerlink" href="#validate-only" title="Link to this heading"></a></h2>
 <p>Use validate-only mode to check input format and argument consistency (including
 auxiliary file checks for <code class="docutils literal notranslate"><span class="pre">cst</span></code> mode) and then exit without trimming.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--validate_only
@@ -426,7 +478,7 @@ auxiliary file checks for <code class="docutils literal notranslate"><span class
 </div>
 </section>
 <section id="report-json">
-<span id="id14"></span><h2>Report JSON<a class="headerlink" href="#report-json" title="Link to this heading"></a></h2>
+<span id="id15"></span><h2>Report JSON<a class="headerlink" href="#report-json" title="Link to this heading"></a></h2>
 <p>Write a machine-readable JSON report with run configuration and outcome details.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># explicit report path</span>
 clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--report_json<span class="w"> </span>run_report.json
@@ -440,7 +492,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--report_jso
 </div>
 </section>
 <section id="plot-trim-report">
-<span id="id15"></span><h2>Plot trim report<a class="headerlink" href="#plot-trim-report" title="Link to this heading"></a></h2>
+<span id="id16"></span><h2>Plot trim report<a class="headerlink" href="#plot-trim-report" title="Link to this heading"></a></h2>
 <p>Write an interactive HTML report with per-site tracks and trimmed-column highlighting.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># explicit report path</span>
 clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_report<span class="w"> </span>run_plot.html
@@ -464,7 +516,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_
 </div>
 </section>
 <section id="all-options">
-<span id="id16"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
+<span id="id17"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 28.0%" />
@@ -497,40 +549,43 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-co/--codon</span></code></p></td>
 <td><p>Conduct codon-based trimming. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-s/--sequence_type</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--remove_stop_codons</span> <span class="pre">{terminal,internal,all}</span></code></p></td>
+<td><p>Mask selected in-frame stop codons as gaps before trimming. Requires nucleotide input and <code class="docutils literal notranslate"><span class="pre">--codon</span></code>. <em>Default: off</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-s/--sequence_type</span></code></p></td>
 <td><p>Specify sequence type of input file (<code class="docutils literal notranslate"><span class="pre">aa</span></code> or <code class="docutils literal notranslate"><span class="pre">nt</span></code>). <em>Default: auto-detect</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-if/--input_file_format</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-if/--input_file_format</span></code></p></td>
 <td><p>Specify input file format*. <em>Default: auto-detect</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-of/--output_file_format</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-of/--output_file_format</span></code></p></td>
 <td><p>Specify output file format*. <em>Default: input file type</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-l/--log</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-l/--log</span></code></p></td>
 <td><p>Create a log file. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-c/--complementary</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-c/--complementary</span></code></p></td>
 <td><p>Create a complementary alignment file. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-a/--auxiliary_file</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-a/--auxiliary_file</span></code></p></td>
 <td><p>Auxiliary file used for specifying sites to trim in <code class="docutils literal notranslate"><span class="pre">cst</span></code> mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-eo/--ends_only</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-eo/--ends_only</span></code></p></td>
 <td><p>Trim only sites at alignment ends that would otherwise be removed. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-q/--quiet</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-q/--quiet</span></code></p></td>
 <td><p>Disable logging to stdout. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-t/--threads</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-t/--threads</span></code></p></td>
 <td><p>Requested threads for parallel processing; KPI/KPIC modes may auto-tune lower. <em>Default: 1</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dry_run</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dry_run</span></code></p></td>
 <td><p>Run trimming/stat calculations but skip writing output files. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--validate_only</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--validate_only</span></code></p></td>
 <td><p>Validate inputs/arguments and exit without trimming. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--report_json</span> <span class="pre">[path]</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--report_json</span> <span class="pre">[path]</span></code></p></td>
 <td><p>Write a JSON run report; if no path is given, uses <code class="docutils literal notranslate"><span class="pre">&lt;output&gt;.report.json</span></code>.</p></td>
 </tr>
 </tbody>
