@@ -71,14 +71,14 @@ def test_ignores_gapped_codons_and_sequences_without_stops():
     assert stats.internal_masked == 0
 
 
-def test_terminal_is_the_final_complete_non_gap_codon():
-    msa = make_msa("ATGTAAT-A---", "ATGTAA---T-A")
+def test_terminal_stops_can_precede_different_numbers_of_trailing_gap_codons():
+    msa = make_msa("ATGTAA------", "ATGCAATAG---")
 
     terminal_stats = msa.mask_stop_codons(StopCodonMode.terminal)
 
     assert [str(record.seq) for record in msa.to_bio_msa()] == [
-        "ATG---T-A---",
-        "ATG------T-A",
+        "ATG---------",
+        "ATGCAA------",
     ]
     assert terminal_stats.terminal_masked == 2
 
