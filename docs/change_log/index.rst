@@ -8,6 +8,20 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+**2.13.2**
+
+- Expanded behavioral test coverage from 84.53% to 98.83% line coverage,
+  increasing the suite from 552 to 619 tests without modifying production
+  behavior.
+- Added coverage for public Python APIs, CLI validation and execution paths,
+  file output, report generation, malformed inputs, and reusable in-process
+  execution.
+- Added boundary and regression tests for alignment parsing and trimming,
+  codon and stop-codon handling, ECOMP archives, smart-gap selection, and
+  gappyout behavior.
+- Exercised benchmark workers, fresh-process execution, CLI/API equivalence,
+  suite orchestration, result comparison, and report generation.
+
 **2.13.1**
 
 - Accelerated terminal, internal, and all stop-codon masking by skipping
