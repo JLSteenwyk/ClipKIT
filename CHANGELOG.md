@@ -6,6 +6,9 @@
 - Vectorized entropy and composition-bias scoring across alignment columns while preserving exact four-decimal scores and trimming decisions.
 - Vectorized codon-site expansion for faster codon-aware trimming on alignments with many selected sites.
 - Expanded reproducible benchmarks to cover every trimming mode, CLI/API paths, threads, stop-codon modes, supported formats, exact baseline comparison, warm-ups, runtime ranges, and peak memory.
+- Accelerated gappy, smart-gap, KPI, and KPIC column counting by combining and fusing temporary-array encoding passes without changing site statistics or trimming decisions.
+- Reused exact classification counts for uppercase KPI/KPIC gap-combination modes, avoiding a second full alignment scan while retaining separate raw and normalized passes for mixed-case inputs.
+- Added a focused 54-case core-mode benchmark matrix with dense/sparse AA and NT fixtures, exact statistic/position hashes, resolved thresholds, effective thread counts, and retained JSON/CSV reports.
 
 ## 2.13.0
 
