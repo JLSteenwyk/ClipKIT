@@ -4,6 +4,7 @@ import math
 import random
 
 from Bio import AlignIO
+import clipkit.msa as msa_module
 from clipkit.guide_tree import build_parsimony_guide_tree
 from clipkit.msa import MSA, _column_character_counts
 from clipkit.modes import TrimmingMode
@@ -315,6 +316,56 @@ def test_count_backed_properties_match_per_column_reference():
     np.testing.assert_equal(
         msa.site_composition_bias, np.around(expected_bias, decimals=4)
     )
+
+
+@pytest.mark.parametrize(
+    "mode",
+    [
+        TrimmingMode.kpi_gappy,
+        TrimmingMode.kpic_gappy,
+        TrimmingMode.kpi_smart_gap,
+        TrimmingMode.kpic_smart_gap,
+    ],
+)
+def test_uppercase_combined_modes_reuse_classification_counts(
+    mode, monkeypatch, mocker
+):
+    seq_records = np.array(
+        [list("AA-CGT"), list("AC-CGT"), list("CAAC-T"), list("CCAG-T")],
+        dtype="U1",
+    )
+    monkeypatch.setattr(msa_module, "_MIN_CELLS_FOR_COLUMN_COUNTING", 0)
+    count_columns = mocker.spy(msa_module, "_column_character_counts")
+    msa = MSA(
+        [{"id": str(index)} for index in range(len(seq_records))],
+        seq_records,
+        gap_chars=["-"],
+    )
+
+    msa.trim(mode=mode, gap_threshold=0.5)
+
+    assert count_columns.call_count == 1
+
+
+def test_mixed_case_combined_mode_keeps_gap_and_normalized_counts_separate(
+    monkeypatch, mocker
+):
+    seq_records = np.array(
+        [list("Aa-CGT"), list("AC-CGT"), list("CAAC-T"), list("CCAG-T")],
+        dtype="U1",
+    )
+    monkeypatch.setattr(msa_module, "_MIN_CELLS_FOR_COLUMN_COUNTING", 0)
+    count_columns = mocker.spy(msa_module, "_column_character_counts")
+    msa = MSA(
+        [{"id": str(index)} for index in range(len(seq_records))],
+        seq_records,
+        gap_chars=["-"],
+        requires_uppercase_normalization=True,
+    )
+
+    msa.trim(mode=TrimmingMode.kpic_gappy, gap_threshold=0.5)
+
+    assert count_columns.call_count == 2
 
 
 @pytest.mark.parametrize(

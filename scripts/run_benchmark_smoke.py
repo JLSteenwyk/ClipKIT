@@ -529,6 +529,11 @@ def _algorithm_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
         mode = TrimmingMode[case.mode]
         threshold = case.gaps
         if case.mode in {"smart_gap", "kpi_smart_gap", "kpic_smart_gap"}:
+            if (
+                case.mode in {"kpi_smart_gap", "kpic_smart_gap"}
+                and not msa._requires_uppercase_normalization
+            ):
+                _ = msa.site_classification_types
             kwargs = {"seq_records": msa.seq_records}
             if (
                 "gaps_dist"

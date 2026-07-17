@@ -202,6 +202,12 @@ def run(
         TrimmingMode.kpi_smart_gap,
         TrimmingMode.kpic_smart_gap,
     }:
+        if (
+            mode in {TrimmingMode.kpi_smart_gap, TrimmingMode.kpic_smart_gap}
+            and not msa._requires_uppercase_normalization
+        ):
+            # Populate reusable raw counts before calculating gappyness.
+            _ = msa.site_classification_types
         gaps = smart_gap_threshold_determination(
             alignment,
             gap_characters,

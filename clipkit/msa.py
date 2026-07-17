@@ -275,7 +275,19 @@ class MSA:
         if self._site_gappyness_cache is not None:
             return self._site_gappyness_cache
 
-        if self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING:
+        # KPI/KPIC classification already counts every uppercase character.
+        # Reuse those exact raw counts when possible instead of rescanning the
+        # alignment for a combined gap/classification mode.
+        shared_counts = (
+            self._column_character_count_cache.get(("frequencies", False))
+            if not self._requires_uppercase_normalization
+            else None
+        )
+        if shared_counts is not None:
+            states, counts = shared_counts
+            gap_counts = counts[np.isin(states, self._gap_chars)].sum(axis=0)
+            site_gappyness = gap_counts / self.seq_records.shape[0]
+        elif self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING:
             site_gappyness = np.isin(self.seq_records, self._gap_chars).mean(axis=0)
         else:
             states, counts = self._get_column_character_counts(
@@ -522,8 +534,16 @@ class MSA:
                 != SiteClassificationType.parsimony_informative
             )[0]
         elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
-            sites_to_trim_gaps_based = np.where(self.site_gappyness > gap_threshold)[0]
-            site_classification_types = self.site_classification_types
+            if self._requires_uppercase_normalization:
+                sites_to_trim_gaps_based = np.where(
+                    self.site_gappyness > gap_threshold
+                )[0]
+                site_classification_types = self.site_classification_types
+            else:
+                site_classification_types = self.site_classification_types
+                sites_to_trim_gaps_based = np.where(
+                    self.site_gappyness > gap_threshold
+                )[0]
             sites_to_trim_classification_based = np.where(
                 site_classification_types
                 != SiteClassificationType.parsimony_informative
@@ -540,9 +560,16 @@ class MSA:
                 | (site_classification_types == SiteClassificationType.singleton)
             )[0]
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
-            sites_to_trim_gaps_based = np.where(self.site_gappyness >= gap_threshold)[0]
-
-            site_classification_types = self.site_classification_types
+            if self._requires_uppercase_normalization:
+                sites_to_trim_gaps_based = np.where(
+                    self.site_gappyness >= gap_threshold
+                )[0]
+                site_classification_types = self.site_classification_types
+            else:
+                site_classification_types = self.site_classification_types
+                sites_to_trim_gaps_based = np.where(
+                    self.site_gappyness >= gap_threshold
+                )[0]
             sites_to_trim_classification_based = np.where(
                 (site_classification_types == SiteClassificationType.other)
                 | (site_classification_types == SiteClassificationType.singleton)
