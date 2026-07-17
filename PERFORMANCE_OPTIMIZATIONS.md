@@ -50,26 +50,25 @@ formats.
 
 | Case | Baseline median (range) | Optimized median (range) | Speedup |
 | --- | ---: | ---: | ---: |
-| Entropy, large algorithm | 0.3375 s (0.3343–0.3461) | 0.1833 s (0.1755–0.1951) | 1.84× |
-| Composition-bias, large algorithm | 0.2864 s (0.2832–0.2924) | 0.1751 s (0.1725–0.1989) | 1.64× |
-| Terminal stop masking, algorithm | 0.3817 s (0.3691–0.3917) | 0.0499 s (0.0339–0.0548) | 7.64× |
-| Internal stop masking, algorithm | 0.3793 s (0.3685–0.3892) | 0.0580 s (0.0416–0.0788) | 6.54× |
-| All stop masking, algorithm | 0.3738 s (0.3646–0.3875) | 0.0524 s (0.0412–0.0772) | 7.13× |
-| Terminal stop masking, end to end | 0.4116 s (0.3947–0.4210) | 0.0882 s (0.0834–0.1023) | 4.67× |
-| Internal stop masking, end to end | 0.3982 s (0.3978–0.4174) | 0.0852 s (0.0762–0.0917) | 4.67× |
-| All stop masking, end to end | 0.4071 s (0.3928–0.4145) | 0.0948 s (0.0775–0.1172) | 4.29× |
+| Entropy, large algorithm | 0.3397 s (0.3348–0.3550) | 0.1780 s (0.1727–0.2335) | 1.91× |
+| Composition-bias, large algorithm | 0.2865 s (0.2849–0.2916) | 0.1751 s (0.1668–0.1818) | 1.64× |
+| Terminal stop masking, algorithm | 0.3757 s (0.3714–0.3806) | 0.0543 s (0.0455–0.0695) | 6.92× |
+| Internal stop masking, algorithm | 0.3852 s (0.3684–0.3878) | 0.0588 s (0.0380–0.0697) | 6.55× |
+| All stop masking, algorithm | 0.3639 s (0.3551–0.4021) | 0.0524 s (0.0384–0.0565) | 6.94× |
+| Terminal stop masking, end to end | 0.4042 s (0.4003–0.4145) | 0.0837 s (0.0799–0.1027) | 4.83× |
+| Internal stop masking, end to end | 0.4049 s (0.4002–0.4128) | 0.0922 s (0.0794–0.1064) | 4.39× |
+| All stop masking, end to end | 0.3990 s (0.3950–0.4144) | 0.0975 s (0.0903–0.1161) | 4.09× |
 
 Unchanged large common paths stayed within noise: gappy end-to-end was
-0.3737 s before and 0.3682 s after; KPIC end-to-end was 0.4990 s before and
-0.4840 s after. A separate 12-repetition interleaved audit of cases that looked
+0.3768 s before and 0.3672 s after; KPIC end-to-end was 0.4738 s before and
+0.4760 s after. A separate 12-repetition interleaved audit of cases that looked
 slower in sequential reports found no regression: large KPIC algorithm −2.2%,
 medium smart-gap −0.5%, sparse gappy −4.8%, and small gappy −14.7%.
 
 ### Memory
 
-Large entropy and composition-bias median process peak RSS changed by +2.7%,
-inside the observed run-to-run range; targeted interleaved measurements ranged
-from −2.4% to −0.2%. Other unchanged large workflows stayed within about 1%.
+Large entropy and composition-bias median process peak RSS changed by −0.2%
+and +0.2%. Other unchanged large workflows stayed within about 2%.
 
 macOS `ru_maxrss` reports 12–17% higher residency for the stop-codon
 end-to-end cases after they became more than four times faster. Allocation
