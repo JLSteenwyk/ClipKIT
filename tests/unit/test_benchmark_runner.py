@@ -1,3 +1,4 @@
+import builtins
 import importlib.util
 import json
 import sys
@@ -292,3 +293,434 @@ def test_unknown_worker_kind_is_rejected(tmp_path):
             BENCHMARK.run_worker(case.name, input_path)
     finally:
         BENCHMARK.CASES.pop(case.name)
+
+
+def _benchmark_sample(**overrides):
+    sample = {
+        "runtime_seconds": 1.0,
+        "cpu_seconds": 0.5,
+        "peak_rss_bytes": 100,
+        "output_sha256": "same-output",
+    }
+    sample.update(overrides)
+    return sample
+
+
+def test_sample_summary_preserves_optional_metadata_and_missing_metrics():
+    case = BENCHMARK.CASES["gappy_small"]
+    result = BENCHMARK.summarize_samples(
+        case,
+        [
+            _benchmark_sample(
+                cpu_seconds=None,
+                peak_rss_bytes=None,
+                threshold=0.9,
+                effective_threads=1,
+            )
+        ],
+    )
+
+    assert result["cpu_seconds_median"] is None
+    assert result["peak_rss_bytes_median"] is None
+    assert result["threshold"] == 0.9
+    assert result["effective_threads"] == 1
+
+
+def test_invoke_worker_runs_fresh_process():
+    case = BENCHMARK.CASES["gappy_small"]
+
+    result = BENCHMARK._invoke_worker(
+        BENCHMARK.ROOT,
+        case,
+        _case_input(case.name),
+    )
+
+    assert result["runtime_seconds"] >= 0
+    assert len(result["output_sha256"]) == 64
+
+
+def test_invoke_worker_reports_process_failure(monkeypatch):
+    monkeypatch.setattr(
+        BENCHMARK.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=1, stderr="worker failed"),
+    )
+    case = BENCHMARK.CASES["gappy_small"]
+
+    with pytest.raises(
+        RuntimeError, match="(?s)Benchmark worker failed.*worker failed"
+    ):
+        BENCHMARK._invoke_worker(
+            BENCHMARK.ROOT,
+            case,
+            _case_input(case.name),
+        )
+
+
+def test_run_case_discards_warmups_and_summarizes_repetitions(monkeypatch):
+    calls = []
+
+    def invoke_worker(source_root, case, input_path):
+        calls.append((source_root, case.name, input_path))
+        return _benchmark_sample()
+
+    monkeypatch.setattr(BENCHMARK, "_invoke_worker", invoke_worker)
+    case = BENCHMARK.CASES["gappy_small"]
+
+    result = BENCHMARK.run_case(
+        BENCHMARK.ROOT,
+        case,
+        _case_input(case.name),
+        warmups=2,
+        repetitions=3,
+    )
+
+    assert len(calls) == 5
+    assert result["repetitions"] == 3
+    assert result["runtime_seconds_median"] == 1.0
+
+
+def test_generated_fixtures_are_deterministic_and_well_formed(tmp_path, monkeypatch):
+    def shortened_range(*args):
+        if args == (384,) or args == (512,):
+            return builtins.range(2)
+        if args == (5000,) or args == (9000,):
+            return builtins.range(20)
+        return builtins.range(*args)
+
+    monkeypatch.setattr(BENCHMARK, "range", shortened_range, raising=False)
+
+    generated = BENCHMARK._write_generated_fixtures(tmp_path)
+
+    assert set(generated) == {
+        "generated_dense_aa",
+        "generated_dense_nt",
+        "generated_sparse_aa",
+        "generated_stop_nt",
+    }
+    assert BENCHMARK._fasta_dimensions(generated["generated_dense_aa"], None) == (
+        2,
+        20,
+    )
+    assert BENCHMARK._fasta_dimensions(generated["generated_dense_nt"], None) == (
+        2,
+        20,
+    )
+    assert BENCHMARK._fasta_dimensions(generated["generated_sparse_aa"], None) == (
+        2,
+        20,
+    )
+    assert BENCHMARK._fasta_dimensions(generated["generated_stop_nt"], None) == (
+        2,
+        6000,
+    )
+    assert "---" in generated["generated_stop_nt"].read_text()
+
+
+def test_input_paths_resolve_static_and_generated_datasets(tmp_path):
+    generated = {
+        name: tmp_path / f"{name}.fa"
+        for name, relative in BENCHMARK.FILES.items()
+        if relative is None
+    }
+
+    paths = BENCHMARK._input_paths(BENCHMARK.ROOT, generated)
+
+    assert paths["small_aa"] == BENCHMARK.ROOT / BENCHMARK.FILES["small_aa"]
+    assert paths["generated_dense_aa"] == generated["generated_dense_aa"]
+
+
+def test_git_revision_reports_repository_and_non_repository(tmp_path):
+    revision = BENCHMARK._git_revision(BENCHMARK.ROOT)
+
+    assert revision is not None
+    assert len(revision) == 40
+    assert BENCHMARK._git_revision(tmp_path) is None
+
+
+def _generated_paths(tmp_path):
+    return {
+        name: tmp_path / f"{name}.fa"
+        for name, relative in BENCHMARK.FILES.items()
+        if relative is None
+    }
+
+
+def test_run_source_reports_each_case_and_revision(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(
+        BENCHMARK,
+        "run_case",
+        lambda *args, **kwargs: {
+            "runtime_seconds_median": 0.25,
+            "output_sha256": "equivalent",
+        },
+    )
+    monkeypatch.setattr(BENCHMARK, "_git_revision", lambda source_root: "revision")
+
+    result = BENCHMARK._run_source(
+        BENCHMARK.ROOT,
+        ("gappy_small", "cli_gappy_small"),
+        _generated_paths(tmp_path),
+        warmups=0,
+        repetitions=1,
+    )
+
+    assert result["git_revision"] == "revision"
+    assert set(result["cases"]) == {"gappy_small", "cli_gappy_small"}
+    output = capsys.readouterr().out
+    assert "gappy_small: 0.250000s median" in output
+    assert "cli_gappy_small: 0.250000s median" in output
+
+
+def test_equivalence_groups_reject_different_outputs():
+    results = {
+        "gappy_small": {"output_sha256": "first"},
+        "cli_gappy_small": {"output_sha256": "second"},
+    }
+
+    with pytest.raises(RuntimeError, match="Equivalent cases produced different"):
+        BENCHMARK._verify_equivalence_groups(results)
+
+
+def _comparison_case(**overrides):
+    result = {
+        "output_sha256": "same",
+        "output_bytes": 100,
+        "threshold": 0.9,
+        "comparison_type": "exact_bytes",
+        "keep_positions_sha256": "keep",
+        "trim_positions_sha256": "trim",
+        "classification_sha256": "classification",
+        "gappyness_sha256": "gappyness",
+        "effective_threads": 1,
+        "runtime_seconds_median": 2.0,
+        "peak_rss_bytes_median": 100,
+        "cpu_seconds_median": 1.0,
+    }
+    result.update(overrides)
+    return result
+
+
+def test_compare_sources_reports_performance_changes():
+    candidate = {"cases": {"case": _comparison_case()}}
+    reference = {
+        "cases": {
+            "case": _comparison_case(
+                runtime_seconds_median=4.0,
+                peak_rss_bytes_median=200,
+                cpu_seconds_median=2.0,
+            )
+        }
+    }
+
+    result = BENCHMARK.compare_sources(candidate, reference)["case"]
+
+    assert result == {
+        "speedup": 2.0,
+        "runtime_change_percent": -50.0,
+        "cpu_change_percent": -50.0,
+        "peak_rss_change_percent": -50.0,
+    }
+
+
+def test_compare_sources_supports_unavailable_resource_metrics():
+    candidate = {
+        "cases": {
+            "case": _comparison_case(
+                cpu_seconds_median=None,
+                peak_rss_bytes_median=None,
+            )
+        }
+    }
+    reference = {
+        "cases": {
+            "case": _comparison_case(
+                cpu_seconds_median=None,
+                peak_rss_bytes_median=None,
+            )
+        }
+    }
+
+    result = BENCHMARK.compare_sources(candidate, reference)["case"]
+
+    assert result["cpu_change_percent"] is None
+    assert result["peak_rss_change_percent"] is None
+
+
+def test_compare_sources_rejects_biological_differences():
+    candidate = {"cases": {"case": _comparison_case(output_sha256="changed")}}
+    reference = {"cases": {"case": _comparison_case()}}
+
+    with pytest.raises(RuntimeError, match="differs.*output_sha256"):
+        BENCHMARK.compare_sources(candidate, reference)
+
+
+def test_dependency_versions_report_missing_packages(monkeypatch):
+    def version(name):
+        if name == "numpy":
+            return "1.2.3"
+        raise BENCHMARK.importlib.metadata.PackageNotFoundError(name)
+
+    monkeypatch.setattr(BENCHMARK.importlib.metadata, "version", version)
+
+    assert BENCHMARK._dependency_versions() == {
+        "numpy": "1.2.3",
+        "biopython": None,
+    }
+
+
+@pytest.mark.parametrize(
+    "arguments, message",
+    [
+        (["--worker"], "--worker requires --case and --input"),
+        (["--repetitions", "0"], "--repetitions must be at least 1"),
+        (["--warmups", "-1"], "--warmups cannot be negative"),
+    ],
+)
+def test_main_rejects_invalid_worker_and_sampling_arguments(
+    arguments, message, monkeypatch, capsys
+):
+    monkeypatch.setattr(sys, "argv", [str(SCRIPT_PATH), *arguments])
+
+    with pytest.raises(SystemExit) as error:
+        BENCHMARK.main()
+
+    assert error.value.code == 2
+    assert message in capsys.readouterr().err
+
+
+def test_main_dispatches_worker_mode(monkeypatch, tmp_path):
+    input_path = tmp_path / "input.fa"
+    input_path.write_text(">a\nAAAA\n>b\nAAAA\n")
+    received = {}
+
+    def run_worker(case_name, worker_input):
+        received["case_name"] = case_name
+        received["input"] = worker_input
+        return 7
+
+    monkeypatch.setattr(BENCHMARK, "run_worker", run_worker)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(SCRIPT_PATH),
+            "--worker",
+            "--case",
+            "gappy_small",
+            "--input",
+            str(input_path),
+        ],
+    )
+
+    assert BENCHMARK.main() == 7
+    assert received == {"case_name": "gappy_small", "input": input_path}
+
+
+@pytest.mark.parametrize(
+    "suite, expected_cases",
+    [
+        ("smoke", BENCHMARK.SMOKE_CASE_NAMES),
+        ("full", BENCHMARK.FULL_CASE_NAMES),
+        ("core", BENCHMARK.CORE_CASE_NAMES),
+        ("comprehensive", BENCHMARK.COMPREHENSIVE_CASE_NAMES),
+    ],
+)
+def test_main_writes_report_for_each_suite(
+    suite, expected_cases, tmp_path, monkeypatch
+):
+    output_path = tmp_path / f"{suite}.json"
+    received = {}
+
+    def run_source(source_root, case_names, generated, warmups, repetitions):
+        received["source_root"] = source_root
+        received["case_names"] = case_names
+        received["warmups"] = warmups
+        received["repetitions"] = repetitions
+        return {"source_root": str(source_root), "git_revision": None, "cases": {}}
+
+    monkeypatch.setattr(BENCHMARK, "_write_generated_fixtures", lambda path: {})
+    monkeypatch.setattr(BENCHMARK, "_run_source", run_source)
+    monkeypatch.setattr(BENCHMARK, "_dependency_versions", lambda: {"numpy": "test"})
+    monkeypatch.setattr(BENCHMARK.time, "time", lambda: 1234567890)
+    monkeypatch.setattr(BENCHMARK.platform, "platform", lambda: "test-platform")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(SCRIPT_PATH),
+            "--output",
+            str(output_path),
+            "--suite",
+            suite,
+            "--warmups",
+            "0",
+            "--repetitions",
+            "1",
+        ],
+    )
+
+    assert BENCHMARK.main() == 0
+    payload = json.loads(output_path.read_text())
+    assert received["source_root"] == BENCHMARK.ROOT.resolve()
+    assert received["case_names"] == expected_cases
+    assert received["warmups"] == 0
+    assert received["repetitions"] == 1
+    assert payload["timestamp_unix"] == 1234567890
+    assert payload["suite"] == suite
+    assert payload["platform"] == "test-platform"
+    assert payload["dependencies"] == {"numpy": "test"}
+    assert payload["reference"] is None
+    assert payload["candidate_vs_reference"] is None
+
+
+def test_main_compares_candidate_and_reference_sources(tmp_path, monkeypatch):
+    output_path = tmp_path / "comparison.json"
+    candidate_root = tmp_path / "candidate"
+    reference_root = tmp_path / "reference"
+    candidate_root.mkdir()
+    reference_root.mkdir()
+    source_results = [
+        {
+            "source_root": str(candidate_root),
+            "git_revision": "candidate",
+            "cases": {"case": _comparison_case()},
+        },
+        {
+            "source_root": str(reference_root),
+            "git_revision": "reference",
+            "cases": {
+                "case": _comparison_case(runtime_seconds_median=4.0),
+            },
+        },
+    ]
+
+    monkeypatch.setattr(BENCHMARK, "_write_generated_fixtures", lambda path: {})
+    monkeypatch.setattr(
+        BENCHMARK,
+        "_run_source",
+        lambda *args, **kwargs: source_results.pop(0),
+    )
+    monkeypatch.setattr(BENCHMARK, "_dependency_versions", lambda: {})
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(SCRIPT_PATH),
+            "--output",
+            str(output_path),
+            "--source-root",
+            str(candidate_root),
+            "--compare-root",
+            str(reference_root),
+            "--warmups",
+            "0",
+            "--repetitions",
+            "1",
+        ],
+    )
+
+    assert BENCHMARK.main() == 0
+    payload = json.loads(output_path.read_text())
+    assert payload["reference"]["git_revision"] == "reference"
+    assert payload["candidate_vs_reference"]["case"]["speedup"] == 2.0
