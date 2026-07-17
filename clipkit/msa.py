@@ -734,18 +734,11 @@ class MSA:
             return np.array([])
 
         sites_to_trim = np.asarray(sites_to_trim)
-        blocks = sites_to_trim // self._codon_size
-
-        # Create all triplet positions for each block
-        triplets = []
-        for block in np.unique(blocks):
-            start = block * self._codon_size
-            positions = np.arange(
-                start, min(start + self._codon_size, self._original_length)
-            )
-            triplets.extend(positions)
-
-        return np.unique(triplets)
+        blocks = np.unique(sites_to_trim // self._codon_size)
+        triplets = (
+            blocks[:, None] * self._codon_size + np.arange(self._codon_size)
+        ).reshape(-1)
+        return triplets[triplets < self._original_length]
 
     def determine_codon_triplet_positions(self, alignment_position):
         """

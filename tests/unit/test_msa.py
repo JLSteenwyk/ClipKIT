@@ -313,6 +313,32 @@ def test_count_backed_properties_match_per_column_reference():
     )
 
 
+@pytest.mark.parametrize("alignment_length", [1, 2, 3, 7, 30, 101])
+def test_codon_site_expansion_matches_triplet_reference(alignment_length):
+    msa = MSA(
+        [{"id": "sequence"}],
+        np.array([list("A" * alignment_length)], dtype="U1"),
+    )
+    sites = np.array(
+        [
+            alignment_length - 1,
+            0,
+            alignment_length // 2,
+            0,
+            max(0, alignment_length - 2),
+        ]
+    )
+    expected = sorted(
+        {
+            position
+            for site in sites
+            for position in msa.determine_codon_triplet_positions(site)
+        }
+    )
+
+    np.testing.assert_equal(msa.determine_all_codon_sites_to_trim(sites), expected)
+
+
 @pytest.mark.parametrize("seed", range(40))
 def test_entropy_and_composition_bias_match_randomized_scalar_reference(seed):
     rng = random.Random(seed)
