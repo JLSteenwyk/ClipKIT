@@ -2,118 +2,123 @@
 
 ## Scope
 
-Performance work was conducted on `codex/faster-msa-construction` and compared
-with `master` at `e0d93b4`. The optimized code benchmarked below ends at
-`52814f0`.
+The current performance work compares `master` at `fb95e1b` with the runtime
+optimization series ending at `701009b`. The benchmark and differential-test
+commits are `2afba34` and `0610ca5`.
 
 The implementation preserves ClipKIT's public APIs, trimming decisions,
-sequence ordering, headers, thresholds, and output formatting. No trimming
-algorithm or parameter was changed.
+sequence ordering, headers, thresholds, statistics, reports, logs, warnings,
+errors, and output formatting. No trimming algorithm, biological rule, or
+parameter was changed, and no runtime dependency was added.
 
-## Optimizations
+## Current optimizations
 
-1. **Fast MSA construction (`47319c4`)**
-   converts complete sequence strings directly into a NumPy Unicode matrix,
-   avoiding a Python object for every input character.
-2. **Batched column statistics (`ad1314a`)**
-   counts compact character codes across batches of columns instead of sorting
-   every column independently. Counts use the smallest safe unsigned dtype and
-   retain a compact-Unicode fallback for unusually wide alphabets.
-3. **Shared smart-gap statistics (`4dc2046`)**
-   feeds the cached per-site gap distribution into smart-gap threshold
-   selection, removing a duplicate full-alignment scan.
-4. **Fast output materialization (`52814f0`)**
-   views contiguous NumPy rows as complete Unicode strings instead of creating
-   millions of one-character Python objects before writing.
+1. **Stop-codon case handling (`aa9e9ca`)** uses the MSA's existing mixed-case
+   metadata to avoid applying Unicode uppercase conversion to every matrix cell
+   when the input is already uppercase. An independent working array is retained
+   so allocation and mutation semantics remain unchanged.
+2. **Vectorized site scoring (`007a2f0`)** evaluates entropy and composition-bias
+   over all columns for each small alphabet state instead of looping over every
+   alignment column in Python. Composition-bias columns are grouped by observed
+   state count to preserve NumPy's original reduction order at four-decimal
+   rounding boundaries.
+3. **Vectorized codon expansion (`701009b`)** expands unique codon blocks in one
+   NumPy operation instead of constructing every triplet in a Python loop.
+
+These changes build on the MSA construction, batched column counting, shared
+smart-gap statistics, and output materialization improvements released in
+ClipKIT 2.12.1 and 2.12.2.
 
 ## Benchmark method
 
-Benchmarks ran on `macOS-26.4.1-arm64-arm-64bit` with Python 3.11, NumPy
-1.26.4, and Biopython 1.83. Each result is the median of fresh processes: seven
-repetitions for the small case and three for medium and large cases. Peak RSS is
-the median process maximum.
+Benchmarks ran on Apple M2 macOS 26.4.1 with Python 3.11.14, NumPy 1.26.4,
+and Biopython 1.83. Every case used one discarded warm-up followed by five
+fresh-process measurements. Tables report median wall-clock time and the
+observed retained range. Algorithm equality hashes the sequence matrix plus
+the exact keep/trim arrays; end-to-end deterministic formats use byte-for-byte
+SHA-256. ECOMP uses a decoded alignment/metadata digest because its gzip
+fallback embeds a creation timestamp.
 
-The representative alignments were:
+The comprehensive suite contains 50 cases spanning small, medium, and large
+amino-acid and nucleotide inputs, deterministic sparse/gappy inputs, every
+trimming mode, codon trimming, all three stop-codon modes, CLI and API entry
+points, one and four requested threads, ECOMP input, and all supported output
+formats.
 
-| Scale | Sequences | Sites | Alignment cells |
+### Optimized hot paths
+
+| Case | Baseline median (range) | Optimized median (range) | Speedup |
 | --- | ---: | ---: | ---: |
-| Small | 117 | 1,026 | 120,042 |
-| Medium | 1,480 | 12,977 | 19,205,960 |
-| Large | 1,478 | 29,838 | 44,100,564 |
+| Entropy, large algorithm | 0.3375 s (0.3343–0.3461) | 0.1833 s (0.1755–0.1951) | 1.84× |
+| Composition-bias, large algorithm | 0.2864 s (0.2832–0.2924) | 0.1751 s (0.1725–0.1989) | 1.64× |
+| Terminal stop masking, algorithm | 0.3817 s (0.3691–0.3917) | 0.0499 s (0.0339–0.0548) | 7.64× |
+| Internal stop masking, algorithm | 0.3793 s (0.3685–0.3892) | 0.0580 s (0.0416–0.0788) | 6.54× |
+| All stop masking, algorithm | 0.3738 s (0.3646–0.3875) | 0.0524 s (0.0412–0.0772) | 7.13× |
+| Terminal stop masking, end to end | 0.4116 s (0.3947–0.4210) | 0.0882 s (0.0834–0.1023) | 4.67× |
+| Internal stop masking, end to end | 0.3982 s (0.3978–0.4174) | 0.0852 s (0.0762–0.0917) | 4.67× |
+| All stop masking, end to end | 0.4071 s (0.3928–0.4145) | 0.0948 s (0.0775–0.1172) | 4.29× |
 
-Algorithm benchmarks load the Biopython alignment before timing, then include
-MSA construction and the named trimming calculation. Their equality check
-hashes the sequence matrix and exact keep/trim position arrays.
+Unchanged large common paths stayed within noise: gappy end-to-end was
+0.3737 s before and 0.3682 s after; KPIC end-to-end was 0.4990 s before and
+0.4840 s after. A separate 12-repetition interleaved audit of cases that looked
+slower in sequential reports found no regression: large KPIC algorithm −2.2%,
+medium smart-gap −0.5%, sparse gappy −4.8%, and small gappy −14.7%.
 
-| Algorithm case | Baseline | Optimized | Speedup | Peak RSS baseline → optimized |
-| --- | ---: | ---: | ---: | ---: |
-| Construct, small | 0.011783 s | 0.000221 s | 53.31× | 57.4 → 56.2 MiB |
-| Construct, medium | 1.695093 s | 0.019756 s | 85.80× | 456.2 → 313.7 MiB |
-| Construct, large | 3.826577 s | 0.047105 s | 81.23× | 950.3 → 631.6 MiB |
-| Gappy, large | 4.047438 s | 0.192978 s | 20.97× | 1,034.3 → 661.2 MiB |
-| Smart-gap, large | 4.319067 s | 0.194392 s | 22.22× | 1,034.9 → 662.0 MiB |
-| KPIC, large | 4.636736 s | 0.193192 s | 24.00× | 975.4 → 663.2 MiB |
-| Entropy, large | 4.620146 s | 0.383034 s | 12.06× | 951.1 → 671.2 MiB |
-| Composition-bias, large | 4.680238 s | 0.327606 s | 14.29× | 975.6 → 662.4 MiB |
+### Memory
 
-End-to-end benchmarks include FASTA parsing, trimming, materialization, and
-FASTA writing. Equality is a byte-for-byte SHA-256 comparison of output files.
+Large entropy and composition-bias median process peak RSS changed by +2.7%,
+inside the observed run-to-run range; targeted interleaved measurements ranged
+from −2.4% to −0.2%. Other unchanged large workflows stayed within about 1%.
 
-| End-to-end case | Baseline | Optimized | Speedup | Peak RSS baseline → optimized |
-| --- | ---: | ---: | ---: | ---: |
-| Gappy, small | 0.022275 s | 0.004334 s | 5.14× | 57.6 → 55.6 MiB |
-| Smart-gap, medium | 2.555377 s | 0.404308 s | 6.32× | 530.5 → 300.3 MiB |
-| Gappy, large | 4.303231 s | 0.402573 s | 10.69× | 733.5 → 333.7 MiB |
-| KPIC, large | 5.194196 s | 0.515740 s | 10.07× | 735.2 → 414.6 MiB |
-| C3, large | 4.794962 s | 0.490340 s | 9.78× | 837.7 → 438.8 MiB |
-
-Every comparison above produced identical hashes. No benchmarked workload was
-slower after optimization.
+macOS `ru_maxrss` reports 12–17% higher residency for the stop-codon
+end-to-end cases after they became more than four times faster. Allocation
+tracing repeated five times measured the same 28,162,648-byte peak before and
+after, and the optimized masking function itself allocates no more memory than
+the baseline. This is a residency/sampling effect from the much shorter-lived
+process, not a memory-for-speed tradeoff; it is disclosed here because the
+benchmark report intentionally retains raw process RSS.
 
 ## Correctness verification
 
-- The full suite passes: 345 tests on the supported NumPy 1.26.4/Biopython
-  1.83 combination.
-- New regression tests compare batched counts, frequencies, gappyness,
-  entropy, composition bias, and classifications with the original
-  per-column calculations, including mixed case, custom gaps, empty rows, and
-  wide Unicode alphabets.
-- Thirteen non-auxiliary CLI modes produced byte-identical FASTA output between
-  baseline and optimized revisions on the same input.
-- Smart-gap thresholds were exactly equal in all benchmark comparisons.
-- Existing integration tests continue to verify supported output formats,
-  complementary output, logging, eComp behavior, headers, and ordering.
+- The comprehensive candidate and baseline reports have identical hashes,
+  output byte lengths, inferred thresholds, and comparison modes for all 50
+  cases.
+- Randomized scalar-oracle tests cover entropy, composition bias, and every
+  stop-codon mode, including lowercase input, trailing gap codons, and mixed
+  complete/incomplete codons.
+- Codon-expansion tests cover partial final codons, duplicates, unsorted site
+  input, and minimal alignments.
+- Existing integration tests continue to cover supported formats, CLI/API
+  behavior, complementary output, logs, reports, headers, ordering, cached
+  statistic invalidation, and stop-codon summaries.
 
 ## Reproducing benchmarks
 
-The scheduled smoke benchmark now covers small, medium, and large workloads,
-records output hashes and peak RSS, and can benchmark another worktree:
+Use a clean baseline worktree and the supported dependency versions:
 
 ```shell
-git worktree add /tmp/clipkit-baseline e0d93b4
-python scripts/run_benchmark_smoke.py \
-  --source-root /tmp/clipkit-baseline \
-  --suite full \
-  --output benchmark-baseline.json
+git worktree add --detach /tmp/clipkit-baseline fb95e1b
 python scripts/run_benchmark_smoke.py \
   --source-root . \
-  --suite full \
-  --output benchmark-optimized.json
+  --compare-root /tmp/clipkit-baseline \
+  --suite comprehensive \
+  --warmups 1 \
+  --repetitions 5 \
+  --output benchmark-comparison.json
 ```
 
-Runtime varies by machine, so compare reports produced on the same otherwise
-idle system and interpreter.
+The runner fails if retained repetitions differ or if the candidate and
+reference outputs, thresholds, or lengths differ. Runtime varies by machine,
+so compare trees using the same idle system and interpreter.
 
 ## Remaining bottlenecks
 
-- Biopython FASTA parsing and format-specific writing now dominate common
-  large end-to-end runs. Replacing them would put support for all current
-  formats and exact formatting at risk, so this work leaves them intact.
-- Heterotachy mode is dominated by Biopython's parsimony guide-tree search. On
-  the 24-sequence, 231-site fixture, tree construction consumed 7.21 of 7.31
-  profiled seconds. Substituting a faster tree search could change the guide
-  tree and trimming output, so it was not done.
-- Entropy's exact per-site floating-point calculation remains more expensive
-  than count-based classification. Vectorizing it could alter values at
-  four-decimal rounding boundaries and has a poor correctness-to-reward ratio
-  now that the surrounding count path is substantially faster.
+- Biopython FASTA parsing and format-specific writing dominate common large
+  end-to-end runs. Replacing them risks changing supported-format behavior and
+  exact serialization, so they remain intact.
+- Batched character counting dominates common gappy and KPI/KPIC algorithm
+  paths. Batch sizes from 128 through 4,096 were measured; the existing 1,024
+  setting remained fastest on the large fixture.
+- Heterotachy remains dominated by Biopython parsimony guide-tree search.
+  Substituting another tree algorithm could change the guide tree and trimming
+  result, so it was not attempted.

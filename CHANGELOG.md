@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Accelerated terminal, internal, and all stop-codon masking by avoiding redundant full-matrix Unicode normalization for inputs already known to be uppercase.
+- Vectorized entropy and composition-bias scoring across alignment columns while preserving exact four-decimal scores and trimming decisions.
+- Vectorized codon-site expansion for faster codon-aware trimming on alignments with many selected sites.
+- Expanded reproducible benchmarks to cover every trimming mode, CLI/API paths, threads, stop-codon modes, supported formats, exact baseline comparison, warm-ups, runtime ranges, and peak memory.
+
 ## 2.13.0
 
 - Added `--remove_stop_codons {terminal,internal,all}` for masking selected in-frame DNA or RNA stop codons as gaps before alignment statistics and codon-aware trimming.
