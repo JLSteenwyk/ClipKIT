@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import random
 from Bio.Align import MultipleSeqAlignment
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
@@ -113,3 +114,77 @@ def test_requires_complete_codon_columns():
 
     with pytest.raises(ValueError, match="alignment length divisible by 3"):
         msa.mask_stop_codons(StopCodonMode.all)
+
+
+def _scalar_stop_codon_mask(sequences, mode):
+    gap_chars = {char.upper() for char in DEFAULT_NT_GAP_CHARS}
+    expected = [list(sequence) for sequence in sequences]
+    terminal_masked = 0
+    internal_masked = 0
+
+    for row_index, sequence in enumerate(sequences):
+        codons = [sequence[index : index + 3] for index in range(0, len(sequence), 3)]
+        complete_positions = [
+            index
+            for index, codon in enumerate(codons)
+            if not any(char.upper() in gap_chars for char in codon)
+        ]
+        terminal_position = complete_positions[-1] if complete_positions else None
+
+        for codon_index, codon in enumerate(codons):
+            is_complete = codon_index in complete_positions
+            is_stop = is_complete and codon.upper() in {
+                "TAA",
+                "TAG",
+                "TGA",
+                "UAA",
+                "UAG",
+                "UGA",
+            }
+            is_terminal = codon_index == terminal_position
+            selected = is_stop and (
+                mode is StopCodonMode.all
+                or (mode is StopCodonMode.terminal and is_terminal)
+                or (mode is StopCodonMode.internal and not is_terminal)
+            )
+            if not selected:
+                continue
+
+            start = codon_index * 3
+            expected[row_index][start : start + 3] = "---"
+            if is_terminal:
+                terminal_masked += 1
+            else:
+                internal_masked += 1
+
+    return (
+        ["".join(sequence) for sequence in expected],
+        terminal_masked,
+        internal_masked,
+    )
+
+
+@pytest.mark.parametrize("mode", list(StopCodonMode))
+@pytest.mark.parametrize("seed", range(8))
+def test_stop_codon_masking_matches_randomized_scalar_reference(mode, seed):
+    rng = random.Random(seed)
+    choices = ["ATG", "CAA", "TTC", "GGA", "TAA", "TAG", "TGA", "---", "A-G"]
+    sequences = []
+    for row in range(18):
+        codons = [rng.choice(choices) for _ in range(40)]
+        if row % 3 == 0:
+            codons = [codon.lower() for codon in codons]
+        if row % 4 == 0:
+            codons[-3:] = ["---", "---", "---"]
+        sequences.append("".join(codons))
+
+    expected, terminal_masked, internal_masked = _scalar_stop_codon_mask(
+        sequences, mode
+    )
+    msa = make_msa(*sequences)
+
+    stats = msa.mask_stop_codons(mode)
+
+    assert [str(record.seq) for record in msa.to_bio_msa()] == expected
+    assert stats.terminal_masked == terminal_masked
+    assert stats.internal_masked == internal_masked

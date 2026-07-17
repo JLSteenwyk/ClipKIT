@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import math
+import random
 
 from Bio import AlignIO
 from clipkit.guide_tree import build_parsimony_guide_tree
@@ -290,9 +291,7 @@ def test_count_backed_properties_match_per_column_reference():
             probabilities = bias_counts / total
             dominance = float(np.sum(np.square(probabilities)))
             min_dominance = 1.0 / float(len(bias_counts))
-            expected_bias.append(
-                (dominance - min_dominance) / (1.0 - min_dominance)
-            )
+            expected_bias.append((dominance - min_dominance) / (1.0 - min_dominance))
 
     assert msa.column_character_frequencies == expected_frequencies
     np.testing.assert_equal(
@@ -308,6 +307,71 @@ def test_count_backed_properties_match_per_column_reference():
         msa.site_gappyness,
         np.around(np.isin(seq_records, gap_chars).mean(axis=0), decimals=4),
     )
+    np.testing.assert_equal(msa.site_entropy, np.around(expected_entropy, decimals=4))
+    np.testing.assert_equal(
+        msa.site_composition_bias, np.around(expected_bias, decimals=4)
+    )
+
+
+@pytest.mark.parametrize("seed", range(12))
+def test_entropy_and_composition_bias_match_randomized_scalar_reference(seed):
+    rng = random.Random(seed)
+    row_count = rng.randint(1, 40)
+    column_count = rng.randint(1, 160)
+    alphabet = "ACDEFGHIKLMNPQRSTVWYacgt-?*Xx"
+    seq_records = np.array(
+        [[rng.choice(alphabet) for _ in range(column_count)] for _ in range(row_count)],
+        dtype="U1",
+    )
+    gap_chars = ["-", "?", "*", "X", "x"]
+    msa = MSA(
+        [{"id": str(index)} for index in range(row_count)],
+        seq_records,
+        gap_chars=gap_chars,
+        requires_uppercase_normalization=bool(
+            np.any(seq_records != np.char.upper(seq_records))
+        ),
+    )
+
+    normalized = np.char.upper(seq_records)
+    entropy_gap_chars = {char.upper() for char in gap_chars}
+    expected_entropy = []
+    expected_bias = []
+    for column in normalized.T:
+        states, counts = np.unique(column, return_counts=True)
+
+        entropy_counts = [
+            count
+            for state, count in zip(states, counts)
+            if state not in entropy_gap_chars
+        ]
+        if len(entropy_counts) <= 1:
+            expected_entropy.append(0.0)
+        else:
+            total = float(sum(entropy_counts))
+            probabilities = [count / total for count in entropy_counts]
+            raw_entropy = -sum(
+                probability * math.log2(probability)
+                for probability in probabilities
+                if probability > 0.0
+            )
+            expected_entropy.append(raw_entropy / math.log2(len(entropy_counts)))
+
+        bias_counts = np.array(
+            [count for state, count in zip(states, counts) if state not in gap_chars],
+            dtype=float,
+        )
+        total = bias_counts.sum()
+        if total == 0:
+            expected_bias.append(0.0)
+        elif len(bias_counts) == 1:
+            expected_bias.append(1.0)
+        else:
+            probabilities = bias_counts / total
+            dominance = float(np.sum(np.square(probabilities)))
+            min_dominance = 1.0 / float(len(bias_counts))
+            expected_bias.append((dominance - min_dominance) / (1.0 - min_dominance))
+
     np.testing.assert_equal(msa.site_entropy, np.around(expected_entropy, decimals=4))
     np.testing.assert_equal(
         msa.site_composition_bias, np.around(expected_bias, decimals=4)
