@@ -2,6 +2,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+from clipkit.clipkit import main
+
 
 def _run_clipkit(*args, **kwargs):
     cmd = [sys.executable, "-m", "clipkit"] + list(args)
@@ -69,3 +73,19 @@ class TestEntrypoint(object):
 
         assert result.returncode == 2
         assert "Stop codon masking requires --codon" in result.stderr
+
+    def test_main_without_arguments_displays_help(self, capsys):
+        main([])
+
+        captured = capsys.readouterr()
+        assert "Usage: clipkit <input> [optional arguments]" in captured.err
+
+    def test_main_reports_stop_codon_validation_errors(self, tmp_path, capsys):
+        input_file = tmp_path / "stops.fa"
+        input_file.write_text(">stop\nATGTAA\n>control\nATGCAA\n")
+
+        with pytest.raises(SystemExit) as error:
+            main([str(input_file), "--remove_stop_codons", "terminal"])
+
+        assert error.value.code == 2
+        assert "Stop codon masking requires --codon" in capsys.readouterr().err
