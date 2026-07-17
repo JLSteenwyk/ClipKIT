@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 from Bio import AlignIO
 
 from clipkit.msa import MSA
@@ -25,6 +26,22 @@ def test_write_trim_plot_report(tmp_path):
     assert "trimmed" in content
     assert "payload" in content
     assert "10.1371/journal.pbio.3001007" in content
-    assert "journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007" in content
+    assert (
+        "journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007"
+        in content
+    )
     assert "Export Per-site Tracks (PNG)" in content
     assert "Export Alignment Preview (PNG)" in content
+
+
+def test_write_trim_plot_report_infers_non_nucleotide_alphabet(tmp_path):
+    sequence = "".join(chr(0x100 + offset) for offset in range(45))
+    msa = MSA(
+        [{"id": "unicode", "description": "unicode"}],
+        np.array([list(sequence)], dtype="U1"),
+    )
+    output_file = tmp_path / "unicode-report.html"
+
+    write_trim_plot_report(str(output_file), msa, mode="gappy", gaps=0.9)
+
+    assert '"sequence_type": "aa"' in output_file.read_text(encoding="utf-8")
