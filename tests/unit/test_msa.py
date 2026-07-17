@@ -4,6 +4,10 @@ import math
 import random
 
 from Bio import AlignIO
+from Bio.Align import MultipleSeqAlignment
+from Bio.Phylo.BaseTree import Tree
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 import clipkit.msa as msa_module
 from clipkit.guide_tree import build_parsimony_guide_tree
 from clipkit.msa import MSA, _column_character_counts
@@ -61,6 +65,49 @@ class TestMSA(object):
         converted = msa.to_bio_msa()
 
         assert [str(record.seq) for record in converted] == [""] * len(bio_msa)
+
+    def test_empty_alignment_supports_analysis_and_stop_codon_masking(self):
+        bio_msa = MultipleSeqAlignment(
+            [SeqRecord(Seq(""), id="first"), SeqRecord(Seq(""), id="second")]
+        )
+        msa = MSA.from_bio_msa(bio_msa)
+
+        assert msa.seq_records.shape == (2, 0)
+        assert msa.column_character_frequencies == []
+        assert msa.site_classification_types.size == 0
+        assert [str(record.seq) for record in msa.to_bio_msa()] == ["", ""]
+        assert msa.mask_stop_codons("all").summary == {
+            "mode": "all",
+            "terminal_masked": 0,
+            "internal_masked": 0,
+            "total_masked": 0,
+        }
+
+    def test_to_bio_msa_supports_object_character_arrays(self):
+        msa = MSA(
+            [{"id": "sequence", "description": "sequence"}],
+            np.array([["A", "B"]], dtype=object),
+        )
+
+        assert str(msa.to_bio_msa()[0].seq) == "AB"
+
+    def test_stop_codon_masking_skips_fully_gapped_codons(self):
+        msa = MSA(
+            [
+                {"id": "gapped", "description": "gapped"},
+                {"id": "stop", "description": "stop"},
+            ],
+            np.array([list("---"), list("TAA")], dtype="U1"),
+            gap_chars=["-"],
+        )
+
+        stats = msa.mask_stop_codons("terminal")
+
+        assert stats.terminal_masked == 1
+        np.testing.assert_equal(
+            msa.seq_records,
+            np.array([list("---"), list("---")], dtype="U1"),
+        )
 
     def test_trim_by_provided_site_positions_np_array(self):
         bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
@@ -199,6 +246,27 @@ class TestMSA(object):
         msa.trim(mode=TrimmingMode.block_gappy, gap_threshold=0.6)
         np.testing.assert_equal(msa._site_positions_to_trim, np.array([], dtype=int))
 
+    def test_block_gappy_mode_retains_complete_high_gap_blocks(self):
+        msa = MSA(
+            [{"id": str(index)} for index in range(4)],
+            np.array(
+                [list("A--A"), list("A--A"), list("AAAA"), list("AAAA")],
+                dtype="U1",
+            ),
+            gap_chars=["-"],
+        )
+
+        msa.trim(mode=TrimmingMode.block_gappy, gap_threshold=0.5)
+
+        np.testing.assert_equal(msa._site_positions_to_trim, np.array([1, 2]))
+
+    def test_trim_rejects_unsupported_site_position_container(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+
+        with pytest.raises(ValueError, match="must be a list or np array"):
+            msa.trim(site_positions_to_trim=(1, 2))
+
     def test_composition_bias_mode_trims_strongly_dominated_sites(self):
         bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
         msa = MSA.from_bio_msa(bio_msa)
@@ -215,6 +283,75 @@ class TestMSA(object):
             guide_tree=guide_tree,
         )
         np.testing.assert_equal(msa._site_positions_to_trim, np.array([1, 2]))
+
+    def test_heterotachy_mode_requires_guide_tree(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+
+        with pytest.raises(ValueError, match="requires a guide tree"):
+            msa.trim(mode=TrimmingMode.heterotachy, gap_threshold=0.5)
+
+    def test_heterotachy_is_zero_without_internal_clades(self):
+        msa = MSA(
+            [
+                {"id": "first", "description": "first"},
+                {"id": "second", "description": "second"},
+            ],
+            np.array([list("AC"), list("GT")], dtype="U1"),
+        )
+
+        np.testing.assert_equal(msa.determine_site_heterotachy(Tree()), [0.0, 0.0])
+
+    def test_analysis_properties_return_cached_results(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+
+        frequencies = msa.column_character_frequencies
+        entropy = msa.site_entropy
+        composition_bias = msa.site_composition_bias
+
+        assert msa.column_character_frequencies is frequencies
+        assert msa.site_entropy is entropy
+        assert msa.site_composition_bias is composition_bias
+
+    def test_gappyout_threshold_handles_empty_and_uniform_alignments(self):
+        empty = MSA(
+            [{"id": "empty", "description": "empty"}],
+            np.empty((1, 0), dtype="U1"),
+        )
+        uniform = MSA(
+            [
+                {"id": "first", "description": "first"},
+                {"id": "second", "description": "second"},
+            ],
+            np.array([list("AAAA"), list("AAAA")], dtype="U1"),
+        )
+
+        assert empty.determine_gappyout_gap_threshold() == 1.0
+        assert uniform.determine_gappyout_gap_threshold() == 1.0
+
+    def test_gappyout_threshold_uses_conservative_fallback_for_small_jumps(self):
+        records = np.full((20, 3), "A", dtype="U1")
+        records[0, 1:] = "-"
+        records[1, 2] = "-"
+        msa = MSA(
+            [{"id": str(index), "description": str(index)} for index in range(20)],
+            records,
+            gap_chars=["-"],
+        )
+
+        assert msa.determine_gappyout_gap_threshold() == 0.9
+
+    def test_endpoint_helpers_handle_empty_and_internal_only_positions(self):
+        bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
+        msa = MSA.from_bio_msa(bio_msa)
+        empty = np.array([], dtype=int)
+        internal = np.array([2, 3], dtype=int)
+
+        np.testing.assert_equal(msa.get_consecutive_starting_from_zero(empty), empty)
+        np.testing.assert_equal(msa.get_consecutive_ending_with_max(empty), empty)
+        np.testing.assert_equal(msa.get_consecutive_starting_from_zero(internal), empty)
+        np.testing.assert_equal(msa.get_consecutive_ending_with_max(internal), empty)
 
 
 @pytest.mark.parametrize(

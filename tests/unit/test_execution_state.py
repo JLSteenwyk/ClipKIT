@@ -32,6 +32,31 @@ def test_execute_invalid_input_format_does_not_crash(tmp_path):
     assert not output_file.exists()
 
 
+def test_validate_only_invalid_input_format_does_not_write_output(tmp_path):
+    input_file = tmp_path / "not_alignment.txt"
+    input_file.write_text("hello world\n")
+    output_file = tmp_path / "out.fa"
+
+    execute(
+        input_file=str(input_file),
+        input_file_format=None,
+        output_file=str(output_file),
+        output_file_format=FileFormat.fasta,
+        sequence_type=None,
+        gaps=0.9,
+        gap_characters=None,
+        complement=False,
+        codon=False,
+        ends_only=False,
+        mode=TrimmingMode.gappy,
+        use_log=False,
+        quiet=True,
+        validate_only=True,
+    )
+
+    assert not output_file.exists()
+
+
 def test_execute_restores_logger_disabled_flag(tmp_path):
     output_file = tmp_path / "simple.out.fa"
     original_disabled = logger.disabled
@@ -203,6 +228,57 @@ def test_execute_writes_report_json_for_validate_only(tmp_path):
     assert payload["validate_only"] is True
     assert payload["dry_run"] is False
     assert "stats" not in payload
+
+
+def test_validate_only_checks_cst_auxiliary_file(tmp_path):
+    auxiliary_file = tmp_path / "sites.cst"
+    auxiliary_file.write_text("2\ttrim\n")
+    output_file = tmp_path / "unused.fa"
+
+    execute(
+        input_file="tests/integration/samples/simple.fa",
+        input_file_format=None,
+        output_file=str(output_file),
+        output_file_format=FileFormat.fasta,
+        sequence_type=None,
+        gaps=0.9,
+        gap_characters=None,
+        complement=False,
+        codon=False,
+        ends_only=False,
+        mode=TrimmingMode.cst,
+        use_log=False,
+        quiet=True,
+        validate_only=True,
+        auxiliary_file=str(auxiliary_file),
+    )
+
+    assert not output_file.exists()
+
+
+def test_execute_writes_trim_plot_report(tmp_path):
+    output_file = tmp_path / "trimmed.fa"
+    plot_file = tmp_path / "trim-report.html"
+
+    execute(
+        input_file="tests/integration/samples/simple.fa",
+        input_file_format=None,
+        output_file=str(output_file),
+        output_file_format=FileFormat.fasta,
+        sequence_type=None,
+        gaps=0.3,
+        gap_characters=None,
+        complement=False,
+        codon=False,
+        ends_only=False,
+        mode=TrimmingMode.gappy,
+        use_log=False,
+        quiet=True,
+        plot_trim_report=str(plot_file),
+    )
+
+    assert output_file.exists()
+    assert "ClipKIT Trim Report" in plot_file.read_text()
 
 
 def test_execute_reports_stop_codon_mode_and_counts(tmp_path):

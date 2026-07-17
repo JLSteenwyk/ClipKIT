@@ -2,6 +2,8 @@ import pytest
 from pathlib import Path
 
 from Bio import AlignIO
+from clipkit.ecomp.reader import HEADER_MAGIC
+from clipkit.exceptions import InvalidInputFileFormat
 from clipkit.files import get_alignment_and_format, FileFormat
 from clipkit.files import get_custom_sites_to_trim
 
@@ -71,6 +73,20 @@ class TestAutomaticFileTypeDetermination(object):
         assert in_file_format == FileFormat.ecomp
         assert alignment.get_alignment_length() > 0
 
+    def test_corrupt_ecomp_header_falls_through_to_format_detection(self, tmp_path):
+        corrupt_archive = tmp_path / "corrupt.ecomp"
+        corrupt_archive.write_bytes(HEADER_MAGIC + b"not-an-ecomp-archive")
+
+        with pytest.raises(InvalidInputFileFormat, match="File could not be read"):
+            get_alignment_and_format(str(corrupt_archive), None)
+
+    def test_format_detection_skips_assertion_errors(self, mocker):
+        input_file = f"{here.parent}/examples/simple.fa"
+        mocker.patch("clipkit.files.AlignIO.read", side_effect=AssertionError())
+
+        with pytest.raises(InvalidInputFileFormat, match="File could not be read"):
+            get_alignment_and_format(input_file, None)
+
 
 class TestCustomSitesParsing(object):
     def test_get_custom_sites_to_trim_invalid_format(self, tmp_path):
@@ -86,3 +102,23 @@ class TestCustomSitesParsing(object):
 
         with pytest.raises(ValueError, match="out of range"):
             get_custom_sites_to_trim(str(cst_file), aln_length=10)
+
+    def test_get_custom_sites_to_trim_keep_only_ignores_blank_lines(self, tmp_path):
+        cst_file = tmp_path / "keep-only.cst"
+        cst_file.write_text("\n2\tkeep\n\n4\tkeep\n")
+
+        assert get_custom_sites_to_trim(str(cst_file), aln_length=5) == [0, 2, 4]
+
+    def test_get_custom_sites_to_trim_rejects_non_numeric_position(self, tmp_path):
+        cst_file = tmp_path / "bad-position.cst"
+        cst_file.write_text("first\ttrim\n")
+
+        with pytest.raises(ValueError, match="Invalid CST position"):
+            get_custom_sites_to_trim(str(cst_file), aln_length=5)
+
+    def test_get_custom_sites_to_trim_rejects_unknown_action(self, tmp_path):
+        cst_file = tmp_path / "bad-action.cst"
+        cst_file.write_text("1\tdrop\n")
+
+        with pytest.raises(ValueError, match="Invalid CST action"):
+            get_custom_sites_to_trim(str(cst_file), aln_length=5)

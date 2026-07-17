@@ -211,6 +211,56 @@ class TestApiInvocation(object):
         assert isinstance(trim_run.trimmed, MultipleSeqAlignment)
         assert report_path.exists()
 
+    def test_output_file_path_writes_alignment_and_returns_path(self, tmp_path):
+        output_path = tmp_path / "api_trimmed.fa"
+
+        returned_path, stats = clipkit(
+            input_file_path="tests/integration/samples/simple.fa",
+            output_file_path=str(output_path),
+            output_file_format=FileFormat.fasta,
+            mode=TrimmingMode.gappy,
+            gaps=0.3,
+            sequence_type="nt",
+        )
+
+        assert returned_path == str(output_path)
+        assert stats.summary["trimmed_length"] == 2
+        assert output_path.read_text() == (
+            ">1\nAGAT\n>2\nAGAT\n>3\nAGTA\n>4\nAATA\n>5\nAaT-\n"
+        )
+
+    def test_complement_property_exposes_trimmed_columns(self):
+        trim_run, _ = clipkit(
+            input_file_path="tests/integration/samples/simple.fa",
+            mode=TrimmingMode.gappy,
+            gaps=0.3,
+            sequence_type="nt",
+        )
+
+        assert [str(record.seq) for record in trim_run.complement] == [
+            "-T",
+            "--",
+            "--",
+            "G-",
+            "C-",
+        ]
+
+    def test_entropy_mode_uses_documented_default_threshold(self):
+        trim_run, stats = clipkit(
+            input_file_path="tests/integration/samples/simple.fa",
+            mode=TrimmingMode.entropy,
+            gaps=None,
+            sequence_type="nt",
+        )
+
+        assert trim_run.gaps == 0.8
+        assert stats.summary == {
+            "alignment_length": 6,
+            "output_length": 2,
+            "trimmed_length": 4,
+            "trimmed_percentage": 66.667,
+        }
+
     def test_heterotachy_mode(self):
         trim_run, stats = clipkit(
             input_file_path="tests/integration/samples/simple.fa",

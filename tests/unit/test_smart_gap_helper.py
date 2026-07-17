@@ -14,13 +14,13 @@ from clipkit.smart_gap_helper import (
     smart_gap_threshold_determination,
     greatest_diff_in_slopes,
     gap_to_gap_slope,
+    gap_to_gap_slope_vectorized,
     get_gaps_distribution,
     count_and_sort_gaps,
 )
 from clipkit.helpers import SeqType
 from clipkit.files import FileFormat
 from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
-
 
 here = Path(__file__)
 
@@ -136,6 +136,14 @@ class TestSmartGapsHelper(object):
 
         ## check results
         assert greatest_diff == expected_return
+
+    def test_greatest_diff_in_slopes_without_slopes_uses_full_threshold(self):
+        assert greatest_diff_in_slopes([], np.empty((0, 2))) == 1
+
+    def test_vectorized_slope_requires_at_least_two_gap_values(self):
+        gaps_arr = np.array([[0.5, 4.0]])
+
+        assert gap_to_gap_slope_vectorized(gaps_arr, alignment_length=4) == []
 
     def test_gap_to_gap_slope_simple_case(self):
         ## set up
