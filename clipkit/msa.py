@@ -166,7 +166,14 @@ class MSA:
         if "-" not in self._gap_chars:
             self._gap_chars = [*self._gap_chars, "-"]
 
-        codons = np.char.upper(self.seq_records).reshape(
+        normalized_records = (
+            np.char.upper(self.seq_records)
+            if self._requires_uppercase_normalization
+            # Keep the independent working array used by the original path,
+            # but avoid an expensive per-character Unicode operation.
+            else self.seq_records.copy()
+        )
+        codons = normalized_records.reshape(
             self.seq_records.shape[0], -1, self._codon_size
         )
         gap_chars = np.char.upper(np.asarray(self._gap_chars, dtype="U1"))
