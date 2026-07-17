@@ -36,6 +36,8 @@ FILES = {
     "medium_nt": "tests/integration/samples/EOG091N44M8_nt.fa",
     "codon_nt": "tests/integration/samples/12_YIL115C_Anc_2.253_codon_aln.fasta",
     "ecomp_aa": "tests/integration/samples/12_YIL115C_Anc_2.253_aa_aln.ecomp",
+    "generated_dense_aa": None,
+    "generated_dense_nt": None,
     "generated_sparse_aa": None,
     "generated_stop_nt": None,
 }
@@ -57,6 +59,22 @@ class BenchmarkCase:
     output_format: str | None = "fasta"
     auxiliary_file: str | None = None
     threads: int = 1
+
+
+CORE_MODES = (
+    "gappy",
+    "smart_gap",
+    "kpi",
+    "kpic",
+    "kpi_gappy",
+    "kpic_gappy",
+    "kpi_smart_gap",
+    "kpic_smart_gap",
+)
+KPI_MODES = frozenset(mode for mode in CORE_MODES if mode.startswith("kpi"))
+GAP_MODES = frozenset(
+    mode for mode in CORE_MODES if "gappy" in mode or "smart_gap" in mode
+)
 
 
 CASES = {
@@ -86,6 +104,40 @@ CASES = {
             "algorithm",
             "generated_sparse_aa",
             mode="gappy",
+        ),
+        # Focused core-mode matrix. The real large AA alignment is very sparse;
+        # generated fixtures add dense AA/NT workloads while medium NT covers a
+        # smaller nucleotide shape. Every target mode uses the same datasets so
+        # differences between their counting and classification paths are clear.
+        *[
+            BenchmarkCase(
+                f"core_{dataset}_{mode}_algorithm",
+                "algorithm",
+                dataset,
+                mode=mode,
+                sequence_type=("nt" if dataset.endswith("nt") else None),
+            )
+            for dataset in (
+                "large_aa",
+                "medium_nt",
+                "generated_dense_aa",
+                "generated_dense_nt",
+            )
+            for mode in CORE_MODES
+        ],
+        BenchmarkCase(
+            "core_generated_dense_aa_smart_gap_threads_4_algorithm",
+            "algorithm",
+            "generated_dense_aa",
+            mode="smart_gap",
+            threads=4,
+        ),
+        BenchmarkCase(
+            "core_generated_dense_aa_kpic_smart_gap_threads_4_algorithm",
+            "algorithm",
+            "generated_dense_aa",
+            mode="kpic_smart_gap",
+            threads=4,
         ),
         BenchmarkCase(
             "stop_terminal_algorithm",
@@ -147,6 +199,16 @@ CASES = {
         BenchmarkCase(
             "kpic_smart_gap_small", "execute", "small_aa", mode="kpic_smart_gap"
         ),
+        *[
+            BenchmarkCase(
+                f"core_{dataset}_{mode}_execute",
+                "execute",
+                dataset,
+                mode=mode,
+            )
+            for dataset in ("small_aa", "large_aa")
+            for mode in CORE_MODES
+        ],
         BenchmarkCase(
             "cst_tiny",
             "execute",
@@ -196,6 +258,31 @@ CASES = {
         BenchmarkCase("cli_gappy_small", "cli", "small_aa", mode="gappy"),
         BenchmarkCase("api_path_gappy_small", "api_path", "small_aa", mode="gappy"),
         BenchmarkCase("api_raw_gappy_small", "api_raw", "small_aa", mode="gappy"),
+        BenchmarkCase(
+            "core_cli_smart_gap_medium_nt",
+            "cli",
+            "medium_nt",
+            mode="smart_gap",
+            sequence_type="nt",
+        ),
+        BenchmarkCase(
+            "core_cli_kpic_gappy_small_aa",
+            "cli",
+            "small_aa",
+            mode="kpic_gappy",
+        ),
+        BenchmarkCase(
+            "core_api_path_kpi_gappy_dense_aa",
+            "api_path",
+            "generated_dense_aa",
+            mode="kpi_gappy",
+        ),
+        BenchmarkCase(
+            "core_api_raw_kpic_smart_gap_small_aa",
+            "api_raw",
+            "small_aa",
+            mode="kpic_smart_gap",
+        ),
         BenchmarkCase(
             "stop_terminal_end_to_end",
             "execute",
@@ -273,6 +360,8 @@ FULL_CASE_NAMES = (
 
 COMPREHENSIVE_CASE_NAMES = tuple(CASES)
 
+CORE_CASE_NAMES = tuple(name for name in CASES if name.startswith("core_"))
+
 # Cases within each group must have identical biological output.  This catches
 # nondeterminism or behavior changes caused by thread selection and entry point.
 EQUIVALENCE_GROUPS = (
@@ -314,6 +403,63 @@ def _msa_digest(msa, extra: bytes = b"") -> str:
         + extra
     )
     return _hash_bytes(payload)
+
+
+def _array_digest(values, dtype: str | None = None) -> str:
+    array = values.astype(dtype) if dtype is not None else values
+    return _hash_bytes(array.tobytes())
+
+
+def _msa_correctness_metadata(msa, mode: str) -> dict[str, Any]:
+    metadata = {
+        "keep_positions_sha256": _array_digest(msa._site_positions_to_keep, "int64"),
+        "trim_positions_sha256": _array_digest(msa._site_positions_to_trim, "int64"),
+    }
+    if mode in KPI_MODES:
+        classifications = "\n".join(
+            classification.value for classification in msa.site_classification_types
+        )
+        metadata["classification_sha256"] = _hash_bytes(classifications.encode("utf-8"))
+    if mode in GAP_MODES:
+        metadata["gappyness_sha256"] = _array_digest(msa.site_gappyness)
+    return metadata
+
+
+def _effective_threads(
+    case: BenchmarkCase, n_sequences: int, alignment_length: int
+) -> int:
+    from clipkit.clipkit import determine_effective_threads
+    from clipkit.modes import TrimmingMode
+
+    return determine_effective_threads(
+        case.threads,
+        TrimmingMode[case.mode],
+        n_sequences,
+        alignment_length,
+    )
+
+
+def _fasta_dimensions(
+    input_path: Path, input_format: str | None
+) -> tuple[int, int] | None:
+    if input_format not in (None, "fasta"):
+        return None
+
+    sequence_count = 0
+    alignment_length = None
+    current_length = 0
+    with input_path.open() as handle:
+        for line in handle:
+            if line.startswith(">"):
+                if sequence_count:
+                    alignment_length = current_length
+                sequence_count += 1
+                current_length = 0
+            else:
+                current_length += len(line.strip())
+    if sequence_count:
+        alignment_length = current_length
+    return sequence_count, alignment_length or 0
 
 
 def _api_digest(trim_run, stats) -> str:
@@ -367,9 +513,12 @@ def _algorithm_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
 
     alignment = _read_alignment(input_path, case.input_format)
     gaps = DEFAULT_NT_GAP_CHARS if case.sequence_type == "nt" else DEFAULT_AA_GAP_CHARS
+    effective_threads = _effective_threads(
+        case, len(alignment), alignment.get_alignment_length()
+    )
     start_cpu = time.process_time()
     start = time.perf_counter()
-    msa = MSA.from_bio_msa(alignment, gaps)
+    msa = MSA.from_bio_msa(alignment, gaps, threads=effective_threads)
     threshold = None
     extra = b""
 
@@ -390,13 +539,16 @@ def _algorithm_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
         msa.trim(mode, gap_threshold=threshold)
 
     elapsed = time.perf_counter() - start
-    return {
+    result = {
         "runtime_seconds": elapsed,
         "cpu_seconds": time.process_time() - start_cpu,
         "peak_rss_bytes": _peak_rss_bytes(),
         "output_sha256": _msa_digest(msa, extra),
         "threshold": threshold,
+        "effective_threads": msa._threads,
     }
+    result.update(_msa_correctness_metadata(msa, case.mode))
+    return result
 
 
 def _execute_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
@@ -404,6 +556,10 @@ def _execute_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
     from clipkit.helpers import SeqType
     from clipkit.modes import StopCodonMode, TrimmingMode
 
+    dimensions = _fasta_dimensions(input_path, case.input_format)
+    effective_threads = (
+        _effective_threads(case, *dimensions) if dimensions is not None else None
+    )
     with tempfile.TemporaryDirectory(prefix="clipkit-benchmark-") as temp_dir:
         output_path = Path(temp_dir) / "output"
         auxiliary = (
@@ -447,6 +603,7 @@ def _execute_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
         "output_sha256": output_digest,
         "output_bytes": output_bytes,
         "comparison_type": comparison_type,
+        "effective_threads": effective_threads,
     }
 
 
@@ -472,15 +629,23 @@ def _api_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
     start = time.perf_counter()
     trim_run, stats = clipkit(**kwargs)
     elapsed = time.perf_counter() - start
-    return {
+    result = {
         "runtime_seconds": elapsed,
         "cpu_seconds": time.process_time() - start_cpu,
         "peak_rss_bytes": _peak_rss_bytes(),
         "output_sha256": _api_digest(trim_run, stats),
+        "threshold": trim_run.gaps,
+        "effective_threads": trim_run.msa._threads,
     }
+    result.update(_msa_correctness_metadata(trim_run.msa, case.mode))
+    return result
 
 
 def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
+    dimensions = _fasta_dimensions(input_path, case.input_format)
+    effective_threads = (
+        _effective_threads(case, *dimensions) if dimensions is not None else None
+    )
     with tempfile.TemporaryDirectory(prefix="clipkit-benchmark-") as temp_dir:
         output_path = Path(temp_dir) / "output"
         command = [
@@ -536,6 +701,7 @@ def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
         "output_sha256": output_digest,
         "output_bytes": output_bytes,
         "comparison_type": comparison_type,
+        "effective_threads": effective_threads,
     }
 
 
@@ -586,13 +752,22 @@ def _invoke_worker(source_root: Path, case: BenchmarkCase, input_path: Path) -> 
 
 
 def summarize_samples(case: BenchmarkCase, samples: list[dict]) -> dict:
-    digests = {sample["output_sha256"] for sample in samples}
-    if len(digests) != 1:
-        raise RuntimeError(f"{case.name} output changed between repetitions")
-
-    thresholds = {sample.get("threshold") for sample in samples}
-    if len(thresholds) != 1:
-        raise RuntimeError(f"{case.name} threshold changed between repetitions")
+    correctness_keys = (
+        "output_sha256",
+        "output_bytes",
+        "threshold",
+        "comparison_type",
+        "keep_positions_sha256",
+        "trim_positions_sha256",
+        "classification_sha256",
+        "gappyness_sha256",
+        "effective_threads",
+    )
+    for key in correctness_keys:
+        values = {sample.get(key) for sample in samples}
+        if len(values) != 1:
+            label = "output" if key == "output_sha256" else key
+            raise RuntimeError(f"{case.name} {label} changed between repetitions")
 
     runtimes = [sample["runtime_seconds"] for sample in samples]
     cpu_values = [
@@ -625,7 +800,7 @@ def summarize_samples(case: BenchmarkCase, samples: list[dict]) -> dict:
         "peak_rss_bytes_max": max(peak_rss_values) if peak_rss_values else None,
         "output_sha256": samples[0]["output_sha256"],
     }
-    for optional_key in ("output_bytes", "threshold", "comparison_type"):
+    for optional_key in correctness_keys[1:]:
         if optional_key in samples[0]:
             result[optional_key] = samples[0][optional_key]
     return result
@@ -648,8 +823,27 @@ def run_case(
 
 def _write_generated_fixtures(directory: Path) -> dict[str, Path]:
     rng = random.Random(8675309)
-    sparse_path = directory / "generated_sparse_aa.fasta"
+    dense_rng = random.Random(20260716)
     aa_alphabet = "ACDEFGHIKLMNPQRSTVWY"
+    dense_aa_path = directory / "generated_dense_aa.fasta"
+    with dense_aa_path.open("w") as handle:
+        for row in range(384):
+            sequence = "".join(
+                "-" if dense_rng.random() < 0.04 else dense_rng.choice(aa_alphabet)
+                for _ in range(5000)
+            )
+            handle.write(f">dense_aa_{row}\n{sequence}\n")
+
+    dense_nt_path = directory / "generated_dense_nt.fasta"
+    with dense_nt_path.open("w") as handle:
+        for row in range(512):
+            sequence = "".join(
+                "-" if dense_rng.random() < 0.04 else dense_rng.choice("ACGT")
+                for _ in range(9000)
+            )
+            handle.write(f">dense_nt_{row}\n{sequence}\n")
+
+    sparse_path = directory / "generated_sparse_aa.fasta"
     with sparse_path.open("w") as handle:
         for row in range(384):
             sequence = "".join(
@@ -672,6 +866,8 @@ def _write_generated_fixtures(directory: Path) -> dict[str, Path]:
             handle.write(f">stop_{row}\n{''.join(codons)}\n")
 
     return {
+        "generated_dense_aa": dense_aa_path,
+        "generated_dense_nt": dense_nt_path,
         "generated_sparse_aa": sparse_path,
         "generated_stop_nt": stop_path,
     }
@@ -739,6 +935,11 @@ def compare_sources(candidate: dict, reference: dict) -> dict:
             "output_bytes",
             "threshold",
             "comparison_type",
+            "keep_positions_sha256",
+            "trim_positions_sha256",
+            "classification_sha256",
+            "gappyness_sha256",
+            "effective_threads",
         ):
             if candidate_case.get(key) != reference_case.get(key):
                 raise RuntimeError(
@@ -788,7 +989,9 @@ def main() -> int:
         help="reference source tree used for exact-output and performance comparison",
     )
     parser.add_argument(
-        "--suite", choices=("smoke", "full", "comprehensive"), default="smoke"
+        "--suite",
+        choices=("smoke", "full", "core", "comprehensive"),
+        default="smoke",
     )
     parser.add_argument("--warmups", type=int, default=1)
     parser.add_argument("--repetitions", type=int, default=5)
@@ -809,6 +1012,7 @@ def main() -> int:
     case_names = {
         "smoke": SMOKE_CASE_NAMES,
         "full": FULL_CASE_NAMES,
+        "core": CORE_CASE_NAMES,
         "comprehensive": COMPREHENSIVE_CASE_NAMES,
     }[args.suite]
     source_root = args.source_root.resolve()

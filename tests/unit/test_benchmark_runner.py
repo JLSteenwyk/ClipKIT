@@ -38,6 +38,35 @@ def test_comprehensive_suite_covers_entry_points_and_stop_codon_modes():
     assert {case.threads for case in cases} >= {1, 4}
 
 
+def test_core_suite_covers_every_target_mode_shape_and_entry_point():
+    cases = [BENCHMARK.CASES[name] for name in BENCHMARK.CORE_CASE_NAMES]
+    algorithm_cases = [case for case in cases if case.kind == "algorithm"]
+
+    for dataset in (
+        "large_aa",
+        "medium_nt",
+        "generated_dense_aa",
+        "generated_dense_nt",
+    ):
+        assert {
+            case.mode for case in algorithm_cases if case.dataset == dataset
+        } >= set(BENCHMARK.CORE_MODES)
+
+    assert {case.kind for case in cases} >= {
+        "algorithm",
+        "execute",
+        "cli",
+        "api_path",
+        "api_raw",
+    }
+    assert {case.threads for case in cases} >= {1, 4}
+    assert {
+        case.mode
+        for case in cases
+        if case.kind == "execute" and case.dataset in {"small_aa", "large_aa"}
+    } == set(BENCHMARK.CORE_MODES)
+
+
 def test_sample_summary_rejects_nondeterministic_output():
     case = BENCHMARK.CASES["gappy_small"]
     samples = [
@@ -56,6 +85,29 @@ def test_sample_summary_rejects_nondeterministic_output():
     ]
 
     with pytest.raises(RuntimeError, match="output changed"):
+        BENCHMARK.summarize_samples(case, samples)
+
+
+def test_sample_summary_rejects_changed_trim_positions():
+    case = BENCHMARK.CASES["core_large_aa_kpic_gappy_algorithm"]
+    samples = [
+        {
+            "runtime_seconds": 1.0,
+            "cpu_seconds": 0.9,
+            "peak_rss_bytes": 10,
+            "output_sha256": "same",
+            "trim_positions_sha256": "a",
+        },
+        {
+            "runtime_seconds": 1.1,
+            "cpu_seconds": 1.0,
+            "peak_rss_bytes": 11,
+            "output_sha256": "same",
+            "trim_positions_sha256": "b",
+        },
+    ]
+
+    with pytest.raises(RuntimeError, match="trim_positions_sha256 changed"):
         BENCHMARK.summarize_samples(case, samples)
 
 
