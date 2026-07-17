@@ -313,7 +313,7 @@ def test_count_backed_properties_match_per_column_reference():
     )
 
 
-@pytest.mark.parametrize("seed", range(12))
+@pytest.mark.parametrize("seed", range(40))
 def test_entropy_and_composition_bias_match_randomized_scalar_reference(seed):
     rng = random.Random(seed)
     row_count = rng.randint(1, 40)

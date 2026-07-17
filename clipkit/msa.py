@@ -303,21 +303,23 @@ class MSA:
         _, counts_by_state = self._get_non_gap_character_counts(
             normalize_gap_chars=True, cache_key="entropy"
         )
-        n_cols = counts_by_state.shape[1]
-        entropies = np.zeros(n_cols, dtype=float)
+        total_counts = counts_by_state.sum(axis=0).astype(float)
+        observed_states = np.count_nonzero(counts_by_state, axis=0)
+        raw_entropy = np.zeros(counts_by_state.shape[1], dtype=float)
 
-        for col_idx in range(n_cols):
-            non_gap_counts = counts_by_state[:, col_idx]
-            non_gap_counts = non_gap_counts[non_gap_counts > 0]
+        # Iterate over the small alphabet dimension while NumPy evaluates all
+        # alignment columns together. This preserves the original summation
+        # order without paying Python overhead once per column.
+        for state_counts in counts_by_state:
+            present = state_counts > 0
+            probabilities = state_counts[present] / total_counts[present]
+            raw_entropy[present] -= probabilities * np.log2(probabilities)
 
-            if len(non_gap_counts) <= 1:
-                continue
-
-            total = float(sum(non_gap_counts))
-            probs = [count / total for count in non_gap_counts]
-            raw_entropy = -sum(p * math.log2(p) for p in probs if p > 0.0)
-            max_entropy = math.log2(len(non_gap_counts))
-            entropies[col_idx] = raw_entropy / max_entropy if max_entropy > 0 else 0.0
+        entropies = np.zeros(counts_by_state.shape[1], dtype=float)
+        variable_sites = observed_states > 1
+        entropies[variable_sites] = raw_entropy[variable_sites] / np.log2(
+            observed_states[variable_sites]
+        )
 
         self._site_entropy_cache = np.around(entropies, decimals=4)
         self._column_character_count_cache.pop(
@@ -335,26 +337,29 @@ class MSA:
             return self._site_composition_bias_cache
 
         _, counts_by_state = self._get_non_gap_character_counts()
+        total_counts = counts_by_state.sum(axis=0).astype(float)
+        observed_states = np.count_nonzero(counts_by_state, axis=0)
+        dominance = np.zeros(counts_by_state.shape[1], dtype=float)
+
+        # Group columns by the number of observed states so each compact row
+        # has the same values and reduction length as the original per-column
+        # calculation. This keeps scores identical at four-decimal boundaries.
+        for state_count in np.unique(observed_states[observed_states > 1]):
+            columns = np.flatnonzero(observed_states == state_count)
+            column_counts = counts_by_state[:, columns].T
+            present_counts = column_counts[column_counts > 0].reshape(
+                len(columns), state_count
+            )
+            probabilities = present_counts.astype(float) / total_counts[columns, None]
+            dominance[columns] = np.sum(np.square(probabilities), axis=1)
+
         bias_scores = np.zeros(counts_by_state.shape[1], dtype=float)
-
-        for idx in range(counts_by_state.shape[1]):
-            counts = counts_by_state[:, idx]
-            counts = counts[counts > 0].astype(float)
-            total = counts.sum()
-
-            if total == 0:
-                bias_scores[idx] = 0.0
-                continue
-
-            n_states = len(counts)
-            if n_states == 1:
-                bias_scores[idx] = 1.0
-                continue
-
-            probs = counts / total
-            dominance = float(np.sum(np.square(probs)))
-            min_dominance = 1.0 / float(n_states)
-            bias_scores[idx] = (dominance - min_dominance) / (1.0 - min_dominance)
+        bias_scores[observed_states == 1] = 1.0
+        variable_sites = observed_states > 1
+        min_dominance = 1.0 / observed_states[variable_sites]
+        bias_scores[variable_sites] = (dominance[variable_sites] - min_dominance) / (
+            1.0 - min_dominance
+        )
 
         self._site_composition_bias_cache = np.around(bias_scores, decimals=4)
         return self._site_composition_bias_cache
