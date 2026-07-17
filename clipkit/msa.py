@@ -47,13 +47,14 @@ def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndar
 
     if code_span <= _MAX_DENSE_CODE_SPAN:
         counts = np.empty((code_span, n_cols), dtype=count_dtype)
-        offsets = np.arange(_COLUMN_COUNT_BATCH_SIZE, dtype=np.int64) * code_span
+        offsets = (
+            np.arange(_COLUMN_COUNT_BATCH_SIZE, dtype=np.int64) * code_span - min_code
+        )
 
         for start_idx in range(0, n_cols, _COLUMN_COUNT_BATCH_SIZE):
             end_idx = min(start_idx + _COLUMN_COUNT_BATCH_SIZE, n_cols)
             width = end_idx - start_idx
             encoded = code_points[:, start_idx:end_idx].astype(np.int64)
-            encoded -= min_code
             encoded += offsets[:width]
             counts[:, start_idx:end_idx] = (
                 np.bincount(encoded.ravel(), minlength=width * code_span)

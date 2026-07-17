@@ -224,6 +224,7 @@ class TestMSA(object):
             [["A", "Ā", "😀"], ["Ω", "A", "😀"], ["Ā", "Ω", "A"]],
             dtype="U1",
         ),
+        np.array([list("ĀāĂ"), list("ĂĀā"), list("āĂĀ")], dtype="U1"),
     ],
 )
 def test_column_character_counts_match_per_column_unique(seq_records):
