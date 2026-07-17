@@ -172,9 +172,9 @@ benchmark report intentionally retains raw process RSS.
   inputs and exact `>`/`>=` threshold boundaries. Dedicated tests prove that
   uppercase combined modes use one count pass and mixed-case modes retain the
   separate raw/normalized passes.
-- The comprehensive candidate and baseline reports have identical hashes,
-  output byte lengths, inferred thresholds, and comparison modes for all 50
-  cases.
+- The final comprehensive candidate and baseline reports have identical hashes,
+  output byte lengths, inferred thresholds, exact statistic/position metadata,
+  comparison modes, and thread decisions for all 104 cases.
 - Randomized scalar-oracle tests cover entropy, composition bias, and every
   stop-codon mode, including lowercase input, trailing gap codons, and mixed
   complete/incomplete codons.
@@ -203,8 +203,8 @@ python scripts/run_benchmark_smoke.py \
 The runner fails if retained repetitions differ or if the candidate and
 reference outputs, thresholds, arrays, thread decisions, or lengths differ.
 Runtime varies by machine, so compare trees using the same idle system and
-interpreter. The retained JSON, compact CSV, and interleaved audit are in
-`benchmark-results/`.
+interpreter. The retained comprehensive/focused JSON reports, compact focused
+CSV, and interleaved audit are in `benchmark-results/`.
 
 ## Remaining bottlenecks
 
