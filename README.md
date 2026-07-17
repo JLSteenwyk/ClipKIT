@@ -29,6 +29,9 @@
         <a href="https://anaconda.org/bioconda/clipkit">
           <img src="https://img.shields.io/conda/dn/bioconda/clipkit?label=bioconda%20downloads" alt="Bioconda Downloads">
         </a>
+        <a href="https://usegalaxy.eu/root?tool_id=clipkit">
+          <img src="https://img.shields.io/badge/usegalaxy-.eu-brightgreen" alt="Run ClipKIT on the European Galaxy server">
+        </a>
         <a href="https://lbesson.mit-license.org/" alt="License">
             <img src="https://img.shields.io/badge/License-MIT-blue.svg">
         </a>
