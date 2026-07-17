@@ -33,8 +33,9 @@ ClipKIT 2.12.1 and 2.12.2.
 
 Benchmarks ran on Apple M2 macOS 26.4.1 with Python 3.11.14, NumPy 1.26.4,
 and Biopython 1.83. Every case used one discarded warm-up followed by five
-fresh-process measurements. Tables report median wall-clock time and the
-observed retained range. Algorithm equality hashes the sequence matrix plus
+fresh-process measurements. Reports include median/range wall-clock time,
+CPU time, and peak RSS. Tables below show wall time. Algorithm equality hashes
+the sequence matrix plus
 the exact keep/trim arrays; end-to-end deterministic formats use byte-for-byte
 SHA-256. ECOMP uses a decoded alignment/metadata digest because its gzip
 fallback embeds a creation timestamp.

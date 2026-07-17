@@ -41,8 +41,18 @@ def test_comprehensive_suite_covers_entry_points_and_stop_codon_modes():
 def test_sample_summary_rejects_nondeterministic_output():
     case = BENCHMARK.CASES["gappy_small"]
     samples = [
-        {"runtime_seconds": 1.0, "peak_rss_bytes": 10, "output_sha256": "a"},
-        {"runtime_seconds": 1.1, "peak_rss_bytes": 11, "output_sha256": "b"},
+        {
+            "runtime_seconds": 1.0,
+            "cpu_seconds": 0.9,
+            "peak_rss_bytes": 10,
+            "output_sha256": "a",
+        },
+        {
+            "runtime_seconds": 1.1,
+            "cpu_seconds": 1.0,
+            "peak_rss_bytes": 11,
+            "output_sha256": "b",
+        },
     ]
 
     with pytest.raises(RuntimeError, match="output changed"):
@@ -52,13 +62,30 @@ def test_sample_summary_rejects_nondeterministic_output():
 def test_sample_summary_reports_median_range_and_memory():
     case = BENCHMARK.CASES["gappy_small"]
     samples = [
-        {"runtime_seconds": 3.0, "peak_rss_bytes": 30, "output_sha256": "same"},
-        {"runtime_seconds": 1.0, "peak_rss_bytes": 10, "output_sha256": "same"},
-        {"runtime_seconds": 2.0, "peak_rss_bytes": 20, "output_sha256": "same"},
+        {
+            "runtime_seconds": 3.0,
+            "cpu_seconds": 2.5,
+            "peak_rss_bytes": 30,
+            "output_sha256": "same",
+        },
+        {
+            "runtime_seconds": 1.0,
+            "cpu_seconds": 0.5,
+            "peak_rss_bytes": 10,
+            "output_sha256": "same",
+        },
+        {
+            "runtime_seconds": 2.0,
+            "cpu_seconds": 1.5,
+            "peak_rss_bytes": 20,
+            "output_sha256": "same",
+        },
     ]
 
     result = BENCHMARK.summarize_samples(case, samples)
 
     assert result["runtime_seconds_median"] == 2.0
     assert result["runtime_seconds_range"] == 2.0
+    assert result["cpu_seconds_median"] == 1.5
+    assert result["cpu_seconds_range"] == 2.0
     assert result["peak_rss_bytes_median"] == 20

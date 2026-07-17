@@ -292,6 +292,16 @@ def _peak_rss_bytes(children: bool = False) -> int | None:
     return peak_rss if sys.platform == "darwin" else peak_rss * 1024
 
 
+def _child_cpu_seconds() -> float | None:
+    try:
+        import resource
+    except ImportError:
+        return None
+
+    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    return usage.ru_utime + usage.ru_stime
+
+
 def _hash_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
@@ -357,6 +367,7 @@ def _algorithm_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
 
     alignment = _read_alignment(input_path, case.input_format)
     gaps = DEFAULT_NT_GAP_CHARS if case.sequence_type == "nt" else DEFAULT_AA_GAP_CHARS
+    start_cpu = time.process_time()
     start = time.perf_counter()
     msa = MSA.from_bio_msa(alignment, gaps)
     threshold = None
@@ -381,6 +392,7 @@ def _algorithm_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
     elapsed = time.perf_counter() - start
     return {
         "runtime_seconds": elapsed,
+        "cpu_seconds": time.process_time() - start_cpu,
         "peak_rss_bytes": _peak_rss_bytes(),
         "output_sha256": _msa_digest(msa, extra),
         "threshold": threshold,
@@ -397,6 +409,7 @@ def _execute_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
         auxiliary = (
             str(Path.cwd() / case.auxiliary_file) if case.auxiliary_file else None
         )
+        start_cpu = time.process_time()
         start = time.perf_counter()
         execute(
             input_file=str(input_path),
@@ -423,11 +436,13 @@ def _execute_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
             threads=case.threads,
         )
         elapsed = time.perf_counter() - start
+        cpu_elapsed = time.process_time() - start_cpu
         output_bytes = output_path.stat().st_size
         output_digest, comparison_type = _output_digest(output_path, case.output_format)
 
     return {
         "runtime_seconds": elapsed,
+        "cpu_seconds": cpu_elapsed,
         "peak_rss_bytes": _peak_rss_bytes(),
         "output_sha256": output_digest,
         "output_bytes": output_bytes,
@@ -453,11 +468,13 @@ def _api_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
     else:
         kwargs["input_file_path"] = str(input_path)
 
+    start_cpu = time.process_time()
     start = time.perf_counter()
     trim_run, stats = clipkit(**kwargs)
     elapsed = time.perf_counter() - start
     return {
         "runtime_seconds": elapsed,
+        "cpu_seconds": time.process_time() - start_cpu,
         "peak_rss_bytes": _peak_rss_bytes(),
         "output_sha256": _api_digest(trim_run, stats),
     }
@@ -496,9 +513,11 @@ def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
         if case.auxiliary_file:
             command.extend(("--auxiliary_file", case.auxiliary_file))
 
+        start_cpu = _child_cpu_seconds()
         start = time.perf_counter()
         process = subprocess.run(command, capture_output=True, text=True)
         elapsed = time.perf_counter() - start
+        end_cpu = _child_cpu_seconds()
         if process.returncode != 0:
             raise RuntimeError(
                 f"ClipKIT CLI failed ({process.returncode}):\n{process.stderr}"
@@ -508,6 +527,11 @@ def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
 
     return {
         "runtime_seconds": elapsed,
+        "cpu_seconds": (
+            end_cpu - start_cpu
+            if start_cpu is not None and end_cpu is not None
+            else None
+        ),
         "peak_rss_bytes": _peak_rss_bytes(children=True),
         "output_sha256": output_digest,
         "output_bytes": output_bytes,
@@ -571,6 +595,11 @@ def summarize_samples(case: BenchmarkCase, samples: list[dict]) -> dict:
         raise RuntimeError(f"{case.name} threshold changed between repetitions")
 
     runtimes = [sample["runtime_seconds"] for sample in samples]
+    cpu_values = [
+        sample["cpu_seconds"]
+        for sample in samples
+        if sample.get("cpu_seconds") is not None
+    ]
     peak_rss_values = [
         sample["peak_rss_bytes"]
         for sample in samples
@@ -583,6 +612,12 @@ def summarize_samples(case: BenchmarkCase, samples: list[dict]) -> dict:
         "runtime_seconds_min": min(runtimes),
         "runtime_seconds_max": max(runtimes),
         "runtime_seconds_range": max(runtimes) - min(runtimes),
+        "cpu_seconds_median": statistics.median(cpu_values) if cpu_values else None,
+        "cpu_seconds_min": min(cpu_values) if cpu_values else None,
+        "cpu_seconds_max": max(cpu_values) if cpu_values else None,
+        "cpu_seconds_range": (
+            max(cpu_values) - min(cpu_values) if cpu_values else None
+        ),
         "peak_rss_bytes_median": (
             statistics.median(peak_rss_values) if peak_rss_values else None
         ),
@@ -714,9 +749,16 @@ def compare_sources(candidate: dict, reference: dict) -> dict:
         reference_time = reference_case["runtime_seconds_median"]
         candidate_memory = candidate_case["peak_rss_bytes_median"]
         reference_memory = reference_case["peak_rss_bytes_median"]
+        candidate_cpu = candidate_case["cpu_seconds_median"]
+        reference_cpu = reference_case["cpu_seconds_median"]
         comparison[name] = {
             "speedup": reference_time / candidate_time,
             "runtime_change_percent": ((candidate_time / reference_time) - 1.0) * 100.0,
+            "cpu_change_percent": (
+                ((candidate_cpu / reference_cpu) - 1.0) * 100.0
+                if candidate_cpu is not None and reference_cpu
+                else None
+            ),
             "peak_rss_change_percent": (
                 ((candidate_memory / reference_memory) - 1.0) * 100.0
                 if candidate_memory is not None and reference_memory
