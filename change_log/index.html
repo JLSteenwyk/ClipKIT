@@ -80,6 +80,29 @@
   <section id="change-log">
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
 <p>Major changes to ClipKIT are summarized here.</p>
+<p><strong>Unreleased</strong></p>
+<p><strong>2.13.1</strong></p>
+<ul class="simple">
+<li><p>Accelerated terminal, internal, and all stop-codon masking by skipping
+redundant full-matrix Unicode normalization for inputs already known to be
+uppercase.</p></li>
+<li><p>Vectorized entropy and composition-bias scoring across alignment columns
+while preserving exact four-decimal scores and trimming decisions.</p></li>
+<li><p>Vectorized codon-site expansion for faster codon-aware trimming when many
+sites are selected.</p></li>
+<li><p>Expanded reproducible benchmarks across every trimming mode, CLI/API paths,
+thread counts, stop-codon modes, and supported formats, with exact baseline
+comparison, warm-ups, runtime ranges, and peak-memory reporting.</p></li>
+<li><p>Accelerated gappy, smart-gap, KPI, and KPIC column counting by combining and
+fusing temporary-array encoding passes without changing site statistics or
+trimming decisions.</p></li>
+<li><p>Reused exact classification counts for uppercase KPI/KPIC gap-combination
+modes while retaining separate raw and normalized passes for mixed-case
+inputs.</p></li>
+<li><p>Added a focused 54-case core-mode benchmark matrix spanning dense and sparse
+amino-acid and nucleotide inputs, exact result hashes, resolved thresholds,
+effective thread counts, and retained JSON/CSV reports.</p></li>
+</ul>
 <p><strong>2.13.0</strong></p>
 <ul class="simple">
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">--remove_stop_codons</span> <span class="pre">{terminal,internal,all}</span></code> to mask selected
