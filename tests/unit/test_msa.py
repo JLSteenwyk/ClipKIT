@@ -7,7 +7,10 @@ from Bio import AlignIO
 from clipkit.guide_tree import build_parsimony_guide_tree
 from clipkit.msa import MSA, _column_character_counts
 from clipkit.modes import TrimmingMode
-from clipkit.site_classification import determine_site_classification_type
+from clipkit.site_classification import (
+    SiteClassificationType,
+    determine_site_classification_type,
+)
 
 
 def get_biopython_msa(file_path, file_format="fasta"):
@@ -311,6 +314,82 @@ def test_count_backed_properties_match_per_column_reference():
     np.testing.assert_equal(
         msa.site_composition_bias, np.around(expected_bias, decimals=4)
     )
+
+
+@pytest.mark.parametrize(
+    "mode",
+    [
+        TrimmingMode.gappy,
+        TrimmingMode.smart_gap,
+        TrimmingMode.kpi,
+        TrimmingMode.kpic,
+        TrimmingMode.kpi_gappy,
+        TrimmingMode.kpic_gappy,
+        TrimmingMode.kpi_smart_gap,
+        TrimmingMode.kpic_smart_gap,
+    ],
+)
+@pytest.mark.parametrize("seed", range(12))
+def test_core_modes_match_randomized_scalar_reference(mode, seed):
+    rng = random.Random(seed)
+    row_count = rng.randint(2, 18)
+    column_count = rng.randint(1, 80)
+    alphabet = "AaCcGgTt-?X"
+    seq_records = np.array(
+        [[rng.choice(alphabet) for _ in range(column_count)] for _ in range(row_count)],
+        dtype="U1",
+    )
+    gap_chars = ["-", "?", "X"]
+    gap_threshold = rng.choice((0.0, 0.25, 0.5, 0.75, 0.9, 1.0))
+    msa = MSA(
+        [{"id": str(index)} for index in range(row_count)],
+        seq_records.copy(),
+        gap_chars=gap_chars,
+        requires_uppercase_normalization=True,
+    )
+
+    normalized = np.char.upper(seq_records)
+    expected_classifications = []
+    for column in normalized.T:
+        states, counts = np.unique(column, return_counts=True)
+        frequencies = dict(zip(states, counts))
+        for gap_char in gap_chars:
+            frequencies.pop(gap_char, None)
+        expected_classifications.append(determine_site_classification_type(frequencies))
+    expected_classifications = np.array(expected_classifications)
+    expected_gappyness = np.around(
+        np.isin(seq_records, gap_chars).mean(axis=0), decimals=4
+    )
+
+    if mode in (TrimmingMode.gappy, TrimmingMode.smart_gap):
+        trim_mask = expected_gappyness >= gap_threshold
+    elif mode == TrimmingMode.kpi:
+        trim_mask = (
+            expected_classifications != SiteClassificationType.parsimony_informative
+        )
+    elif mode == TrimmingMode.kpic:
+        trim_mask = np.isin(
+            expected_classifications,
+            (SiteClassificationType.other, SiteClassificationType.singleton),
+        )
+    elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
+        trim_mask = (expected_gappyness > gap_threshold) | (
+            expected_classifications != SiteClassificationType.parsimony_informative
+        )
+    else:
+        trim_mask = (expected_gappyness >= gap_threshold) | np.isin(
+            expected_classifications,
+            (SiteClassificationType.other, SiteClassificationType.singleton),
+        )
+
+    expected_trim = np.flatnonzero(trim_mask)
+    expected_keep = np.flatnonzero(~trim_mask)
+    msa.trim(mode=mode, gap_threshold=gap_threshold)
+
+    np.testing.assert_equal(msa.site_gappyness, expected_gappyness)
+    np.testing.assert_equal(msa.site_classification_types, expected_classifications)
+    np.testing.assert_equal(msa._site_positions_to_trim, expected_trim)
+    np.testing.assert_equal(msa._site_positions_to_keep, expected_keep)
 
 
 @pytest.mark.parametrize("alignment_length", [1, 2, 3, 7, 30, 101])
