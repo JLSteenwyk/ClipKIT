@@ -8,6 +8,8 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+**2.13.1**
+
 - Accelerated terminal, internal, and all stop-codon masking by skipping
   redundant full-matrix Unicode normalization for inputs already known to be
   uppercase.
@@ -18,6 +20,15 @@ Major changes to ClipKIT are summarized here.
 - Expanded reproducible benchmarks across every trimming mode, CLI/API paths,
   thread counts, stop-codon modes, and supported formats, with exact baseline
   comparison, warm-ups, runtime ranges, and peak-memory reporting.
+- Accelerated gappy, smart-gap, KPI, and KPIC column counting by combining and
+  fusing temporary-array encoding passes without changing site statistics or
+  trimming decisions.
+- Reused exact classification counts for uppercase KPI/KPIC gap-combination
+  modes while retaining separate raw and normalized passes for mixed-case
+  inputs.
+- Added a focused 54-case core-mode benchmark matrix spanning dense and sparse
+  amino-acid and nucleotide inputs, exact result hashes, resolved thresholds,
+  effective thread counts, and retained JSON/CSV reports.
 
 **2.13.0**
 

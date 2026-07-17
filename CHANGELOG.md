@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.13.1
+
 - Accelerated terminal, internal, and all stop-codon masking by avoiding redundant full-matrix Unicode normalization for inputs already known to be uppercase.
 - Vectorized entropy and composition-bias scoring across alignment columns while preserving exact four-decimal scores and trimming decisions.
 - Vectorized codon-site expansion for faster codon-aware trimming on alignments with many selected sites.
