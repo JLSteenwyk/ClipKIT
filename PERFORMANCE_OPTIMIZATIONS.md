@@ -101,6 +101,8 @@ reversed all material apparent regressions: API raw KPIC-smart-gap was 1.23×
 faster, dense-NT smart-gap 1.04×, medium-NT KPIC 1.07×, dense-NT KPIC 1.30×,
 CLI smart-gap 1.01×, and dense-AA KPI 1.19×. A subsequent 30-repetition audit
 of medium-NT KPI measured a 1.3% median and 3.2% mean wall-time improvement.
+The remaining unchanged non-core outlier, internal stop masking, was 3.3%
+faster by median and 0.7% faster by mean in its own 30-repetition audit.
 
 ### Profiling and optimization decisions
 
