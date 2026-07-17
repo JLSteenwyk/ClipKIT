@@ -430,11 +430,17 @@ def test_input_paths_resolve_static_and_generated_datasets(tmp_path):
     assert paths["generated_dense_aa"] == generated["generated_dense_aa"]
 
 
-def test_git_revision_reports_repository_and_non_repository(tmp_path):
+def test_git_revision_reports_repository_and_non_repository(tmp_path, monkeypatch):
     revision = BENCHMARK._git_revision(BENCHMARK.ROOT)
 
     assert revision is not None
     assert len(revision) == 40
+
+    monkeypatch.setattr(
+        BENCHMARK.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=128, stdout=""),
+    )
     assert BENCHMARK._git_revision(tmp_path) is None
 
 
