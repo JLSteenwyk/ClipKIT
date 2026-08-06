@@ -29,3 +29,11 @@ class StopCodonMode(Enum):
     terminal = "terminal"
     internal = "internal"
     all = "all"
+
+
+class AmbiguityHandling(Enum):
+    """How recognized IUPAC ambiguity symbols contribute to analysis."""
+
+    missing = "missing"
+    fractional = "fractional"
+    literal = "literal"

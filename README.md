@@ -73,7 +73,20 @@ clipkit input.fa
 
 # mask all in-frame stops in a codon-aligned nucleotide MSA
 clipkit coding.fa --codon --sequence_type nt --remove_stop_codons all
+
+# fractionally weight IUPAC ambiguity symbols in entropy/composition analyses
+clipkit ambiguous.fa --sequence_type nt --ambiguity_handling fractional
 ```
+
+ClipKIT handles recognized IUPAC ambiguity symbols conservatively by default:
+they are treated as missing evidence and contribute to the effective
+unavailable fraction used by gap-based modes. Use `fractional` to distribute
+them across possible states for entropy, composition, and the clade-entropy
+part of heterotachy analysis, or `literal`
+for legacy behavior. Configured gap characters take precedence, and alignment
+symbols are never rewritten. See the
+[ambiguity-handling documentation](https://jlsteenwyk.com/ClipKIT/advanced/#ambiguity-handling)
+for the full nucleotide/protein mappings and mode-specific behavior.
 
 The same operation is available through the Python API:
 

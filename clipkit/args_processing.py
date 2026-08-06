@@ -4,7 +4,7 @@ import sys
 
 from .helpers import SeqType
 from .exceptions import StopCodonValidationError
-from .modes import StopCodonMode, TrimmingMode
+from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from .settings import DEFAULT_AA_GAP_CHARS
 
 logger = logging.getLogger(__name__)
@@ -75,6 +75,9 @@ def process_args(args) -> dict:
     remove_stop_codons = (
         StopCodonMode(remove_stop_codons_arg) if remove_stop_codons_arg else None
     )
+    ambiguity_handling = AmbiguityHandling(
+        getattr(args, "ambiguity_handling", None) or AmbiguityHandling.missing.value
+    )
 
     if remove_stop_codons is not None and not codon:
         raise StopCodonValidationError("Stop codon masking requires --codon.")
@@ -122,6 +125,7 @@ def process_args(args) -> dict:
         auxiliary_file=auxiliary_file,
         codon=codon,
         remove_stop_codons=remove_stop_codons,
+        ambiguity_handling=ambiguity_handling,
         sequence_type=sequence_type,
         complement=complement,
         gaps=gaps,

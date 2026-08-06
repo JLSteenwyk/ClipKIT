@@ -5,7 +5,7 @@ from .clipkit import run
 from .files import FileFormat
 from .helpers import SeqType, write_msa
 from .logger import logger
-from .modes import StopCodonMode, TrimmingMode
+from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from .plot_report import write_trim_plot_report
 
 if TYPE_CHECKING:
@@ -29,6 +29,7 @@ def clipkit(
     sequence_type: Union[SeqType, str, None] = None,
     codon: bool = False,
     remove_stop_codons: Union[StopCodonMode, str, None] = None,
+    ambiguity_handling: Union[AmbiguityHandling, str] = AmbiguityHandling.missing,
     ends_only=False,
     threads: int = 1,
     plot_trim_report_path: Union[str, None] = None,
@@ -71,6 +72,15 @@ def clipkit(
                     "sequence_type must be one of: 'aa', 'nt', SeqType.aa, SeqType.nt, or None."
                 ) from exc
 
+        if isinstance(ambiguity_handling, str):
+            try:
+                ambiguity_handling = AmbiguityHandling(ambiguity_handling.lower())
+            except ValueError as exc:
+                raise ValueError(
+                    "ambiguity_handling must be one of: 'missing', 'fractional', "
+                    "'literal', or the corresponding AmbiguityHandling value."
+                ) from exc
+
         # override options not currently available through programmatic interface
         complement = False
         use_log = False
@@ -94,6 +104,7 @@ def clipkit(
             ends_only,
             threads,
             remove_stop_codons,
+            ambiguity_handling,
         )
 
         if plot_trim_report_path:
@@ -103,6 +114,7 @@ def clipkit(
                 mode=TrimmingMode(mode).value,
                 gaps=trim_run.gaps,
                 sequence_type=trim_run.sequence_type.value,
+                ambiguity_handling=trim_run.ambiguity_handling.value,
             )
 
         if not output_file_path:

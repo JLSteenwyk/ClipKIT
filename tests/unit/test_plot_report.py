@@ -32,6 +32,10 @@ def test_write_trim_plot_report(tmp_path):
     )
     assert "Export Per-site Tracks (PNG)" in content
     assert "Export Alignment Preview (PNG)" in content
+    assert '"ambiguity_handling": "missing"' in content
+    assert '"site_gap_fraction"' in content
+    assert '"site_ambiguity"' in content
+    assert '"site_resolved_fraction"' in content
 
 
 def test_write_trim_plot_report_infers_non_nucleotide_alphabet(tmp_path):

@@ -26,7 +26,7 @@ from .helpers import (
 )
 from .guide_tree import build_parsimony_guide_tree
 from .logger import logger, log_file_logger
-from .modes import StopCodonMode, TrimmingMode
+from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from .msa import MSA
 from .parser import create_parser
 from .plot_report import write_trim_plot_report
@@ -61,6 +61,7 @@ class TrimRun:
     output_file_format: FileFormat
     gaps: float
     codon: bool
+    ambiguity_handling: AmbiguityHandling = AmbiguityHandling.missing
     stop_codon_masking: StopCodonMaskingStats = field(
         default_factory=StopCodonMaskingStats
     )
@@ -136,6 +137,7 @@ def run(
     ends_only: bool,
     threads: int = 1,
     remove_stop_codons: Union[StopCodonMode, str, None] = None,
+    ambiguity_handling: Union[AmbiguityHandling, str] = AmbiguityHandling.missing,
 ):
     alignment, input_file_format = get_alignment_and_format(
         input_file, input_file_format
@@ -145,6 +147,7 @@ def run(
         raise ValueError("threads must be an integer >= 1")
 
     sequence_type = sequence_type or get_seq_type(alignment)
+    ambiguity_handling = AmbiguityHandling(ambiguity_handling)
     remove_stop_codons = normalize_stop_codon_mode(remove_stop_codons)
     validate_stop_codon_configuration(
         remove_stop_codons,
@@ -188,7 +191,13 @@ def run(
         alignment.get_alignment_length(),
     )
 
-    msa = create_msa(alignment, gap_characters, effective_threads)
+    msa = create_msa(
+        alignment,
+        gap_characters,
+        effective_threads,
+        sequence_type=sequence_type,
+        ambiguity_handling=ambiguity_handling,
+    )
     stop_codon_masking = (
         msa.mask_stop_codons(remove_stop_codons)
         if remove_stop_codons is not None
@@ -235,6 +244,7 @@ def run(
         output_file_format=output_file_format,
         gaps=gaps,
         codon=codon,
+        ambiguity_handling=ambiguity_handling,
         stop_codon_masking=stop_codon_masking,
     )
 
@@ -262,6 +272,7 @@ def execute(
     auxiliary_file: str = None,
     threads: int = 1,
     remove_stop_codons: Union[StopCodonMode, str, None] = None,
+    ambiguity_handling: Union[AmbiguityHandling, str] = AmbiguityHandling.missing,
     **kwargs,
 ) -> None:
     fh = None
@@ -281,6 +292,7 @@ def execute(
 
         start_time = time.time()
         remove_stop_codons = normalize_stop_codon_mode(remove_stop_codons)
+        ambiguity_handling = AmbiguityHandling(ambiguity_handling)
 
         if validate_only:
             try:
@@ -327,6 +339,7 @@ def execute(
                         input_file_format=detected_input_format.value,
                         output_file_format=resolved_output_format.value,
                         sequence_type=validated_sequence_type.value,
+                        ambiguity_handling=ambiguity_handling.value,
                         gaps=gaps,
                         gap_characters=validated_gap_characters,
                         mode=mode.value,
@@ -360,6 +373,7 @@ def execute(
                 ends_only,
                 threads,
                 remove_stop_codons,
+                ambiguity_handling,
             )
         except InvalidInputFileFormat:
             logger.error(
@@ -382,6 +396,7 @@ def execute(
             use_log,
             ends_only,
             trim_run.stop_codon_masking,
+            trim_run.ambiguity_handling,
         )
 
         if dry_run:
@@ -425,6 +440,7 @@ def execute(
                     input_file_format=trim_run.input_file_format.value,
                     output_file_format=trim_run.output_file_format.value,
                     sequence_type=trim_run.sequence_type.value,
+                    ambiguity_handling=trim_run.ambiguity_handling.value,
                     gaps=trim_run.gaps,
                     gap_characters=trim_run.gap_characters,
                     mode=mode.value,
@@ -446,6 +462,7 @@ def execute(
                 mode=mode.value,
                 gaps=trim_run.gaps,
                 sequence_type=trim_run.sequence_type.value,
+                ambiguity_handling=trim_run.ambiguity_handling.value,
             )
             logger.info(f"Wrote trim plot report to {plot_trim_report}")
 

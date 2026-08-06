@@ -8,7 +8,7 @@ from argparse import (
 
 from .helpers import SeqType
 from .files import FileFormat
-from .modes import StopCodonMode, TrimmingMode
+from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from .version import __version__
 
 _MAIN_DESCRIPTION_TEMPLATE = r"""\
@@ -67,6 +67,10 @@ _OPTIONAL_ARGUMENTS_DESCRIPTION = """\
 
 -s, --sequence_type <nt, aa>                specifies sequence type of input file
                                             (default: auto-detect)
+
+--ambiguity_handling <missing,              controls how recognized IUPAC ambiguity symbols
+                      fractional,           contribute to trimming statistics
+                      literal>              (default: missing)
 
 -of, --output_file_format <file_format>     specifies output file format
                                             (default: same as input file format)
@@ -157,6 +161,16 @@ Sequence type
     gaps. For nucleotide sequences, the same characters are
     considered gaps as well as N.
 
+Ambiguity handling
+    Controls how recognized IUPAC ambiguity symbols are analyzed. "missing"
+    excludes them from entropy, composition, and KPI/KPIC state counts and
+    includes them in the unavailable fraction used by gap-based modes.
+    "fractional" distributes each symbol equally among its possible states
+    for entropy and composition, but excludes it from KPI/KPIC classification.
+    "literal" treats each ambiguity code as a separate state, matching the
+    legacy ambiguity interpretation. Configured gap characters take precedence.
+    Input and output alignment symbols are never rewritten.
+
 Input and output file formats
     Supported input files include:
     fasta, clustal, maf, mauve, phylip, phylip-sequential,
@@ -171,7 +185,8 @@ Log
     - Column 2 reports if the site was trimmed or kept (trim and keep, respectively),
     - Column 3 reports if the site is a parsimony informative site or not (PI and nPI, respectively), or
       a constant site or not (Const and nConst, respectively), or neither (nConst, nPI)
-    - Column 4 reports the gappyness of the position (number of gaps / entries in alignment)
+    - Column 4 reports the effective unavailable fraction. In missing mode this
+      combines configured gaps and recognized ambiguity symbols.
 
 Complementary
     Creates an alignment file of only the trimmed sequences
@@ -267,6 +282,15 @@ def create_parser() -> ArgumentParser:
         help=SUPPRESS,
         nargs="?",
         choices=seq_type_choices,
+    )
+
+    optional.add_argument(
+        "--ambiguity_handling",
+        "--ambiguity-handling",
+        choices=[handling.value for handling in AmbiguityHandling],
+        default=AmbiguityHandling.missing.value,
+        required=False,
+        help=SUPPRESS,
     )
 
     optional.add_argument(

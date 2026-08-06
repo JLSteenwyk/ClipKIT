@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from .files import FileFormat
     from .helpers import SeqType
-    from .modes import TrimmingMode
+    from .modes import AmbiguityHandling, TrimmingMode
     from .stop_codons import StopCodonMaskingStats
 
 
@@ -26,6 +26,7 @@ def write_user_args(
     use_log: bool,
     ends_only: bool,
     stop_codon_masking: "Optional[StopCodonMaskingStats]" = None,
+    ambiguity_handling: "Optional[AmbiguityHandling]" = None,
 ) -> None:
     if seq_type.value == "nt":
         seq_type_name = "Nucleotides"
@@ -39,6 +40,9 @@ def write_user_args(
         stop_codon_summary = (
             f"    Stop codon masking mode: {stop_codon_masking.mode.value}\n"
         )
+    ambiguity_summary = (
+        ambiguity_handling.value if ambiguity_handling is not None else "missing"
+    )
 
     logger.info(textwrap.dedent(f"""\
 
@@ -48,6 +52,7 @@ def write_user_args(
     Input file: {in_file_name} (format: {in_file_format.value})
     Output file: {out_file_name} (format: {out_file_format.value})
     Sequence type: {seq_type_name}
+    Ambiguity handling: {ambiguity_summary}
     Gaps threshold: {gaps}
     Gap characters: {gap_chars}
     Trimming mode: {mode.value}

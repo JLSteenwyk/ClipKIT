@@ -3,7 +3,7 @@ import pytest
 from Bio.Align import MultipleSeqAlignment
 from clipkit import clipkit
 from clipkit.files import FileFormat
-from clipkit.modes import StopCodonMode, TrimmingMode
+from clipkit.modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from clipkit.msa import MSA
 
 
@@ -196,6 +196,38 @@ class TestApiInvocation(object):
             clipkit(
                 input_file_path="tests/integration/samples/simple.fa",
                 sequence_type="protein",
+            )
+
+    def test_ambiguity_handling_api(self):
+        alignment = ">one\nA\n>two\nA\n>three\nR\n>four\nR\n"
+
+        missing_run, _ = clipkit(
+            raw_alignment=alignment,
+            mode=TrimmingMode.kpi,
+            sequence_type="nt",
+        )
+        literal_run, _ = clipkit(
+            raw_alignment=alignment,
+            mode=TrimmingMode.kpi,
+            sequence_type="nt",
+            ambiguity_handling=AmbiguityHandling.literal,
+        )
+
+        assert missing_run.ambiguity_handling == AmbiguityHandling.missing
+        assert missing_run.msa.length == 0
+        assert literal_run.msa.length == 1
+        assert missing_run.msa.site_classification_types[0].value == "constant"
+        assert (
+            literal_run.msa.site_classification_types[0].value
+            == "parsimony-informative"
+        )
+
+    def test_invalid_ambiguity_handling_rejected(self):
+        with pytest.raises(ValueError, match="ambiguity_handling must be one of"):
+            clipkit(
+                raw_alignment=">one\nA\n>two\nR\n",
+                sequence_type="nt",
+                ambiguity_handling="unsupported",
             )
 
     def test_plot_trim_report_path_writes_html(self, tmp_path):

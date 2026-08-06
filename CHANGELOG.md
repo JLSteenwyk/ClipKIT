@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added `--ambiguity_handling {missing,fractional,literal}` (and the equivalent Python API argument) for explicit IUPAC ambiguity handling.
+- Made conservative `missing` handling the default: ambiguity symbols are excluded from entropy, composition, heterotachy, and KPI/KPIC state counts, and contribute to the effective unavailable fraction in gap-based modes.
+- Added optional fractional IUPAC weighting for entropy, composition, and heterotachy's clade-entropy calculation while keeping KPI/KPIC classification conservative, plus a `literal` compatibility mode for the legacy ambiguity interpretation.
+- Improved sequence-type auto-detection for IUPAC-rich nucleotide alignments and added separate configured-gap, ambiguity, and resolved-state tracks to HTML reports.
+- Documented nucleotide/protein ambiguity maps, configured-gap precedence, mode-specific behavior, and unchanged alignment output.
+
 ## 2.13.2
 
 - Expanded behavioral test coverage from 84.53% to 98.83% line coverage, increasing the suite from 552 to 619 tests without modifying production behavior.

@@ -13,7 +13,7 @@ pip install clipkit
 
 ```python
 from clipkit import clipkit
-from clipkit.modes import TrimmingMode
+from clipkit.modes import AmbiguityHandling, TrimmingMode
 from clipkit.files import FileFormat
 
 # Trim an alignment file
@@ -43,6 +43,11 @@ print(f"Sites trimmed: {stats.trimmed_length}")
 - `input_file_format`: Input format (default: `FileFormat.fasta`)
 - `output_file_format`: Output format (default: `FileFormat.fasta` for API usage)
 - `sequence_type`: Sequence type - `SeqType.aa` or `SeqType.nt` (default: auto-detect)
+- `ambiguity_handling`: IUPAC ambiguity policy (default: `AmbiguityHandling.missing`)
+  - `missing`: exclude ambiguity symbols from state counts and include them in the effective unavailable fraction used by gap-based modes
+  - `fractional`: distribute ambiguity symbols equally over their possible states for entropy/composition calculations; KPI/KPIC still excludes them
+  - `literal`: treat each non-gap ambiguity symbol as a distinct state, matching the legacy ambiguity interpretation
+  - Configured `gap_characters` take precedence over ambiguity expansion, and output alignment symbols are never rewritten
 - `codon`: Enable codon-based trimming (default: `False`)
 - `ends_only`: Trim only alignment ends (default: `False`)
 - `threads`: Requested number of threads for parallel processing (default: `1`)
@@ -106,6 +111,28 @@ trim_run, stats = clipkit(
     raw_alignment=alignment_string,
     output_file_path="output.fa",
 )
+```
+
+### IUPAC Ambiguity Handling
+
+```python
+from clipkit import clipkit
+from clipkit.modes import AmbiguityHandling, TrimmingMode
+
+trim_run, stats = clipkit(
+    input_file_path="ambiguous_nt.fasta",
+    mode=TrimmingMode.entropy,
+    sequence_type="nt",
+    ambiguity_handling=AmbiguityHandling.fractional,
+    # N and X are gaps in the nucleotide default. Override the gap set if
+    # they should also be fractionally expanded.
+    gap_characters=["-", "?", "*"],
+)
+
+print(trim_run.ambiguity_handling.value)  # fractional
+print(trim_run.msa.site_gap_fraction)
+print(trim_run.msa.site_ambiguity)
+print(trim_run.msa.site_resolved_fraction)
 ```
 
 ## Performance Considerations

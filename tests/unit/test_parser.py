@@ -60,6 +60,18 @@ class TestParser(object):
         with pytest.raises(SystemExit):
             parser.parse_args(["my/input/file.fa", "--remove_stop_codons", "unknown"])
 
+    @pytest.mark.parametrize("handling", ["missing", "fractional", "literal"])
+    def test_ambiguity_handling(self, parser, handling):
+        parsed = parser.parse_args(
+            ["my/input/file.fa", "--ambiguity-handling", handling]
+        )
+
+        assert parsed.ambiguity_handling == handling
+
+    def test_ambiguity_handling_rejects_unknown_mode(self, parser):
+        with pytest.raises(SystemExit):
+            parser.parse_args(["my/input/file.fa", "--ambiguity_handling", "unknown"])
+
     def test_plot_trim_report_with_no_value(self, parser):
         input_path = "my/input/file.fa"
         parsed = parser.parse_args([input_path, "--plot_trim_report"])

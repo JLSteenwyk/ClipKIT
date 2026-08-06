@@ -4,6 +4,8 @@ from typing import Any
 
 import numpy as np
 
+from .ambiguity import is_nucleotide_alphabet
+
 
 def _to_list(values: Any) -> list:
     if values is None:
@@ -21,7 +23,6 @@ def _site_class_values(site_classes: Any) -> list[str]:
 
 
 def _infer_sequence_type(msa) -> str:
-    nt_chars = set("ACGTUN-?*X")
     observed = set()
     for row in msa.seq_records.tolist():
         for char in row:
@@ -33,7 +34,7 @@ def _infer_sequence_type(msa) -> str:
         if len(observed) > 40:
             break
 
-    if observed and observed.issubset(nt_chars):
+    if observed and is_nucleotide_alphabet(observed):
         return "nt"
     return "aa"
 
@@ -74,25 +75,37 @@ def write_trim_plot_report(
     mode: str,
     gaps: float,
     sequence_type: str | None = None,
+    ambiguity_handling: str | None = None,
 ) -> None:
     trimmed_positions = [int(x) for x in _to_list(msa._site_positions_to_trim)]
     alignment_length = int(msa.original_length)
     trimmed_count = len(trimmed_positions)
     kept_count = max(0, alignment_length - trimmed_count)
     trimmed_percent = (
-        round((trimmed_count / alignment_length) * 100.0, 3) if alignment_length else 0.0
+        round((trimmed_count / alignment_length) * 100.0, 3)
+        if alignment_length
+        else 0.0
     )
     resolved_sequence_type = sequence_type or _infer_sequence_type(msa)
+    resolved_ambiguity_handling = ambiguity_handling or getattr(
+        getattr(msa, "ambiguity_handling", None), "value", "missing"
+    )
 
     payload = {
         "mode": mode,
         "gaps": gaps,
         "sequence_type": resolved_sequence_type,
+        "ambiguity_handling": resolved_ambiguity_handling,
         "alignment_length": alignment_length,
         "trimmed_count": trimmed_count,
         "kept_count": kept_count,
         "trimmed_percent": trimmed_percent,
         "site_gappyness": [float(x) for x in _to_list(msa.site_gappyness)],
+        "site_gap_fraction": [float(x) for x in _to_list(msa.site_gap_fraction)],
+        "site_ambiguity": [float(x) for x in _to_list(msa.site_ambiguity)],
+        "site_resolved_fraction": [
+            float(x) for x in _to_list(msa.site_resolved_fraction)
+        ],
         "site_entropy": [float(x) for x in _to_list(msa.site_entropy)],
         "site_classification": _site_class_values(msa.site_classification_types),
         "trimmed_positions": trimmed_positions,
@@ -304,6 +317,7 @@ def write_trim_plot_report(
     <section class=\"cards\">
       <article class=\"card\"><div class=\"label\">Mode</div><div class=\"value\">{escape(mode)}</div></article>
       <article class=\"card\"><div class=\"label\">Sequence Type</div><div class=\"value\">{escape(resolved_sequence_type)}</div></article>
+      <article class=\"card\"><div class=\"label\">Ambiguity Handling</div><div class=\"value\">{escape(resolved_ambiguity_handling)}</div></article>
       <article class=\"card\"><div class=\"label\">Threshold</div><div class=\"value\">{gaps}</div></article>
       <article class=\"card\"><div class=\"label\">Alignment Length</div><div class=\"value\">{alignment_length}</div></article>
       <article class=\"card\"><div class=\"label\">Sites Kept</div><div class=\"value\">{kept_count}</div></article>
@@ -313,14 +327,14 @@ def write_trim_plot_report(
     <section class=\"panel\">
       <h2>Per-site Tracks</h2>
       <div class=\"legend\">
-        <span><span class=\"dot\" style=\"background: var(--accent);\"></span>gappyness (binned bars)</span>
+        <span><span class=\"dot\" style=\"background: var(--accent);\"></span>effective unavailable fraction (binned bars)</span>
         <span><span class=\"dot\" style=\"background: var(--warm);\"></span>entropy (line)</span>
         <span><span class=\"dot\" style=\"background: var(--trim);\"></span>trimmed columns (red vertical bands)</span>
       </div>
       <div class=\"controls\">
         <button class=\"btn\" id=\"export-track-png\" type=\"button\">Export Per-site Tracks (PNG)</button>
       </div>
-      <p class=\"legend-note\">Trimmed columns are highlighted in red here and in the alignment preview below.</p>
+      <p class=\"legend-note\">In missing mode, the effective unavailable fraction combines configured gaps and recognized ambiguity symbols. Trimmed columns are highlighted in red here and below.</p>
       <div class=\"track-wrap\">
         <canvas id=\"track\" width=\"1200\" height=\"240\"></canvas>
       </div>
@@ -455,7 +469,7 @@ def write_trim_plot_report(
       const drawW = (canvas.clientWidth || 1200) - pad * 2;
       const x = Math.max(pad, Math.min(pad + drawW - 1, Math.round(event.clientX - rect.left)));
       const site = Math.min(n - 1, Math.max(0, Math.floor((x - pad) * n / drawW)));
-      tooltip.textContent = `Site ${{site + 1}} | gappyness=${{data.site_gappyness[site].toFixed(4)}} | entropy=${{data.site_entropy[site].toFixed(4)}} | class=${{data.site_classification[site]}} | status=${{trimmed.has(site) ? "trimmed" : "kept"}}`;
+      tooltip.textContent = `Site ${{site + 1}} | unavailable=${{data.site_gappyness[site].toFixed(4)}} | configured gaps=${{data.site_gap_fraction[site].toFixed(4)}} | ambiguity=${{data.site_ambiguity[site].toFixed(4)}} | entropy=${{data.site_entropy[site].toFixed(4)}} | class=${{data.site_classification[site]}} | status=${{trimmed.has(site) ? "trimmed" : "kept"}}`;
     }});
 
     canvas.addEventListener("mouseleave", () => {{

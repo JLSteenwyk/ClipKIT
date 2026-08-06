@@ -3,10 +3,18 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import numpy as np
 import math
+from itertools import chain
 from typing import Union
 from Bio.Phylo.BaseTree import Tree
 
-from .modes import StopCodonMode, TrimmingMode
+from .ambiguity import (
+    ambiguity_map,
+    ambiguity_symbols,
+    is_nucleotide_alphabet,
+    normalize_sequence_type,
+    resolved_symbols,
+)
+from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 
 # Always import the standard version for compatibility
 from .site_classification import (
@@ -96,6 +104,8 @@ class MSA:
         gap_chars=DEFAULT_AA_GAP_CHARS,
         threads=1,
         requires_uppercase_normalization=False,
+        sequence_type="aa",
+        ambiguity_handling=AmbiguityHandling.missing,
     ) -> None:
         self.header_info = header_info
         self.seq_records = seq_records
@@ -105,18 +115,29 @@ class MSA:
         self._site_classification_types = None
         self._column_character_frequencies = None
         self._column_character_count_cache = {}
+        self._observed_sequence_states_cache = None
         self._gap_chars = gap_chars or DEFAULT_AA_GAP_CHARS
         self._codon_size = 3
         self._threads = threads
         self._requires_uppercase_normalization = requires_uppercase_normalization
+        self._sequence_type = normalize_sequence_type(sequence_type)
+        self._ambiguity_handling = AmbiguityHandling(ambiguity_handling)
         # Cache for expensive computations
         self._site_gappyness_cache = None
+        self._site_gap_fraction_cache = None
+        self._site_ambiguity_cache = None
+        self._site_resolved_fraction_cache = None
+        self._site_analyzable_fraction_cache = None
         self._site_entropy_cache = None
         self._site_composition_bias_cache = None
 
     @staticmethod
     def from_bio_msa(
-        alignment: MultipleSeqAlignment, gap_chars=None, threads=1
+        alignment: MultipleSeqAlignment,
+        gap_chars=None,
+        threads=1,
+        sequence_type=None,
+        ambiguity_handling=AmbiguityHandling.missing,
     ) -> "MSA":
         header_info = []
         sequences = []
@@ -129,6 +150,11 @@ class MSA:
             sequences.append(seq)
             if not requires_uppercase_normalization and seq != seq.upper():
                 requires_uppercase_normalization = True
+
+        if sequence_type is None:
+            sequence_type = (
+                "nt" if is_nucleotide_alphabet(chain.from_iterable(sequences)) else "aa"
+            )
 
         alignment_length = len(sequences[0])
         if alignment_length == 0:
@@ -145,6 +171,8 @@ class MSA:
             gap_chars,
             threads,
             requires_uppercase_normalization=requires_uppercase_normalization,
+            sequence_type=sequence_type,
+            ambiguity_handling=ambiguity_handling,
         )
 
     def to_bio_msa(self) -> MultipleSeqAlignment:
@@ -178,7 +206,8 @@ class MSA:
         codons = normalized_records.reshape(
             self.seq_records.shape[0], -1, self._codon_size
         )
-        gap_chars = np.char.upper(np.asarray(self._gap_chars, dtype="U1"))
+        unavailable_chars = self._effective_unavailable_chars
+        gap_chars = np.asarray(sorted(unavailable_chars), dtype="U1")
         complete_codons = ~np.any(np.isin(codons, gap_chars), axis=2)
         codon_strings = (
             np.ascontiguousarray(codons).view("U3").reshape(codons.shape[:2])
@@ -220,7 +249,12 @@ class MSA:
         self._site_classification_types = None
         self._column_character_frequencies = None
         self._column_character_count_cache = {}
+        self._observed_sequence_states_cache = None
         self._site_gappyness_cache = None
+        self._site_gap_fraction_cache = None
+        self._site_ambiguity_cache = None
+        self._site_resolved_fraction_cache = None
+        self._site_analyzable_fraction_cache = None
         self._site_entropy_cache = None
         self._site_composition_bias_cache = None
 
@@ -272,32 +306,125 @@ class MSA:
         return self._gap_chars
 
     @property
-    def site_gappyness(self) -> np.floating:
-        if self._site_gappyness_cache is not None:
-            return self._site_gappyness_cache
+    def sequence_type(self) -> str:
+        return self._sequence_type
 
-        # KPI/KPIC classification already counts every uppercase character.
-        # Reuse those exact raw counts when possible instead of rescanning the
-        # alignment for a combined gap/classification mode.
+    @property
+    def ambiguity_handling(self) -> AmbiguityHandling:
+        return self._ambiguity_handling
+
+    @property
+    def _normalized_gap_chars(self) -> frozenset[str]:
+        return frozenset(str(char).upper() for char in self._gap_chars)
+
+    @property
+    def _ambiguity_chars(self) -> frozenset[str]:
+        return ambiguity_symbols(self._sequence_type)
+
+    @property
+    def _effective_unavailable_chars(self) -> frozenset[str]:
+        if self._ambiguity_handling == AmbiguityHandling.missing:
+            return self._normalized_gap_chars | self._ambiguity_chars
+        return self._normalized_gap_chars
+
+    @property
+    def _observed_sequence_states(self) -> np.ndarray:
+        if self._observed_sequence_states_cache is None:
+            seq_array = (
+                np.char.upper(self.seq_records)
+                if self._requires_uppercase_normalization
+                else self.seq_records
+            )
+            self._observed_sequence_states_cache = np.unique(seq_array)
+        return self._observed_sequence_states_cache
+
+    def _site_fraction_for_states(
+        self, states_to_count: frozenset[str], cache_key: str
+    ) -> np.ndarray:
         shared_counts = (
             self._column_character_count_cache.get(("frequencies", False))
             if not self._requires_uppercase_normalization
             else None
         )
-        if shared_counts is not None:
-            states, counts = shared_counts
-            gap_counts = counts[np.isin(states, self._gap_chars)].sum(axis=0)
-            site_gappyness = gap_counts / self.seq_records.shape[0]
-        elif self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING:
-            site_gappyness = np.isin(self.seq_records, self._gap_chars).mean(axis=0)
-        else:
-            states, counts = self._get_column_character_counts(
-                normalize_case=False, cache_key="gappyness"
+        if (
+            shared_counts is None
+            and self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING
+        ):
+            seq_array = (
+                np.char.upper(self.seq_records)
+                if self._requires_uppercase_normalization
+                else self.seq_records
             )
-            gap_counts = counts[np.isin(states, self._gap_chars)].sum(axis=0)
-            site_gappyness = gap_counts / self.seq_records.shape[0]
-        self._site_gappyness_cache = np.around(site_gappyness, decimals=4)
-        self._column_character_count_cache.pop(("gappyness", False), None)
+            return np.around(
+                np.isin(seq_array, tuple(states_to_count)).mean(axis=0), decimals=4
+            )
+        if shared_counts is None:
+            states, counts = self._get_column_character_counts(
+                normalize_case=True, cache_key=cache_key
+            )
+        else:
+            states, counts = shared_counts
+        matching_counts = counts[np.isin(states, tuple(states_to_count))].sum(axis=0)
+        fractions = matching_counts / self.seq_records.shape[0]
+        self._column_character_count_cache.pop(
+            (cache_key, self._requires_uppercase_normalization), None
+        )
+        return np.around(fractions, decimals=4)
+
+    @property
+    def site_gap_fraction(self) -> np.ndarray:
+        """Fraction of configured gap characters at each site."""
+        if self._site_gap_fraction_cache is None:
+            self._site_gap_fraction_cache = self._site_fraction_for_states(
+                self._normalized_gap_chars, "gap_fraction"
+            )
+        return self._site_gap_fraction_cache
+
+    @property
+    def site_ambiguity(self) -> np.ndarray:
+        """Fraction of recognized IUPAC ambiguity symbols at each site."""
+        if self._site_ambiguity_cache is None:
+            self._site_ambiguity_cache = self._site_fraction_for_states(
+                self._ambiguity_chars, "ambiguity_fraction"
+            )
+        return self._site_ambiguity_cache
+
+    @property
+    def site_resolved_fraction(self) -> np.ndarray:
+        """Fraction of unambiguous biological states at each site."""
+        if self._site_resolved_fraction_cache is None:
+            self._site_resolved_fraction_cache = self._site_fraction_for_states(
+                resolved_symbols(self._sequence_type), "resolved_fraction"
+            )
+        return self._site_resolved_fraction_cache
+
+    @property
+    def site_analyzable_fraction(self) -> np.ndarray:
+        """Fraction of entries contributing to entropy/composition analysis."""
+        if self._site_analyzable_fraction_cache is None:
+            _, counts = self._get_non_gap_character_counts(
+                cache_key="analyzable_fraction"
+            )
+            self._site_analyzable_fraction_cache = np.around(
+                counts.sum(axis=0) / self.seq_records.shape[0], decimals=4
+            )
+            self._column_character_count_cache.pop(
+                (
+                    "analyzable_fraction",
+                    self._requires_uppercase_normalization,
+                ),
+                None,
+            )
+        return self._site_analyzable_fraction_cache
+
+    @property
+    def site_gappyness(self) -> np.floating:
+        if self._site_gappyness_cache is not None:
+            return self._site_gappyness_cache
+
+        self._site_gappyness_cache = self._site_fraction_for_states(
+            self._effective_unavailable_chars, "gappyness"
+        )
         return self._site_gappyness_cache
 
     @property
@@ -314,9 +441,7 @@ class MSA:
         if self._site_entropy_cache is not None:
             return self._site_entropy_cache
 
-        _, counts_by_state = self._get_non_gap_character_counts(
-            normalize_gap_chars=True, cache_key="entropy"
-        )
+        _, counts_by_state = self._get_non_gap_character_counts(cache_key="entropy")
         total_counts = counts_by_state.sum(axis=0).astype(float)
         observed_states = np.count_nonzero(counts_by_state, axis=0)
         raw_entropy = np.zeros(counts_by_state.shape[1], dtype=float)
@@ -384,8 +509,9 @@ class MSA:
 
     def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
         for idx, row in enumerate(self.trimmed):
-            if np.all(row == row[0]) and (  # all values the same
-                row[0] in self.gap_chars
+            normalized_row = np.char.upper(row)
+            if np.all(
+                np.isin(normalized_row, tuple(self._effective_unavailable_chars))
             ):
                 return True, self.header_info[idx].get("id")
         return False, None
@@ -436,7 +562,7 @@ class MSA:
                 dict(
                     zip(
                         states[present],
-                        counts_by_state[present, col_idx].astype(np.int64),
+                        counts_by_state[present, col_idx].tolist(),
                     )
                 )
             )
@@ -459,19 +585,58 @@ class MSA:
 
     def _get_non_gap_character_counts(
         self,
-        normalize_gap_chars: bool = False,
         cache_key: str = "frequencies",
+        classification: bool = False,
     ) -> tuple[np.ndarray, np.ndarray]:
         states, counts = self._get_column_character_counts(
             normalize_case=True, cache_key=cache_key
         )
-        gap_chars = (
-            [gap.upper() for gap in self._gap_chars]
-            if normalize_gap_chars
-            else self._gap_chars
+        non_gap_states = ~np.isin(states, tuple(self._normalized_gap_chars))
+        states = states[non_gap_states]
+        counts = counts[non_gap_states]
+
+        if self._ambiguity_handling == AmbiguityHandling.literal:
+            return states, counts
+
+        recognized_ambiguity = np.isin(states, tuple(self._ambiguity_chars))
+        if self._ambiguity_handling == AmbiguityHandling.missing or classification:
+            return states[~recognized_ambiguity], counts[~recognized_ambiguity]
+
+        return self._fractionally_expand_ambiguities(states, counts)
+
+    def _fractionally_expand_ambiguities(
+        self,
+        states: np.ndarray,
+        counts: np.ndarray,
+        observed_states: np.ndarray = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        expansions = ambiguity_map(
+            self._sequence_type,
+            states if observed_states is None else observed_states,
         )
-        non_gap_states = ~np.isin(states, gap_chars)
-        return states[non_gap_states], counts[non_gap_states]
+        expanded_counts: dict[str, np.ndarray] = {}
+
+        for state, state_counts in zip(states, counts):
+            destinations = expansions.get(str(state))
+            if destinations is None:
+                expanded_counts[str(state)] = (
+                    expanded_counts.get(str(state), 0) + state_counts
+                )
+                continue
+
+            weight = state_counts.astype(float) / len(destinations)
+            for destination in destinations:
+                expanded_counts[destination] = (
+                    expanded_counts.get(destination, 0) + weight
+                )
+
+        if not expanded_counts:
+            return np.empty(0, dtype="U1"), np.empty((0, counts.shape[1]), dtype=float)
+
+        expanded_states = np.array(sorted(expanded_counts), dtype="U1")
+        return expanded_states, np.vstack(
+            [expanded_counts[state] for state in expanded_states]
+        )
 
     @property
     def site_classification_types(self):
@@ -482,7 +647,7 @@ class MSA:
             self._site_classification_types = np.array([])
             return self._site_classification_types
 
-        _, counts_by_state = self._get_non_gap_character_counts()
+        _, counts_by_state = self._get_non_gap_character_counts(classification=True)
         observed_states = np.count_nonzero(counts_by_state, axis=0)
         states_occurring_at_least_twice = np.count_nonzero(counts_by_state >= 2, axis=0)
 
@@ -520,14 +685,23 @@ class MSA:
             # Keep sites at the inferred boundary and trim strictly above it.
             sites_to_trim = np.where(self.site_gappyness > gap_threshold)[0]
         elif mode == TrimmingMode.entropy:
-            sites_to_trim = np.where(self.site_entropy >= gap_threshold)[0]
+            trim_mask = self.site_entropy >= gap_threshold
+            if self._ambiguity_handling == AmbiguityHandling.missing:
+                trim_mask |= self.site_analyzable_fraction == 0
+            sites_to_trim = np.where(trim_mask)[0]
         elif mode == TrimmingMode.composition_bias:
-            sites_to_trim = np.where(self.site_composition_bias >= gap_threshold)[0]
+            trim_mask = self.site_composition_bias >= gap_threshold
+            if self._ambiguity_handling == AmbiguityHandling.missing:
+                trim_mask |= self.site_analyzable_fraction == 0
+            sites_to_trim = np.where(trim_mask)[0]
         elif mode == TrimmingMode.heterotachy:
             if guide_tree is None:
                 raise ValueError("heterotachy mode requires a guide tree")
             site_heterotachy = self.determine_site_heterotachy(guide_tree)
-            sites_to_trim = np.where(site_heterotachy >= gap_threshold)[0]
+            trim_mask = site_heterotachy >= gap_threshold
+            if self._ambiguity_handling == AmbiguityHandling.missing:
+                trim_mask |= self.site_analyzable_fraction == 0
+            sites_to_trim = np.where(trim_mask)[0]
         elif mode == TrimmingMode.kpi:
             site_classification_types = self.site_classification_types
             sites_to_trim = np.where(
@@ -660,20 +834,33 @@ class MSA:
         clade_indices: list[int],
         site_idx: int,
     ) -> float:
-        column = self.seq_records[clade_indices, site_idx]
-        gap_chars_upper = {char.upper() for char in self._gap_chars}
-        non_gap = [char for char in column if char.upper() not in gap_chars_upper]
+        column = np.char.upper(self.seq_records[clade_indices, site_idx])
+        states, counts = np.unique(column, return_counts=True)
+        counts = counts.reshape(-1, 1)
 
-        if len(non_gap) <= 1:
+        non_gap_states = ~np.isin(states, tuple(self._normalized_gap_chars))
+        states = states[non_gap_states]
+        counts = counts[non_gap_states]
+        if self._ambiguity_handling != AmbiguityHandling.literal:
+            recognized_ambiguity = np.isin(states, tuple(self._ambiguity_chars))
+            if self._ambiguity_handling == AmbiguityHandling.missing:
+                states = states[~recognized_ambiguity]
+                counts = counts[~recognized_ambiguity]
+            else:
+                states, counts = self._fractionally_expand_ambiguities(
+                    states,
+                    counts,
+                    observed_states=self._observed_sequence_states,
+                )
+
+        present_counts = counts[:, 0]
+        present_counts = present_counts[present_counts > 0]
+        if len(present_counts) <= 1:
             return 0.0
 
-        unique, counts = np.unique(non_gap, return_counts=True)
-        if len(unique) <= 1:
-            return 0.0
-
-        probs = counts.astype(float) / float(np.sum(counts))
+        probs = present_counts.astype(float) / float(np.sum(present_counts))
         raw_entropy = -float(np.sum(probs * np.log2(probs)))
-        max_entropy = math.log2(len(unique))
+        max_entropy = math.log2(len(present_counts))
         return raw_entropy / max_entropy if max_entropy > 0 else 0.0
 
     @staticmethod

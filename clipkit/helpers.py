@@ -5,8 +5,9 @@ from Bio.Align import MultipleSeqAlignment
 import numpy as np
 from typing import Optional
 
+from .ambiguity import is_nucleotide_alphabet
 from .msa import MSA
-from .modes import TrimmingMode
+from .modes import AmbiguityHandling, TrimmingMode
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .files import FileFormat
 from .stats import TrimmingStats
@@ -32,10 +33,7 @@ def get_seq_type(alignment: MultipleSeqAlignment) -> SeqType:
         seq = "".join([str(record.seq) for record in alignment])
         seq = remove_gaps(seq)
 
-    if len(set(seq.upper())) > 5:
-        sequence_type = SeqType.aa
-    else:
-        sequence_type = SeqType.nt
+    sequence_type = SeqType.nt if is_nucleotide_alphabet(seq) else SeqType.aa
 
     return sequence_type
 
@@ -47,11 +45,23 @@ def get_gap_chars(seq_type: SeqType) -> list[str]:
         return DEFAULT_AA_GAP_CHARS
 
 
-def create_msa(alignment: MultipleSeqAlignment, gap_chars: list[str] = None, threads: int = 1) -> MSA:
+def create_msa(
+    alignment: MultipleSeqAlignment,
+    gap_chars: list[str] = None,
+    threads: int = 1,
+    sequence_type: Optional[SeqType] = None,
+    ambiguity_handling: AmbiguityHandling = AmbiguityHandling.missing,
+) -> MSA:
     """
     Create MSA class
     """
-    return MSA.from_bio_msa(alignment, gap_chars, threads)
+    return MSA.from_bio_msa(
+        alignment,
+        gap_chars,
+        threads,
+        sequence_type=sequence_type,
+        ambiguity_handling=ambiguity_handling,
+    )
 
 
 def write_msa(

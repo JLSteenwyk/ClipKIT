@@ -8,6 +8,20 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+- Added ``--ambiguity_handling {missing,fractional,literal}`` and equivalent
+  Python API support for explicit IUPAC ambiguity handling.
+- Made conservative ``missing`` handling the default: ambiguity symbols are
+  excluded from entropy, composition, heterotachy, and KPI/KPIC state counts,
+  and contribute to the effective unavailable fraction in gap-based modes.
+- Added fractional IUPAC weighting for entropy, composition, and heterotachy's
+  clade-entropy calculation while
+  keeping KPI/KPIC classification conservative, plus a ``literal`` legacy
+  compatibility mode.
+- Improved auto-detection of IUPAC-rich nucleotide alignments and added
+  configured-gap, ambiguity, and resolved-state tracks to HTML reports.
+- Documented the supported nucleotide/protein ambiguity maps, configured-gap
+  precedence, mode-specific behavior, and unchanged alignment output.
+
 **2.13.2**
 
 - Expanded behavioral test coverage from 84.53% to 98.83% line coverage,

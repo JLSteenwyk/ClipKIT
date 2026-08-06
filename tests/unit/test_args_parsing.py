@@ -4,7 +4,7 @@ import pytest
 from clipkit.args_processing import process_args
 from clipkit.helpers import SeqType
 from clipkit.exceptions import StopCodonValidationError
-from clipkit.modes import StopCodonMode, TrimmingMode
+from clipkit.modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from clipkit.settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 
 
@@ -30,6 +30,7 @@ def args():
         report_json=None,
         plot_trim_report=None,
         remove_stop_codons=None,
+        ambiguity_handling=None,
         threads=1,
     )
     return Namespace(**kwargs)
@@ -133,6 +134,15 @@ class TestArgsProcessing(object):
         res = process_args(args)
         assert res["sequence_type"] == SeqType.aa
 
+    def test_process_args_default_ambiguity_handling(self, args):
+        res = process_args(args)
+        assert res["ambiguity_handling"] == AmbiguityHandling.missing
+
+    def test_process_args_fractional_ambiguity_handling(self, args):
+        args.ambiguity_handling = "fractional"
+        res = process_args(args)
+        assert res["ambiguity_handling"] == AmbiguityHandling.fractional
+
     def test_process_args_gap_characters_nt(self, args):
         res = process_args(args)
         assert res["gap_characters"] == DEFAULT_NT_GAP_CHARS
@@ -170,6 +180,7 @@ class TestArgsProcessing(object):
             "complement",
             "codon",
             "remove_stop_codons",
+            "ambiguity_handling",
             "sequence_type",
             "gaps",
             "mode",

@@ -11,7 +11,7 @@ from Bio.SeqRecord import SeqRecord
 import clipkit.msa as msa_module
 from clipkit.guide_tree import build_parsimony_guide_tree
 from clipkit.msa import MSA, _column_character_counts
-from clipkit.modes import TrimmingMode
+from clipkit.modes import AmbiguityHandling, TrimmingMode
 from clipkit.site_classification import (
     SiteClassificationType,
     determine_site_classification_type,
@@ -392,6 +392,7 @@ def test_count_backed_properties_match_per_column_reference():
         seq_records,
         gap_chars=gap_chars,
         requires_uppercase_normalization=True,
+        ambiguity_handling=AmbiguityHandling.literal,
     )
 
     normalized = np.char.upper(seq_records)
