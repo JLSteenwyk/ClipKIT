@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.14.0
+
 - Added `--ambiguity_handling {missing,fractional,literal}` (and the equivalent Python API argument) for explicit IUPAC ambiguity handling.
 - Made conservative `missing` handling the default: ambiguity symbols are excluded from entropy, composition, heterotachy, and KPI/KPIC state counts, and contribute to the effective unavailable fraction in gap-based modes.
 - Added optional fractional IUPAC weighting for entropy, composition, and heterotachy's clade-entropy calculation while keeping KPI/KPIC classification conservative, plus a `literal` compatibility mode for the legacy ambiguity interpretation.

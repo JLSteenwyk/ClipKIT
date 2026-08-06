@@ -8,6 +8,8 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+**2.14.0**
+
 - Added ``--ambiguity_handling {missing,fractional,literal}`` and equivalent
   Python API support for explicit IUPAC ambiguity handling.
 - Made conservative ``missing`` handling the default: ambiguity symbols are
