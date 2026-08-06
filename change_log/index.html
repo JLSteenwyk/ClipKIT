@@ -81,6 +81,22 @@
 <span id="id1"></span><h1>Change log<a class="headerlink" href="#change-log" title="Link to this heading"></a></h1>
 <p>Major changes to ClipKIT are summarized here.</p>
 <p><strong>Unreleased</strong></p>
+<p><strong>2.14.0</strong></p>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">--ambiguity_handling</span> <span class="pre">{missing,fractional,literal}</span></code> and equivalent
+Python API support for explicit IUPAC ambiguity handling.</p></li>
+<li><p>Made conservative <code class="docutils literal notranslate"><span class="pre">missing</span></code> handling the default: ambiguity symbols are
+excluded from entropy, composition, heterotachy, and KPI/KPIC state counts,
+and contribute to the effective unavailable fraction in gap-based modes.</p></li>
+<li><p>Added fractional IUPAC weighting for entropy, composition, and heterotachy’s
+clade-entropy calculation while
+keeping KPI/KPIC classification conservative, plus a <code class="docutils literal notranslate"><span class="pre">literal</span></code> legacy
+compatibility mode.</p></li>
+<li><p>Improved auto-detection of IUPAC-rich nucleotide alignments and added
+configured-gap, ambiguity, and resolved-state tracks to HTML reports.</p></li>
+<li><p>Documented the supported nucleotide/protein ambiguity maps, configured-gap
+precedence, mode-specific behavior, and unchanged alignment output.</p></li>
+</ul>
 <p><strong>2.13.2</strong></p>
 <ul class="simple">
 <li><p>Expanded behavioral test coverage from 84.53% to 98.83% line coverage,

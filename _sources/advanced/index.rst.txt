@@ -13,6 +13,7 @@ This section describes the various features and options of ClipKIT.
 - Gaps_
 - `Gap Characters`_
 - `Sequence Type`_
+- `Ambiguity handling`_
 - `Ends only`_
 - Threads_
 - `Plot trim report`_
@@ -125,7 +126,9 @@ will create a four-column file with the suffix 'clipkit.log'. *Default: off*
 * col1: position in the alignment (starting at 1)
 * col2: reports if site was trimmed or kept (trim or keep, respectively)
 * col3: reports if the site is parsimony informative or not (PI or nPI, respectively)
-* col4: reports the gappyness of the position (number of gaps / entries in alignment)
+* col4: reports the effective unavailable fraction of the position. In the
+  default ``missing`` ambiguity mode this includes configured gaps and
+  recognized IUPAC ambiguity symbols; otherwise it includes configured gaps.
 
 .. code-block:: shell
 
@@ -297,6 +300,13 @@ is printed. This argument is also ignored when using the ``kpi`` and ``kpic`` mo
 In entropy mode, this value is treated as a normalized Shannon entropy threshold
 (default: 0.8).
 
+With the default ``--ambiguity_handling missing`` policy, gappyness is an
+effective unavailable fraction: the union of configured gap characters and
+recognized IUPAC ambiguity symbols divided by the number of sequences. The
+configured-gap and ambiguity fractions remain separately visible in HTML trim
+reports. A symbol can occur in both tracks when it is both a recognized
+ambiguity code and a configured gap character.
+
 To specify a gaps threshold, use the -g/\\-\\-gaps argument.
 
 .. code-block:: shell
@@ -349,6 +359,61 @@ Use this option to specify that input sequences are amino acids.
 	clipkit <input> -s nt
 
 Use this option to specify that input sequences are nucleotides.
+
+|
+
+.. _`Ambiguity handling`:
+
+Ambiguity handling
+------------------
+
+ClipKIT recognizes the IUPAC nucleotide ambiguity symbols ``R``, ``Y``,
+``S``, ``W``, ``K``, ``M``, ``B``, ``D``, ``H``, ``V``, ``N``, and ``X``.
+For proteins it recognizes ``B`` (``D`` or ``N``), ``Z`` (``E`` or ``Q``),
+``J`` (``I`` or ``L``), and ``X`` (any standard amino acid). Recognition is
+case-insensitive. IUPAC-rich nucleotide alignments are also recognized by
+automatic sequence-type detection.
+
+Use ``--ambiguity_handling`` (or ``--ambiguity-handling``) to select one of
+three policies:
+
+* ``missing`` (default): ambiguity symbols do not contribute states to
+  entropy, composition-bias, heterotachy entropy, or KPI/KPIC classification.
+  They do contribute to the effective unavailable fraction used by gappy,
+  block-gappy, gappyout, smart-gap, and combined gap/classification modes.
+  Sites with no analyzable states are removed by entropy, composition-bias,
+  and heterotachy modes.
+* ``fractional``: an ambiguity symbol contributes equal weight to each
+  possible state for entropy, composition-bias, and heterotachy entropy. For
+  example, nucleotide ``R`` contributes 0.5 to ``A`` and 0.5 to ``G``.
+  Ambiguity symbols are still excluded from KPI/KPIC site classification, so
+  uncertainty alone cannot create a parsimony-informative site. Gap-based
+  modes count configured gap characters only.
+* ``literal``: each non-gap ambiguity symbol is treated as its own state. This
+  reproduces ClipKIT's legacy ambiguity interpretation. Gap-based modes count
+  configured gap characters only.
+
+Configured gap characters always take precedence over the selected ambiguity
+policy. Consequently, ``N`` and ``X`` remain gaps under the default nucleotide
+gap-character set, and ``X`` remains a gap under the default protein set. To
+fractionally expand those symbols, provide a gap-character set that does not
+contain them (for example, ``-gc '?*-'``).
+
+.. code-block:: shell
+
+	# conservative default
+	clipkit nucleotide.fa --sequence_type nt --ambiguity_handling missing
+
+	# fractionally weight partial ambiguity codes
+	clipkit nucleotide.fa --sequence_type nt --ambiguity_handling fractional
+
+	# reproduce the historical literal-state behavior
+	clipkit nucleotide.fa --sequence_type nt --ambiguity_handling literal
+
+These policies affect analysis only. ClipKIT never rewrites ambiguity symbols
+in the kept or complementary alignment output. JSON reports, HTML trim reports,
+and the Python ``TrimRun`` object record the selected policy. HTML reports also
+provide per-site configured-gap, ambiguity, and resolved-state fractions.
 
 |
 
@@ -468,7 +533,9 @@ Write an interactive HTML report with per-site tracks and trimmed-column highlig
 
 The report includes:
 
-* Per-site gappyness bars and entropy line plot
+* Per-site effective-unavailable bars and an entropy line plot
+* Per-site configured-gap, ambiguity, and resolved-state fractions in the
+  embedded report data and hover diagnostics
 * Highlighting of trimmed columns in both tracks and alignment preview
 * Amino-acid or nucleotide coloring in the alignment preview (auto-detected)
 * Export buttons for saving per-site tracks and alignment preview as PNG files
@@ -512,6 +579,8 @@ All options
      - Mask selected in-frame stop codons as gaps before trimming. Requires nucleotide input and ``--codon``. *Default: off*.
    * - ``-s/--sequence_type``
      - Specify sequence type of input file (``aa`` or ``nt``). *Default: auto-detect*.
+   * - ``--ambiguity_handling {missing,fractional,literal}``
+     - Control how recognized IUPAC ambiguity symbols contribute to analysis. *Default: missing*.
    * - ``-if/--input_file_format``
      - Specify input file format*. *Default: auto-detect*.
    * - ``-of/--output_file_format``

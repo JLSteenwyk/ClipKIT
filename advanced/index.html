@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#gaps">Gaps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#gap-characters">Gap Characters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sequence-type">Sequence Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ambiguity-handling">Ambiguity handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ends-only">Ends only</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#threads">Threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dry-run">Dry run</a></li>
@@ -110,6 +111,7 @@
 <li><p><a class="reference internal" href="#gaps">Gaps</a></p></li>
 <li><p><a class="reference internal" href="#gap-characters">Gap Characters</a></p></li>
 <li><p><a class="reference internal" href="#sequence-type">Sequence Type</a></p></li>
+<li><p><a class="reference internal" href="#ambiguity-handling">Ambiguity handling</a></p></li>
 <li><p><a class="reference internal" href="#ends-only">Ends only</a></p></li>
 <li><p><a class="reference internal" href="#threads">Threads</a></p></li>
 <li><p><a class="reference internal" href="#plot-trim-report">Plot trim report</a></p></li>
@@ -215,7 +217,9 @@ will create a four-column file with the suffix ‘clipkit.log’. <em>Default: o
 <li><p>col1: position in the alignment (starting at 1)</p></li>
 <li><p>col2: reports if site was trimmed or kept (trim or keep, respectively)</p></li>
 <li><p>col3: reports if the site is parsimony informative or not (PI or nPI, respectively)</p></li>
-<li><p>col4: reports the gappyness of the position (number of gaps / entries in alignment)</p></li>
+<li><p>col4: reports the effective unavailable fraction of the position. In the
+default <code class="docutils literal notranslate"><span class="pre">missing</span></code> ambiguity mode this includes configured gaps and
+recognized IUPAC ambiguity symbols; otherwise it includes configured gaps.</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-l
 </pre></div>
@@ -363,6 +367,12 @@ dynamically determines its own threshold (<code class="docutils literal notransl
 is printed. This argument is also ignored when using the <code class="docutils literal notranslate"><span class="pre">kpi</span></code> and <code class="docutils literal notranslate"><span class="pre">kpic</span></code> modes.
 In entropy mode, this value is treated as a normalized Shannon entropy threshold
 (default: 0.8).</p>
+<p>With the default <code class="docutils literal notranslate"><span class="pre">--ambiguity_handling</span> <span class="pre">missing</span></code> policy, gappyness is an
+effective unavailable fraction: the union of configured gap characters and
+recognized IUPAC ambiguity symbols divided by the number of sequences. The
+configured-gap and ambiguity fractions remain separately visible in HTML trim
+reports. A symbol can occur in both tracks when it is both a recognized
+ambiguity code and a configured gap character.</p>
 <p>To specify a gaps threshold, use the -g/\-\-gaps argument.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--gaps<span class="w"> </span><span class="m">0</span>.4
 
@@ -409,8 +419,58 @@ considered gaps as well as N.</p>
 <div class="line"><br /></div>
 </div>
 </section>
+<section id="ambiguity-handling">
+<span id="id11"></span><h2>Ambiguity handling<a class="headerlink" href="#ambiguity-handling" title="Link to this heading"></a></h2>
+<p>ClipKIT recognizes the IUPAC nucleotide ambiguity symbols <code class="docutils literal notranslate"><span class="pre">R</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code>,
+<code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">W</span></code>, <code class="docutils literal notranslate"><span class="pre">K</span></code>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span></code>, <code class="docutils literal notranslate"><span class="pre">H</span></code>, <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">N</span></code>, and <code class="docutils literal notranslate"><span class="pre">X</span></code>.
+For proteins it recognizes <code class="docutils literal notranslate"><span class="pre">B</span></code> (<code class="docutils literal notranslate"><span class="pre">D</span></code> or <code class="docutils literal notranslate"><span class="pre">N</span></code>), <code class="docutils literal notranslate"><span class="pre">Z</span></code> (<code class="docutils literal notranslate"><span class="pre">E</span></code> or <code class="docutils literal notranslate"><span class="pre">Q</span></code>),
+<code class="docutils literal notranslate"><span class="pre">J</span></code> (<code class="docutils literal notranslate"><span class="pre">I</span></code> or <code class="docutils literal notranslate"><span class="pre">L</span></code>), and <code class="docutils literal notranslate"><span class="pre">X</span></code> (any standard amino acid). Recognition is
+case-insensitive. IUPAC-rich nucleotide alignments are also recognized by
+automatic sequence-type detection.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--ambiguity_handling</span></code> (or <code class="docutils literal notranslate"><span class="pre">--ambiguity-handling</span></code>) to select one of
+three policies:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">missing</span></code> (default): ambiguity symbols do not contribute states to
+entropy, composition-bias, heterotachy entropy, or KPI/KPIC classification.
+They do contribute to the effective unavailable fraction used by gappy,
+block-gappy, gappyout, smart-gap, and combined gap/classification modes.
+Sites with no analyzable states are removed by entropy, composition-bias,
+and heterotachy modes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fractional</span></code>: an ambiguity symbol contributes equal weight to each
+possible state for entropy, composition-bias, and heterotachy entropy. For
+example, nucleotide <code class="docutils literal notranslate"><span class="pre">R</span></code> contributes 0.5 to <code class="docutils literal notranslate"><span class="pre">A</span></code> and 0.5 to <code class="docutils literal notranslate"><span class="pre">G</span></code>.
+Ambiguity symbols are still excluded from KPI/KPIC site classification, so
+uncertainty alone cannot create a parsimony-informative site. Gap-based
+modes count configured gap characters only.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">literal</span></code>: each non-gap ambiguity symbol is treated as its own state. This
+reproduces ClipKIT’s legacy ambiguity interpretation. Gap-based modes count
+configured gap characters only.</p></li>
+</ul>
+<p>Configured gap characters always take precedence over the selected ambiguity
+policy. Consequently, <code class="docutils literal notranslate"><span class="pre">N</span></code> and <code class="docutils literal notranslate"><span class="pre">X</span></code> remain gaps under the default nucleotide
+gap-character set, and <code class="docutils literal notranslate"><span class="pre">X</span></code> remains a gap under the default protein set. To
+fractionally expand those symbols, provide a gap-character set that does not
+contain them (for example, <code class="docutils literal notranslate"><span class="pre">-gc</span> <span class="pre">'?*-'</span></code>).</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># conservative default</span>
+clipkit<span class="w"> </span>nucleotide.fa<span class="w"> </span>--sequence_type<span class="w"> </span>nt<span class="w"> </span>--ambiguity_handling<span class="w"> </span>missing
+
+<span class="c1"># fractionally weight partial ambiguity codes</span>
+clipkit<span class="w"> </span>nucleotide.fa<span class="w"> </span>--sequence_type<span class="w"> </span>nt<span class="w"> </span>--ambiguity_handling<span class="w"> </span>fractional
+
+<span class="c1"># reproduce the historical literal-state behavior</span>
+clipkit<span class="w"> </span>nucleotide.fa<span class="w"> </span>--sequence_type<span class="w"> </span>nt<span class="w"> </span>--ambiguity_handling<span class="w"> </span>literal
+</pre></div>
+</div>
+<p>These policies affect analysis only. ClipKIT never rewrites ambiguity symbols
+in the kept or complementary alignment output. JSON reports, HTML trim reports,
+and the Python <code class="docutils literal notranslate"><span class="pre">TrimRun</span></code> object record the selected policy. HTML reports also
+provide per-site configured-gap, ambiguity, and resolved-state fractions.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 <section id="ends-only">
-<span id="id11"></span><h2>Ends only<a class="headerlink" href="#ends-only" title="Link to this heading"></a></h2>
+<span id="id12"></span><h2>Ends only<a class="headerlink" href="#ends-only" title="Link to this heading"></a></h2>
 <p>For a given trimming mode, this option trims only sites at the ends of an alignment.
 For example, if the sites that should be trimmed include
 [0, 1, 2, 4, 5, 6, 14, 15, 16] for smart-gap mode and an alignment of
@@ -428,7 +488,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--ends_only
 </div>
 </section>
 <section id="threads">
-<span id="id12"></span><h2>Threads<a class="headerlink" href="#threads" title="Link to this heading"></a></h2>
+<span id="id13"></span><h2>Threads<a class="headerlink" href="#threads" title="Link to this heading"></a></h2>
 <p>ClipKIT supports parallel processing for site classification and character frequency
 calculations. For larger alignments, this can significantly speed up processing.</p>
 <p>The number of threads can be specified using the -t/\-\-threads argument.
@@ -456,7 +516,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--threads<sp
 </div>
 </section>
 <section id="dry-run">
-<span id="id13"></span><h2>Dry run<a class="headerlink" href="#dry-run" title="Link to this heading"></a></h2>
+<span id="id14"></span><h2>Dry run<a class="headerlink" href="#dry-run" title="Link to this heading"></a></h2>
 <p>Use dry run mode to execute trimming and compute summary statistics without
 writing alignment, complementary, or log output files.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--dry_run
@@ -467,7 +527,7 @@ writing alignment, complementary, or log output files.</p>
 </div>
 </section>
 <section id="validate-only">
-<span id="id14"></span><h2>Validate only<a class="headerlink" href="#validate-only" title="Link to this heading"></a></h2>
+<span id="id15"></span><h2>Validate only<a class="headerlink" href="#validate-only" title="Link to this heading"></a></h2>
 <p>Use validate-only mode to check input format and argument consistency (including
 auxiliary file checks for <code class="docutils literal notranslate"><span class="pre">cst</span></code> mode) and then exit without trimming.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--validate_only
@@ -478,7 +538,7 @@ auxiliary file checks for <code class="docutils literal notranslate"><span class
 </div>
 </section>
 <section id="report-json">
-<span id="id15"></span><h2>Report JSON<a class="headerlink" href="#report-json" title="Link to this heading"></a></h2>
+<span id="id16"></span><h2>Report JSON<a class="headerlink" href="#report-json" title="Link to this heading"></a></h2>
 <p>Write a machine-readable JSON report with run configuration and outcome details.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># explicit report path</span>
 clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--report_json<span class="w"> </span>run_report.json
@@ -492,7 +552,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--report_jso
 </div>
 </section>
 <section id="plot-trim-report">
-<span id="id16"></span><h2>Plot trim report<a class="headerlink" href="#plot-trim-report" title="Link to this heading"></a></h2>
+<span id="id17"></span><h2>Plot trim report<a class="headerlink" href="#plot-trim-report" title="Link to this heading"></a></h2>
 <p>Write an interactive HTML report with per-site tracks and trimmed-column highlighting.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># explicit report path</span>
 clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_report<span class="w"> </span>run_plot.html
@@ -503,7 +563,9 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_
 </div>
 <p>The report includes:</p>
 <ul class="simple">
-<li><p>Per-site gappyness bars and entropy line plot</p></li>
+<li><p>Per-site effective-unavailable bars and an entropy line plot</p></li>
+<li><p>Per-site configured-gap, ambiguity, and resolved-state fractions in the
+embedded report data and hover diagnostics</p></li>
 <li><p>Highlighting of trimmed columns in both tracks and alignment preview</p></li>
 <li><p>Amino-acid or nucleotide coloring in the alignment preview (auto-detected)</p></li>
 <li><p>Export buttons for saving per-site tracks and alignment preview as PNG files</p></li>
@@ -516,7 +578,7 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_
 </div>
 </section>
 <section id="all-options">
-<span id="id17"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
+<span id="id18"></span><h2>All options<a class="headerlink" href="#all-options" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 28.0%" />
@@ -555,37 +617,40 @@ clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--plot_trim_
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-s/--sequence_type</span></code></p></td>
 <td><p>Specify sequence type of input file (<code class="docutils literal notranslate"><span class="pre">aa</span></code> or <code class="docutils literal notranslate"><span class="pre">nt</span></code>). <em>Default: auto-detect</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-if/--input_file_format</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ambiguity_handling</span> <span class="pre">{missing,fractional,literal}</span></code></p></td>
+<td><p>Control how recognized IUPAC ambiguity symbols contribute to analysis. <em>Default: missing</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-if/--input_file_format</span></code></p></td>
 <td><p>Specify input file format*. <em>Default: auto-detect</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-of/--output_file_format</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-of/--output_file_format</span></code></p></td>
 <td><p>Specify output file format*. <em>Default: input file type</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-l/--log</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-l/--log</span></code></p></td>
 <td><p>Create a log file. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-c/--complementary</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-c/--complementary</span></code></p></td>
 <td><p>Create a complementary alignment file. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-a/--auxiliary_file</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-a/--auxiliary_file</span></code></p></td>
 <td><p>Auxiliary file used for specifying sites to trim in <code class="docutils literal notranslate"><span class="pre">cst</span></code> mode.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-eo/--ends_only</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-eo/--ends_only</span></code></p></td>
 <td><p>Trim only sites at alignment ends that would otherwise be removed. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-q/--quiet</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-q/--quiet</span></code></p></td>
 <td><p>Disable logging to stdout. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-t/--threads</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-t/--threads</span></code></p></td>
 <td><p>Requested threads for parallel processing; KPI/KPIC modes may auto-tune lower. <em>Default: 1</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dry_run</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dry_run</span></code></p></td>
 <td><p>Run trimming/stat calculations but skip writing output files. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--validate_only</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--validate_only</span></code></p></td>
 <td><p>Validate inputs/arguments and exit without trimming. <em>Default: off</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--report_json</span> <span class="pre">[path]</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--report_json</span> <span class="pre">[path]</span></code></p></td>
 <td><p>Write a JSON run report; if no path is given, uses <code class="docutils literal notranslate"><span class="pre">&lt;output&gt;.report.json</span></code>.</p></td>
 </tr>
 </tbody>

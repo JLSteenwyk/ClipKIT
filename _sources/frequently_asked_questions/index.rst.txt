@@ -35,6 +35,21 @@ For amino acids ?, \*, -, X; for nucleotides, the same characters and N.
 
 |
 
+**How are ambiguous bases or amino acids handled?**
+
+By default, recognized IUPAC ambiguity symbols are treated as missing evidence:
+they are excluded from entropy/composition and KPI/KPIC state counts and are
+included in the effective unavailable fraction used by gap-based modes. Use
+``--ambiguity_handling fractional`` to distribute them equally among possible
+states for entropy/composition calculations, or ``literal`` for the legacy
+ambiguity interpretation. Configured gap characters take precedence, and
+ClipKIT does not rewrite the input symbols. See `Ambiguity handling`_ for the
+complete mappings and mode-specific details.
+
+.. _`Ambiguity handling`: ../advanced/index.html#ambiguity-handling
+
+|
+
 **I am having trouble install ClipKIT, what should I do?**
 
 Please install ClipKIT using a virtual environment as directed in the installation instructions.
@@ -43,5 +58,3 @@ main software developer via email_ or twitter_.
 
 .. _email: https://jlsteenwyk.com/contact.html
 .. _twitter: https://twitter.com/jlsteenwyk
-
-^^^^^

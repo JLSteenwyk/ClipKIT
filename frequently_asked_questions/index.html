@@ -105,11 +105,22 @@ time will be of great value.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<p><strong>How are ambiguous bases or amino acids handled?</strong></p>
+<p>By default, recognized IUPAC ambiguity symbols are treated as missing evidence:
+they are excluded from entropy/composition and KPI/KPIC state counts and are
+included in the effective unavailable fraction used by gap-based modes. Use
+<code class="docutils literal notranslate"><span class="pre">--ambiguity_handling</span> <span class="pre">fractional</span></code> to distribute them equally among possible
+states for entropy/composition calculations, or <code class="docutils literal notranslate"><span class="pre">literal</span></code> for the legacy
+ambiguity interpretation. Configured gap characters take precedence, and
+ClipKIT does not rewrite the input symbols. See <a class="reference external" href="../advanced/index.html#ambiguity-handling">Ambiguity handling</a> for the
+complete mappings and mode-specific details.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p><strong>I am having trouble install ClipKIT, what should I do?</strong></p>
 <p>Please install ClipKIT using a virtual environment as directed in the installation instructions.
 If you are still running into issues after installing in a virtual environment, please contact the
 main software developer via <a class="reference external" href="https://jlsteenwyk.com/contact.html">email</a> or <a class="reference external" href="https://twitter.com/jlsteenwyk">twitter</a>.</p>
-<hr class="docutils" />
 </section>
 
 
