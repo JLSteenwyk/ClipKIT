@@ -292,12 +292,12 @@ counts under <code class="docutils literal notranslate"><span class="pre">stop_c
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clipkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">clipkit</span>
 
 <span class="n">trim_run</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">clipkit</span><span class="p">(</span>
-    <span class="n">input_file_path</span><span class="o">=</span><span class="s2">&quot;coding.fa&quot;</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;gappy&quot;</span><span class="p">,</span>
+    <span class="n">input_file_path</span><span class="o">=</span><span class="s2">"coding.fa"</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"gappy"</span><span class="p">,</span>
     <span class="n">gaps</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-    <span class="n">sequence_type</span><span class="o">=</span><span class="s2">&quot;nt&quot;</span><span class="p">,</span>
+    <span class="n">sequence_type</span><span class="o">=</span><span class="s2">"nt"</span><span class="p">,</span>
     <span class="n">codon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">remove_stop_codons</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">remove_stop_codons</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">trim_run</span><span class="o">.</span><span class="n">stop_codon_masking</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
 </pre></div>
