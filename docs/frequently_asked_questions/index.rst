@@ -13,6 +13,23 @@ stop codons as gaps.
 
 |
 
+**Which trimming mode should I use before selection analyses (e.g., HyPhy or PAML)?**
+
+For codon-aligned nucleotide MSAs used to estimate dN/dS or test for selection,
+we recommend a gap-based mode with codon-aware trimming, such as
+``clipkit coding.fa --codon --sequence_type nt --remove_stop_codons all`` (the
+default ``smart-gap`` mode) or ``-m gappy -g <threshold>`` for explicit control
+over gap tolerance. Lower ``-g`` values trim more aggressively. We advise against
+``kpi`` and ``kpic`` modes for these analyses: singleton sites are real
+substitutions, often on terminal branches, and are informative for selection
+inference. In codon mode, ``kpic`` modes also remove every codon that contains a
+singleton site, including its constant and parsimony-informative positions. See
+`Codon`_ for details.
+
+.. _`Codon`: ../advanced/index.html#codon
+
+|
+
 **Is there a website application of ClipKIT?**
 
 Currently, ClipKIT is only a command line tool.
