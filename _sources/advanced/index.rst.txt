@@ -161,6 +161,13 @@ Codon
 Trims codon-based alignments. If one position in a codon should be trimmed, the whole
 codon will be trimmed. To conduct codon-based trimming, use the -co/\\-\\-codon argument.
 
+Because whole codons are removed, codon mode can remove sites that the selected
+trimming mode would otherwise keep. For example, ``kpic``, ``kpic-gappy``, and
+``kpic-smart-gap`` remove singleton sites; with ``--codon``, any codon that
+contains a singleton site is removed entirely, including its constant and
+parsimony-informative positions. Use ``--log`` to see the classification and
+trimming decision for every site.
+
 .. code-block:: shell
 
 	clipkit <input> --codon

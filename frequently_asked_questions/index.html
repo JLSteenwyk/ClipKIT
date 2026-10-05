@@ -86,6 +86,20 @@ stop codons as gaps.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+<p><strong>Which trimming mode should I use before selection analyses (e.g., HyPhy or PAML)?</strong></p>
+<p>For codon-aligned nucleotide MSAs used to estimate dN/dS or test for selection,
+we recommend a gap-based mode with codon-aware trimming, such as
+<code class="docutils literal notranslate"><span class="pre">clipkit</span> <span class="pre">coding.fa</span> <span class="pre">--codon</span> <span class="pre">--sequence_type</span> <span class="pre">nt</span> <span class="pre">--remove_stop_codons</span> <span class="pre">all</span></code> (the
+default <code class="docutils literal notranslate"><span class="pre">smart-gap</span></code> mode) or <code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">gappy</span> <span class="pre">-g</span> <span class="pre">&lt;threshold&gt;</span></code> for explicit control
+over gap tolerance. Lower <code class="docutils literal notranslate"><span class="pre">-g</span></code> values trim more aggressively. We advise against
+<code class="docutils literal notranslate"><span class="pre">kpi</span></code> and <code class="docutils literal notranslate"><span class="pre">kpic</span></code> modes for these analyses: singleton sites are real
+substitutions, often on terminal branches, and are informative for selection
+inference. In codon mode, <code class="docutils literal notranslate"><span class="pre">kpic</span></code> modes also remove every codon that contains a
+singleton site, including its constant and parsimony-informative positions. See
+<a class="reference external" href="../advanced/index.html#codon">Codon</a> for details.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p><strong>Is there a website application of ClipKIT?</strong></p>
 <p>Currently, ClipKIT is only a command line tool.</p>
 <div class="line-block">

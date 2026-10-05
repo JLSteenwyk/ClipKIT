@@ -245,6 +245,12 @@ option.</p>
 <span id="id5"></span><h2>Codon<a class="headerlink" href="#codon" title="Link to this heading"></a></h2>
 <p>Trims codon-based alignments. If one position in a codon should be trimmed, the whole
 codon will be trimmed. To conduct codon-based trimming, use the -co/\-\-codon argument.</p>
+<p>Because whole codons are removed, codon mode can remove sites that the selected
+trimming mode would otherwise keep. For example, <code class="docutils literal notranslate"><span class="pre">kpic</span></code>, <code class="docutils literal notranslate"><span class="pre">kpic-gappy</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">kpic-smart-gap</span></code> remove singleton sites; with <code class="docutils literal notranslate"><span class="pre">--codon</span></code>, any codon that
+contains a singleton site is removed entirely, including its constant and
+parsimony-informative positions. Use <code class="docutils literal notranslate"><span class="pre">--log</span></code> to see the classification and
+trimming decision for every site.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>clipkit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>--codon
 
 <span class="c1"># or</span>
