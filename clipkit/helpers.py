@@ -153,6 +153,6 @@ def _write_fasta_row(handle, title, residues):
         residues, count=lines * width, dtype=np.uint8
     ).reshape(lines, width)
     wrapped[:, width] = ord("\n")
-    handle.write(wrapped.tobytes().decode("ascii"))
+    handle.write(str(wrapped, "ascii"))
     if tail:
         handle.write(residues[-tail:].decode("ascii") + "\n")
