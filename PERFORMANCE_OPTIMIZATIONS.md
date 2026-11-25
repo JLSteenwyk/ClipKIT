@@ -532,3 +532,24 @@ scoring fell to 3 ms after batching.
 The exact 119-case comparison for `f19e096` measured a 1.29× geometric
 mean across end-to-end workloads and 2.00× for the whole-CLI subset.
 That comparison precedes the packed-input and histogram changes.
+
+### Direct FASTA row output
+
+Commit `ae894a4` converts selected ASCII code points directly to bytes
+and shares the line-wrap writer with the Bio path. Streaming now covers
+outputs starting at 2,048 columns. The destination remains untouched
+when unequal decoded row lengths would fail Bio validation, including
+matrices with trailing NUL padding.
+
+| Case | Reference median | Candidate median |
+| --- | ---: | ---: |
+| Medium C3 nucleotide | 6.38 ms | 5.31 ms |
+| Large gappyout | 485 ms | 466 ms |
+| Large KPIC | 483 ms | 465 ms |
+| Medium smart-gap | 231 ms | 223 ms |
+| Medium log and complement | 939 ms | 925 ms |
+
+Six interleaved samples per tree matched exact output and companion
+files. Peak RSS was flat within about 1%. The input-parser threshold
+stayed at 1 MiB after smaller blocks and earlier eligibility had mixed
+results across medium input shapes.
