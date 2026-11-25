@@ -198,7 +198,11 @@ class MSA:
                 # Keep Bio.Seq's ASCII validation for malformed records.
                 seq.decode("ascii")
             sequences.append(seq)
-            if not requires_uppercase_normalization and seq != seq.upper():
+            if (
+                not packed_ascii
+                and not requires_uppercase_normalization
+                and seq != seq.upper()
+            ):
                 requires_uppercase_normalization = True
 
         if sequence_type is None:
@@ -217,8 +221,15 @@ class MSA:
         elif packed_ascii:
             code_points = np.empty((len(sequences), alignment_length), dtype=np.uint32)
             for row, sequence in zip(code_points, sequences):
-                width = min(len(sequence), alignment_length)
-                row[:width] = np.frombuffer(sequence, dtype=np.uint8, count=width)
+                residues = np.frombuffer(sequence, dtype=np.uint8)
+                if (
+                    not requires_uppercase_normalization
+                    and residues.max(initial=0) >= ord("a")
+                    and np.any((residues >= ord("a")) & (residues <= ord("z")))
+                ):
+                    requires_uppercase_normalization = True
+                width = min(len(residues), alignment_length)
+                row[:width] = residues[:width]
                 if width < alignment_length:
                     row[width:] = 0
             seq_records = code_points.view("U1")

@@ -74,16 +74,18 @@ def test_large_msa_keeps_biopython_ascii_validation():
         MSA.from_bio_msa(MultipleSeqAlignment(records), sequence_type="aa")
 
 
-def test_large_ascii_msa_pads_and_truncates_records_changed_after_reading():
+@pytest.mark.parametrize(("short_row", "normalizes"), [("a\0C", True), ("A\0~", False)])
+def test_large_ascii_msa_pads_and_truncates_records_changed_after_reading(short_row, normalizes):
     width = 500_000
     alignment = MultipleSeqAlignment([SeqRecord(Seq("A" * width)) for _ in range(3)])
-    alignment[1].seq = Seq("a\0C")
+    alignment[1].seq = Seq(short_row)
     alignment[2].seq = Seq("G" * width + "T")
 
     msa = MSA.from_bio_msa(alignment, sequence_type="nt")
 
     assert msa.seq_records.shape == (3, width)
-    assert msa.seq_records[1, :4].tolist() == ["a", "", "C", ""]
+    assert msa.seq_records[1, :4].tolist() == [short_row[0], "", short_row[2], ""]
+    assert msa._requires_uppercase_normalization is normalizes
     assert np.all(msa.seq_records[1, 3:] == "")
     assert np.all(msa.seq_records[2] == "G")
 
