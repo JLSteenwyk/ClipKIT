@@ -8,6 +8,12 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+**2.16.0**
+
+- Accelerated trimming by reusing residue counts, reducing alignment copies, and speeding up FASTA and ECOMP I/O. The comprehensive benchmark measured a 1.784× end-to-end geometric-mean speedup over 2.15.0, with exact agreement across all 119 cases.
+- Verified trimming results and metadata across all 15 modes, with full tests on Python 3.12–3.15.
+- Restored automatic PyPI publishing on version tags.
+
 **2.15.0**
 
 - Added support for Python 3.14 and 3.15 and raised the minimum supported
