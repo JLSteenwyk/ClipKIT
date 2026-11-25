@@ -22,6 +22,37 @@ def get_biopython_msa(file_path, file_format="fasta"):
     return AlignIO.read(open(file_path), file_format)
 
 
+def test_batched_fitch_preserves_guide_tree_and_alignment_order():
+    from Bio.Phylo.TreeConstruction import (
+        DistanceCalculator,
+        DistanceTreeConstructor,
+        NNITreeSearcher,
+        ParsimonyScorer,
+        ParsimonyTreeConstructor,
+    )
+
+    rng = random.Random(78123)
+    records = [
+        SeqRecord(Seq("".join(rng.choices("ACGT-?nRyX", k=80))), id=f"taxon_{index}")
+        for index in reversed(range(8))
+    ]
+    baseline = MultipleSeqAlignment(records)
+    matrix = DistanceCalculator("identity").get_distance(baseline)
+    starting_tree = DistanceTreeConstructor().nj(matrix)
+    expected = ParsimonyTreeConstructor(
+        NNITreeSearcher(ParsimonyScorer()), starting_tree
+    ).build_tree(baseline)
+
+    candidate = MultipleSeqAlignment(records)
+    actual = build_parsimony_guide_tree(candidate)
+
+    assert actual.format("newick") == expected.format("newick")
+    assert [node.branch_length for node in actual.find_clades()] == [
+        node.branch_length for node in expected.find_clades()
+    ]
+    assert [record.id for record in candidate] == [record.id for record in baseline]
+
+
 class TestMSA(object):
     def test_clipkit_msa_from_bio_msa(self):
         bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")
