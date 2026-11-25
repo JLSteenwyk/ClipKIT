@@ -476,3 +476,25 @@ mask counts, and emitted FASTA.
 The unbounded prototype used about 20 MB more peak RSS than the reference.
 The row batches retain the runtime gain and lower memory use. The focused
 stop-codon, ambiguity-handling, and MSA suite passed 241 tests.
+
+### CLI startup follow-up
+
+Commit `f19e096` reads help and version arguments through the existing
+parser before importing NumPy or Biopython. The console script and
+`python -m clipkit` use that parser. Importing the callable from
+`clipkit.api` still loads the trimming runtime, so the direct API retains
+its existing first-call behavior. The file-format and sequence-type
+enumerations retain their original import names for pickling.
+
+| Case | Reference median | Candidate median | Speedup | Peak RSS |
+| --- | ---: | ---: | ---: | --- |
+| CLI help | 215 ms | 46 ms | 4.69× | 44.0 to 22.0 MB |
+| CLI version | 224 ms | 47 ms | 4.81× | 44.0 to 22.0 MB |
+| Small gappy CLI | 230 ms | 225 ms | 1.02× | 47.2 to 46.4 MB |
+| Medium nucleotide smart-gap CLI | 245 ms | 237 ms | 1.03× | 48.8 MB on both |
+| Small raw gappy API | 4.34 ms | 4.32 ms | 1.01× | 48.8 MB on both |
+
+The interleaved comparison kept six fresh-process samples per source and
+checked exact outputs. The 25 focused tests verify the public callable,
+enum pickle round trips, and startup imports. The installed script's help
+and version text also matched the reference module invocation.
