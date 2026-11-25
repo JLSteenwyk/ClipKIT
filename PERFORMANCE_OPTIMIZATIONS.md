@@ -1146,3 +1146,22 @@ parsing and serialization.
 
 The [54-case core comparison at `913afff`](benchmark-results/clipkit-175x-core-913afff.json)
 also matched the baseline exactly.
+
+### Direct FASTA output on smaller selections
+
+Commit `fa671f8` applies the validated FASTA writer at 512 selected
+columns. Small gappy fell from 3.98 to 3.69 ms in six interleaved
+observations per source, with exact output and equal median peak RSS.
+Keep and complement tests compare both selection sizes with Biopython.
+A 128-column cutoff and a wrapped-indexing prototype offered too
+little benefit to retain.
+
+In a separate interleaved comparison with `6044b1e`, small gappy
+measured 1.55×, small KPIC-gappy 1.32×, and medium log and complement
+1.96×, with exact checked artifacts.
+
+Commit `261b4b3` passes the existing wrapping array to the ASCII
+decoder without materializing a separate bytes object. The median
+for large KPIC-smart-gap fell from 386.48 to 375.14 ms against the
+previous revision. Small gappy, medium C3, and medium smart-gap
+stayed within 2%. All checked bytes matched.
