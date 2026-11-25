@@ -987,3 +987,32 @@ previous padding and truncation, including embedded NUL bytes.
 Each comparison used six interleaved fresh-process observations per
 source. Output and the case-specific correctness metadata matched
 exactly.
+
+### Single-byte FASTA header scan
+
+Commit `192f57a` splits standard FASTA blocks on the one-byte header
+marker and retains newline-aware splitting for markers within a title
+or sequence. Tests compare the records for both cases with Biopython.
+Six interleaved measurements per side improved large gappy from 341.73
+to 288.80 ms, medium smart-gap from 205.60 to 181.11 ms, and large
+KPIC-gappy from 393.53 to 337.01 ms. Peak RSS stayed within 1%.
+
+| Large combined mode | Baseline median | Candidate median | Speedup |
+| --- | ---: | ---: | ---: |
+| KPI-gappy | 659.12 ms | 377.50 ms | 1.75× |
+| KPIC-gappy | 628.46 ms | 347.65 ms | 1.81× |
+| KPI-smart-gap | 728.19 ms | 376.44 ms | 1.93× |
+| KPIC-smart-gap | 759.45 ms | 386.95 ms | 1.96× |
+
+The baseline comparison interleaved six fresh-process observations per
+side and matched the checked outputs exactly. Commit `913afff` then
+extended the same reader to regular files starting at 64 KiB. Small
+amino-acid trimming improved from 4.14 to 3.81 ms and the file API
+from 2.50 to 2.28 ms, with exact outputs. C3 and codon controls stayed
+within 3%. The smaller cutoff depends on the preceding header scan
+improvement for its timing.
+
+The [comprehensive checkpoint at `3a87d78`](benchmark-results/clipkit-175x-comprehensive-3a87d78.json)
+matched all 119 cases against `6044b1e`. It measured 1.59× end to end,
+2.11× for whole CLI runs, 1.50× for Python API cases, and 14.02× for
+algorithm-only cases. It precedes the FASTA header scan changes.
