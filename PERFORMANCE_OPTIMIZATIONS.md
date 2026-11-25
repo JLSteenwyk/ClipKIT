@@ -921,3 +921,28 @@ writing moved the small in-process FASTA call from 4.14 to 24.15 ms
 while changing the full small and medium log CLI invocations by less
 than 1%. The existing import remains. Both prototypes matched the
 checked outputs exactly.
+
+### ECOMP fallback input and output
+
+Commit `3a87d78` decodes decompressed FASTA payloads of at least 1 MiB
+incrementally. The parser continues to split on LF and strip line-edge
+whitespace. Tests cover Unicode headers, CRLF, and a final line without
+a terminator on both size paths.
+
+The large ECOMP fixture wraps the amino-acid alignment
+`tests/integration/samples/EOG092C0CZK_aa_aln.fasta` in the existing gzip
+fallback archive format. Six interleaved observations per side measured
+559.34 to 358.34 ms (1.56×) compared to `9bce4f6`, and 815.33 to
+361.17 ms (2.26×) compared to `6044b1e`. The incremental comparison
+reduced median peak RSS from 303.2 to 300.1 MiB. The small control
+stayed within 2%, and the checked outputs matched exactly.
+
+The medium ECOMP output profile measured about 113 ms in gzip
+compression, 7 ms preparing metadata, and 3 ms encoding metadata.
+Sharing the converted sequence strings moved the whole median from
+263.14 to 262.74 ms. The existing output path remains.
+
+The [119-case checkpoint at `c262934`](benchmark-results/clipkit-175x-comprehensive-c262934.json)
+matched `6044b1e` exactly. The geometric means were 1.58× end to end,
+2.12× for the whole CLI subset, 1.53× for Python API cases, and 13.95×
+for algorithm-only cases. It precedes incremental ECOMP decoding.
