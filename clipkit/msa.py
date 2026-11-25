@@ -721,20 +721,21 @@ class MSA:
     def _filter_character_counts(
         self, states, counts, *, classification=False, observed_states=None
     ):
-        non_gap_states = ~np.isin(states, tuple(self._normalized_gap_chars))
-        states = states[non_gap_states]
-        counts = counts[non_gap_states]
+        policy = self._ambiguity_handling
+        excluded = self._normalized_gap_chars
+        if policy == AmbiguityHandling.missing or (
+            classification and policy != AmbiguityHandling.literal
+        ):
+            excluded |= self._ambiguity_chars
+        retained = ~np.isin(states, tuple(excluded))
+        states = states[retained]
+        counts = counts[retained]
 
-        if self._ambiguity_handling == AmbiguityHandling.literal:
-            return states, counts
-
-        recognized_ambiguity = np.isin(states, tuple(self._ambiguity_chars))
-        if self._ambiguity_handling == AmbiguityHandling.missing or classification:
-            return states[~recognized_ambiguity], counts[~recognized_ambiguity]
-
-        return self._fractionally_expand_ambiguities(
-            states, counts, observed_states=observed_states
-        )
+        if policy == AmbiguityHandling.fractional and not classification:
+            return self._fractionally_expand_ambiguities(
+                states, counts, observed_states=observed_states
+            )
+        return states, counts
 
     def _fractionally_expand_ambiguities(
         self,
