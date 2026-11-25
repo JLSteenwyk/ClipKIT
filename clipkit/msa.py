@@ -76,17 +76,32 @@ def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndar
             np.arange(_COLUMN_COUNT_BATCH_SIZE, dtype=np.int64) * code_span - min_code
         )
 
+        gap_code = ord("-")
+        sparse_gaps = False
+        if code_points.size >= 1_000_000 and min_code <= gap_code <= max_code:
+            sample = code_points[::max(1, n_rows // 32), ::max(1, n_cols // 64)]
+            sparse_gaps = np.count_nonzero(sample != gap_code) <= sample.size // 8
+
         for start_idx in range(0, n_cols, _COLUMN_COUNT_BATCH_SIZE):
             end_idx = min(start_idx + _COLUMN_COUNT_BATCH_SIZE, n_cols)
-            width = end_idx - start_idx
-            encoded = np.add(
-                code_points[:, start_idx:end_idx], offsets[:width], dtype=np.int64
+            segment = code_points[:, start_idx:end_idx]
+            width = segment.shape[1]
+            non_gaps = segment != gap_code if sparse_gaps else None
+            sparse_batch = non_gaps is not None and (
+                np.count_nonzero(non_gaps) <= non_gaps.size // 8
             )
-            counts[:, start_idx:end_idx] = (
-                np.bincount(encoded.ravel(), minlength=width * code_span)
-                .reshape(width, code_span)
-                .T
-            )
+            if sparse_batch:
+                rows, columns = np.divmod(np.flatnonzero(non_gaps), width)
+                encoded = segment[rows, columns] + offsets[columns]
+            else:
+                encoded = np.add(segment, offsets[:width], dtype=np.int64)
+
+            histogram = np.bincount(encoded.ravel(), minlength=width * code_span)
+            histogram = histogram.reshape(width, code_span)
+            if sparse_batch:
+                # Account for the omitted dash codes without assigning them to bins.
+                histogram[:, gap_code - min_code] = n_rows - histogram.sum(axis=1)
+            counts[:, start_idx:end_idx] = histogram.T
 
         present = np.any(counts, axis=1)
         states = np.array(

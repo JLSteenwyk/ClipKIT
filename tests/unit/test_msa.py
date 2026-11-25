@@ -816,3 +816,16 @@ def test_entropy_and_composition_bias_match_randomized_scalar_reference(seed):
     np.testing.assert_equal(
         msa.site_composition_bias, np.around(expected_bias, decimals=4)
     )
+
+
+def test_sparse_character_counts_keep_dense_batches_exact():
+    records = np.full((40, 30_000), "-", dtype="U1")
+    records[:, :256] = "A"
+    records[:3, ::97] = "C"
+
+    states, counts = _column_character_counts(records)
+
+    np.testing.assert_array_equal(states, ["-", "A", "C"])
+    np.testing.assert_array_equal(
+        counts, [np.count_nonzero(records == state, axis=0) for state in states]
+    )
