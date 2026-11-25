@@ -78,9 +78,10 @@ def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndar
 
     if code_span <= _MAX_DENSE_CODE_SPAN:
         counts = np.empty((code_span, n_cols), dtype=count_dtype)
-        offsets = (
-            np.arange(_COLUMN_COUNT_BATCH_SIZE, dtype=np.int64) * code_span - min_code
-        )
+        batch_size = _COLUMN_COUNT_BATCH_SIZE
+        if code_points.size < 500_000 and code_span <= 64:
+            batch_size = 128
+        offsets = np.arange(batch_size, dtype=np.int64) * code_span - min_code
 
         gap_code = ord("-")
         sparse_gaps = (
@@ -89,8 +90,8 @@ def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndar
             and _mostly_dashes(code_points)
         )
 
-        for start_idx in range(0, n_cols, _COLUMN_COUNT_BATCH_SIZE):
-            end_idx = min(start_idx + _COLUMN_COUNT_BATCH_SIZE, n_cols)
+        for start_idx in range(0, n_cols, batch_size):
+            end_idx = min(start_idx + batch_size, n_cols)
             segment = code_points[:, start_idx:end_idx]
             width = segment.shape[1]
             non_gaps = segment != gap_code if sparse_gaps else None
