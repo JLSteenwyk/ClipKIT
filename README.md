@@ -11,10 +11,10 @@
   </p>
     <p align="center">
         <a href="https://github.com/JLSteenwyk/ClipKIT/actions" alt="Build">
-            <img src="https://img.shields.io/github/actions/workflow/status/JLSteenwyk/ClipKIT/ci.yml?branch=master">
+            <img src="https://img.shields.io/github/actions/workflow/status/JLSteenwyk/ClipKIT/ci.yml?branch=main">
         </a>
         <a href="https://codecov.io/gh/jlsteenwyk/clipkit" alt="Coverage">
-          <img src="https://codecov.io/gh/jlsteenwyk/clipkit/branch/master/graph/badge.svg?token=0J49I6441V">
+          <img src="https://codecov.io/gh/jlsteenwyk/clipkit/branch/main/graph/badge.svg?token=0J49I6441V">
         </a>
         <a href="https://github.com/JLSteenwyk/ClipKIT/graphs/contributors" alt="Contributors">
             <img src="https://img.shields.io/github/contributors/JLSteenwyk/ClipKIT">

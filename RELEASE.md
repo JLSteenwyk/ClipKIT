@@ -15,13 +15,15 @@ The workflow will:
 2. Build source and wheel distributions with `python -m build`.
 3. Run `twine check` on built artifacts.
 4. Create a GitHub Release and attach `dist/*` artifacts.
+5. For version tags, publish those same validated artifacts to PyPI in a separate job.
 
-The workflow does not publish to PyPI. Publish the locally validated artifacts
-with the manual procedure below before pushing the release tag.
+The PyPI job uses the `PYPI_API_TOKEN` Actions secret. To retry a PyPI
+failure, rerun the failed job or dispatch the workflow against the existing
+release tag. Dispatches from a branch build the GitHub release only.
 
 ## Manual PyPI release
 
-PyPI versions and filenames are immutable. Before uploading, bump
+Use this fallback if the automated job cannot publish. PyPI versions and filenames are immutable. Before uploading, bump
 `clipkit/version.py` and the changelog files to a version that does not already
 exist on PyPI.
 
@@ -39,6 +41,7 @@ Do not pass `--universal`; ClipKIT supports Python 3.12+ and should publish a
 
 ## PyPI authentication
 
-Use a project-scoped PyPI API token through Twine, either in the local
-`pypi` entry in `~/.pypirc` or through Twine's environment variables. Never
-commit a token or print it in release logs.
+Use a project-scoped PyPI API token. Store it as the `PYPI_API_TOKEN`
+Actions secret for automated releases, or use the local `pypi` entry in
+`~/.pypirc` or Twine environment variables for manual recovery. Never commit
+a token or print it in release logs.
