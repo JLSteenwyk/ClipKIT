@@ -144,6 +144,20 @@ def test_sequence_type_checks_later_records_after_nucleotide_symbols():
     assert MSA.from_bio_msa(alignment, gap_chars=["-"]).sequence_type == "aa"
 
 
+@pytest.mark.parametrize("residues, expected", [(199, SeqType.aa), (200, SeqType.nt)])
+def test_sequence_type_counts_only_non_gap_symbols_toward_first_row_limit(
+    residues, expected
+):
+    alignment = MultipleSeqAlignment(
+        [
+            SeqRecord(Seq("A" * residues + "-?*Xx")),
+            SeqRecord(Seq("A" * residues + "E----")),
+        ]
+    )
+
+    assert get_seq_type(alignment) == expected
+
+
 def test_supported_iupac_ambiguity_symbols_are_sequence_type_specific():
     assert ambiguity_symbols("nt") == frozenset("RYSWKMBDHVNX")
     assert ambiguity_symbols("aa") == frozenset("BZJX")

@@ -16,6 +16,10 @@ from .stats import TrimmingStats
 from .ecomp import write_ecomp
 
 def remove_gaps(seq: str, gap_chars: list[str] = DEFAULT_AA_GAP_CHARS) -> str:
+    if isinstance(gap_chars, (list, tuple)) and all(
+        isinstance(char, str) and len(char) == 1 for char in gap_chars
+    ):
+        return seq.translate(str.maketrans("", "", "".join(gap_chars)))
     pattern = "|".join([re.escape(char) for char in gap_chars])
     return re.sub(pattern, "", seq)
 
