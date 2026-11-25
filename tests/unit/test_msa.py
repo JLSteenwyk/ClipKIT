@@ -651,6 +651,13 @@ def test_gap_only_warning_uses_trimmed_mixed_case_residues():
     assert msa.is_any_entry_sequence_only_gaps() == (True, "ambiguous")
 
 
+def test_gap_only_warning_preserves_unicode_uppercase_membership():
+    records = np.array([list("a" + "s" * 1024), list("ſ" * 1025)], dtype="U1")
+    msa = MSA([{"id": "occupied"}, {"id": "gap-only"}], records, gap_chars=["S"])
+
+    assert msa.is_any_entry_sequence_only_gaps() == (True, "gap-only")
+
+
 @pytest.mark.parametrize(
     "mode",
     [

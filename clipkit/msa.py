@@ -645,8 +645,25 @@ class MSA:
 
     def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
         unavailable = tuple(self._effective_unavailable_chars)
-        for idx, row in enumerate(self.trimmed):
-            if np.all(np.isin(_uppercase_records(row), unavailable)):
+        trimmed = self.trimmed
+        ascii_gaps = None
+        if (
+            type(trimmed) is np.ndarray
+            and trimmed.ndim == 2
+            and trimmed.dtype == np.dtype("U1")
+            and trimmed.shape[1] >= 128
+            and all(len(char) == 1 and 0 < ord(char) < 128 for char in unavailable)
+        ):
+            gap_symbols = "".join(unavailable)
+            ascii_gaps = (gap_symbols + gap_symbols.lower()).encode("ascii")
+
+        for idx, row in enumerate(trimmed):
+            if ascii_gaps is not None and row.view(np.uint32).max() <= 127:
+                residues = row.view(np.uint32).astype(np.uint8).tobytes()
+                gap_only = not residues.translate(None, ascii_gaps)
+            else:
+                gap_only = np.all(np.isin(_uppercase_records(row), unavailable))
+            if gap_only:
                 return True, self.header_info[idx].get("id")
         return False, None
 
