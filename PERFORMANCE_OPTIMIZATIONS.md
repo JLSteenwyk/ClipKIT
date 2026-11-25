@@ -553,3 +553,80 @@ Six interleaved samples per tree matched exact output and companion
 files. Peak RSS was flat within about 1%. The input-parser threshold
 stayed at 1 MiB after smaller blocks and earlier eligibility had mixed
 results across medium input shapes.
+
+### Measured checkpoint at `9908ef8`
+
+The [119-case comprehensive results](benchmark-results/clipkit-175x-comprehensive-9908ef8.json)
+compare `9908ef8` with `6044b1e` using the recorded CPython 3.12.14,
+NumPy 2.0.2, and Biopython 1.83 environment on the same Linux host. They
+contain five fresh-process measurements per case and source and record
+exact output agreement. This checkpoint includes packed input and
+smaller histograms. The direct FASTA row follow-up has its own targeted
+comparison above.
+
+### Same-machine suite comparison
+
+The comprehensive suite compared 119 cases exactly against `6044b1e`.
+Each row shows a representative workload for one public trimming mode.
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| `gappy` | 623.25 ms | 356.29 ms | 1.75× |
+| `smart_gap` | 1,013.93 ms | 484.38 ms | 2.09× |
+| `block_gappy` | 646.82 ms | 364.80 ms | 1.77× |
+| `gappyout` | 1,023.80 ms | 484.44 ms | 2.11× |
+| `kpi` | 755.24 ms | 463.43 ms | 1.63× |
+| `kpic` | 784.87 ms | 468.31 ms | 1.68× |
+| `kpi_gappy` | 646.98 ms | 424.00 ms | 1.53× |
+| `kpic_gappy` | 631.18 ms | 423.81 ms | 1.49× |
+| `kpi_smart_gap` | 738.11 ms | 470.06 ms | 1.57× |
+| `kpic_smart_gap` | 756.53 ms | 484.36 ms | 1.56× |
+| `entropy` | 1,005.06 ms | 497.72 ms | 2.02× |
+| `composition_bias` | 1,035.69 ms | 505.03 ms | 2.05× |
+| `heterotachy` | 1,084.93 ms | 247.77 ms | 4.38× |
+| `cst` | 0.69 ms | 0.59 ms | 1.18× |
+| `c3` | 6.35 ms | 6.20 ms | 1.02× |
+
+### Major workflows
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| CLI help startup | 237.00 ms | 45.41 ms | 5.22× |
+| CLI version startup | 233.53 ms | 45.88 ms | 5.09× |
+| CLI small FASTA trimming | 251.82 ms | 220.39 ms | 1.14× |
+| Python API from file | 4.38 ms | 3.93 ms | 1.12× |
+| Python API from string | 4.71 ms | 4.20 ms | 1.12× |
+| HTML report | 1,820.13 ms | 778.74 ms | 2.34× |
+| Log and complementary output | 1,190.12 ms | 941.97 ms | 1.26× |
+| Mixed-case amino-acid CLI | 1,050.96 ms | 253.60 ms | 4.14× |
+| ECOMP input | 2.19 ms | 2.00 ms | 1.09× |
+| ECOMP output | 403.95 ms | 282.75 ms | 1.43× |
+| Codon trimming | 5.22 ms | 5.00 ms | 1.05× |
+| Terminal stop-codon masking | 185.19 ms | 75.46 ms | 2.45× |
+| Internal stop-codon masking | 181.15 ms | 77.81 ms | 2.33× |
+| All stop-codon masking | 180.90 ms | 77.25 ms | 2.34× |
+| One requested thread | 463.95 ms | 231.33 ms | 2.01× |
+| Four requested threads | 445.84 ms | 234.18 ms | 1.90× |
+| Missing ambiguity policy | 397.10 ms | 218.78 ms | 1.82× |
+| Fractional ambiguity policy | 320.91 ms | 217.70 ms | 1.47× |
+| Literal ambiguity policy | 320.69 ms | 218.04 ms | 1.47× |
+
+### Geometric means
+
+- all cases (119 cases), 3.43×
+- algorithm only (47 cases), 12.96×
+- all end-to-end and CLI cases (72 cases), 1.44×
+- whole CLI (13 cases), 2.04×
+- Python API (4 cases), 1.23×
+
+The representative large gap modes, entropy, composition bias, and
+medium heterotachy reached approximately 1.75× or better at this checkpoint.
+The combined gap and classification modes reached 1.49–1.57×, and the
+tiny CST and medium C3 cases reached 1.18× and 1.02×. The aggregate
+end-to-end result of 1.44× leaves the suite-wide target open. The stage
+samples show the largest shared costs still include FASTA reading,
+residue counting, and output serialization.
+
+The Linux test matrix for the later runtime revision `ae894a4` passed
+533 unit and 135 integration tests on each of CPython 3.12.14, 3.13.15,
+3.14.7, and 3.15.2.
