@@ -829,3 +829,19 @@ def test_sparse_character_counts_keep_dense_batches_exact():
     np.testing.assert_array_equal(
         counts, [np.count_nonzero(records == state, axis=0) for state in states]
     )
+
+
+def test_small_mixed_case_nt_gap_fraction_matches_unicode_membership():
+    residues = np.array(list("acgu-RnßY?N"), dtype="U1")
+    records = np.resize(residues, (36, 128))
+    msa = MSA(
+        [{} for _ in range(len(records))],
+        records,
+        gap_chars=["-", "?"],
+        sequence_type="nt",
+        requires_uppercase_normalization=True,
+    )
+    normalized = np.char.upper(records)
+    expected = np.isin(normalized, tuple(msa._effective_unavailable_chars)).mean(axis=0)
+
+    np.testing.assert_array_equal(msa.site_gappyness, np.around(expected, decimals=4))

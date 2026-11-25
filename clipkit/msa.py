@@ -453,31 +453,31 @@ class MSA:
         shared_counts = self._column_character_count_cache.get(
             ("frequencies", self._requires_uppercase_normalization)
         )
-        if (
+        small = self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING
+        direct = (
             shared_counts is None
-            and self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING
-        ):
+            and self.seq_records.size >= 1024
+            and (small or not self._requires_uppercase_normalization)
+            and self.seq_records.dtype == np.dtype("U1")
+            and 0 < len(states_to_count) <= (16 if small else 8)
+            and all(
+                len(state) == 1 and state.isascii() and state != "\0"
+                for state in states_to_count
+            )
+        )
+        if shared_counts is None and (small or direct):
             seq_array = (
                 _uppercase_records(self.seq_records)
                 if self._requires_uppercase_normalization
                 else self.seq_records
             )
-            return np.around(
-                np.isin(seq_array, tuple(states_to_count)).mean(axis=0), decimals=4
-            )
-        if (
-            shared_counts is None
-            and not self._requires_uppercase_normalization
-            and self.seq_records.size
-            and self.seq_records.dtype == np.dtype("U1")
-            and 0 < len(states_to_count) <= 8
-            and all(
-                len(state) == 1 and state.isascii() and state != "\0"
-                for state in states_to_count
-            )
-        ):
+            if not direct:
+                return np.around(
+                    np.isin(seq_array, tuple(states_to_count)).mean(axis=0),
+                    decimals=4,
+                )
             # Count membership directly, with bounded scratch space per row batch.
-            code_points = self.seq_records.view(np.uint32)
+            code_points = seq_array.view(np.uint32)
             low, high = int(code_points.min()), int(code_points.max())
             codes = [ord(state) for state in states_to_count if low <= ord(state) <= high]
             matching_counts = np.zeros(code_points.shape[1], dtype=np.int64)
