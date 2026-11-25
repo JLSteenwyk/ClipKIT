@@ -42,7 +42,7 @@ setup(
     url="https://github.com/jlsteenwyk/clipkit",
     packages=find_packages(exclude=["tests", "tests.*"]),
     classifiers=CLASSIFIERS,
-    entry_points={"console_scripts": ["clipkit = clipkit.clipkit:main"]},
+    entry_points={"console_scripts": ["clipkit = clipkit.cli:main"]},
     version=_read_version(),
     include_package_data=True,
     install_requires=REQUIRES,

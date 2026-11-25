@@ -6,8 +6,7 @@ from argparse import (
     RawDescriptionHelpFormatter,
 )
 
-from .helpers import SeqType
-from .files import FileFormat
+from .formats import FileFormat, SeqType
 from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from .version import __version__
 

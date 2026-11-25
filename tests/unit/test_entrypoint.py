@@ -89,3 +89,43 @@ class TestEntrypoint(object):
 
         assert error.value.code == 2
         assert "Stop codon masking requires --codon" in capsys.readouterr().err
+
+
+def test_information_flags_leave_numeric_runtime_unloaded():
+    script = """
+import sys
+from clipkit.cli import main
+
+for flag in ("--help", "--version"):
+    try:
+        main([flag])
+    except SystemExit as error:
+        assert error.code == 0
+assert "numpy" not in sys.modules
+assert "Bio" not in sys.modules
+"""
+    subprocess.run([sys.executable, "-c", script], check=True, capture_output=True)
+
+
+def test_runtime_import_preserves_api_callable_and_enum_pickle_paths():
+    script = """
+import importlib
+import pickle
+import clipkit as package
+
+assert "clipkit" in dir(package)
+engine = importlib.import_module("clipkit.clipkit")
+assert callable(engine.execute)
+
+from clipkit import clipkit
+from clipkit.api import clipkit as public_api
+from clipkit.files import FileFormat
+from clipkit.helpers import SeqType
+
+assert clipkit is public_api and callable(clipkit)
+assert FileFormat.__module__ == "clipkit.files"
+assert SeqType.__module__ == "clipkit.helpers"
+for option in (FileFormat.fasta, SeqType.nt):
+    assert pickle.loads(pickle.dumps(option)) is option
+"""
+    subprocess.run([sys.executable, "-c", script], check=True, capture_output=True)

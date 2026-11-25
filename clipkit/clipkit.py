@@ -8,7 +8,7 @@ from typing import Union
 from multiprocessing import cpu_count
 
 from Bio.Align import MultipleSeqAlignment
-from .args_processing import process_args
+from .cli import main
 from .exceptions import InvalidInputFileFormat, StopCodonValidationError
 from .files import (
     get_alignment_and_format,
@@ -28,7 +28,6 @@ from .guide_tree import build_parsimony_guide_tree
 from .logger import logger, log_file_logger
 from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from .msa import MSA
-from .parser import create_parser
 from .plot_report import write_trim_plot_report
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
 from .smart_gap_helper import smart_gap_threshold_determination
@@ -480,25 +479,6 @@ def execute(
 def _write_report_json(path: str, payload: dict) -> None:
     with open(path, "w") as handle:
         json.dump(payload, handle, indent=2, sort_keys=True)
-
-
-def main(argv=None):
-    """
-    Function that parses and collects arguments
-    """
-    parser = create_parser()
-    argv = sys.argv[1:] if argv is None else argv
-
-    if len(argv) == 0:
-        parser.print_help(sys.stderr)
-        return
-
-    args = parser.parse_args(argv)
-
-    try:
-        execute(**process_args(args))
-    except StopCodonValidationError as exc:
-        parser.error(str(exc))
 
 
 if __name__ == "__main__":

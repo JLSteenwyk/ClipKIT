@@ -1,4 +1,3 @@
-from enum import Enum
 from io import StringIO
 from os import stat
 from stat import S_ISREG
@@ -11,20 +10,9 @@ from Bio.SeqRecord import SeqRecord
 import numpy as np
 
 from .exceptions import InvalidInputFileFormat
+from .formats import FileFormat
 from .ecomp import read_ecomp
 from .ecomp.reader import HEADER_MAGIC, EcompDecodeError
-
-
-class FileFormat(Enum):
-    fasta = "fasta"
-    clustal = "clustal"
-    maf = "maf"
-    mauve = "mauve"
-    phylip = "phylip"
-    phylip_sequential = "phylip_sequential"
-    phylip_relaxed = "phylip_relaxed"
-    stockholm = "stockholm"
-    ecomp = "ecomp"
 
 
 _FASTA_BLOCK_BYTES = 1 << 20

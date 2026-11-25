@@ -9,17 +9,9 @@ from .ambiguity import is_nucleotide_alphabet
 from .msa import MSA
 from .modes import AmbiguityHandling, TrimmingMode
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
-from .files import FileFormat
+from .formats import FileFormat, SeqType
 from .stats import TrimmingStats
 from .ecomp import write_ecomp
-
-from enum import Enum
-
-
-class SeqType(Enum):
-    aa = "aa"
-    nt = "nt"
-
 
 def remove_gaps(seq: str, gap_chars: list[str] = DEFAULT_AA_GAP_CHARS) -> str:
     pattern = "|".join([re.escape(char) for char in gap_chars])
