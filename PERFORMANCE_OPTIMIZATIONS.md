@@ -877,3 +877,47 @@ Further gains on this C3 case depend on parsing and writing costs.
 The [54-case core result](benchmark-results/clipkit-175x-core-c9774e8.json)
 at `c9774e8` matched the baseline exactly. The end-to-end geometric mean
 was 1.42× and the algorithm-only geometric mean was 13.25×.
+
+### Remaining time to reach 1.75×
+
+The values below use the same-machine `c9774e8` comprehensive checkpoint.
+The last column is the additional reduction required from the measured
+candidate median to reach 1.75× for that case.
+
+| Workflow | Baseline | Candidate | Speedup | Additional reduction |
+| --- | ---: | ---: | ---: | ---: |
+| Medium C3 | 6.35 ms | 5.24 ms | 1.21× | 1.62 ms |
+| Tiny explicit CST | 0.69 ms | 0.63 ms | 1.10× | 0.23 ms |
+| Large KPI-gappy | 646.98 ms | 390.69 ms | 1.66× | 20.99 ms |
+| Large KPIC-gappy | 631.18 ms | 398.91 ms | 1.58× | 38.23 ms |
+| Large KPI-smart-gap | 738.11 ms | 423.03 ms | 1.74× | 1.25 ms |
+| Large KPIC-smart-gap | 756.53 ms | 449.46 ms | 1.68× | 17.16 ms |
+| Small gappy CLI | 251.82 ms | 211.43 ms | 1.19× | 67.53 ms |
+| Small raw gappy API | 4.71 ms | 2.87 ms | 1.64× | 0.18 ms |
+| ECOMP input | 2.19 ms | 1.40 ms | 1.56× | 0.15 ms |
+| Medium ECOMP output | 403.95 ms | 279.56 ms | 1.44× | 48.73 ms |
+| Medium fractional-ambiguity CLI | 320.91 ms | 216.41 ms | 1.48× | 33.03 ms |
+| Medium literal-ambiguity CLI | 320.69 ms | 217.39 ms | 1.48× | 34.14 ms |
+| Medium log and complement CLI | 1,190.12 ms | 709.96 ms | 1.68× | 29.89 ms |
+
+C3 needs faster FASTA parsing or serialization. Tiny CST also has little
+algorithm time to remove, while the separate million-site CST workload
+benefited from retaining site arrays. The large combined modes share the
+residue histogram already. Further gains must come from faster histogram
+construction, parsing, or encoding the selected rows. Medium ECOMP output
+needs a reduction in serialization or gzip time while preserving decoded
+content and archive metadata. The small CLI and both ambiguity CLI cases
+spend substantially more time starting the process than trimming, so measure
+imports and the full command together when evaluating deferred imports.
+The small in-process API and ECOMP reader have less than 0.2 ms each to
+recover. The log workflow still spends most of its post-trim time building
+and emitting the per-site log.
+
+Two follow-up prototypes were evaluated with six interleaved
+fresh-process observations per source. Taking the alignment length from
+the first parsed row left the four controls within 2%, so the shared
+Biopython length call remains. Deferring `Bio.SeqIO` until parsing or
+writing moved the small in-process FASTA call from 4.14 to 24.15 ms
+while changing the full small and medium log CLI invocations by less
+than 1%. The existing import remains. Both prototypes matched the
+checked outputs exactly.
