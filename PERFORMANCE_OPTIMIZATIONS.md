@@ -823,3 +823,9 @@ non-dash ambiguity symbols, and a dense batch in one alignment.
 
 The six interleaved observations per side matched exactly. Median peak
 RSS stayed within 1% across these workloads.
+
+An interleaved comparison with `6044b1e` measured 632.53 to 344.83 ms
+(1.83×) for large gappy, and 464.39 to 208.32 ms (2.23×) for
+medium smart-gap. Both matched the reference exactly. The Linux test
+matrix passed 539 unit and 135 integration tests on each of CPython
+3.12.14, 3.13.15, 3.14.7, and 3.15.2 at `8fbeef9`.
