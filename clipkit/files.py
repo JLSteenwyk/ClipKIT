@@ -1,4 +1,4 @@
-from io import StringIO
+from io import BytesIO, StringIO, TextIOWrapper
 from os import stat
 from stat import S_ISREG
 from .logger import log_file_logger
@@ -53,6 +53,13 @@ def _iter_plain_fasta_records(handle):
 
 
 def _read_alignment(path, file_format):
+    if isinstance(path, BytesIO):
+        try:
+            return MultipleSeqAlignment(_iter_plain_fasta_records(path))
+        except ValueError:
+            path.seek(0)
+            with TextIOWrapper(path, encoding="ascii") as handle:
+                return AlignIO.read(handle, file_format.value)
     if isinstance(path, StringIO):
         return AlignIO.read(path, file_format.value)
     if file_format == FileFormat.fasta:
@@ -68,7 +75,7 @@ def _read_alignment(path, file_format):
 
 
 def get_alignment_and_format(
-    input_file_name: str | StringIO, file_format: FileFormat
+    input_file_name: str | StringIO | BytesIO, file_format: FileFormat
 ) -> tuple[MultipleSeqAlignment, FileFormat]:
     """
     Automatically determines what type of input file was used

@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from clipkit.api import clipkit
 from clipkit.clipkit import execute
 from clipkit.files import FileFormat
@@ -120,8 +122,9 @@ def test_api_restores_logger_disabled_flag():
     logger.disabled = original_disabled
 
 
-def test_api_reads_ascii_fasta_text_without_temp_files(tmp_path, mocker):
-    raw = ">first a header\r\nAc-G\r\n>second\r\nAt-G\r\n"
+@pytest.mark.parametrize(("newline", "repeats"), [("\r\n", 1), ("\n", 8192), ("\r\n", 8192)])
+def test_api_reads_ascii_fasta_text_without_temp_files(tmp_path, mocker, newline, repeats):
+    raw = newline.join([">first a header", "Ac-G" * repeats, ">second", "At-G" * repeats, ""])
     source = tmp_path / "input.fa"
     source.write_bytes(raw.encode("ascii"))
     options = {"mode": TrimmingMode.gappy, "gaps": 0.5, "sequence_type": "nt"}

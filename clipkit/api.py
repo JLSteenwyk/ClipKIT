@@ -1,9 +1,9 @@
-from io import StringIO
+from io import BytesIO, StringIO
 from typing import TYPE_CHECKING, Union
 from tempfile import NamedTemporaryFile
 
 from .clipkit import run
-from .files import FileFormat
+from .files import FileFormat, _FASTA_BLOCK_MIN_FILE_BYTES
 from .helpers import SeqType, write_msa
 from .logger import logger
 from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
@@ -62,7 +62,10 @@ def clipkit(
                 and raw_alignment.isascii()
                 and input_file_format in (FileFormat.fasta, FileFormat.fasta.value)
             ):
-                input_handle = StringIO(raw_alignment, newline=None)
+                if len(raw_alignment) >= _FASTA_BLOCK_MIN_FILE_BYTES:
+                    input_handle = BytesIO(raw_alignment.encode("ascii"))
+                else:
+                    input_handle = StringIO(raw_alignment, newline=None)
                 input_source = input_handle
             else:
                 input_handle = NamedTemporaryFile()
