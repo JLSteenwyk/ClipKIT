@@ -767,16 +767,11 @@ class MSA:
             )[0]
         elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
             site_classification_types = self.site_classification_types
-            sites_to_trim_gaps_based = np.where(
-                self.site_gappyness > gap_threshold
-            )[0]
-            sites_to_trim_classification_based = np.where(
-                site_classification_types
-                != SiteClassificationType.parsimony_informative
-            )[0]
-            sites_to_trim = np.unique(
-                np.concatenate(
-                    (sites_to_trim_gaps_based, sites_to_trim_classification_based)
+            sites_to_trim = np.flatnonzero(
+                (self.site_gappyness > gap_threshold)
+                | (
+                    site_classification_types
+                    != SiteClassificationType.parsimony_informative
                 )
             )
         elif mode == TrimmingMode.kpic:
@@ -787,18 +782,10 @@ class MSA:
             )[0]
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
             site_classification_types = self.site_classification_types
-            sites_to_trim_gaps_based = np.where(
-                self.site_gappyness >= gap_threshold
-            )[0]
-            sites_to_trim_classification_based = np.where(
-                (site_classification_types == SiteClassificationType.other)
+            sites_to_trim = np.flatnonzero(
+                (self.site_gappyness >= gap_threshold)
+                | (site_classification_types == SiteClassificationType.other)
                 | (site_classification_types == SiteClassificationType.singleton)
-            )[0]
-
-            sites_to_trim = np.unique(
-                np.concatenate(
-                    (sites_to_trim_gaps_based, sites_to_trim_classification_based)
-                )
             )
         elif mode == TrimmingMode.c3:
             sites_to_trim = np.arange(3, self._original_length + 1, 3) - 1
