@@ -1469,3 +1469,31 @@ cases. The tiny FASTA output slowdown in that non-interleaved run
 did not recur in the interleaved audit above. Tiny first-call
 heterotachy remains subject to the documented import tradeoff. The
 full rerun for `f8d239e` follows this checkpoint.
+
+### Exact trimming metadata across all modes
+
+The [metadata audit](benchmark-results/clipkit-175x-mode-metadata-f8d239e.json)
+compared `f8d239e` with `6044b1e` across 23 cases spanning all 15 public
+trimming modes. It checked kept and trimmed positions, rounded gap
+fractions, classifications, effective gap thresholds, trimming and
+stop-masking statistics, and trimmed records with IDs, names,
+descriptions, and ordering. The cases include all three ambiguity
+policies, codon trimming, ends-only trimming, and all three
+stop-masking modes. Every check matched.
+
+Run the script in the same Python environment as the benchmark, using
+the detached baseline worktree from the reproduction commands above.
+
+```bash
+PYTHONPATH=/tmp/clipkit-175x-reference python scripts/audit_mode_metadata.py \
+  /tmp/clipkit-175x-reference > /tmp/clipkit-metadata-reference.json
+PYTHONPATH="$PWD" python scripts/audit_mode_metadata.py "$PWD" \
+  > /tmp/clipkit-metadata-candidate.json
+cmp /tmp/clipkit-metadata-reference.json /tmp/clipkit-metadata-candidate.json
+```
+
+The [54-case core rerun at `20d4a20`](benchmark-results/clipkit-175x-core-20d4a20.json)
+matched exactly. Its geometric means were 1.69× end to end, 1.32× for
+whole CLI runs, 1.53× for Python API cases, and 14.39× for algorithm-only
+cases. No core case measured more than 5% slower. The full rerun for
+the FASTA byte-gather change at `f8d239e` is in progress.
