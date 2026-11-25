@@ -120,6 +120,23 @@ def test_api_restores_logger_disabled_flag():
     logger.disabled = original_disabled
 
 
+def test_api_reads_ascii_fasta_text_without_temp_files(tmp_path, mocker):
+    raw = ">first a header\r\nAc-G\r\n>second\r\nAt-G\r\n"
+    source = tmp_path / "input.fa"
+    source.write_bytes(raw.encode("ascii"))
+    options = {"mode": TrimmingMode.gappy, "gaps": 0.5, "sequence_type": "nt"}
+    mocker.patch("clipkit.api.NamedTemporaryFile", side_effect=AssertionError)
+
+    expected, expected_stats = clipkit(input_file_path=str(source), **options)
+    actual, actual_stats = clipkit(raw_alignment=raw, **options)
+
+    assert actual.msa.header_info == expected.msa.header_info
+    assert [str(row.seq) for row in actual.trimmed] == [
+        str(row.seq) for row in expected.trimmed
+    ]
+    assert actual_stats.summary == expected_stats.summary
+
+
 def test_execute_dry_run_writes_no_output_files(tmp_path):
     output_file = tmp_path / "dryrun.out.fa"
 

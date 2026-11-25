@@ -1,3 +1,4 @@
+from io import StringIO
 from typing import TYPE_CHECKING, Union
 from tempfile import NamedTemporaryFile
 
@@ -37,8 +38,7 @@ def clipkit(
     """
     If input_file_path is given with no output_file_path -> Bio MSA (multiple sequence alignment object)
     If input_file_path is given and output_file_path is given -> write to output file
-    If raw_alignment is given we write it to NamedTemporaryFile and then pass to execute
-        * handles when output_file_path is given and also when not given
+    Raw alignment input works with or without an output file.
     """
     if threads < 1:
         raise ValueError("threads must be an integer >= 1")
@@ -53,16 +53,22 @@ def clipkit(
 
     original_logger_disabled = logger.disabled
     logger.disabled = True
-    output_temp_file = None
-    input_temp_file = None
+    input_handle = None
     try:
+        input_source = input_file_path
         if raw_alignment:
-            input_temp_file = NamedTemporaryFile()
-            input_temp_file.write(bytes(raw_alignment, "utf-8"))
-            input_temp_file.flush()
-
-        if not output_file_path:
-            output_temp_file = NamedTemporaryFile()
+            if (
+                isinstance(raw_alignment, str)
+                and raw_alignment.isascii()
+                and input_file_format in (FileFormat.fasta, FileFormat.fasta.value)
+            ):
+                input_handle = StringIO(raw_alignment, newline=None)
+                input_source = input_handle
+            else:
+                input_handle = NamedTemporaryFile()
+                input_handle.write(bytes(raw_alignment, "utf-8"))
+                input_handle.flush()
+                input_source = input_handle.name
 
         if isinstance(sequence_type, str):
             try:
@@ -88,9 +94,9 @@ def clipkit(
         auxiliary_file = None
 
         trim_run, stats = run(
-            input_temp_file.name if input_temp_file else input_file_path,
+            input_source,
             input_file_format,
-            output_temp_file.name if output_temp_file else output_file_path,
+            output_file_path,
             output_file_format,
             auxiliary_file,
             sequence_type,
@@ -130,7 +136,5 @@ def clipkit(
         return output_file_path, stats
     finally:
         logger.disabled = original_logger_disabled
-        if input_temp_file is not None:
-            input_temp_file.close()
-        if output_temp_file is not None:
-            output_temp_file.close()
+        if input_handle is not None:
+            input_handle.close()

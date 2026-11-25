@@ -1,4 +1,5 @@
 from enum import Enum
+from io import StringIO
 from os import stat
 from stat import S_ISREG
 from .logger import log_file_logger
@@ -59,6 +60,8 @@ def _iter_plain_fasta_records(handle):
 
 
 def _read_alignment(path, file_format):
+    if isinstance(path, StringIO):
+        return AlignIO.read(path, file_format.value)
     if file_format == FileFormat.fasta:
         info = stat(path)
         if S_ISREG(info.st_mode) and info.st_size >= _FASTA_BLOCK_BYTES:
@@ -72,11 +75,13 @@ def _read_alignment(path, file_format):
 
 
 def get_alignment_and_format(
-    input_file_name: str, file_format: FileFormat
+    input_file_name: str | StringIO, file_format: FileFormat
 ) -> tuple[MultipleSeqAlignment, FileFormat]:
     """
     Automatically determines what type of input file was used
     and reads in the alignment file
+
+    An in-memory text stream must provide an explicit file format.
     """
 
     if file_format:
