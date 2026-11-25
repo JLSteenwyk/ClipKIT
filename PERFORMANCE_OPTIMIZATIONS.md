@@ -1238,3 +1238,19 @@ matched `6044b1e` exactly and measured 1.67× end to end, 2.08× for the
 whole CLI subset, 1.75× for Python API cases, and 13.81× for
 algorithm-only cases. Tiny first-call heterotachy was its only timing
 regression above 5%.
+
+### Binary FASTA format and fallback checks
+
+Commit `20d4a20` limits the binary block reader to streams with an
+explicit FASTA format. Its text fallback starts at the original stream
+position and leaves the borrowed stream open. The focused tests
+exercise an explicit PHYLIP request on FASTA bytes and CRLF FASTA
+starting at a nonzero stream offset. All three interleaved API cases
+matched exactly and stayed within 1% in time.
+
+A smaller-matrix bulk widening prototype left the C3, gappy, combined
+API, and codon controls within 2%. The current matrix cutoff remains.
+
+The [54-case core comparison at `fef1ffa`](benchmark-results/clipkit-175x-core-fef1ffa.json)
+matched `6044b1e` exactly and measured 1.60× end to end and 13.08× for
+algorithm-only cases.
