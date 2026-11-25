@@ -1409,3 +1409,10 @@ All three fixtures matched `6044b1e` exactly in six interleaved
 observations per source. The larger case comes in below the 1.75×
 time budget. The two smaller fixtures remain limited by input and
 output work.
+
+The [54-case core comparison at `e2f8a67`](benchmark-results/clipkit-175x-core-e2f8a67.json)
+also matched the baseline exactly. It measured 1.69× end to end,
+1.31× for whole CLI runs, 1.58× for Python API cases, and 14.39×
+for algorithm-only cases. No core case measured more than 5% slower
+in that checkpoint. The final core and comprehensive rerun at
+`20d4a20` is in progress.
