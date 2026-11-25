@@ -569,6 +569,17 @@ def test_entropy_trimming_reuses_its_totals_for_empty_sites(mocker):
     np.testing.assert_array_equal(msa.site_analyzable_fraction, [1.0, 0.3333, 0.0])
 
 
+def test_gap_only_warning_uses_trimmed_mixed_case_residues():
+    rows = ["a" * 4097, "a" + "n" * 4096, "-" * 4097]
+    records = np.array([list(row) for row in rows], dtype="U1")
+    headers = [{"id": name} for name in ("occupied", "ambiguous", "gap-only")]
+    msa = MSA(headers, records, gap_chars=["-"], sequence_type="nt")
+
+    assert msa.is_any_entry_sequence_only_gaps() == (True, "gap-only")
+    msa.trim(site_positions_to_trim=[0])
+    assert msa.is_any_entry_sequence_only_gaps() == (True, "ambiguous")
+
+
 @pytest.mark.parametrize(
     "mode",
     [

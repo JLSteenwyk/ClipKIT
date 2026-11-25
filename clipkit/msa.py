@@ -553,11 +553,9 @@ class MSA:
         return TrimmingStats(self)
 
     def is_any_entry_sequence_only_gaps(self) -> tuple[bool, Union[str, None]]:
+        unavailable = tuple(self._effective_unavailable_chars)
         for idx, row in enumerate(self.trimmed):
-            normalized_row = np.char.upper(row)
-            if np.all(
-                np.isin(normalized_row, tuple(self._effective_unavailable_chars))
-            ):
+            if np.all(np.isin(_uppercase_records(row), unavailable)):
                 return True, self.header_info[idx].get("id")
         return False, None
 
