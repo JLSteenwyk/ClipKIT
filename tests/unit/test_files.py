@@ -2,6 +2,7 @@ import pytest
 from pathlib import Path
 
 from Bio import AlignIO
+import clipkit.files as files_module
 from clipkit.ecomp.reader import HEADER_MAGIC
 from clipkit.exceptions import InvalidInputFileFormat
 from clipkit.files import get_alignment_and_format, FileFormat
@@ -9,6 +10,30 @@ from clipkit.files import get_custom_sites_to_trim
 
 here = Path(__file__)
 SAMPLES_DIR = here.parent.parent / "integration" / "samples"
+
+
+@pytest.mark.parametrize(
+    ("data", "falls_back"),
+    [
+        (b">one first\nAC GT\nTA\n>two second\nGT\nACAA", False),
+        (b">one first\r\nACGTTA\r\n>two second\r\nGTACAA\r\n", True),
+    ],
+)
+def test_block_fasta_preserves_biopython_records(tmp_path, monkeypatch, mocker, data, falls_back):
+    path = tmp_path / "alignment.fa"
+    path.write_bytes(data)
+    with path.open() as handle:
+        expected = AlignIO.read(handle, "fasta")
+    monkeypatch.setattr(files_module, "_FASTA_BLOCK_BYTES", 20)
+    biopython_read = mocker.spy(AlignIO, "read")
+
+    actual, format_detected = get_alignment_and_format(path, None)
+
+    assert format_detected == FileFormat.fasta
+    assert biopython_read.called == falls_back
+    assert [(r.seq, r.id, r.name, r.description) for r in actual] == [
+        (r.seq, r.id, r.name, r.description) for r in expected
+    ]
 
 
 class TestAutomaticFileTypeDetermination(object):

@@ -1,8 +1,12 @@
 from enum import Enum
+from os import stat
+from stat import S_ISREG
 from .logger import log_file_logger
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 import numpy as np
 
 from .exceptions import InvalidInputFileFormat
@@ -22,6 +26,51 @@ class FileFormat(Enum):
     ecomp = "ecomp"
 
 
+_FASTA_BLOCK_BYTES = 1 << 20
+_NONPRINTABLE_FASTA_BYTES = bytes(range(32)) + bytes(range(127, 256))
+_FASTA_VALIDATION = bytes.maketrans(
+    _NONPRINTABLE_FASTA_BYTES, bytes(len(_NONPRINTABLE_FASTA_BYTES))
+)
+
+
+def _iter_fasta_blocks(handle):
+    if handle.read(1) != b">":
+        raise ValueError("Expected a FASTA header")
+    pending = b""
+    while block := handle.read(_FASTA_BLOCK_BYTES):
+        records = (pending + block).split(b"\n>")
+        pending = records.pop()
+        yield from records
+        if len(pending) > _FASTA_BLOCK_BYTES:
+            raise ValueError("FASTA record exceeds the block parser limit")
+    yield pending
+
+
+def _iter_plain_fasta_records(handle):
+    for record in _iter_fasta_blocks(handle):
+        raw_title, _, sequence = record.partition(b"\n")
+        sequence = sequence.translate(_FASTA_VALIDATION, b" \n")
+        # Defer unusual whitespace and encodings to the installed Bio parser.
+        if b"\0" in sequence or b"\r" in raw_title:
+            raise ValueError("Unusual FASTA whitespace or encoding")
+        title = raw_title.decode("ascii").rstrip()
+        identifier = title.split(None, 1)[0] if title else ""
+        yield SeqRecord(Seq(sequence), id=identifier, name=identifier, description=title)
+
+
+def _read_alignment(path, file_format):
+    if file_format == FileFormat.fasta:
+        info = stat(path)
+        if S_ISREG(info.st_mode) and info.st_size >= _FASTA_BLOCK_BYTES:
+            try:
+                with open(path, "rb") as handle:
+                    return MultipleSeqAlignment(_iter_plain_fasta_records(handle))
+            except ValueError:
+                pass
+    with open(path) as handle:
+        return AlignIO.read(handle, file_format.value)
+
+
 def get_alignment_and_format(
     input_file_name: str, file_format: FileFormat
 ) -> tuple[MultipleSeqAlignment, FileFormat]:
@@ -35,9 +84,7 @@ def get_alignment_and_format(
         if file_format == FileFormat.ecomp:
             alignment, _ = read_ecomp(input_file_name)
             return alignment, file_format
-        with open(input_file_name) as handle:
-            alignment = AlignIO.read(handle, file_format.value)
-        return alignment, file_format
+        return _read_alignment(input_file_name, file_format), file_format
     else:
         # attempt to auto-detect file format
         if _looks_like_ecomp(input_file_name):
@@ -50,9 +97,7 @@ def get_alignment_and_format(
             if fileFormat == FileFormat.ecomp:
                 continue
             try:
-                with open(input_file_name) as handle:
-                    alignment = AlignIO.read(handle, fileFormat.value)
-                return alignment, fileFormat
+                return _read_alignment(input_file_name, fileFormat), fileFormat
             # the following exceptions refer to skipping over errors
             # associated with reading the wrong input file
             except ValueError:
