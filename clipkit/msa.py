@@ -3,6 +3,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import numpy as np
 import math
+import sys
 from typing import Union
 from Bio.Phylo.BaseTree import Tree
 
@@ -399,6 +400,15 @@ class MSA:
             batch = code_points[start : start + rows_per_batch]
             if batch.max() > 127 or batch.min() == 0:
                 return None
+
+        if code_points.flags.c_contiguous and width <= 16_384 and len(positions) < width:
+            # Validated ASCII residues occupy the low byte of each code point.
+            byte_offset = 0 if sys.byteorder == "little" else code_points.itemsize - 1
+            residues = code_points.view(np.uint8)[:, byte_offset::code_points.itemsize]
+            return (
+                (info["description"], row[positions].tobytes())
+                for row, info in zip(residues, self.header_info)
+            )
 
         rows = (
             code_points

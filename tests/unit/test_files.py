@@ -74,7 +74,7 @@ def test_batched_fasta_matches_biopython_for_kept_and_complementary_sites(tmp_pa
         SeqRecord(Seq("tTn-" * repeats), id="three", description="three full header"),
     ])
     msa = MSA.from_bio_msa(alignment, sequence_type="aa")
-    msa.trim(site_positions_to_trim=list(range(2 * repeats - 1)))
+    msa.trim(site_positions_to_trim=list(range(-4 * repeats, -2 * repeats - 1)))
     path = tmp_path / "actual.fa"
     write_msa(msa, path, FileFormat.fasta)
     write_complement(msa, path, FileFormat.fasta)
