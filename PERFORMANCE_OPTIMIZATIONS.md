@@ -1183,3 +1183,18 @@ for algorithm-only cases. Tiny first-call heterotachy was the only
 runtime regression above 5%. The raw small gappy API case showed a
 6.9% RSS increase in the comprehensive run and equal median RSS in
 the interleaved audit.
+
+### Reused FASTA line buffer
+
+Commit `703e30d` allocates the direct FASTA wrapping buffer once for
+each written selection. Its focused test compares two different
+standard rows and an unusual-header fallback against Biopython.
+Six interleaved observations per source measured 3.81 to 3.67 ms for
+small gappy and 5.28 to 5.15 ms for medium C3. The large controls
+stayed within 2%, and peak RSS was flat or lower except for a 0.4%
+increase in large KPIC-smart-gap. Checked output bytes matched.
+
+The [54-case core comparison at `fc041aa`](benchmark-results/clipkit-175x-core-fc041aa.json)
+matched `6044b1e` exactly. It measured 1.58× end to end, 1.31× for whole
+CLI cases, 1.54× for the Python API subset, and 13.29× for algorithm-only
+cases.
