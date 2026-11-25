@@ -280,3 +280,98 @@ ECOMP for its content and metadata check. The comprehensive suite adds CLI
 startup, HTML reporting, logs and complementary output, ambiguity-handling
 policies, large entropy and composition scoring, and medium heterotachy
 and mixed-case fixtures to the earlier coverage.
+
+### Measured checkpoint at `161eb0c`
+
+The [comprehensive JSON](benchmark-results/clipkit-175x-comprehensive-161eb0c.json)
+contains fresh-process wall and CPU samples, peak RSS, and the comparison
+metadata for every case. Both revisions used CPython 3.12.14, NumPy 2.0.2,
+and Biopython 1.83 on Linux x86-64. Five recorded runs followed one warm-up
+for each case and each source tree.
+
+### Same-machine suite comparison
+
+The comprehensive suite compared 119 cases exactly against `6044b1e`.
+Each row shows a representative case for one public trimming mode.
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| `gappy` | 623.25 ms | 465.41 ms | 1.34× |
+| `smart_gap` | 1,013.93 ms | 769.70 ms | 1.32× |
+| `block_gappy` | 646.82 ms | 476.31 ms | 1.36× |
+| `gappyout` | 1,023.80 ms | 777.55 ms | 1.32× |
+| `kpi` | 755.24 ms | 685.23 ms | 1.10× |
+| `kpic` | 784.87 ms | 681.81 ms | 1.15× |
+| `kpi_gappy` | 646.98 ms | 585.70 ms | 1.10× |
+| `kpic_gappy` | 631.18 ms | 587.11 ms | 1.08× |
+| `kpi_smart_gap` | 738.11 ms | 664.50 ms | 1.11× |
+| `kpic_smart_gap` | 756.53 ms | 695.92 ms | 1.09× |
+| `entropy` | 1,005.06 ms | 740.19 ms | 1.36× |
+| `composition_bias` | 1,035.69 ms | 752.35 ms | 1.38× |
+| `heterotachy` | 1,084.93 ms | 639.86 ms | 1.70× |
+| `cst` | 0.69 ms | 0.60 ms | 1.15× |
+| `c3` | 6.35 ms | 6.38 ms | 0.99× |
+
+### Major workflows
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| CLI help startup | 237.00 ms | 213.56 ms | 1.11× |
+| CLI version startup | 233.53 ms | 224.67 ms | 1.04× |
+| CLI small FASTA trimming | 251.82 ms | 222.51 ms | 1.13× |
+| Python API from file | 4.38 ms | 4.45 ms | 0.99× |
+| Python API from string | 4.71 ms | 4.96 ms | 0.95× |
+| HTML report | 1,820.13 ms | 945.85 ms | 1.92× |
+| Log and complementary output | 1,190.12 ms | 1,067.97 ms | 1.11× |
+| Mixed-case amino-acid CLI | 1,050.96 ms | 275.36 ms | 3.82× |
+| ECOMP input | 2.19 ms | 2.22 ms | 0.98× |
+| ECOMP output | 403.95 ms | 336.42 ms | 1.20× |
+| Codon trimming | 5.22 ms | 5.19 ms | 1.01× |
+| Terminal stop-codon masking | 185.19 ms | 183.74 ms | 1.01× |
+| Internal stop-codon masking | 181.15 ms | 183.70 ms | 0.99× |
+| All stop-codon masking | 180.90 ms | 182.03 ms | 0.99× |
+| One requested thread | 463.95 ms | 346.58 ms | 1.34× |
+| Four requested threads | 445.84 ms | 348.71 ms | 1.28× |
+| Missing ambiguity policy | 397.10 ms | 236.68 ms | 1.68× |
+| Fractional ambiguity policy | 320.91 ms | 229.65 ms | 1.40× |
+| Literal ambiguity policy | 320.69 ms | 230.74 ms | 1.39× |
+
+### Geometric means
+
+- all cases (119 cases), 2.53×
+- algorithm only (47 cases), 8.79×
+- all end-to-end and CLI cases (72 cases), 1.12×
+- whole CLI (13 cases), 1.41×
+- Python API (4 cases), 0.98×
+
+### Remaining runtime
+
+The stage profile uses three warm in-process repetitions. Large gappy spent
+131 ms reading FASTA and 150 ms creating the alignment matrix, out of
+418 ms total. Its trim step used 77 ms. Large KPI/KPIC and combined workloads
+still pay for parsing and matrix construction, as well as the character
+frequency pass. Large KPIC spent 176 ms trimming and 152 ms writing, out of
+622 ms. Closely integrating FASTA ingestion and matrix construction would
+address costs shared by these modes if it can retain format and header
+semantics.
+
+Medium smart-gap spent 130 ms writing, out of 300 ms. Large gappyout spent
+304 ms writing, out of 688 ms. More of the gappyout gain must come from
+output materialization or writing. Entropy and composition each spent
+about 175 ms in trimming, in addition to roughly 260–280 ms in reading and
+matrix construction. Sharing or narrowing the character counts is the next
+candidate there.
+
+The medium heterotachy guide-tree stage fell from 452 ms to 11 ms. Clade
+scoring consumed 381 ms in the candidate, making it the next optimization
+target. C3 spent about 3.2 of 3.8 ms reading and writing. Medium ECOMP spent
+132 of 301 ms writing. Compression tuning must account for the encoded
+length stored in the archive metadata. Cold startup still includes loading
+NumPy and Biopython, and the API end-to-end sample remains close to parity.
+Smaller inputs expose file access and CLI startup costs that the algorithm
+benchmarks exclude.
+
+The suite-wide end-to-end result remains below 1.75×. The largest
+verified end-to-end gains are workload-specific, especially the mixed-case
+paths. The tiny first-call heterotachy regression and the remaining
+format-level timing differences are recorded in the interleaved audit.
