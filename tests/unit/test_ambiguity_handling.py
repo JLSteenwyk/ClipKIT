@@ -135,6 +135,15 @@ def test_amino_acid_alignment_is_not_misdetected_as_nucleotide():
     assert get_seq_type(alignment) == SeqType.aa
 
 
+def test_sequence_type_checks_later_records_after_nucleotide_symbols():
+    alignment = MultipleSeqAlignment(
+        [SeqRecord(Seq("acgtn---")), SeqRecord(Seq("acgtn--E"))]
+    )
+
+    assert get_seq_type(alignment) == SeqType.aa
+    assert MSA.from_bio_msa(alignment, gap_chars=["-"]).sequence_type == "aa"
+
+
 def test_supported_iupac_ambiguity_symbols_are_sequence_type_specific():
     assert ambiguity_symbols("nt") == frozenset("RYSWKMBDHVNX")
     assert ambiguity_symbols("aa") == frozenset("BZJX")

@@ -33,7 +33,7 @@ def get_seq_type(alignment: MultipleSeqAlignment) -> SeqType:
         seq = "".join([str(record.seq) for record in alignment])
         seq = remove_gaps(seq)
 
-    sequence_type = SeqType.nt if is_nucleotide_alphabet(seq) else SeqType.aa
+    sequence_type = SeqType.nt if is_nucleotide_alphabet(set(seq)) else SeqType.aa
 
     return sequence_type
 

@@ -3,7 +3,6 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import numpy as np
 import math
-from itertools import chain
 from typing import Union
 from Bio.Phylo.BaseTree import Tree
 
@@ -153,7 +152,7 @@ class MSA:
 
         if sequence_type is None:
             sequence_type = (
-                "nt" if is_nucleotide_alphabet(chain.from_iterable(sequences)) else "aa"
+                "nt" if all(is_nucleotide_alphabet(set(seq)) for seq in sequences) else "aa"
             )
 
         alignment_length = len(sequences[0])
