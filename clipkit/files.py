@@ -102,6 +102,10 @@ def get_alignment_and_format(
 
 
 def get_custom_sites_to_trim(file_path: str, aln_length: int) -> list:
+    return list(_read_custom_sites_to_trim(file_path, aln_length))
+
+
+def _read_custom_sites_to_trim(file_path: str, aln_length: int) -> list | np.ndarray:
     with open(file_path) as f:
         lines = f.read().splitlines()
 
@@ -143,7 +147,7 @@ def get_custom_sites_to_trim(file_path: str, aln_length: int) -> list:
         # we only had keeps so treat every other site as a trim
         trim_mask = np.ones(max(0, aln_length), dtype=bool)
         trim_mask[sites_to_keep] = False
-        sites_to_trim = list(np.flatnonzero(trim_mask))
+        sites_to_trim = np.flatnonzero(trim_mask)
 
     return sites_to_trim
 

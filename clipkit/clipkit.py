@@ -14,7 +14,7 @@ from .files import (
     get_alignment_and_format,
     FileFormat,
     write_debug_log_file,
-    get_custom_sites_to_trim,
+    _read_custom_sites_to_trim,
 )
 from .helpers import (
     create_msa,
@@ -177,9 +177,8 @@ def run(
     guide_tree = None
     if mode == TrimmingMode.cst:
         aln_length = alignment.get_alignment_length()
-        site_positions_to_trim = (
-            get_custom_sites_to_trim(auxiliary_file, aln_length) or []
-        )
+        sites = _read_custom_sites_to_trim(auxiliary_file, aln_length)
+        site_positions_to_trim = sites if len(sites) else []
     elif mode == TrimmingMode.heterotachy:
         guide_tree = build_parsimony_guide_tree(alignment)
 
@@ -323,7 +322,7 @@ def execute(
 
             if mode == TrimmingMode.cst:
                 aln_length = alignment.get_alignment_length()
-                get_custom_sites_to_trim(auxiliary_file, aln_length)
+                _read_custom_sites_to_trim(auxiliary_file, aln_length)
 
             logger.info("Validation successful. No trimming was performed.")
 
