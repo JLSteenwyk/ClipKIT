@@ -230,16 +230,26 @@ class MSA:
         normalized_records = (
             _uppercase_records(self.seq_records)
             if self._requires_uppercase_normalization
-            # Keep the independent working array used by the original path,
-            # but avoid an expensive per-character Unicode operation.
-            else self.seq_records.copy()
+            else self.seq_records
         )
         codons = normalized_records.reshape(
             self.seq_records.shape[0], -1, self._codon_size
         )
         unavailable_chars = self._effective_unavailable_chars
         gap_chars = np.asarray(sorted(unavailable_chars), dtype="U1")
-        complete_codons = ~np.any(np.isin(codons, gap_chars), axis=2)
+        if codons.dtype == np.dtype("U1"):
+            code_points = codons.view(np.uint32)
+            gap_codes = gap_chars.view(np.uint32)
+            complete_codons = np.empty(codons.shape[:2], dtype=bool)
+            # Bound the temporary arrays used by integer membership checks.
+            rows_per_batch = max(1, 262_144 // self._original_length)
+            for start in range(0, len(codons), rows_per_batch):
+                stop = start + rows_per_batch
+                complete_codons[start:stop] = ~np.any(
+                    np.isin(code_points[start:stop], gap_codes), axis=2
+                )
+        else:
+            complete_codons = ~np.any(np.isin(codons, gap_chars), axis=2)
         codon_strings = (
             np.ascontiguousarray(codons).view("U3").reshape(codons.shape[:2])
         )
