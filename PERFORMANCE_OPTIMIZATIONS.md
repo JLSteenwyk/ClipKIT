@@ -498,3 +498,37 @@ The interleaved comparison kept six fresh-process samples per source and
 checked exact outputs. The 25 focused tests verify the public callable,
 enum pickle round trips, and startup imports. The installed script's help
 and version text also matched the reference module invocation.
+
+### Matrix construction and counting follow-up
+
+Commit `eabf605` packs aligned ASCII Bio.Seq bytes before widening them in
+one NumPy operation. The returned matrix retains its writable Unicode
+representation, case, and inferred sequence type. Tests also check the
+original error path for non-ASCII residues. Commit `9908ef8` uses smaller
+batches for character histograms, based on measurements on sparse
+amino-acid and dense amino-acid and nucleotide alignments. Heterotachy
+retains its independent site batch width.
+
+| Change | Workload | Reference median | Candidate median |
+| --- | --- | ---: | ---: |
+| Packed input | Large amino-acid matrix construction | 159 ms | 66 ms |
+| Packed input | Medium amino-acid matrix construction | 80 ms | 33 ms |
+| Packed input | Large gappy end to end | 476 ms | 349 ms |
+| Packed input | Medium smart-gap end to end | 292 ms | 232 ms |
+| Smaller count batches | Large KPIC end to end | 504 ms | 474 ms |
+| Smaller count batches | Large entropy end to end | 520 ms | 493 ms |
+| Smaller count batches | Large composition bias end to end | 537 ms | 505 ms |
+| Smaller count batches | Dense amino-acid KPI algorithm | 20.1 ms | 13.4 ms |
+
+Five interleaved samples per source matched the case-specific output and
+metadata. Peak RSS for the listed large and medium workflows stayed within
+1%, or fell. The [instrumented stage samples](benchmark-results/clipkit-175x-stage-profile.json)
+show large gappy parsing and matrix construction at 134 ms and 67 ms,
+respectively, on `9908ef8`. Large KPIC spent 128 ms trimming and 89 ms
+writing. The medium smart-gap writer consumed 84 of 213 ms, and the
+medium ECOMP writer consumed 134 of 261 ms. Medium heterotachy clade
+scoring fell to 3 ms after batching.
+
+The exact 119-case comparison for `f19e096` measured a 1.29× geometric
+mean across end-to-end workloads and 2.00× for the whole-CLI subset.
+That comparison precedes the packed-input and histogram changes.

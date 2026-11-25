@@ -589,5 +589,595 @@
         }
       ]
     }
+  },
+  "followup_candidates": {
+    "f19e096": {
+      "gappy_large": {
+        "wall_seconds_median": {
+          "total": 0.41228342335671186,
+          "get_alignment_and_format": 0.1344575141556561,
+          "create_msa": 0.1562781874090433,
+          "trim": 0.07620019093155861,
+          "write_msa": 0.03823545062914491
+        },
+        "profile_samples": [
+          {
+            "total": 0.4252145867794752,
+            "get_alignment_and_format": 0.1344575141556561,
+            "create_msa": 0.15755931101739407,
+            "trim": 0.07577156601473689,
+            "write_msa": 0.0381190930493176
+          },
+          {
+            "total": 0.4099550782702863,
+            "get_alignment_and_format": 0.13473534770309925,
+            "create_msa": 0.14267499512061477,
+            "trim": 0.07620019093155861,
+            "write_msa": 0.03823545062914491
+          },
+          {
+            "total": 0.41228342335671186,
+            "get_alignment_and_format": 0.11882993392646313,
+            "create_msa": 0.1562781874090433,
+            "trim": 0.07680097734555602,
+            "write_msa": 0.03824376221746206
+          }
+        ]
+      },
+      "smart_gap_medium": {
+        "wall_seconds_median": {
+          "total": 0.26045295875519514,
+          "get_alignment_and_format": 0.06212563207373023,
+          "create_msa": 0.06856924807652831,
+          "trim": 7.598893716931343e-05,
+          "write_msa": 0.08636251138523221
+        },
+        "profile_samples": [
+          {
+            "total": 0.2594009879976511,
+            "get_alignment_and_format": 0.06176943285390735,
+            "create_msa": 0.06856924807652831,
+            "trim": 7.598893716931343e-05,
+            "write_msa": 0.0860763662494719
+          },
+          {
+            "total": 0.26045295875519514,
+            "get_alignment_and_format": 0.06212563207373023,
+            "create_msa": 0.06895275367423892,
+            "trim": 7.361406460404396e-05,
+            "write_msa": 0.08648361777886748
+          },
+          {
+            "total": 0.26768258586525917,
+            "get_alignment_and_format": 0.06989905284717679,
+            "create_msa": 0.06829616287723184,
+            "trim": 7.717590779066086e-05,
+            "write_msa": 0.08636251138523221
+          }
+        ]
+      },
+      "kpic_large": {
+        "wall_seconds_median": {
+          "total": 0.5819380222819746,
+          "get_alignment_and_format": 0.13521265424787998,
+          "create_msa": 0.15072981407865882,
+          "trim": 0.17947734473273158,
+          "write_msa": 0.09530188702046871
+        },
+        "profile_samples": [
+          {
+            "total": 0.591013940051198,
+            "get_alignment_and_format": 0.1356970821507275,
+            "create_msa": 0.15764004876837134,
+            "trim": 0.17947734473273158,
+            "write_msa": 0.0955595369450748
+          },
+          {
+            "total": 0.5819380222819746,
+            "get_alignment_and_format": 0.13510579522699118,
+            "create_msa": 0.15072981407865882,
+            "trim": 0.17907009227201343,
+            "write_msa": 0.09526864206418395
+          },
+          {
+            "total": 0.5727979890070856,
+            "get_alignment_and_format": 0.13521265424787998,
+            "create_msa": 0.14412115886807442,
+            "trim": 0.17967681493610144,
+            "write_msa": 0.09530188702046871
+          }
+        ]
+      },
+      "entropy_large": {
+        "wall_seconds_median": {
+          "total": 0.5960113951005042,
+          "get_alignment_and_format": 0.1350238691084087,
+          "create_msa": 0.1493548909202218,
+          "trim": 0.1796316970139742,
+          "write_msa": 0.1069614258594811
+        },
+        "profile_samples": [
+          {
+            "total": 0.5960113951005042,
+            "get_alignment_and_format": 0.13583481311798096,
+            "create_msa": 0.1516511789523065,
+            "trim": 0.17864028038457036,
+            "write_msa": 0.10652330191805959
+          },
+          {
+            "total": 0.5881976038217545,
+            "get_alignment_and_format": 0.1350238691084087,
+            "create_msa": 0.14279729081317782,
+            "trim": 0.1796316970139742,
+            "write_msa": 0.10751353204250336
+          },
+          {
+            "total": 0.6142344707623124,
+            "get_alignment_and_format": 0.1327952602878213,
+            "create_msa": 0.1493548909202218,
+            "trim": 0.19744870672002435,
+            "write_msa": 0.1069614258594811
+          }
+        ]
+      },
+      "composition_bias_large": {
+        "wall_seconds_median": {
+          "total": 0.6000613640062511,
+          "get_alignment_and_format": 0.1367822987958789,
+          "create_msa": 0.12935795215889812,
+          "trim": 0.1928870021365583,
+          "write_msa": 0.1208638227544725
+        },
+        "profile_samples": [
+          {
+            "total": 0.6105537619441748,
+            "get_alignment_and_format": 0.12236816389486194,
+            "create_msa": 0.15194919798523188,
+            "trim": 0.19466205360367894,
+            "write_msa": 0.12230286095291376
+          },
+          {
+            "total": 0.6000613640062511,
+            "get_alignment_and_format": 0.13713374687358737,
+            "create_msa": 0.12935795215889812,
+            "trim": 0.1928870021365583,
+            "write_msa": 0.12084957491606474
+          },
+          {
+            "total": 0.5895214742049575,
+            "get_alignment_and_format": 0.1367822987958789,
+            "create_msa": 0.12778236996382475,
+            "trim": 0.18495685281232,
+            "write_msa": 0.1208638227544725
+          }
+        ]
+      },
+      "gappyout_large": {
+        "wall_seconds_median": {
+          "total": 0.5214271568693221,
+          "get_alignment_and_format": 0.13612926984205842,
+          "create_msa": 0.1283321031369269,
+          "trim": 0.00011279573664069176,
+          "write_msa": 0.16479250136762857
+        },
+        "profile_samples": [
+          {
+            "total": 0.5214271568693221,
+            "get_alignment_and_format": 0.13655195804312825,
+            "create_msa": 0.1280044000595808,
+            "trim": 0.00011279573664069176,
+            "write_msa": 0.16461083991453052
+          },
+          {
+            "total": 0.5208964222110808,
+            "get_alignment_and_format": 0.13607346592471004,
+            "create_msa": 0.1283321031369269,
+            "trim": 0.00011398410424590111,
+            "write_msa": 0.16479250136762857
+          },
+          {
+            "total": 0.5238706739619374,
+            "get_alignment_and_format": 0.13612926984205842,
+            "create_msa": 0.12911217473447323,
+            "trim": 0.00011160783469676971,
+            "write_msa": 0.16625291062518954
+          }
+        ]
+      },
+      "c3_medium_nt": {
+        "wall_seconds_median": {
+          "total": 0.003717517014592886,
+          "get_alignment_and_format": 0.001200387254357338,
+          "create_msa": 0.00028733303770422935,
+          "trim": 5.342997610569e-05,
+          "write_msa": 0.002003018744289875
+        },
+        "profile_samples": [
+          {
+            "total": 0.003763822838664055,
+            "get_alignment_and_format": 0.0012395679950714111,
+            "create_msa": 0.00028733303770422935,
+            "trim": 5.817878991365433e-05,
+            "write_msa": 0.002012516837567091
+          },
+          {
+            "total": 0.003717517014592886,
+            "get_alignment_and_format": 0.001200387254357338,
+            "create_msa": 0.00029801763594150543,
+            "trim": 5.342997610569e-05,
+            "write_msa": 0.002003018744289875
+          },
+          {
+            "total": 0.0036842720583081245,
+            "get_alignment_and_format": 0.0011873249895870686,
+            "create_msa": 0.0002813967876136303,
+            "trim": 4.98676672577858e-05,
+            "write_msa": 0.001991144847124815
+          }
+        ]
+      },
+      "output_ecomp_medium": {
+        "wall_seconds_median": {
+          "total": 0.3079400537535548,
+          "get_alignment_and_format": 0.06252338597550988,
+          "create_msa": 0.0688743912614882,
+          "trim": 0.03138339426368475,
+          "write_msa": 0.13330106111243367
+        },
+        "profile_samples": [
+          {
+            "total": 0.30361937591806054,
+            "get_alignment_and_format": 0.06252338597550988,
+            "create_msa": 0.0668963068164885,
+            "trim": 0.03138339426368475,
+            "write_msa": 0.13330106111243367
+          },
+          {
+            "total": 0.3091285671107471,
+            "get_alignment_and_format": 0.06475199712440372,
+            "create_msa": 0.0688743912614882,
+            "trim": 0.031240913551300764,
+            "write_msa": 0.13340792013332248
+          },
+          {
+            "total": 0.3079400537535548,
+            "get_alignment_and_format": 0.062355972826480865,
+            "create_msa": 0.06902162032201886,
+            "trim": 0.032142095267772675,
+            "write_msa": 0.1331942011602223
+          }
+        ]
+      },
+      "heterotachy_medium": {
+        "wall_seconds_median": {
+          "total": 0.014526930171996355,
+          "get_alignment_and_format": 0.00016622524708509445,
+          "build_parsimony_guide_tree": 0.010981576051563025,
+          "create_msa": 3.9182137697935104e-05,
+          "trim": 0.002989686094224453,
+          "write_msa": 0.00023390306159853935
+        },
+        "profile_samples": [
+          {
+            "total": 0.014596981927752495,
+            "get_alignment_and_format": 0.00016978802159428596,
+            "build_parsimony_guide_tree": 0.010981576051563025,
+            "create_msa": 4.1557010263204575e-05,
+            "trim": 0.0030383667908608913,
+            "write_msa": 0.0002434011548757553
+          },
+          {
+            "total": 0.014526930171996355,
+            "get_alignment_and_format": 0.00016622524708509445,
+            "build_parsimony_guide_tree": 0.010982763022184372,
+            "create_msa": 3.9182137697935104e-05,
+            "trim": 0.002989686094224453,
+            "write_msa": 0.00023034214973449707
+          },
+          {
+            "total": 0.014477062039077282,
+            "get_alignment_and_format": 0.0001567271538078785,
+            "build_parsimony_guide_tree": 0.010973263997584581,
+            "create_msa": 3.91816720366478e-05,
+            "trim": 0.00296475226059556,
+            "write_msa": 0.00023390306159853935
+          }
+        ]
+      }
+    },
+    "9908ef8": {
+      "gappy_large": {
+        "wall_seconds_median": {
+          "total": 0.3059370811097324,
+          "get_alignment_and_format": 0.13424856588244438,
+          "create_msa": 0.06711834715679288,
+          "trim": 0.07202437706291676,
+          "write_msa": 0.02817761804908514
+        },
+        "profile_samples": [
+          {
+            "total": 0.3216881463304162,
+            "get_alignment_and_format": 0.13589063799008727,
+            "create_msa": 0.07439309218898416,
+            "trim": 0.07218466605991125,
+            "write_msa": 0.03495368780568242
+          },
+          {
+            "total": 0.3042558282613754,
+            "get_alignment_and_format": 0.13349580205976963,
+            "create_msa": 0.06594645604491234,
+            "trim": 0.07202437706291676,
+            "write_msa": 0.02817286876961589
+          },
+          {
+            "total": 0.3059370811097324,
+            "get_alignment_and_format": 0.13424856588244438,
+            "create_msa": 0.06711834715679288,
+            "trim": 0.07181065902113914,
+            "write_msa": 0.02817761804908514
+          }
+        ]
+      },
+      "smart_gap_medium": {
+        "wall_seconds_median": {
+          "total": 0.2124755340628326,
+          "get_alignment_and_format": 0.06263025477528572,
+          "create_msa": 0.030367047991603613,
+          "trim": 7.4801966547966e-05,
+          "write_msa": 0.08387982565909624
+        },
+        "profile_samples": [
+          {
+            "total": 0.2121929512359202,
+            "get_alignment_and_format": 0.06263025477528572,
+            "create_msa": 0.030367047991603613,
+            "trim": 7.361406460404396e-05,
+            "write_msa": 0.08380265021696687
+          },
+          {
+            "total": 0.2124755340628326,
+            "get_alignment_and_format": 0.06257088808342814,
+            "create_msa": 0.03050240222364664,
+            "trim": 7.4801966547966e-05,
+            "write_msa": 0.08404961414635181
+          },
+          {
+            "total": 0.22058734530583024,
+            "get_alignment_and_format": 0.07162068737670779,
+            "create_msa": 0.03010583482682705,
+            "trim": 7.717590779066086e-05,
+            "write_msa": 0.08387982565909624
+          }
+        ]
+      },
+      "kpic_large": {
+        "wall_seconds_median": {
+          "total": 0.42290293239057064,
+          "get_alignment_and_format": 0.1347816758789122,
+          "create_msa": 0.06623616302385926,
+          "trim": 0.12815164821222425,
+          "write_msa": 0.08890340197831392
+        },
+        "profile_samples": [
+          {
+            "total": 0.42465779976919293,
+            "get_alignment_and_format": 0.1347816758789122,
+            "create_msa": 0.0659322077408433,
+            "trim": 0.12824307195842266,
+            "write_msa": 0.08890340197831392
+          },
+          {
+            "total": 0.42290293239057064,
+            "get_alignment_and_format": 0.13508206978440285,
+            "create_msa": 0.06650093803182244,
+            "trim": 0.1269892561249435,
+            "write_msa": 0.08929759496822953
+          },
+          {
+            "total": 0.4053055737167597,
+            "get_alignment_and_format": 0.11725318292155862,
+            "create_msa": 0.06623616302385926,
+            "trim": 0.12815164821222425,
+            "write_msa": 0.08865169016644359
+          }
+        ]
+      },
+      "entropy_large": {
+        "wall_seconds_median": {
+          "total": 0.43890927312895656,
+          "get_alignment_and_format": 0.1341262715868652,
+          "create_msa": 0.0660521280951798,
+          "trim": 0.1341155869886279,
+          "write_msa": 0.09949909895658493
+        },
+        "profile_samples": [
+          {
+            "total": 0.43890927312895656,
+            "get_alignment_and_format": 0.1341262715868652,
+            "create_msa": 0.0660521280951798,
+            "trim": 0.1344409128651023,
+            "write_msa": 0.09949909895658493
+          },
+          {
+            "total": 0.4227343322709203,
+            "get_alignment_and_format": 0.11736835399642587,
+            "create_msa": 0.06637745629996061,
+            "trim": 0.13389830524101853,
+            "write_msa": 0.10012244526296854
+          },
+          {
+            "total": 0.44793769903481007,
+            "get_alignment_and_format": 0.14385284623131156,
+            "create_msa": 0.06579566607251763,
+            "trim": 0.1341155869886279,
+            "write_msa": 0.09925213595852256
+          }
+        ]
+      },
+      "composition_bias_large": {
+        "wall_seconds_median": {
+          "total": 0.44939692225307226,
+          "get_alignment_and_format": 0.1340835290029645,
+          "create_msa": 0.0661174301058054,
+          "trim": 0.12933659879490733,
+          "write_msa": 0.1149319619871676
+        },
+        "profile_samples": [
+          {
+            "total": 0.44939692225307226,
+            "get_alignment_and_format": 0.1340835290029645,
+            "create_msa": 0.0661174301058054,
+            "trim": 0.12933659879490733,
+            "write_msa": 0.11477048508822918
+          },
+          {
+            "total": 0.4510532426647842,
+            "get_alignment_and_format": 0.1346902516670525,
+            "create_msa": 0.06614236487075686,
+            "trim": 0.1293864669278264,
+            "write_msa": 0.11585332686081529
+          },
+          {
+            "total": 0.43226499715819955,
+            "get_alignment_and_format": 0.11750845890492201,
+            "create_msa": 0.0657505476847291,
+            "trim": 0.12918699719011784,
+            "write_msa": 0.1149319619871676
+          }
+        ]
+      },
+      "gappyout_large": {
+        "wall_seconds_median": {
+          "total": 0.4415688831359148,
+          "get_alignment_and_format": 0.13497639819979668,
+          "create_msa": 0.06576717039570212,
+          "trim": 0.00010923389345407486,
+          "write_msa": 0.1618645810522139
+        },
+        "profile_samples": [
+          {
+            "total": 0.4415688831359148,
+            "get_alignment_and_format": 0.13497639819979668,
+            "create_msa": 0.06576717039570212,
+            "trim": 0.00010804738849401474,
+            "write_msa": 0.1618645810522139
+          },
+          {
+            "total": 0.4406047738157213,
+            "get_alignment_and_format": 0.13478642562404275,
+            "create_msa": 0.06575054721906781,
+            "trim": 0.00010923389345407486,
+            "write_msa": 0.1613920251838863
+          },
+          {
+            "total": 0.4431670242920518,
+            "get_alignment_and_format": 0.13506188476458192,
+            "create_msa": 0.06644157133996487,
+            "trim": 0.00011160876601934433,
+            "write_msa": 0.16256866371259093
+          }
+        ]
+      },
+      "c3_medium_nt": {
+        "wall_seconds_median": {
+          "total": 0.0037590740248560905,
+          "get_alignment_and_format": 0.0012098848819732666,
+          "create_msa": 0.00029445672407746315,
+          "trim": 5.461694672703743e-05,
+          "write_msa": 0.002024390734732151
+        },
+        "profile_samples": [
+          {
+            "total": 0.003947858698666096,
+            "get_alignment_and_format": 0.001334554050117731,
+            "create_msa": 0.0002920832484960556,
+            "trim": 5.936622619628906e-05,
+            "write_msa": 0.0020742579363286495
+          },
+          {
+            "total": 0.0037590740248560905,
+            "get_alignment_and_format": 0.0012098848819732666,
+            "create_msa": 0.0003003939054906368,
+            "trim": 5.461694672703743e-05,
+            "write_msa": 0.002024390734732151
+          },
+          {
+            "total": 0.0037127691321074963,
+            "get_alignment_and_format": 0.0011956370435655117,
+            "create_msa": 0.00029445672407746315,
+            "trim": 5.224207416176796e-05,
+            "write_msa": 0.0020065810531377792
+          }
+        ]
+      },
+      "output_ecomp_medium": {
+        "wall_seconds_median": {
+          "total": 0.2609872967004776,
+          "get_alignment_and_format": 0.06300070090219378,
+          "create_msa": 0.029582224786281586,
+          "trim": 0.03157811984419823,
+          "write_msa": 0.13357416493818164
+        },
+        "profile_samples": [
+          {
+            "total": 0.2609872967004776,
+            "get_alignment_and_format": 0.06297220475971699,
+            "create_msa": 0.029582224786281586,
+            "trim": 0.031644610688090324,
+            "write_msa": 0.13357416493818164
+          },
+          {
+            "total": 0.26097661117091775,
+            "get_alignment_and_format": 0.06300070090219378,
+            "create_msa": 0.029610720928758383,
+            "trim": 0.03157811984419823,
+            "write_msa": 0.1335266730748117
+          },
+          {
+            "total": 0.26159995840862393,
+            "get_alignment_and_format": 0.06357892788946629,
+            "create_msa": 0.02953948173671961,
+            "trim": 0.031537750735878944,
+            "write_msa": 0.1336560919880867
+          }
+        ]
+      },
+      "heterotachy_medium": {
+        "wall_seconds_median": {
+          "total": 0.015156216453760862,
+          "get_alignment_and_format": 0.00017928611487150192,
+          "build_parsimony_guide_tree": 0.011323526967316866,
+          "create_msa": 5.699228495359421e-05,
+          "trim": 0.0031297910027205944,
+          "write_msa": 0.00029327021911740303
+        },
+        "profile_samples": [
+          {
+            "total": 0.015156216453760862,
+            "get_alignment_and_format": 0.00018759770318865776,
+            "build_parsimony_guide_tree": 0.01127009792253375,
+            "create_msa": 5.699228495359421e-05,
+            "trim": 0.0031760972924530506,
+            "write_msa": 0.00031582824885845184
+          },
+          {
+            "total": 0.015113471075892448,
+            "get_alignment_and_format": 0.00017928611487150192,
+            "build_parsimony_guide_tree": 0.011323526967316866,
+            "create_msa": 5.224207416176796e-05,
+            "trim": 0.003117918036878109,
+            "write_msa": 0.00029327021911740303
+          },
+          {
+            "total": 0.015179961919784546,
+            "get_alignment_and_format": 0.00017334986478090286,
+            "build_parsimony_guide_tree": 0.01137102022767067,
+            "create_msa": 5.699228495359421e-05,
+            "trim": 0.0031297910027205944,
+            "write_msa": 0.0002932692877948284
+          }
+        ]
+      }
+    }
   }
 }
