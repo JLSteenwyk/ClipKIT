@@ -361,6 +361,10 @@ CASES = {
         BenchmarkCase(
             "input_ecomp", "execute", "ecomp_aa", mode="gappy", input_format="ecomp"
         ),
+        BenchmarkCase(
+            "output_ecomp_medium", "execute", "medium_aa", mode="gappy",
+            gaps=0.95, output_format="ecomp",
+        ),
         *[
             BenchmarkCase(
                 f"output_{format_name}",

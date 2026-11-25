@@ -112,7 +112,9 @@ def _prepare_metadata(
 
     ids = [record.id or record.name or f"seq_{index}" for index, record in enumerate(alignment)]
     sequences = [str(record.seq) for record in alignment]
-    alphabet = sorted({char for seq in sequences for char in seq})
+    alphabet = set()
+    for sequence in sequences:
+        alphabet.update(sequence)
 
     format_version = metadata.get("format_version", "0.2.0")
     if isinstance(format_version, (tuple, list)):
@@ -121,7 +123,7 @@ def _prepare_metadata(
     metadata["codec"] = "ecomp"
     metadata["num_sequences"] = len(sequences)
     metadata["alignment_length"] = alignment.get_alignment_length()
-    metadata["alphabet"] = alphabet
+    metadata["alphabet"] = sorted(alphabet)
     metadata["source_format"] = alignment.annotations.get(
         "source_format", metadata.get("source_format", "fasta")
     )
