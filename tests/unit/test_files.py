@@ -1,12 +1,17 @@
 import pytest
 from pathlib import Path
 
-from Bio import AlignIO
+from Bio import AlignIO, SeqIO
+from Bio.Align import MultipleSeqAlignment
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 import clipkit.files as files_module
 from clipkit.ecomp.reader import HEADER_MAGIC
 from clipkit.exceptions import InvalidInputFileFormat
 from clipkit.files import get_alignment_and_format, FileFormat
 from clipkit.files import get_custom_sites_to_trim
+from clipkit.helpers import write_msa, write_complement
+from clipkit.msa import MSA
 
 here = Path(__file__)
 SAMPLES_DIR = here.parent.parent / "integration" / "samples"
@@ -34,6 +39,26 @@ def test_block_fasta_preserves_biopython_records(tmp_path, monkeypatch, mocker, 
     assert [(r.seq, r.id, r.name, r.description) for r in actual] == [
         (r.seq, r.id, r.name, r.description) for r in expected
     ]
+
+
+def test_batched_fasta_matches_biopython_for_kept_and_complementary_sites(tmp_path):
+    alignment = MultipleSeqAlignment([
+        SeqRecord(Seq("AaX-" * 2101), id="one", description="one full header"),
+        SeqRecord(Seq("gTc?" * 2101), id="two", description="two\nheader"),
+    ])
+    msa = MSA.from_bio_msa(alignment, sequence_type="aa")
+    msa.trim(site_positions_to_trim=list(range(4201)))
+    path = tmp_path / "actual.fa"
+    write_msa(msa, path, FileFormat.fasta)
+    write_complement(msa, path, FileFormat.fasta)
+
+    for result, records in (
+        (path, msa.to_bio_msa()),
+        (path.with_suffix(".fa.complement"), msa.complement_to_bio_msa()),
+    ):
+        expected = tmp_path / "expected.fa"
+        SeqIO.write(records, expected, "fasta")
+        assert result.read_bytes() == expected.read_bytes()
 
 
 class TestAutomaticFileTypeDetermination(object):

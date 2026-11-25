@@ -73,16 +73,7 @@ def write_msa(
     """
     msa is populated with sites that are kept after trimming is finished
     """
-    output_msa = msa.to_bio_msa()
-    if out_file_format == FileFormat.ecomp:
-        write_ecomp(output_msa, out_file_name, base_metadata)
-        return
-    if out_file_format.value == "phylip_relaxed":
-        SeqIO.write(output_msa, out_file_name, "phylip-relaxed")
-    elif out_file_format.value == "phylip_sequential":
-        SeqIO.write(output_msa, out_file_name, "phylip-sequential")
-    else:
-        SeqIO.write(output_msa, out_file_name, out_file_format.value)
+    _write_alignment(msa.to_bio_msa(), out_file_name, out_file_format, base_metadata)
 
 
 def write_complement(
@@ -94,14 +85,47 @@ def write_complement(
     """
     msa is populated with sites that are trimmed after trimming is finished
     """
-    output_msa = msa.complement_to_bio_msa()
-    complement_out = f"{out_file}.complement"
-    if out_file_format == FileFormat.ecomp:
-        write_ecomp(output_msa, complement_out, base_metadata)
-        return
-    if out_file_format.value == "phylip_relaxed":
-        SeqIO.write(output_msa, complement_out, "phylip-relaxed")
-    elif out_file_format.value == "phylip_sequential":
-        SeqIO.write(output_msa, complement_out, "phylip-sequential")
+    _write_alignment(
+        msa.complement_to_bio_msa(),
+        f"{out_file}.complement",
+        out_file_format,
+        base_metadata,
+    )
+
+
+def _write_alignment(alignment, path, file_format, base_metadata):
+    if file_format == FileFormat.ecomp:
+        write_ecomp(alignment, path, base_metadata)
+    elif file_format == FileFormat.fasta and alignment.get_alignment_length() >= 4096:
+        _write_wrapped_fasta(alignment, path)
     else:
-        SeqIO.write(output_msa, complement_out, out_file_format.value)
+        SeqIO.write(alignment, path, file_format.value.replace("_", "-"))
+
+
+def _write_wrapped_fasta(alignment, path):
+    # Match Biopython's standard FASTA format, batching the 60-column lines.
+    width = 60
+    with open(path, "w") as handle:
+        for record in alignment:
+            if (
+                record.description
+                or record.seq is None
+                or "\n" in record.id
+                or "\r" in record.id
+            ):
+                SeqIO.write(record, handle, "fasta")
+                continue
+            residues = bytes(record.seq)
+            if not residues.isascii() or b"\n" in residues or b"\r" in residues:
+                SeqIO.write(record, handle, "fasta")
+                continue
+            handle.write(f">{record.id}\n")
+            lines, tail = divmod(len(residues), width)
+            wrapped = np.empty((lines, width + 1), dtype=np.uint8)
+            wrapped[:, :width] = np.frombuffer(
+                residues, count=lines * width, dtype=np.uint8
+            ).reshape(lines, width)
+            wrapped[:, width] = ord("\n")
+            handle.write(wrapped.tobytes().decode("ascii"))
+            if tail:
+                handle.write(residues[-tail:].decode("ascii") + "\n")
