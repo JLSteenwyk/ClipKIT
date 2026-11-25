@@ -40,6 +40,8 @@ FILES = {
     "generated_dense_nt": None,
     "generated_sparse_aa": None,
     "generated_stop_nt": None,
+    "generated_mixed_aa": None,
+    "generated_clades_nt": None,
 }
 
 
@@ -176,6 +178,13 @@ CASES = {
         BenchmarkCase("kpic_large", "execute", "large_aa", mode="kpic"),
         BenchmarkCase("block_gappy_small", "execute", "small_aa", mode="block_gappy"),
         BenchmarkCase("gappyout_small", "execute", "small_aa", mode="gappyout"),
+        *[
+            BenchmarkCase(
+                f"{mode}_large", "execute", "large_aa", mode=mode,
+                gaps=0.8 if mode in {"entropy", "composition_bias"} else 0.9,
+            )
+            for mode in ("block_gappy", "gappyout", "entropy", "composition_bias")
+        ],
         BenchmarkCase("entropy_small", "execute", "small_aa", mode="entropy", gaps=0.8),
         BenchmarkCase(
             "composition_bias_small",
@@ -191,6 +200,10 @@ CASES = {
             mode="heterotachy",
             gaps=0.8,
             sequence_type="nt",
+        ),
+        BenchmarkCase(
+            "heterotachy_medium", "cli", "generated_clades_nt",
+            mode="heterotachy", gaps=0.8, sequence_type="nt",
         ),
         BenchmarkCase("kpi_small", "execute", "small_aa", mode="kpi"),
         BenchmarkCase("kpi_gappy_small", "execute", "small_aa", mode="kpi_gappy"),
@@ -259,6 +272,10 @@ CASES = {
         ),
         # Public CLI/API paths and stop-codon behavior.
         BenchmarkCase("cli_gappy_small", "cli", "small_aa", mode="gappy"),
+        BenchmarkCase(
+            "cli_kpic_smart_gap_mixed_aa", "cli", "generated_mixed_aa",
+            mode="kpic_smart_gap", sequence_type="aa",
+        ),
         *[
             BenchmarkCase(
                 f"cli_startup_{option}", "cli", "tiny_nt",
@@ -829,6 +846,14 @@ def summarize_samples(case: BenchmarkCase, samples: list[dict]) -> dict:
     result = {
         **asdict(case),
         "repetitions": len(samples),
+        "timing_samples": [
+            {
+                "runtime_seconds": sample["runtime_seconds"],
+                "cpu_seconds": sample.get("cpu_seconds"),
+                "peak_rss_bytes": sample["peak_rss_bytes"],
+            }
+            for sample in samples
+        ],
         "runtime_seconds_median": statistics.median(runtimes),
         "runtime_seconds_min": min(runtimes),
         "runtime_seconds_max": max(runtimes),
@@ -911,11 +936,29 @@ def _write_generated_fixtures(directory: Path) -> dict[str, Path]:
                     codons[index] = "---"
             handle.write(f">stop_{row}\n{''.join(codons)}\n")
 
+    mixed_path = directory / "generated_mixed_aa.fasta"
+    with dense_aa_path.open() as dense, mixed_path.open("w") as mixed:
+        for index, line in enumerate(dense):
+            mixed.write(line.lower() if index % 4 == 3 else line)
+
+    clades_path = directory / "generated_clades_nt.fasta"
+    clade_rng = random.Random(78123)
+    ancestor = clade_rng.choices("ACGT-", k=500)
+    with clades_path.open("w") as handle:
+        for row in range(12):
+            sequence = "".join(
+                residue if clade_rng.random() < 0.86 else clade_rng.choice("ACGT-")
+                for residue in ancestor
+            )
+            handle.write(f">taxon_{row}\n{sequence}\n")
+
     return {
         "generated_dense_aa": dense_aa_path,
         "generated_dense_nt": dense_nt_path,
         "generated_sparse_aa": sparse_path,
         "generated_stop_nt": stop_path,
+        "generated_mixed_aa": mixed_path,
+        "generated_clades_nt": clades_path,
     }
 
 

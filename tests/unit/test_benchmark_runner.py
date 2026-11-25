@@ -396,6 +396,7 @@ def test_run_case_discards_warmups_and_summarizes_repetitions(monkeypatch):
 
     assert len(calls) == 5
     assert result["repetitions"] == 3
+    assert [sample["runtime_seconds"] for sample in result["timing_samples"]] == [1.0] * 3
     assert result["runtime_seconds_median"] == 1.0
 
 
@@ -416,6 +417,8 @@ def test_generated_fixtures_are_deterministic_and_well_formed(tmp_path, monkeypa
         "generated_dense_nt",
         "generated_sparse_aa",
         "generated_stop_nt",
+        "generated_mixed_aa",
+        "generated_clades_nt",
     }
     assert BENCHMARK._fasta_dimensions(generated["generated_dense_aa"], None) == (
         2,
@@ -434,6 +437,8 @@ def test_generated_fixtures_are_deterministic_and_well_formed(tmp_path, monkeypa
         6000,
     )
     assert "---" in generated["generated_stop_nt"].read_text()
+    assert generated["generated_mixed_aa"].read_text().splitlines()[3].islower()
+    assert BENCHMARK._fasta_dimensions(generated["generated_clades_nt"], None) == (12, 500)
 
 
 def test_input_paths_resolve_static_and_generated_datasets(tmp_path):
