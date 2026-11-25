@@ -774,3 +774,15 @@ complement sample. Six interleaved observations per revision measured
 RSS increase. The small control varied by 2.7% in time. The remaining
 cost in the medium workflow is debug log generation and emission,
 which consumed about 279 ms after the change.
+
+Commit `c9774e8` shares the classification count table with gappyness
+when writing a per-site log. Six interleaved measurements per revision
+showed another 1.05× improvement for the whole command, with exact
+output and a 0.24% increase in median peak RSS. An interleaved
+comparison with the original baseline measured 1,230.88 to 722.26 ms
+(1.70×) for log and complement, and 243.12 to 218.52 ms (1.11×) for
+the small standalone CLI control.
+
+On Linux x86-64, `make test` on `c9774e8` passed 538 unit and 135
+integration tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and
+3.15.2. Each interpreter used its own temporary directory.
