@@ -375,3 +375,53 @@ The suite-wide end-to-end result remains below 1.75×. The largest
 verified end-to-end gains are workload-specific, especially the mixed-case
 paths. The tiny first-call heterotachy regression and the remaining
 format-level timing differences are recorded in the interleaved audit.
+
+The [54-case core checkpoint](benchmark-results/clipkit-175x-core-161eb0c.json)
+also matched the reference. Its geometric means were 9.00× for algorithm-only
+cases and 1.08× for end-to-end cases. The small core CLI subset averaged 1.21×.
+
+### Heterotachy scoring follow-up
+
+Commit `5a87a86` batches sites with the same observed-state count, preserving
+the scalar reduction order and using the same gap and ambiguity filters.
+The deterministic medium nucleotide CLI fixture produced the same FASTA
+bytes across all three policies. Five interleaved measurements per policy
+gave median wall times of 630 to 250 ms for missing, 690 to 250 ms for
+fractional, and 450 to 240 ms for literal. Median peak RSS was 44,544 KiB on
+both revisions. The samples are in the targeted benchmark JSON. Differential
+tests match the rounded scalar scores on nucleotide and amino-acid inputs
+that cross a column batch boundary. The full Linux test matrix passed
+526 unit and 135 integration tests per interpreter at `5a87a86`.
+
+### Incremental implementation history
+
+Each row links the runtime change to its targeted verification. The targeted
+JSON identifies the timing reference and candidate for each comparison.
+
+| Commit | Change | Verification |
+| --- | --- | --- |
+| `eb97f94` | Defer Biopython tree construction imports | Exact help and version text with interleaved cold startup |
+| `a63f9d1` | Infer alphabets from distinct symbols | Construction and gappy comparisons plus mixed-case and later-record tests |
+| `84f582b` | Count small gap alphabets directly | Exact large gap scores and row-batch coverage |
+| `45d439f` | Share the frequency table across report tracks | Exact HTML and FASTA with one frequency pass |
+| `a710fc1` | Reuse normalized counts in mixed combined modes | Exact KPIC-gappy and KPIC smart-gap FASTA |
+| `9eb38d6` | Normalize large ASCII arrays in bounded batches | Exact mixed-case trimming with Unicode fallback and strided-array tests |
+| `e2eb3fd` | Benchmark startup, reports, and ambiguity handling | Exact comparisons for the added cases |
+| `6b39356` | Reuse entropy totals for missing-site filtering | Exact entropy FASTA and analyzable-site fractions |
+| `9b72df9` | Read standard large FASTA in blocks | Exact records, headers, fallback behavior, and trimmed output |
+| `c3a70a0` | Batch Fitch scoring during the existing tree search | Exact topology, branch lengths, order, and heterotachy FASTA |
+| `bb9de1a` | Retain raw timing samples and add larger workflows | Expected fixture shapes and exact added comparisons |
+| `ab5fa77` | Use fast residue normalization in gap-only log checks | Exact debug log, FASTA, and first warned record |
+| `de03988` | Audit CLI logs, complements, and tiny heterotachy | Exact combined artifacts and CLI output |
+| `4b24f75` | Accumulate the ECOMP alphabet by sequence | Exact decoded alignment, metadata, and archive length |
+| `684e8bb` | Batch wide FASTA line wrapping | Byte-identical output and complement, including header fallback |
+| `5ed743a` | Fill very wide ASCII alignment matrices from bytes | Exact case, editable Unicode storage, and matching output |
+| `8f3ecd2` | Suppress formatting work for disabled INFO messages | Exact quiet artifacts and entrypoint/state tests |
+| `161eb0c` | Combine Boolean masks before converting to trim indices | Exact positions, thresholds, and classifications |
+| `5a87a86` | Batch clade entropy scoring | Exact rounded scores and all ambiguity-policy FASTA outputs |
+
+When reverting `45d439f`, revert `a710fc1` first because the mixed-case
+schedule depends on normalized frequency reuse. Revert `ab5fa77` and
+`5a87a86` before removing the fast normalization helper from `9eb38d6`.
+The benchmark-only commits can be reverted independently of the production
+code. The checkpoint and audit files identify their runtime revision.
