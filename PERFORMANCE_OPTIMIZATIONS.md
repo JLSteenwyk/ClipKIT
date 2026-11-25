@@ -786,3 +786,21 @@ the small standalone CLI control.
 On Linux x86-64, `make test` on `c9774e8` passed 538 unit and 135
 integration tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and
 3.15.2. Each interpreter used its own temporary directory.
+
+### Checkpoint after sequence-type inference optimization
+
+The [core comparison](benchmark-results/clipkit-175x-core-0b9ceed.json) and
+[comprehensive comparison](benchmark-results/clipkit-175x-comprehensive-0b9ceed.json)
+for `0b9ceed` matched all 54 and 119 cases, respectively, against `6044b1e`.
+
+| Geometric mean | Core | Comprehensive |
+| --- | ---: | ---: |
+| End-to-end and CLI | 1.42× | 1.54× |
+| Whole CLI | 1.31× | 2.03× |
+| Python API | 1.35× | 1.48× |
+| Algorithm only | 13.33× | 13.95× |
+
+The comprehensive run flagged tiny heterotachy, FASTA output, and Mauve
+output above 5% slower. The earlier interleaved audit reproduced the
+first-call heterotachy deferral, while FASTA and Mauve were faster in
+that audit. The log-path improvements follow this checkpoint.
