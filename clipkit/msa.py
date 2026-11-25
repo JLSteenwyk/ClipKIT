@@ -50,6 +50,12 @@ def _uppercase_records(records: np.ndarray) -> np.ndarray:
     return upper.view("U1").reshape(records.shape)
 
 
+def _mostly_dashes(code_points: np.ndarray) -> bool:
+    rows, columns = code_points.shape
+    sample = code_points[::max(1, rows // 32), ::max(1, columns // 64)]
+    return np.count_nonzero(sample != ord("-")) <= sample.size // 8
+
+
 def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Return sorted character states and their counts in every column."""
     n_rows, n_cols = seq_array.shape
@@ -77,10 +83,11 @@ def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndar
         )
 
         gap_code = ord("-")
-        sparse_gaps = False
-        if code_points.size >= 1_000_000 and min_code <= gap_code <= max_code:
-            sample = code_points[::max(1, n_rows // 32), ::max(1, n_cols // 64)]
-            sparse_gaps = np.count_nonzero(sample != gap_code) <= sample.size // 8
+        sparse_gaps = (
+            code_points.size >= 1_000_000
+            and min_code <= gap_code <= max_code
+            and _mostly_dashes(code_points)
+        )
 
         for start_idx in range(0, n_cols, _COLUMN_COUNT_BATCH_SIZE):
             end_idx = min(start_idx + _COLUMN_COUNT_BATCH_SIZE, n_cols)
@@ -477,12 +484,33 @@ class MSA:
                 )
             # Count membership directly, with bounded scratch space per row batch.
             code_points = seq_array.view(np.uint32)
-            low, high = int(code_points.min()), int(code_points.max())
-            codes = [ord(state) for state in states_to_count if low <= ord(state) <= high]
             matching_counts = np.zeros(code_points.shape[1], dtype=np.int64)
             rows_per_batch = max(1, 1_000_000 // code_points.shape[1])
+            dash = ord("-")
+            codes = [ord(state) for state in states_to_count]
+            sparse = (
+                not small
+                and code_points.flags.c_contiguous
+                and dash in codes
+                and _mostly_dashes(code_points)
+            )
+            if sparse:
+                other_gaps = [code for code in codes if code != dash]
+            else:
+                low, high = int(code_points.min()), int(code_points.max())
+                codes = [code for code in codes if low <= code <= high]
             for start in range(0, len(code_points), rows_per_batch):
                 batch = code_points[start : start + rows_per_batch]
+                if sparse:
+                    non_dash = batch.ravel() != dash
+                    if np.count_nonzero(non_dash) <= non_dash.size // 16:
+                        indices = np.flatnonzero(non_dash)
+                        resolved = indices[~np.isin(batch.ravel()[indices], other_gaps)]
+                        # Every cell outside the resolved indices is unavailable.
+                        matching_counts += len(batch) - np.bincount(
+                            resolved % batch.shape[1], minlength=batch.shape[1]
+                        )
+                        continue
                 matches = np.zeros(batch.shape, dtype=bool)
                 for code in codes:
                     matches |= batch == code
