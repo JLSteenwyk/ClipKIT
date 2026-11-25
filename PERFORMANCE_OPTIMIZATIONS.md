@@ -2,7 +2,8 @@
 
 The latest [comprehensive verification](#comprehensive-writer-rerun-at-f8d239e)
 measured 1.784× end to end across 119 cases with exact agreement
-against `6044b1e`. The report includes the raw samples, per-workflow
+against `6044b1e`. The [core rerun](#core-writer-rerun-at-f8d239e)
+measured 1.710× across 54 cases. The report includes the raw samples, per-workflow
 results, reproduction commands, and remaining shortfalls.
 
 ## Scope
@@ -1540,7 +1541,7 @@ covers all 15 modes on the same runtime revision.
 The only runtime regression above 5% in this run was the documented
 first-call in-process tree import. Raw gappy API showed 6.9% higher peak
 RSS in the full run and equal median RSS in the interleaved comparison
-on this revision. The latest core rerun is active.
+on this revision. The corresponding core rerun is linked below.
 
 The block reader was also tested on every nonempty regular file. The
 tiny CST control slowed from 0.60 to 0.64 ms across six interleaved
@@ -1596,3 +1597,67 @@ checked outputs.
 - all end-to-end and CLI cases (72 cases), 1.78×
 - whole CLI (13 cases), 2.18×
 - Python API (4 cases), 1.84×
+
+### Core writer rerun at `f8d239e`
+
+The [54-case core comparison](benchmark-results/clipkit-175x-core-f8d239e.json)
+matched `6044b1e` exactly. It measured 1.710× end to end, 1.26× for the
+whole CLI subset, 1.54× for the Python API subset, and 14.41× for
+algorithm-only cases. No core case crossed the 5% timing or peak RSS
+flag. Both suites use the same runtime code as the tested pushed
+revision `94f76c3`. GitHub’s
+[Version Consistency check](https://github.com/JLSteenwyk/ClipKIT/actions/runs/45688669347)
+also passed on the documentation checkpoint `fa3477d`.
+
+### Remaining per-case shortfalls
+
+The table accounts for all 40 comprehensive end-to-end cases below
+1.75× at `f8d239e`. The last column is the candidate median minus the
+baseline median divided by 1.75. The timing JSON identifies every case.
+
+| Area | Cases | Speedup range | Additional reduction to reach 1.75× |
+| --- | ---: | ---: | ---: |
+| Small trimming modes | 19 | 1.20–1.70× | 0.09–1.41 ms |
+| Medium C3 | 1 | 1.27× | 1.36 ms |
+| Startup-bound CLI | 6 | 1.04–1.52× | 28.00–94.80 ms |
+| Dense input combined-mode API | 1 | 1.54× | 2.41 ms |
+| Small raw combined-mode API | 1 | 1.66× | 0.15 ms |
+| Tiny explicit CST | 1 | 1.18× | 0.19 ms |
+| Tiny first-call heterotachy | 1 | 0.23× | 21.86 ms |
+| Tiny ECOMP input | 1 | 1.65× | 0.08 ms |
+| Tiny output formats | 9 | 1.06–1.13× | 0.57–0.68 ms |
+The [stage profiles](benchmark-results/clipkit-175x-stage-profile.json)
+put medium C3 at 2.94 ms once warm. Parsing took 1.07 ms and writing
+took 1.37 ms. Trimming took 0.05 ms. A shared byte-oriented parse and
+write path offers more room for improvement than changing the C3
+selection formula. The separate dense C3 fixture reached 1.99×.
+Tiny explicit CST spent about 0.26 ms in input and output and 0.02 ms
+in selection. Improving the fixed reader and writer setup may help
+that case. The million-site keep-only CST case reached 5.43×.
+
+For a warmed small KPIC-smart-gap execution, parsing and writing
+accounted for about 1.51 ms of 2.85 ms. The related raw API profile
+spent about 0.50 ms on residue counting and 0.64 ms parsing. For the
+dense combined-mode API case, parsing took about 4.99 ms and residue
+counting about 5.68 ms of 13.27 ms warmed. Reducing conversions between
+the reader and the count table could benefit both sizes while keeping
+classification and rounding exact.
+
+Tiny FASTA, PHYLIP, Stockholm, and ECOMP output totalled about
+0.44–0.51 ms once warm, including about 0.13–0.20 ms in writing.
+Fresh-process runs took more than 1.6 ms. Shared first-call setup is
+a larger opportunity than format-specific serialization at these
+sizes. Tiny ECOMP input spent about 0.32 ms in reading and decoding;
+the larger ECOMP read already reached 2.26×. Further ECOMP gains
+would need to preserve decoded content and archive metadata.
+
+The startup audit above measures the separate CLI costs. Moving the
+tree import to startup adds about 21 ms to ordinary commands, while
+deferring sequence I/O delays first-call format handling. Both
+experiments preserved outputs and were left out of the implementation.
+
+The final Ponytail review retained the shared parser and wrapping code,
+the exact NumPy count and slope operations, and Biopython fallbacks.
+The import, histogram layout, and tiny-file prototypes remain in the
+timing archive. They either moved costs between entry points or yielded
+too little end-to-end improvement to justify their added paths.
