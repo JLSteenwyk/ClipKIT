@@ -458,3 +458,21 @@ and formats. FASTA, log, and companion files matched exactly in the
 streaming benchmark. A malformed-record regression test verifies that an
 existing destination survives a conversion failure. Revert `7d08ec7`
 before reverting the batched writer in `684e8bb`.
+
+### Stop-codon masking follow-up
+
+Commit `b78e9a0` checks gap membership on integer residue codes in bounded
+row batches. The source matrix stays read-only until the selected stop
+codons are masked. The targeted JSON contains five interleaved samples for
+each case on the deterministic stop-codon fixture, with matching sequences,
+mask counts, and emitted FASTA.
+
+| Case | Reference median | Candidate median | Speedup | Peak RSS |
+| --- | ---: | ---: | ---: | --- |
+| Terminal masking, algorithm | 167 ms | 70 ms | 2.40× | 75.4 to 67.6 MB |
+| Internal masking, end to end | 178 ms | 84 ms | 2.13× | 76.0 to 69.0 MB |
+| All masking, end to end | 179 ms | 84 ms | 2.12× | 76.6 to 69.0 MB |
+
+The unbounded prototype used about 20 MB more peak RSS than the reference.
+The row batches retain the runtime gain and lower memory use. The focused
+stop-codon, ambiguity-handling, and MSA suite passed 241 tests.
