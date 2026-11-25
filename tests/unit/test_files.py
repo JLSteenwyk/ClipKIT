@@ -23,6 +23,8 @@ SAMPLES_DIR = here.parent.parent / "integration" / "samples"
     [
         (b">one first\nAC GT\nTA\n>two second\nGT\nACAA", False),
         (b">one first\r\nACGTTA\r\n>two second\r\nGTACAA\r\n", True),
+        (b">one > first\nACGTTA\n>two second\nGTACAA", False),
+        (b">one first\nAC>GTTA\n>two second\nGTACAAA", False),
     ],
 )
 def test_block_fasta_preserves_biopython_records(tmp_path, monkeypatch, mocker, data, falls_back):

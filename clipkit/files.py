@@ -27,7 +27,11 @@ def _iter_fasta_blocks(handle):
         raise ValueError("Expected a FASTA header")
     pending = b""
     while block := handle.read(_FASTA_BLOCK_BYTES):
-        records = (pending + block).split(b"\n>")
+        window = pending + block
+        records = window.split(b">")
+        # A greater-than character can also occur inside a title or sequence.
+        if any(not record.endswith(b"\n") for record in records[:-1]):
+            records = window.split(b"\n>")
         pending = records.pop()
         yield from records
         if len(pending) > _FASTA_BLOCK_BYTES:
