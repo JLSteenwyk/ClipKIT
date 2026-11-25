@@ -308,7 +308,11 @@ def _validate_checksum(sequences: Iterable[str], checksum: object) -> None:
 def _alignment_from_fasta_bytes(
     data: bytes, source_format: Optional[str]
 ) -> MultipleSeqAlignment:
-    buffer = io.StringIO(data.decode("utf-8"))
+    # Decode large payloads incrementally to avoid a full-size text buffer.
+    if len(data) >= 1 << 20:
+        buffer = io.TextIOWrapper(io.BytesIO(data), encoding="utf-8", newline="\n")
+    else:
+        buffer = io.StringIO(data.decode("utf-8"))
     records: list[SeqRecord] = []
     current_id: Optional[str] = None
     current_seq: list[str] = []

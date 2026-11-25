@@ -219,8 +219,11 @@ class TestDecodeBitmask:
 
 
 class TestArchiveReading:
-    def test_read_ecomp_uses_fallback(self, tmp_path):
-        fasta = b"\n".join([b">s0", b"AC", b">s1", b"AG"]) + b"\n"
+    @pytest.mark.parametrize("length", [2, 1 << 19])
+    def test_read_ecomp_uses_fallback(self, tmp_path, length):
+        first = "AC" * (length // 2)
+        second = "AG" * (length // 2)
+        fasta = f">s0 café\r\n {first} \r\n\r\n>s1\r\n{second}".encode("utf-8")
         payload = gzip.compress(fasta)
         metadata = {
             "fallback": {"type": "gzip"},
@@ -234,8 +237,8 @@ class TestArchiveReading:
         assert decoded == metadata
         assert alignment.annotations["ecomp_metadata"] == metadata
         assert alignment.annotations["ecomp_version"] == INLINE_METADATA_VERSION
-        assert [record.id for record in alignment] == ["s0", "s1"]
-        assert alignment.get_alignment_length() == 2
+        assert [record.id for record in alignment] == ["s0 café", "s1"]
+        assert [str(record.seq) for record in alignment] == [first, second]
 
     def test_read_archive_inline_metadata(self, tmp_path):
         payload = b"data"
