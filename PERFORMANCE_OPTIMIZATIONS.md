@@ -1318,3 +1318,67 @@ The Linux test matrix for `20d4a20` passed 552 unit and 135 integration
 tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and 3.15.2.
 GitHub's [Version Consistency run](https://github.com/JLSteenwyk/ClipKIT/actions/runs/45685074669)
 passed on branch commit `2492e7f`.
+
+### Comprehensive checkpoint after packed case detection
+
+The [119-case comparison at `e2f8a67`](benchmark-results/clipkit-175x-comprehensive-e2f8a67.json)
+matched `6044b1e` exactly. Its unrounded end-to-end geometric mean was
+approximately 1.745×. The separate first-call tiny heterotachy
+case remains the only runtime regression above 5% in this checkpoint.
+The raw small gappy API RSS difference was 6.9% here and zero in the
+interleaved audit described above. The binary format guard and its final
+suite rerun follow this checkpoint.
+
+On Linux CPython 3.12.14, `make test` at `20d4a20` also passed
+552 unit and 135 integration tests at the supported dependency floor
+with NumPy 1.26.0 and Biopython 1.82.
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| `gappy` | 623.25 ms | 246.14 ms | 2.53× |
+| `smart_gap` | 1,013.93 ms | 342.85 ms | 2.96× |
+| `block_gappy` | 646.82 ms | 252.24 ms | 2.56× |
+| `gappyout` | 1,023.80 ms | 350.09 ms | 2.92× |
+| `kpi` | 755.24 ms | 326.53 ms | 2.31× |
+| `kpic` | 784.87 ms | 344.26 ms | 2.28× |
+| `kpi_gappy` | 646.98 ms | 291.09 ms | 2.22× |
+| `kpic_gappy` | 631.18 ms | 290.44 ms | 2.17× |
+| `kpi_smart_gap` | 738.11 ms | 331.28 ms | 2.23× |
+| `kpic_smart_gap` | 756.53 ms | 341.52 ms | 2.22× |
+| `entropy` | 1,005.06 ms | 363.07 ms | 2.77× |
+| `composition_bias` | 1,035.69 ms | 363.59 ms | 2.85× |
+| `heterotachy` | 1,084.93 ms | 243.67 ms | 4.45× |
+| `cst` | 0.69 ms | 0.60 ms | 1.16× |
+| `c3` | 6.35 ms | 5.22 ms | 1.21× |
+
+### Major workflows
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| CLI help startup | 237.00 ms | 45.30 ms | 5.23× |
+| CLI version startup | 233.53 ms | 44.79 ms | 5.21× |
+| CLI small FASTA trimming | 251.82 ms | 210.58 ms | 1.20× |
+| Python API from file | 4.38 ms | 2.31 ms | 1.90× |
+| Python API from string | 4.71 ms | 2.29 ms | 2.06× |
+| HTML report | 1,820.13 ms | 646.18 ms | 2.82× |
+| Log and complementary output | 1,190.12 ms | 591.28 ms | 2.01× |
+| Mixed-case amino-acid CLI | 1,050.96 ms | 247.54 ms | 4.25× |
+| ECOMP input | 2.19 ms | 1.54 ms | 1.42× |
+| ECOMP output | 403.95 ms | 228.57 ms | 1.77× |
+| Codon trimming | 5.22 ms | 1.99 ms | 2.62× |
+| Terminal stop-codon masking | 185.19 ms | 84.79 ms | 2.18× |
+| Internal stop-codon masking | 181.15 ms | 84.49 ms | 2.14× |
+| All stop-codon masking | 180.90 ms | 84.25 ms | 2.15× |
+| One requested thread | 463.95 ms | 163.36 ms | 2.84× |
+| Four requested threads | 445.84 ms | 161.53 ms | 2.76× |
+| Missing ambiguity policy | 397.10 ms | 222.97 ms | 1.78× |
+| Fractional ambiguity policy | 320.91 ms | 228.79 ms | 1.40× |
+| Literal ambiguity policy | 320.69 ms | 228.41 ms | 1.40× |
+
+### Geometric means
+
+- all cases (119 cases), 4.11×
+- algorithm only (47 cases), 15.25×
+- all end-to-end and CLI cases (72 cases), 1.75×
+- whole CLI (13 cases), 2.14×
+- Python API (4 cases), 1.75×
