@@ -360,7 +360,7 @@ class MSA:
         if (
             type(positions) is not np.ndarray
             or positions.ndim != 1
-            or len(positions) < 2048
+            or len(positions) < 512
             or not np.can_cast(positions.dtype, np.intp, casting="safe")
             or type(matrix) is not np.ndarray
             or matrix.ndim != 2

@@ -45,13 +45,14 @@ def test_block_fasta_preserves_biopython_records(tmp_path, monkeypatch, mocker, 
     ]
 
 
-def test_batched_fasta_matches_biopython_for_kept_and_complementary_sites(tmp_path):
+@pytest.mark.parametrize("repeats", [300, 2101])
+def test_batched_fasta_matches_biopython_for_kept_and_complementary_sites(tmp_path, repeats):
     alignment = MultipleSeqAlignment([
-        SeqRecord(Seq("AaX-" * 2101), id="one", description="one full header"),
-        SeqRecord(Seq("gTc?" * 2101), id="two", description="two\nheader"),
+        SeqRecord(Seq("AaX-" * repeats), id="one", description="one full header"),
+        SeqRecord(Seq("gTc?" * repeats), id="two", description="two\nheader"),
     ])
     msa = MSA.from_bio_msa(alignment, sequence_type="aa")
-    msa.trim(site_positions_to_trim=list(range(4201)))
+    msa.trim(site_positions_to_trim=list(range(2 * repeats - 1)))
     path = tmp_path / "actual.fa"
     write_msa(msa, path, FileFormat.fasta)
     write_complement(msa, path, FileFormat.fasta)
