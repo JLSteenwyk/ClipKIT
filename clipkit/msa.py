@@ -357,6 +357,30 @@ class MSA:
             return np.around(
                 np.isin(seq_array, tuple(states_to_count)).mean(axis=0), decimals=4
             )
+        if (
+            shared_counts is None
+            and not self._requires_uppercase_normalization
+            and self.seq_records.size
+            and self.seq_records.dtype == np.dtype("U1")
+            and 0 < len(states_to_count) <= 8
+            and all(
+                len(state) == 1 and state.isascii() and state != "\0"
+                for state in states_to_count
+            )
+        ):
+            # Count membership directly, with bounded scratch space per row batch.
+            code_points = self.seq_records.view(np.uint32)
+            low, high = int(code_points.min()), int(code_points.max())
+            codes = [ord(state) for state in states_to_count if low <= ord(state) <= high]
+            matching_counts = np.zeros(code_points.shape[1], dtype=np.int64)
+            rows_per_batch = max(1, 1_000_000 // code_points.shape[1])
+            for start in range(0, len(code_points), rows_per_batch):
+                batch = code_points[start : start + rows_per_batch]
+                matches = np.zeros(batch.shape, dtype=bool)
+                for code in codes:
+                    matches |= batch == code
+                matching_counts += np.count_nonzero(matches, axis=0)
+            return np.around(matching_counts / len(code_points), decimals=4)
         if shared_counts is None:
             states, counts = self._get_column_character_counts(
                 normalize_case=True, cache_key=cache_key

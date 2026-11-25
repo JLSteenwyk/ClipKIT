@@ -506,6 +506,16 @@ def test_mixed_case_combined_mode_keeps_gap_and_normalized_counts_separate(
     assert count_columns.call_count == 2
 
 
+def test_large_gap_fractions_match_membership_across_row_batches():
+    records = np.resize(np.array(list("A-XZB?NJΔ"), dtype="U1"), (35, 32_768))
+    msa = MSA([{}] * len(records), records, gap_chars=["-", "?"])
+
+    np.testing.assert_array_equal(
+        msa.site_gappyness,
+        np.round(np.isin(records, tuple("-?BZJX")).mean(axis=0), 4),
+    )
+
+
 @pytest.mark.parametrize(
     "mode",
     [
