@@ -34,7 +34,7 @@ twine check dist/*
 twine upload dist/* -r pypi
 ```
 
-Do not pass `--universal`; ClipKIT supports Python 3.10+ and should publish a
+Do not pass `--universal`; ClipKIT supports Python 3.12+ and should publish a
 `py3-none-any` wheel.
 
 ## PyPI authentication

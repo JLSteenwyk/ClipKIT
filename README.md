@@ -36,8 +36,8 @@
             <img src="https://img.shields.io/badge/License-MIT-blue.svg">
         </a>
         <br />
-        <a href="https://pypi.org/project/clipkit/" alt="PyPI - Python Version">
-            <img src="https://img.shields.io/pypi/pyversions/clipkit">
+        <a href="https://github.com/JLSteenwyk/ClipKIT/actions/workflows/ci.yml">
+            <img src="https://img.shields.io/badge/Python-3.12%20%7C%203.13%20%7C%203.14%20%7C%203.15-blue" alt="Supported Python versions: 3.12, 3.13, 3.14, and 3.15">
         </a>
         <a href="https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007">
           <img src="https://zenodo.org/badge/DOI/10.1371/journal.pbio.3001007.svg">  
@@ -117,6 +117,8 @@ specify `-of fasta` if you prefer a text format.
 <br />
 
 **Installation**
+
+ClipKIT supports Python 3.12 through 3.15.
 
 **If you are having trouble installing ClipKIT, please contact the lead developer, Jacob L. Steenwyk, via [email](https://jlsteenwyk.com/contact.html) or [twitter](https://twitter.com/jlsteenwyk) to get help.**
 

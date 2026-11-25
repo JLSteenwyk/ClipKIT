@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added support for Python 3.14 and 3.15 and raised the minimum supported version to Python 3.12.
+
 ## 2.14.0
 
 - Added `--ambiguity_handling {missing,fractional,literal}` (and the equivalent Python API argument) for explicit IUPAC ambiguity handling.
