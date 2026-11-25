@@ -91,6 +91,7 @@ def write_trim_plot_report(
         getattr(msa, "ambiguity_handling", None), "value", "missing"
     )
 
+    site_classes = msa.site_classification_types
     payload = {
         "mode": mode,
         "gaps": gaps,
@@ -107,7 +108,7 @@ def write_trim_plot_report(
             float(x) for x in _to_list(msa.site_resolved_fraction)
         ],
         "site_entropy": [float(x) for x in _to_list(msa.site_entropy)],
-        "site_classification": _site_class_values(msa.site_classification_types),
+        "site_classification": _site_class_values(site_classes),
         "trimmed_positions": trimmed_positions,
         "preview": _preview_payload(msa, max_sequences=25, max_columns=240),
     }

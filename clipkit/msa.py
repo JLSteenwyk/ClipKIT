@@ -340,10 +340,8 @@ class MSA:
     def _site_fraction_for_states(
         self, states_to_count: frozenset[str], cache_key: str
     ) -> np.ndarray:
-        shared_counts = (
-            self._column_character_count_cache.get(("frequencies", False))
-            if not self._requires_uppercase_normalization
-            else None
+        shared_counts = self._column_character_count_cache.get(
+            ("frequencies", self._requires_uppercase_normalization)
         )
         if (
             shared_counts is None
@@ -596,6 +594,11 @@ class MSA:
         self, normalize_case: bool, cache_key: str = "frequencies"
     ) -> tuple[np.ndarray, np.ndarray]:
         normalize_case = normalize_case and self._requires_uppercase_normalization
+        shared_counts = self._column_character_count_cache.get(
+            ("frequencies", normalize_case)
+        )
+        if shared_counts is not None:
+            return shared_counts
         key = (cache_key, normalize_case)
         if key not in self._column_character_count_cache:
             seq_array = (
