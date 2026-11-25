@@ -1123,3 +1123,26 @@ and 1.19×, respectively.
 - all end-to-end and CLI cases (72 cases), 1.64×
 - whole CLI (13 cases), 2.10×
 - Python API (4 cases), 1.55×
+
+### Small combined-mode profiling and C3 fixture comparison
+
+The warmed small raw KPIC-smart-gap API case at `fc041aa` spent about
+0.64 ms parsing, 0.24 ms constructing the alignment matrix, and 0.50 ms
+counting residues, out of 1.83 ms measured in process. Smart-gap
+thresholding took about 0.11 ms, including 0.025 ms for slopes. A
+column-major histogram layout left the measured controls within 3%
+and did not improve either small combined case.
+
+| C3 workload | Baseline median | Candidate median | Speedup |
+| --- | ---: | ---: | ---: |
+| Medium nucleotide | 6.55 ms | 5.48 ms | 1.19× |
+| Codon fixture | 1.79 ms | 1.57 ms | 1.14× |
+| Generated dense nucleotide (512 × 9,000) | 71.15 ms | 42.53 ms | 1.67× |
+
+All three C3 cases matched the baseline exactly across six interleaved
+observations per source. The larger case needs about another 1.9 ms
+reduction to meet 1.75×. The earlier medium profile puts most time in
+parsing and serialization.
+
+The [54-case core comparison at `913afff`](benchmark-results/clipkit-175x-core-913afff.json)
+also matched the baseline exactly.
