@@ -735,16 +735,10 @@ class MSA:
                 != SiteClassificationType.parsimony_informative
             )[0]
         elif mode in (TrimmingMode.kpi_gappy, TrimmingMode.kpi_smart_gap):
-            if self._requires_uppercase_normalization:
-                sites_to_trim_gaps_based = np.where(
-                    self.site_gappyness > gap_threshold
-                )[0]
-                site_classification_types = self.site_classification_types
-            else:
-                site_classification_types = self.site_classification_types
-                sites_to_trim_gaps_based = np.where(
-                    self.site_gappyness > gap_threshold
-                )[0]
+            site_classification_types = self.site_classification_types
+            sites_to_trim_gaps_based = np.where(
+                self.site_gappyness > gap_threshold
+            )[0]
             sites_to_trim_classification_based = np.where(
                 site_classification_types
                 != SiteClassificationType.parsimony_informative
@@ -761,16 +755,10 @@ class MSA:
                 | (site_classification_types == SiteClassificationType.singleton)
             )[0]
         elif mode in (TrimmingMode.kpic_gappy, TrimmingMode.kpic_smart_gap):
-            if self._requires_uppercase_normalization:
-                sites_to_trim_gaps_based = np.where(
-                    self.site_gappyness >= gap_threshold
-                )[0]
-                site_classification_types = self.site_classification_types
-            else:
-                site_classification_types = self.site_classification_types
-                sites_to_trim_gaps_based = np.where(
-                    self.site_gappyness >= gap_threshold
-                )[0]
+            site_classification_types = self.site_classification_types
+            sites_to_trim_gaps_based = np.where(
+                self.site_gappyness >= gap_threshold
+            )[0]
             sites_to_trim_classification_based = np.where(
                 (site_classification_types == SiteClassificationType.other)
                 | (site_classification_types == SiteClassificationType.singleton)

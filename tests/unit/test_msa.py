@@ -485,7 +485,7 @@ def test_uppercase_combined_modes_reuse_classification_counts(
     assert count_columns.call_count == 1
 
 
-def test_mixed_case_combined_mode_keeps_gap_and_normalized_counts_separate(
+def test_mixed_case_combined_mode_reuses_normalized_counts(
     monkeypatch, mocker
 ):
     seq_records = np.array(
@@ -503,7 +503,7 @@ def test_mixed_case_combined_mode_keeps_gap_and_normalized_counts_separate(
 
     msa.trim(mode=TrimmingMode.kpic_gappy, gap_threshold=0.5)
 
-    assert count_columns.call_count == 2
+    assert count_columns.call_count == 1
 
 
 def test_large_gap_fractions_match_membership_across_row_batches():
