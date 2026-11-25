@@ -53,6 +53,20 @@ def test_batched_fitch_preserves_guide_tree_and_alignment_order():
     assert [record.id for record in candidate] == [record.id for record in baseline]
 
 
+def test_large_ascii_msa_preserves_case_and_writable_unicode_matrix():
+    sequences = ["Acgtn-?" * 72_000, "ACGTN-?" * 72_000]
+    alignment = MultipleSeqAlignment([
+        SeqRecord(Seq(seq), id=str(index)) for index, seq in enumerate(sequences)
+    ])
+
+    msa = MSA.from_bio_msa(alignment)
+
+    assert msa.sequence_type == "nt"
+    assert msa.seq_records.dtype == np.dtype("U1")
+    assert msa.seq_records.flags.writeable
+    assert msa.seq_records.view(f"U{len(sequences[0])}").ravel().tolist() == sequences
+
+
 class TestMSA(object):
     def test_clipkit_msa_from_bio_msa(self):
         bio_msa = get_biopython_msa("tests/unit/examples/simple.fa")

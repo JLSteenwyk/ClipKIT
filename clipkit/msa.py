@@ -175,6 +175,15 @@ class MSA:
         alignment_length = len(sequences[0])
         if alignment_length == 0:
             seq_records = np.empty((len(sequences), 0), dtype="U1")
+        elif (
+            alignment_length >= 16_384
+            and len(sequences) * alignment_length >= 1_000_000
+            and all(seq.isascii() and len(seq) == alignment_length for seq in sequences)
+        ):
+            seq_records = np.empty((len(sequences), alignment_length), dtype="U1")
+            code_points = seq_records.view(np.uint32)
+            for row, sequence in zip(code_points, sequences):
+                row[:] = np.frombuffer(sequence.encode("ascii"), dtype=np.uint8)
         else:
             seq_records = (
                 np.array(sequences, dtype=f"U{alignment_length}")
