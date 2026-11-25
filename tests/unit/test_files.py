@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+from io import BytesIO
 from pathlib import Path
 
 from Bio import AlignIO, SeqIO
@@ -44,6 +45,25 @@ def test_block_fasta_preserves_biopython_records(tmp_path, monkeypatch, mocker, 
     assert [(r.seq, r.id, r.name, r.description) for r in actual] == [
         (r.seq, r.id, r.name, r.description) for r in expected
     ]
+
+
+def test_binary_alignment_stream_honors_explicit_format():
+    stream = BytesIO(b">one\nACGT\n>two\nACGT\n")
+
+    with pytest.raises(ValueError):
+        get_alignment_and_format(stream, FileFormat.phylip)
+
+    assert not stream.closed
+
+
+def test_binary_fasta_fallback_rewinds_to_original_position():
+    stream = BytesIO(b"prefix>one\r\nACGT\r\n>two\r\nATGT\r\n")
+    stream.seek(len(b"prefix"))
+
+    alignment, _ = get_alignment_and_format(stream, FileFormat.fasta)
+
+    assert [str(record.seq) for record in alignment] == ["ACGT", "ATGT"]
+    assert not stream.closed
 
 
 @pytest.mark.parametrize("repeats", [300, 2101])

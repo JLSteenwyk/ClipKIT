@@ -54,12 +54,17 @@ def _iter_plain_fasta_records(handle):
 
 def _read_alignment(path, file_format):
     if isinstance(path, BytesIO):
+        if file_format == FileFormat.fasta:
+            start = path.tell()
+            try:
+                return MultipleSeqAlignment(_iter_plain_fasta_records(path))
+            except ValueError:
+                path.seek(start)
+        handle = TextIOWrapper(path, encoding="ascii")
         try:
-            return MultipleSeqAlignment(_iter_plain_fasta_records(path))
-        except ValueError:
-            path.seek(0)
-            with TextIOWrapper(path, encoding="ascii") as handle:
-                return AlignIO.read(handle, file_format.value)
+            return AlignIO.read(handle, file_format.value)
+        finally:
+            handle.detach()
     if isinstance(path, StringIO):
         return AlignIO.read(path, file_format.value)
     if file_format == FileFormat.fasta:
