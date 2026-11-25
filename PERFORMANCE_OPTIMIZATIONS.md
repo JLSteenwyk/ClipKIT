@@ -829,3 +829,32 @@ An interleaved comparison with `6044b1e` measured 632.53 to 344.83 ms
 medium smart-gap. Both matched the reference exactly. The Linux test
 matrix passed 539 unit and 135 integration tests on each of CPython
 3.12.14, 3.13.15, 3.14.7, and 3.15.2 at `8fbeef9`.
+
+### Keep-only custom site trimming
+
+Commit `7821042` builds a boolean mask from validated keep indices and
+extracts the complementary positions in order. Commit `c262934` passes
+that array through trimming and validation. The public list helper
+still returns the same values and element types. Revert `c262934`
+before reverting `7821042` to restore the former list-based execution.
+
+The benchmark alignment contains four identical rows made by repeating
+`ACGT` 250,000 times. The CST file retains one-based positions 1, 38,
+75, and every 37th position thereafter. Each comparison interleaved six
+fresh-process samples per side following two warm-ups.
+
+| Revision | End-to-end median | Median peak RSS |
+| --- | ---: | ---: |
+| Original baseline `6044b1e` | 373.82 ms | 126.9 MiB |
+| Keep-only array `c262934` | 68.88 ms | 88.7 MiB |
+
+Trimmed FASTA matched exactly. The 5.43× gain applies to this wide
+keep-only workload. The tiny CST case with an explicit trim directive
+measured 0.70 to 0.63 ms in the baseline comparison.
+
+The [119-case log-optimization checkpoint](benchmark-results/clipkit-175x-comprehensive-c9774e8.json)
+matched `6044b1e` exactly before the sparse gap and CST follow-ups. It
+measured 1.56× across end-to-end cases, 2.10× for the whole-CLI subset,
+1.50× for Python API cases, and 13.91× for algorithm-only cases. Tiny
+first-call heterotachy was the only runtime regression above 5% in
+that suite.
