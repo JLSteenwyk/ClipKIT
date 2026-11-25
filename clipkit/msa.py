@@ -155,6 +155,13 @@ class MSA:
         sequence_type=None,
         ambiguity_handling=AmbiguityHandling.missing,
     ) -> "MSA":
+        packed_ascii = (
+            type(alignment) is MultipleSeqAlignment
+            and len(alignment) > 0
+            and len(alignment[0]) >= 4096
+            and len(alignment) * len(alignment[0]) >= 1_000_000
+            and all(type(record.seq) is Seq for record in alignment)
+        )
         header_info = []
         sequences = []
         requires_uppercase_normalization = False
@@ -162,28 +169,35 @@ class MSA:
             header_info.append(
                 {"id": rec.id, "name": rec.name, "description": rec.description}
             )
-            seq = str(rec.seq)
+            seq = bytes(rec.seq) if packed_ascii else str(rec.seq)
+            if packed_ascii and not seq.isascii():
+                # Keep Bio.Seq's ASCII validation for malformed records.
+                seq.decode("ascii")
             sequences.append(seq)
             if not requires_uppercase_normalization and seq != seq.upper():
                 requires_uppercase_normalization = True
 
         if sequence_type is None:
+            symbols = (
+                (map(chr, set(seq)) for seq in sequences)
+                if packed_ascii
+                else (set(seq) for seq in sequences)
+            )
             sequence_type = (
-                "nt" if all(is_nucleotide_alphabet(set(seq)) for seq in sequences) else "aa"
+                "nt" if all(is_nucleotide_alphabet(states) for states in symbols) else "aa"
             )
 
         alignment_length = len(sequences[0])
         if alignment_length == 0:
             seq_records = np.empty((len(sequences), 0), dtype="U1")
-        elif (
-            alignment_length >= 16_384
-            and len(sequences) * alignment_length >= 1_000_000
-            and all(seq.isascii() and len(seq) == alignment_length for seq in sequences)
-        ):
-            seq_records = np.empty((len(sequences), alignment_length), dtype="U1")
-            code_points = seq_records.view(np.uint32)
-            for row, sequence in zip(code_points, sequences):
-                row[:] = np.frombuffer(sequence.encode("ascii"), dtype=np.uint8)
+        elif packed_ascii:
+            packed = np.asarray(sequences, dtype=f"S{alignment_length}")
+            seq_records = (
+                packed.view(np.uint8)
+                .astype(np.uint32)
+                .view("U1")
+                .reshape(len(sequences), alignment_length)
+            )
         else:
             seq_records = (
                 np.array(sequences, dtype=f"U{alignment_length}")

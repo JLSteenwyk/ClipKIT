@@ -67,6 +67,13 @@ def test_large_ascii_msa_preserves_case_and_writable_unicode_matrix():
     assert msa.seq_records.view(f"U{len(sequences[0])}").ravel().tolist() == sequences
 
 
+def test_large_msa_keeps_biopython_ascii_validation():
+    records = [SeqRecord(Seq(b"A" * 499_999 + b"\xff"), id=str(i)) for i in range(2)]
+
+    with pytest.raises(UnicodeDecodeError):
+        MSA.from_bio_msa(MultipleSeqAlignment(records), sequence_type="aa")
+
+
 def test_untrimmed_bio_alignment_is_independent_of_source_matrix():
     msa = MSA.from_bio_msa(get_biopython_msa("tests/unit/examples/simple.fa"))
     output = msa.to_bio_msa()
