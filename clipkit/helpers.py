@@ -73,7 +73,7 @@ def write_msa(
     """
     msa is populated with sites that are kept after trimming is finished
     """
-    _write_alignment(msa.to_bio_msa(), out_file_name, out_file_format, base_metadata)
+    _write_msa_selection(msa, out_file_name, out_file_format, base_metadata)
 
 
 def write_complement(
@@ -85,12 +85,26 @@ def write_complement(
     """
     msa is populated with sites that are trimmed after trimming is finished
     """
-    _write_alignment(
-        msa.complement_to_bio_msa(),
+    _write_msa_selection(
+        msa,
         f"{out_file}.complement",
         out_file_format,
         base_metadata,
+        complement=True,
     )
+
+
+def _write_msa_selection(msa, path, file_format, base_metadata, *, complement=False):
+    if file_format == FileFormat.fasta and type(msa) is MSA:
+        positions = (
+            msa._site_positions_to_trim if complement else msa._site_positions_to_keep
+        )
+        records = msa._wide_ascii_bio_records(positions)
+        if records is not None:
+            _write_wrapped_fasta(records, path)
+            return
+    alignment = msa.complement_to_bio_msa() if complement else msa.to_bio_msa()
+    _write_alignment(alignment, path, file_format, base_metadata)
 
 
 def _write_alignment(alignment, path, file_format, base_metadata):

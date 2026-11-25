@@ -204,7 +204,7 @@ class MSA:
         sites = (
             self.seq_records
             if isinstance(self.seq_records, np.ndarray)
-            and self.length == self.seq_records.shape[1]
+            and self.length == self._original_length == self.seq_records.shape[1]
             else self.sites_kept
         )
         return self._to_bio_msa(sites)
@@ -290,7 +290,6 @@ class MSA:
         self._site_composition_bias_cache = None
 
     def _to_bio_msa(self, sites) -> MultipleSeqAlignment:
-        # NOTE: we use the description as the id to preserve the full sequence description - see issue #20
         if sites.shape[1] == 0:
             sequence_rows = [""] * sites.shape[0]
         elif (
@@ -303,12 +302,48 @@ class MSA:
         else:
             sequence_rows = ["".join(rec) for rec in sites.tolist()]
 
-        return MultipleSeqAlignment(
-            [
-                SeqRecord(Seq(rec), id=str(info["description"]), description="")
-                for rec, info in zip(sequence_rows, self.header_info)
-            ]
+        return MultipleSeqAlignment(self._bio_records(sequence_rows))
+
+    def _bio_records(self, sequence_rows):
+        # Preserve the full description in the output identifier.
+        for sequence, info in zip(sequence_rows, self.header_info):
+            yield SeqRecord(Seq(sequence), id=str(info["description"]), description="")
+
+    def _wide_ascii_bio_records(self, positions):
+        matrix = self.seq_records
+        if (
+            type(positions) is not np.ndarray
+            or positions.ndim != 1
+            or len(positions) < 4096
+            or not np.can_cast(positions.dtype, np.intp, casting="safe")
+            or type(matrix) is not np.ndarray
+            or matrix.ndim != 2
+            or matrix.dtype != np.dtype("U1")
+            or not matrix.size
+        ):
+            return None
+        width = matrix.shape[1]
+        # Check before opening the destination so invalid records use the
+        # existing materialization path and fail before altering the file.
+        if (
+            int(positions.min()) < -width
+            or int(positions.max()) >= width
+            or not all(
+                type(info) is dict and type(info.get("description")) is str
+                for info in self.header_info
+            )
+            or matrix.view(np.uint32).max() > 127
+        ):
+            return None
+
+        rows = (
+            (np.ascontiguousarray(row) for row in matrix)
+            if positions is self._site_positions_to_keep
+            and len(positions) == self._original_length == width
+            else (np.take(row, positions) for row in matrix)
         )
+        dtype = f"U{len(positions)}"
+        return self._bio_records(row.view(dtype).item() for row in rows)
 
     @property
     def trimmed(self):
