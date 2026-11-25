@@ -1,5 +1,10 @@
 # ClipKIT performance optimization report
 
+The latest [comprehensive verification](#comprehensive-writer-rerun-at-f8d239e)
+measured 1.784× end to end across 119 cases with exact agreement
+against `6044b1e`. The report includes the raw samples, per-workflow
+results, reproduction commands, and remaining shortfalls.
+
 ## Scope
 
 The current performance work has two measured baselines. The earlier round
@@ -1521,3 +1526,73 @@ branch.
 
 The benchmark worker uses `f8d239e`, whose production code, tests, and
 benchmark runner are identical to those at `94f76c3`.
+
+### Comprehensive writer rerun at `f8d239e`
+
+The [119-case comparison](benchmark-results/clipkit-175x-comprehensive-f8d239e.json)
+matched `6044b1e` exactly. It measured 1.784× end to end, 2.18× for the
+whole CLI subset, 1.84× for Python API cases, and 15.34× for algorithm-only
+cases. Of the 72 end-to-end cases, 32 reached at least 1.75×. The
+representative trimming-mode and workflow table below shows the remaining
+gaps. The [metadata audit](benchmark-results/clipkit-175x-mode-metadata-f8d239e.json)
+covers all 15 modes on the same runtime revision.
+
+The only runtime regression above 5% in this run was the documented
+first-call in-process tree import. Raw gappy API showed 6.9% higher peak
+RSS in the full run and equal median RSS in the interleaved comparison
+on this revision. The latest core rerun is active.
+
+The block reader was also tested on every nonempty regular file. The
+tiny CST control slowed from 0.60 to 0.64 ms across six interleaved
+samples, so the 64 KiB cutoff remains. The prototype matched the
+checked outputs.
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| `gappy` | 623.25 ms | 245.72 ms | 2.54× |
+| `smart_gap` | 1,013.93 ms | 341.03 ms | 2.97× |
+| `block_gappy` | 646.82 ms | 252.43 ms | 2.56× |
+| `gappyout` | 1,023.80 ms | 347.21 ms | 2.95× |
+| `kpi` | 755.24 ms | 333.48 ms | 2.26× |
+| `kpic` | 784.87 ms | 333.40 ms | 2.35× |
+| `kpi_gappy` | 646.98 ms | 288.43 ms | 2.24× |
+| `kpic_gappy` | 631.18 ms | 277.47 ms | 2.27× |
+| `kpi_smart_gap` | 738.11 ms | 339.57 ms | 2.17× |
+| `kpic_smart_gap` | 756.53 ms | 347.40 ms | 2.18× |
+| `entropy` | 1,005.06 ms | 351.39 ms | 2.86× |
+| `composition_bias` | 1,035.69 ms | 367.59 ms | 2.82× |
+| `heterotachy` | 1,084.93 ms | 245.12 ms | 4.43× |
+| `cst` | 0.69 ms | 0.59 ms | 1.18× |
+| `c3` | 6.35 ms | 4.98 ms | 1.27× |
+
+### Major workflows
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| CLI help startup | 237.00 ms | 45.47 ms | 5.21× |
+| CLI version startup | 233.53 ms | 44.55 ms | 5.24× |
+| CLI small FASTA trimming | 251.82 ms | 211.97 ms | 1.19× |
+| Python API from file | 4.38 ms | 2.22 ms | 1.98× |
+| Python API from string | 4.71 ms | 2.09 ms | 2.26× |
+| HTML report | 1,820.13 ms | 639.31 ms | 2.85× |
+| Log and complementary output | 1,190.12 ms | 578.65 ms | 2.06× |
+| Mixed-case amino-acid CLI | 1,050.96 ms | 246.43 ms | 4.26× |
+| ECOMP input | 2.19 ms | 1.33 ms | 1.65× |
+| ECOMP output | 403.95 ms | 225.53 ms | 1.79× |
+| Codon trimming | 5.22 ms | 1.99 ms | 2.63× |
+| Terminal stop-codon masking | 185.19 ms | 83.66 ms | 2.21× |
+| Internal stop-codon masking | 181.15 ms | 83.46 ms | 2.17× |
+| All stop-codon masking | 180.90 ms | 83.70 ms | 2.16× |
+| One requested thread | 463.95 ms | 157.85 ms | 2.94× |
+| Four requested threads | 445.84 ms | 159.61 ms | 2.79× |
+| Missing ambiguity policy | 397.10 ms | 216.54 ms | 1.83× |
+| Fractional ambiguity policy | 320.91 ms | 217.48 ms | 1.48× |
+| Literal ambiguity policy | 320.69 ms | 222.79 ms | 1.44× |
+
+### Geometric means
+
+- all cases (119 cases), 4.17×
+- algorithm only (47 cases), 15.34×
+- all end-to-end and CLI cases (72 cases), 1.78×
+- whole CLI (13 cases), 2.18×
+- Python API (4 cases), 1.84×
