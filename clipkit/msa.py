@@ -379,10 +379,15 @@ class MSA:
                 type(info) is dict and type(info.get("description")) is str
                 for info in self.header_info
             )
-            or code_points.max() > 127
-            or code_points.min() == 0
         ):
             return None
+
+        # Keep both reductions on the same portion of the matrix in cache.
+        rows_per_batch = max(1, 512_000 // width)
+        for start in range(0, len(code_points), rows_per_batch):
+            batch = code_points[start : start + rows_per_batch]
+            if batch.max() > 127 or batch.min() == 0:
+                return None
 
         rows = (
             code_points

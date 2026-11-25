@@ -66,8 +66,9 @@ def test_batched_fasta_matches_biopython_for_kept_and_complementary_sites(tmp_pa
         assert result.read_bytes() == expected.read_bytes()
 
 
-def test_wide_fasta_validation_preserves_destination_on_bad_sequence(tmp_path):
-    records = np.full((2, 4097), "A", dtype="U1")
+@pytest.mark.parametrize("width", [4097, 300_000])
+def test_wide_fasta_validation_preserves_destination_on_bad_sequence(tmp_path, width):
+    records = np.full((2, width), "A", dtype="U1")
     records[1, -1] = "é"
     msa = MSA([{"description": "first"}, {"description": "second"}], records)
     output = tmp_path / "existing.fa"
