@@ -660,3 +660,27 @@ and metadata. The preceding `ae894a4` checkpoint compared all 119
 comprehensive cases exactly and reached 1.45× across end-to-end
 workloads, 2.04× for whole CLI runs, and 1.21× for Python API cases.
 The focused changes above follow that checkpoint.
+
+### Stop-codon selection and cold execution audit
+
+Commit `4f44170` finds the last complete codon in each row with one
+indexed operation and reuses the stop mask for internal and all-mode
+selection. The focused unit tests include a row composed entirely of
+gaps. Six fresh-process observations per side were interleaved after
+two warm-ups for all three stop modes.
+
+| Stop-codon mode | Previous end-to-end median | Indexed end-to-end median | Speedup |
+| --- | ---: | ---: | ---: |
+| Terminal | 74.56 ms | 71.58 ms | 1.04× |
+| Internal | 75.20 ms | 71.62 ms | 1.05× |
+| All | 75.64 ms | 72.77 ms | 1.04× |
+
+Outputs and masking metadata matched exactly. Median peak RSS fell
+1.4–2.0 MiB for terminal and internal modes and rose 0.3 MiB for all-mode.
+
+The interleaved audit of `c00fc29` against `6044b1e` compared 18 cases
+exactly. Medium nucleotide ends-only went from 89.67 to 7.89 ms, and large
+KPIC-smart-gap went from 754.87 to 442.72 ms. Tiny heterotachy went from
+6.06 to 25.55 ms in the first execution after importing ClipKIT because
+the tree-construction import now falls inside that timer. A fresh CLI
+invocation of the same workflow went from 246.22 to 239.71 ms.
