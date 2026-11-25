@@ -1198,3 +1198,16 @@ The [54-case core comparison at `fc041aa`](benchmark-results/clipkit-175x-core-f
 matched `6044b1e` exactly. It measured 1.58× end to end, 1.31× for whole
 CLI cases, 1.54× for the Python API subset, and 13.29× for algorithm-only
 cases.
+
+### Carrying FASTA records across blocks
+
+Commit `37c9828` splits a new byte block before joining the carried
+bytes to its first record. It avoids copying the entire block on
+standard input. Tests cover a header marker at the start of the
+next block and retain the embedded-marker and CRLF cases.
+
+Six interleaved observations per source measured 177.01 to 169.85 ms
+for medium smart-gap, 281.37 to 277.35 ms for large gappy, and 335.88
+to 333.27 ms for large KPIC-gappy. The small control was within 1%.
+All checked output bytes matched. The change builds on the
+single-byte block split from `192f57a`.
