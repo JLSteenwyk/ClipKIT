@@ -946,3 +946,25 @@ The [119-case checkpoint at `c262934`](benchmark-results/clipkit-175x-comprehens
 matched `6044b1e` exactly. The geometric means were 1.58× end to end,
 2.12× for the whole CLI subset, 1.53× for Python API cases, and 13.95×
 for algorithm-only cases. It precedes incremental ECOMP decoding.
+
+### Buffered per-site log file writes
+
+Commit `38d8946` buffers writes to ClipKIT's per-site log file and
+flushes after the log records are written. Other handlers continue to
+receive each formatted logging event through the logging framework.
+The file handler is closed on exit and logger settings are restored
+even if closing raises.
+
+Six interleaved observations reduced the medium log-and-complement
+median from 718.24 to 639.92 ms against `3a87d78`, with peak RSS
+essentially equal. A separate interleaved comparison against `6044b1e`
+measured 1,242.04 to 663.39 ms (1.87×). The log, complement, and main
+alignment matched exactly. The small no-log control stayed within 1%
+in the incremental comparison.
+
+On `38d8946`, Linux `make test` passed 540 unit and 135 integration
+tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and 3.15.2.
+
+The earlier [core comparison at `c262934`](benchmark-results/clipkit-175x-core-c262934.json)
+matched all 54 cases exactly and measured 1.42× end to end and 13.26×
+for algorithm-only cases.
