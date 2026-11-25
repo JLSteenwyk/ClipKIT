@@ -968,3 +968,22 @@ tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and 3.15.2.
 The earlier [core comparison at `c262934`](benchmark-results/clipkit-175x-core-c262934.json)
 matched all 54 cases exactly and measured 1.42× end to end and 13.26×
 for algorithm-only cases.
+
+### Direct row-byte matrix construction
+
+Commit `a9ccb80` widens ASCII bytes from each row directly into the
+final writable Unicode matrix. This eliminates the temporary packed
+copy of the entire alignment. A focused test checks that shorter and
+longer records modified after Biopython validation still produce the
+previous padding and truncation, including embedded NUL bytes.
+
+| Workload | Previous median | Candidate median | Peak RSS before and after |
+| --- | ---: | ---: | ---: |
+| Large amino-acid construction | 66.69 ms | 63.24 ms | 300.1 → 258.1 MiB |
+| Medium amino-acid construction | 32.27 ms | 31.29 ms | 156.6 → 138.3 MiB |
+| Large KPIC-gappy end to end | 402.05 ms | 387.01 ms | 302.9 → 277.8 MiB |
+| Dense nucleotide KPIC algorithm | 62.42 ms | 63.04 ms | 73.2 → 70.2 MiB |
+
+Each comparison used six interleaved fresh-process observations per
+source. Output and the case-specific correctness metadata matched
+exactly.
