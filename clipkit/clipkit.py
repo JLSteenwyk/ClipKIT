@@ -25,7 +25,7 @@ from .helpers import (
     SeqType,
 )
 from .guide_tree import build_parsimony_guide_tree
-from .logger import logger, log_file_logger
+from .logger import _SiteLogFileHandler, logger, log_file_logger
 from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
 from .msa import MSA
 from .plot_report import write_trim_plot_report
@@ -282,7 +282,7 @@ def execute(
         if use_log and not dry_run and not validate_only:
             log_file_logger.setLevel(logging.DEBUG)
             log_file_logger.propagate = False
-            fh = logging.FileHandler(f"{output_file}.log", mode="w")
+            fh = _SiteLogFileHandler(f"{output_file}.log", mode="w")
             fh.setLevel(logging.DEBUG)
             log_file_logger.addHandler(fh)
 
@@ -407,6 +407,8 @@ def execute(
             warn_if_all_sites_were_trimmed(trim_run.msa)
             warn_if_entry_contains_only_gaps(trim_run.msa)
             write_debug_log_file(trim_run.msa)
+            if fh is not None:
+                fh.flush()
 
         base_metadata = trim_run.alignment.annotations.get("ecomp_metadata")
 
@@ -471,12 +473,14 @@ def execute(
             stop_codon_masking=trim_run.stop_codon_masking,
         )
     finally:
-        if fh is not None:
-            log_file_logger.removeHandler(fh)
-            fh.close()
-        logger.disabled = original_logger_disabled
-        log_file_logger.setLevel(original_log_level)
-        log_file_logger.propagate = original_log_propagate
+        try:
+            if fh is not None:
+                log_file_logger.removeHandler(fh)
+                fh.close()
+        finally:
+            logger.disabled = original_logger_disabled
+            log_file_logger.setLevel(original_log_level)
+            log_file_logger.propagate = original_log_propagate
 
 
 def _write_report_json(path: str, payload: dict) -> None:
