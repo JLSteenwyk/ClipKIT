@@ -8,6 +8,11 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+**2.16.1**
+
+- Consolidated trimming defaults across the CLI and Python API, shared ECOMP checksum and decoding logic, and simplified ends-only trimming.
+- Verified exact agreement with 2.16.0 across 119 benchmark cases and ran the full test suite on Python 3.12–3.15.
+
 **2.16.0**
 
 - Accelerated trimming by reusing residue counts, reducing alignment copies, and speeding up FASTA and ECOMP I/O. The comprehensive benchmark measured a 1.784× end-to-end geometric-mean speedup over 2.15.0, with exact agreement across all 119 cases.
