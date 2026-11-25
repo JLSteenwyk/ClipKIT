@@ -1211,3 +1211,30 @@ for medium smart-gap, 281.37 to 277.35 ms for large gappy, and 335.88
 to 333.27 ms for large KPIC-gappy. The small control was within 1%.
 All checked output bytes matched. The change builds on the
 single-byte block split from `192f57a`.
+
+### Lowercase detection when widening packed rows
+
+Commit `e2f8a67` checks for lowercase with the byte view used to fill the
+Unicode matrix. Rows whose maximum is below ASCII `a` need no range
+check. The fallback range check distinguishes lowercase from high
+punctuation, and the focused tests cover that distinction alongside
+NUL padding. The matrix remains writable and retains original case.
+
+| Workload | Previous median | Candidate median |
+| --- | ---: | ---: |
+| Large amino-acid construction | 62.77 ms | 30.76 ms |
+| Medium amino-acid construction | 31.11 ms | 18.84 ms |
+| Large KPIC-gappy end to end | 332.96 ms | 288.27 ms |
+| Mixed-case KPIC-smart-gap CLI | 251.04 ms | 250.41 ms |
+| Dense nucleotide KPIC algorithm | 63.84 ms | 61.93 ms |
+
+Six interleaved observations per source matched the checked outputs and
+metadata exactly. Peak RSS stayed within 1%. Lowering the packed matrix
+cutoff was also evaluated and slowed the small raw API control by 5.8%,
+so the original packed cutoff remains.
+
+The earlier [119-case comparison at `fef1ffa`](benchmark-results/clipkit-175x-comprehensive-fef1ffa.json)
+matched `6044b1e` exactly and measured 1.67× end to end, 2.08× for the
+whole CLI subset, 1.75× for Python API cases, and 13.81× for
+algorithm-only cases. Tiny first-call heterotachy was its only timing
+regression above 5%.
