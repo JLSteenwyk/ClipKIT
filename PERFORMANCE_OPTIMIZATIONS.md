@@ -630,3 +630,33 @@ residue counting, and output serialization.
 The Linux test matrix for the later runtime revision `ae894a4` passed
 533 unit and 135 integration tests on each of CPython 3.12.14, 3.13.15,
 3.14.7, and 3.15.2.
+
+### Sparse and medium residue counts
+
+Commit `93a6e74` applies a single residue filter to configured gaps and
+excluded ambiguity symbols. Its interleaved timing and memory medians
+stayed within 1%. Commit `218368e` bins the non-dash residues in highly
+sparse batches and reconstructs exact dash counts by subtraction. A
+sample selects likely sparse input, while a per-batch density check
+retains the full histogram for dense regions. Both dense controls
+stayed within 2% in time and 3% in peak RSS.
+
+Commit `c00fc29` reuses the bounded integer membership pass for
+medium-sized ASCII gap alphabets, including mixed-case nucleotide
+input after normalization. Tests compare the rounded result with
+Unicode membership, including an uppercase expansion.
+
+| Change | Workload | Reference median | Candidate median |
+| --- | --- | ---: | ---: |
+| Sparse histogram | Large KPIC algorithm | 207 ms | 187 ms |
+| Sparse histogram | Large KPIC end to end | 471 ms | 451 ms |
+| Sparse histogram | Large KPIC-gappy end to end | 421 ms | 399 ms |
+| Integer membership | Medium nucleotide ends-only | 16.14 ms | 8.27 ms |
+| Integer membership | Medium nucleotide gappy algorithm | 15.31 ms | 7.32 ms |
+| Integer membership | Small raw gappy API | 4.25 ms | 2.94 ms |
+
+The samples in the targeted JSON match the checked outputs, positions,
+and metadata. The preceding `ae894a4` checkpoint compared all 119
+comprehensive cases exactly and reached 1.45× across end-to-end
+workloads, 2.04× for whole CLI runs, and 1.21× for Python API cases.
+The focused changes above follow that checkpoint.
