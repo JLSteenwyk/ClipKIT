@@ -8,6 +8,8 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+**2.15.0**
+
 - Added support for Python 3.14 and 3.15 and raised the minimum supported
   version to Python 3.12.
 
