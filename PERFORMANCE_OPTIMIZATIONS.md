@@ -1382,3 +1382,30 @@ with NumPy 1.26.0 and Biopython 1.82.
 - all end-to-end and CLI cases (72 cases), 1.75×
 - whole CLI (13 cases), 2.14×
 - Python API (4 cases), 1.75×
+
+### Import tradeoffs and C3 across input sizes
+
+Six interleaved runs per source measured the cost of importing
+`Bio.Phylo.TreeConstruction` at engine load. Eager import shortened
+the timed first tiny heterotachy call from 25.64 to 4.52 ms. Whole
+heterotachy CLI stayed within 1%, while the small gappy CLI rose from
+211.80 to 233.31 ms. The import trace attributed about 21 ms to the
+tree-construction module, and the existing heterotachy-only import
+remains.
+
+Deferring `Bio.SeqIO` after the FASTA parser and writer improvements
+shortened the small gappy CLI from 217.20 to 184.37 ms. It added about
+20 ms to each in-process first call for tiny FASTA and PHYLIP output.
+The existing import remains. Both startup prototypes matched all
+checked outputs.
+
+| C3 case at `20d4a20` | Baseline median | Candidate median | Speedup |
+| --- | ---: | ---: | ---: |
+| Medium nucleotide | 6.47 ms | 5.24 ms | 1.23× |
+| Codon fixture | 1.80 ms | 1.57 ms | 1.15× |
+| Generated dense nucleotide (512 × 9,000) | 71.04 ms | 35.70 ms | 1.99× |
+
+All three fixtures matched `6044b1e` exactly in six interleaved
+observations per source. The larger case comes in below the 1.75×
+time budget. The two smaller fixtures remain limited by input and
+output work.
