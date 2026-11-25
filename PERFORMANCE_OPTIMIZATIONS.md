@@ -1443,3 +1443,29 @@ GitHub’s [Version Consistency run](https://github.com/JLSteenwyk/ClipKIT/actio
 passed on `6737aff`. The local four-version test matrix covers the
 runtime code on this branch. The hosted CI workflow targets the
 default branch and pull requests.
+
+### Gather moderate-width FASTA selections as ASCII bytes
+
+Commit `f8d239e` gathers validated residues from the native low byte
+of each code point for moderate-width contiguous arrays. Signed
+indices are covered in the keep and complement regression test.
+Interleaved medians went from 5.24 to 4.97 ms for medium C3, 3.49 to
+3.31 ms for small gappy, and 162.25 to 157.27 ms for medium smart-gap.
+Checked outputs matched. The small gappy control measured 5.1% higher
+peak RSS once and 3.2% lower in the repeat. C3 median RSS was unchanged.
+
+An interleaved audit against `6044b1e` measured 1.12× for tiny FASTA
+output, 2.17× for raw gappy API, and 1.26× for medium C3. All outputs
+matched exactly. On Linux, `make test` at `f8d239e` passed 552 unit and
+135 integration tests on each of CPython 3.12.14, 3.13.15, 3.14.7,
+and 3.15.2.
+
+### Comprehensive rerun at `20d4a20`
+
+The [119-case comparison](benchmark-results/clipkit-175x-comprehensive-20d4a20.json)
+matched `6044b1e` exactly and measured 1.757× end to end, 2.18× for
+whole CLI runs, 1.78× for Python API cases, and 15.55× for algorithm-only
+cases. The tiny FASTA output slowdown in that non-interleaved run
+did not recur in the interleaved audit above. Tiny first-call
+heterotachy remains subject to the documented import tradeoff. The
+full rerun for `f8d239e` follows this checkpoint.
