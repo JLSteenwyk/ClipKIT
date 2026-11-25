@@ -1016,3 +1016,29 @@ The [comprehensive checkpoint at `3a87d78`](benchmark-results/clipkit-175x-compr
 matched all 119 cases against `6044b1e`. It measured 1.59× end to end,
 2.11× for whole CLI runs, 1.50× for Python API cases, and 14.02× for
 algorithm-only cases. It precedes the FASTA header scan changes.
+
+### Block parsing for the raw ASCII FASTA API
+
+Commit `2ab1d58` sends raw ASCII FASTA strings of at least 64 KiB through
+the existing block reader using an in-memory byte stream. Legacy text
+handling remains available when the block reader declines the input.
+Tests compare trimmed records and headers for LF and CRLF inputs and check
+that neither path writes a temporary alignment file. This optimization
+uses the block reader and cutoff developed in `192f57a` and `913afff`.
+
+| Small public API workflow | Baseline median | Candidate median | Speedup |
+| --- | ---: | ---: | ---: |
+| Raw gappy | 4.84 ms | 2.14 ms | 2.26× |
+| Raw KPIC-smart-gap | 5.37 ms | 3.51 ms | 1.53× |
+| File gappy | 4.44 ms | 2.28 ms | 1.95× |
+
+Six interleaved observations per source agreed exactly on the checked
+artifacts and metadata. Compared with the preceding runtime revision,
+raw gappy fell from 2.77 to 2.09 ms and raw KPIC-smart-gap fell from 3.92
+to 3.34 ms. Median peak RSS was flat or lower in those two comparisons.
+
+On Linux, `make test` at `2ab1d58` passed 545 unit and 135 integration
+tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and 3.15.2. The earlier
+[core checkpoint at `3a87d78`](benchmark-results/clipkit-175x-core-3a87d78.json)
+matched all 54 cases and measured 1.43× end to end and 13.32× for
+algorithm-only cases.
