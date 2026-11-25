@@ -2,6 +2,8 @@ import re
 
 from Bio import SeqIO
 from Bio.Align import MultipleSeqAlignment
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 import numpy as np
 from typing import Optional
 
@@ -91,9 +93,20 @@ def _write_msa_selection(msa, path, file_format, base_metadata, *, complement=Fa
         positions = (
             msa._site_positions_to_trim if complement else msa._site_positions_to_keep
         )
-        records = msa._wide_ascii_bio_records(positions)
-        if records is not None:
-            _write_wrapped_fasta(records, path)
+        rows = msa._selected_fasta_rows(positions)
+        if rows is not None:
+            with open(path, "w") as handle:
+                for title, residues in rows:
+                    if (
+                        "\n" in title
+                        or "\r" in title
+                        or b"\n" in residues
+                        or b"\r" in residues
+                    ):
+                        record = SeqRecord(Seq(residues), id=title, description="")
+                        SeqIO.write(record, handle, "fasta")
+                    else:
+                        _write_fasta_row(handle, title, residues)
             return
     alignment = msa.complement_to_bio_msa() if complement else msa.to_bio_msa()
     _write_alignment(alignment, path, file_format, base_metadata)
@@ -109,8 +122,6 @@ def _write_alignment(alignment, path, file_format, base_metadata):
 
 
 def _write_wrapped_fasta(alignment, path):
-    # Match Biopython's standard FASTA format, batching the 60-column lines.
-    width = 60
     with open(path, "w") as handle:
         for record in alignment:
             if (
@@ -125,13 +136,19 @@ def _write_wrapped_fasta(alignment, path):
             if not residues.isascii() or b"\n" in residues or b"\r" in residues:
                 SeqIO.write(record, handle, "fasta")
                 continue
-            handle.write(f">{record.id}\n")
-            lines, tail = divmod(len(residues), width)
-            wrapped = np.empty((lines, width + 1), dtype=np.uint8)
-            wrapped[:, :width] = np.frombuffer(
-                residues, count=lines * width, dtype=np.uint8
-            ).reshape(lines, width)
-            wrapped[:, width] = ord("\n")
-            handle.write(wrapped.tobytes().decode("ascii"))
-            if tail:
-                handle.write(residues[-tail:].decode("ascii") + "\n")
+            _write_fasta_row(handle, record.id, residues)
+
+
+def _write_fasta_row(handle, title, residues):
+    # Match Biopython's standard FASTA format, batching the 60-column lines.
+    width = 60
+    handle.write(f">{title}\n")
+    lines, tail = divmod(len(residues), width)
+    wrapped = np.empty((lines, width + 1), dtype=np.uint8)
+    wrapped[:, :width] = np.frombuffer(
+        residues, count=lines * width, dtype=np.uint8
+    ).reshape(lines, width)
+    wrapped[:, width] = ord("\n")
+    handle.write(wrapped.tobytes().decode("ascii"))
+    if tail:
+        handle.write(residues[-tail:].decode("ascii") + "\n")

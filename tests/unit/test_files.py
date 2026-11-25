@@ -75,6 +75,19 @@ def test_wide_fasta_validation_preserves_destination_on_bad_sequence(tmp_path):
     assert output.read_text() == "preserve this file\n"
 
 
+def test_wide_fasta_validates_lengths_after_removing_null_padding(tmp_path):
+    records = np.full((2, 4097), "A", dtype="U1")
+    records[1, -1] = ""
+    msa = MSA([{"description": "first"}, {"description": "second"}], records)
+    output = tmp_path / "existing.fa"
+    output.write_text("preserve this file\n")
+
+    with pytest.raises(ValueError, match="same length"):
+        write_msa(msa, output, FileFormat.fasta)
+
+    assert output.read_text() == "preserve this file\n"
+
+
 class TestAutomaticFileTypeDetermination(object):
     def test_get_alignment_and_format_when_format_is_provided(self):
         # setup

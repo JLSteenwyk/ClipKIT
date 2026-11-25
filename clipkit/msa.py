@@ -327,19 +327,18 @@ class MSA:
         else:
             sequence_rows = ["".join(rec) for rec in sites.tolist()]
 
-        return MultipleSeqAlignment(self._bio_records(sequence_rows))
-
-    def _bio_records(self, sequence_rows):
         # Preserve the full description in the output identifier.
-        for sequence, info in zip(sequence_rows, self.header_info):
-            yield SeqRecord(Seq(sequence), id=str(info["description"]), description="")
+        return MultipleSeqAlignment(
+            SeqRecord(Seq(sequence), id=str(info["description"]), description="")
+            for sequence, info in zip(sequence_rows, self.header_info)
+        )
 
-    def _wide_ascii_bio_records(self, positions):
+    def _selected_fasta_rows(self, positions):
         matrix = self.seq_records
         if (
             type(positions) is not np.ndarray
             or positions.ndim != 1
-            or len(positions) < 4096
+            or len(positions) < 2048
             or not np.can_cast(positions.dtype, np.intp, casting="safe")
             or type(matrix) is not np.ndarray
             or matrix.ndim != 2
@@ -348,6 +347,7 @@ class MSA:
         ):
             return None
         width = matrix.shape[1]
+        code_points = matrix.view(np.uint32)
         # Check before opening the destination so invalid records use the
         # existing materialization path and fail before altering the file.
         if (
@@ -357,18 +357,21 @@ class MSA:
                 type(info) is dict and type(info.get("description")) is str
                 for info in self.header_info
             )
-            or matrix.view(np.uint32).max() > 127
+            or code_points.max() > 127
+            or code_points.min() == 0
         ):
             return None
 
         rows = (
-            (np.ascontiguousarray(row) for row in matrix)
+            code_points
             if positions is self._site_positions_to_keep
             and len(positions) == self._original_length == width
-            else (np.take(row, positions) for row in matrix)
+            else (np.take(row, positions) for row in code_points)
         )
-        dtype = f"U{len(positions)}"
-        return self._bio_records(row.view(dtype).item() for row in rows)
+        return (
+            (info["description"], row.astype(np.uint8).tobytes())
+            for row, info in zip(rows, self.header_info)
+        )
 
     @property
     def trimmed(self):
