@@ -141,9 +141,9 @@ def get_custom_sites_to_trim(file_path: str, aln_length: int) -> list:
 
     if len(sites_to_trim) == 0:
         # we only had keeps so treat every other site as a trim
-        sites_to_trim = list(
-            np.setdiff1d(np.arange(aln_length), np.array(sites_to_keep))
-        )
+        trim_mask = np.ones(max(0, aln_length), dtype=bool)
+        trim_mask[sites_to_keep] = False
+        sites_to_trim = list(np.flatnonzero(trim_mask))
 
     return sites_to_trim
 

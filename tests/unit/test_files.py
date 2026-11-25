@@ -182,7 +182,7 @@ class TestCustomSitesParsing(object):
 
     def test_get_custom_sites_to_trim_keep_only_ignores_blank_lines(self, tmp_path):
         cst_file = tmp_path / "keep-only.cst"
-        cst_file.write_text("\n2\tkeep\n\n4\tkeep\n")
+        cst_file.write_text("\n4\tkeep\n\n2\tkeep\n4\tkeep\n")
 
         assert get_custom_sites_to_trim(str(cst_file), aln_length=5) == [0, 2, 4]
 
