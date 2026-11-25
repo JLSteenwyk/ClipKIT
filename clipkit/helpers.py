@@ -15,6 +15,8 @@ from .formats import FileFormat, SeqType
 from .stats import TrimmingStats
 from .ecomp import write_ecomp
 
+_FASTA_LINE_WIDTH = 60
+
 def remove_gaps(seq: str, gap_chars: list[str] = DEFAULT_AA_GAP_CHARS) -> str:
     if isinstance(gap_chars, (list, tuple)) and all(
         isinstance(char, str) and len(char) == 1 for char in gap_chars
@@ -99,6 +101,7 @@ def _write_msa_selection(msa, path, file_format, base_metadata, *, complement=Fa
         )
         rows = msa._selected_fasta_rows(positions)
         if rows is not None:
+            wrapped = _fasta_wrap_buffer(len(positions))
             with open(path, "w") as handle:
                 for title, residues in rows:
                     if (
@@ -110,7 +113,7 @@ def _write_msa_selection(msa, path, file_format, base_metadata, *, complement=Fa
                         record = SeqRecord(Seq(residues), id=title, description="")
                         SeqIO.write(record, handle, "fasta")
                     else:
-                        _write_fasta_row(handle, title, residues)
+                        _write_fasta_row(handle, title, residues, wrapped)
             return
     alignment = msa.complement_to_bio_msa() if complement else msa.to_bio_msa()
     _write_alignment(alignment, path, file_format, base_metadata)
@@ -143,16 +146,23 @@ def _write_wrapped_fasta(alignment, path):
             _write_fasta_row(handle, record.id, residues)
 
 
-def _write_fasta_row(handle, title, residues):
+def _fasta_wrap_buffer(sequence_length):
+    width = _FASTA_LINE_WIDTH
+    wrapped = np.empty((sequence_length // width, width + 1), dtype=np.uint8)
+    wrapped[:, width] = ord("\n")
+    return wrapped
+
+
+def _write_fasta_row(handle, title, residues, wrapped=None):
     # Match Biopython's standard FASTA format, batching the 60-column lines.
-    width = 60
+    width = _FASTA_LINE_WIDTH
     handle.write(f">{title}\n")
     lines, tail = divmod(len(residues), width)
-    wrapped = np.empty((lines, width + 1), dtype=np.uint8)
+    if wrapped is None:
+        wrapped = _fasta_wrap_buffer(len(residues))
     wrapped[:, :width] = np.frombuffer(
         residues, count=lines * width, dtype=np.uint8
     ).reshape(lines, width)
-    wrapped[:, width] = ord("\n")
     handle.write(str(wrapped, "ascii"))
     if tail:
         handle.write(residues[-tail:].decode("ascii") + "\n")
