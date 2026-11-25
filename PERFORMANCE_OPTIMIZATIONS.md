@@ -751,3 +751,26 @@ measured 1,750.28 to 298.15 ms (5.87×) and median peak RSS fell from 233
 to 159 MiB. The unmodified medium fixture measured 222.01 to 221.16 ms,
 and the small gappy fixture measured 4.34 to 4.12 ms. All three cases
 matched their reference outputs and metadata exactly.
+
+The [updated 54-case core checkpoint](benchmark-results/clipkit-175x-core-c00fc29.json)
+also matched `6044b1e` exactly. Its geometric means were 1.40× for
+end-to-end and CLI cases, 1.25× for whole CLI invocation, 1.29× for the
+Python API subset, and 13.16× for algorithm-only cases. The
+comprehensive checkpoint included a 6.9% RSS increase for the small
+raw Python API case. The interleaved audit measured the same median
+RSS for both revisions on that case.
+
+### Gap-only warnings for log output
+
+Commit `4ed4dc8` tests wide ASCII rows for resolved residues with byte
+deletion, including matching lowercase gap symbols. Other rows retain
+Unicode normalization and membership. The warning still reports the
+first matching trimmed row. A focused test covers Unicode characters
+that map into the ASCII gap alphabet when uppercased.
+
+The warning stage fell from about 173 to 10 ms on the medium log-and-
+complement sample. Six interleaved observations per revision measured
+1.22× for the whole command, with exact output and a 0.24% median peak
+RSS increase. The small control varied by 2.7% in time. The remaining
+cost in the medium workflow is debug log generation and emission,
+which consumed about 279 ms after the change.
