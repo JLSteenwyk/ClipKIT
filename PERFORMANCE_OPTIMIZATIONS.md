@@ -425,3 +425,36 @@ schedule depends on normalized frequency reuse. Revert `ab5fa77` and
 `5a87a86` before removing the fast normalization helper from `9eb38d6`.
 The benchmark-only commits can be reverted independently of the production
 code. The checkpoint and audit files identify their runtime revision.
+
+### Wide FASTA and Python API follow-up
+
+The targeted JSON also records the comparisons below. These are incremental
+measurements against the runtime revision immediately before each change.
+
+| Commit | Workflow | Reference median | Candidate median | Peak RSS |
+| --- | --- | ---: | ---: | --- |
+| `d9385d5` | Large CST with every site kept | 920 ms | 770 ms | 520,268 to 347,936 KiB |
+| `d9385d5` | The same CST job with logging | 2.52 s | 2.17 s | 521,932 to 349,260 KiB |
+| `a6edb03` | Small raw gappy API | 4.90 ms | 4.44 ms | Recorded in JSON |
+| `a6edb03` | Small raw KPIC smart-gap API | 4.92 ms | 4.55 ms | Recorded in JSON |
+| `a6edb03` | Small path-based gappy API | 4.44 ms | 4.02 ms | Recorded in JSON |
+| `7d08ec7` | Large gappyout FASTA | 767 ms | 593 ms | 537 to 314 MB |
+| `7d08ec7` | Large smart-gap FASTA | 783 ms | 607 ms | 536 to 314 MB |
+| `7d08ec7` | Large KPIC FASTA | 690 ms | 617 ms | 375 to 312 MB |
+| `7d08ec7` | Medium smart-gap FASTA | 353 ms | 295 ms | 261 to 167 MB |
+| `7d08ec7` | Medium log and complement | 1.07 s | 1.01 s | 257 to 174 MB |
+
+The keep-all path preserves an independent Bio alignment without copying
+the input residue matrix first. Its two timing cases used the large
+`EOG092C0CZK_aa_aln.fasta` fixture and a CST file that marks all 29,838 sites
+`keep`. The API reads explicit ASCII FASTA from an in-memory text stream
+with the same newline normalization as file input. The tests compare
+headers, sequences, and statistics from CRLF text with the file path.
+
+The wide FASTA exporter validates eligible matrices and positions before
+opening the destination, then feeds one record at a time to the existing
+wrapped writer. The legacy output conversion still handles other inputs
+and formats. FASTA, log, and companion files matched exactly in the
+streaming benchmark. A malformed-record regression test verifies that an
+existing destination survives a conversion failure. Revert `7d08ec7`
+before reverting the batched writer in `684e8bb`.
