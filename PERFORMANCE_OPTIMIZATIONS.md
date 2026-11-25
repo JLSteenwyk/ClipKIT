@@ -1042,3 +1042,84 @@ tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and 3.15.2. The earlier
 [core checkpoint at `3a87d78`](benchmark-results/clipkit-175x-core-3a87d78.json)
 matched all 54 cases and measured 1.43× end to end and 13.32× for
 algorithm-only cases.
+
+### Smart-gap slopes and small residue-count batches
+
+Commit `a9e75d1` computes the existing slope formula in NumPy.
+It retains the cumulative sum, transition order, duplicate filtering,
+and first-half selection. Large KPIC-smart-gap improved from 391.62 to
+385.05 ms. In-process timing for 1,000 points fell from about 691 to 46 μs.
+
+Commit `fc041aa` halves the histogram column batch for small matrices
+with compact residue alphabets. The small raw KPIC-smart-gap API
+improved from 3.33 to 3.07 ms in the incremental comparison. A wider
+batch slowed that case and the medium nucleotide algorithm case. The
+interleaved baseline comparison measured 5.06 to 3.19 ms (1.59×) for
+raw KPIC-smart-gap and 5.29 to 2.19 ms (2.42×) for raw gappy. Outputs
+matched exactly. The [raw samples](benchmark-results/clipkit-175x-targeted.json)
+include the incremental, baseline, and discarded prototype timings.
+
+A separate interleaved audit measured 1.04× for tiny FASTA output and
+1.07× for tiny Mauve output. It also measured 1.06× for a fresh tiny
+heterotachy CLI process. The first-call in-process tree import remains
+a separate cost. On Linux, `make test` at `fc041aa` passed 546 unit and
+135 integration tests per interpreter on CPython 3.12.14, 3.13.15,
+3.14.7, and 3.15.2.
+
+### Comprehensive checkpoint after FASTA parsing changes
+
+The [119-case comparison at `913afff`](benchmark-results/clipkit-175x-comprehensive-913afff.json)
+matched `6044b1e` exactly. It precedes the raw API and smart-gap
+follow-ups. Thirteen representative trimming-mode cases reached 1.75×
+or better. The explicit tiny CST and medium C3 cases measured 1.10×
+and 1.19×, respectively.
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| `gappy` | 623.25 ms | 290.67 ms | 2.14× |
+| `smart_gap` | 1,013.93 ms | 390.03 ms | 2.60× |
+| `block_gappy` | 646.82 ms | 283.62 ms | 2.28× |
+| `gappyout` | 1,023.80 ms | 394.65 ms | 2.59× |
+| `kpi` | 755.24 ms | 380.71 ms | 1.98× |
+| `kpic` | 784.87 ms | 383.77 ms | 2.05× |
+| `kpi_gappy` | 646.98 ms | 346.51 ms | 1.87× |
+| `kpic_gappy` | 631.18 ms | 349.07 ms | 1.81× |
+| `kpi_smart_gap` | 738.11 ms | 392.45 ms | 1.88× |
+| `kpic_smart_gap` | 756.53 ms | 392.52 ms | 1.93× |
+| `entropy` | 1,005.06 ms | 410.68 ms | 2.45× |
+| `composition_bias` | 1,035.69 ms | 417.93 ms | 2.48× |
+| `heterotachy` | 1,084.93 ms | 248.79 ms | 4.36× |
+| `cst` | 0.69 ms | 0.63 ms | 1.10× |
+| `c3` | 6.35 ms | 5.35 ms | 1.19× |
+
+### Major workflows
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| CLI help startup | 237.00 ms | 46.68 ms | 5.08× |
+| CLI version startup | 233.53 ms | 46.25 ms | 5.05× |
+| CLI small FASTA trimming | 251.82 ms | 223.08 ms | 1.13× |
+| Python API from file | 4.38 ms | 2.35 ms | 1.87× |
+| Python API from string | 4.71 ms | 2.80 ms | 1.68× |
+| HTML report | 1,820.13 ms | 674.87 ms | 2.70× |
+| Log and complementary output | 1,190.12 ms | 618.36 ms | 1.92× |
+| Mixed-case amino-acid CLI | 1,050.96 ms | 257.80 ms | 4.08× |
+| ECOMP input | 2.19 ms | 1.40 ms | 1.56× |
+| ECOMP output | 403.95 ms | 249.40 ms | 1.62× |
+| Codon trimming | 5.22 ms | 2.01 ms | 2.60× |
+| Terminal stop-codon masking | 185.19 ms | 85.50 ms | 2.17× |
+| Internal stop-codon masking | 181.15 ms | 86.32 ms | 2.10× |
+| All stop-codon masking | 180.90 ms | 85.83 ms | 2.11× |
+| One requested thread | 463.95 ms | 188.11 ms | 2.47× |
+| Four requested threads | 445.84 ms | 185.61 ms | 2.40× |
+| Missing ambiguity policy | 397.10 ms | 227.64 ms | 1.74× |
+| Fractional ambiguity policy | 320.91 ms | 231.79 ms | 1.38× |
+| Literal ambiguity policy | 320.69 ms | 228.55 ms | 1.40× |
+
+### Geometric means
+
+- all cases (119 cases), 3.79×
+- algorithm only (47 cases), 13.73×
+- all end-to-end and CLI cases (72 cases), 1.64×
+- whole CLI (13 cases), 2.10×
+- Python API (4 cases), 1.55×
