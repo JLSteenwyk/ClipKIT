@@ -285,26 +285,25 @@ class MSA:
         )
         stop_codons = np.isin(codon_strings, tuple(STOP_CODONS)) & complete_codons
 
-        terminal_to_mask = np.zeros(stop_codons.shape, dtype=bool)
-        internal_to_mask = np.zeros(stop_codons.shape, dtype=bool)
-
-        for sequence_index in range(self.seq_records.shape[0]):
-            complete_positions = np.flatnonzero(complete_codons[sequence_index])
-            if complete_positions.size == 0:
-                continue
-
-            terminal_position = complete_positions[-1]
-            terminal_to_mask[sequence_index, terminal_position] = stop_codons[
-                sequence_index, terminal_position
-            ]
-            internal_to_mask[sequence_index] = stop_codons[sequence_index]
-            internal_to_mask[sequence_index, terminal_position] = False
-
-        selected = np.zeros(stop_codons.shape, dtype=bool)
-        if mode in (StopCodonMode.terminal, StopCodonMode.all):
-            selected |= terminal_to_mask
-        if mode in (StopCodonMode.internal, StopCodonMode.all):
-            selected |= internal_to_mask
+        rows = np.arange(len(codons))
+        terminal_positions = complete_codons.shape[1] - 1 - np.argmax(
+            complete_codons[:, ::-1], axis=1
+        )
+        # Rows without complete codons have no stop codons at any position.
+        terminal_stops = stop_codons[rows, terminal_positions]
+        terminal_masked = 0
+        internal_masked = 0
+        if mode == StopCodonMode.terminal:
+            selected = np.zeros_like(stop_codons)
+            selected[rows, terminal_positions] = terminal_stops
+            terminal_masked = np.count_nonzero(terminal_stops)
+        else:
+            selected = stop_codons
+            if mode == StopCodonMode.internal:
+                selected[rows, terminal_positions] = False
+            else:
+                terminal_masked = np.count_nonzero(terminal_stops)
+            internal_masked = np.count_nonzero(selected) - terminal_masked
 
         selected_sites = np.repeat(selected, self._codon_size, axis=1)
         self.seq_records[selected_sites] = "-"
@@ -312,8 +311,8 @@ class MSA:
 
         return StopCodonMaskingStats(
             mode=mode,
-            terminal_masked=int(np.count_nonzero(terminal_to_mask & selected)),
-            internal_masked=int(np.count_nonzero(internal_to_mask & selected)),
+            terminal_masked=int(terminal_masked),
+            internal_masked=int(internal_masked),
         )
 
     def _reset_analysis_caches(self) -> None:

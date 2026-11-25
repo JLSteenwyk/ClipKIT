@@ -60,13 +60,14 @@ def test_handles_lowercase_dna_and_rna_with_trailing_gap_codons():
 
 
 def test_ignores_gapped_codons_and_sequences_without_stops():
-    msa = make_msa("ATGT-AACCTGA---", "ATGCAAACCCTG---")
+    msa = make_msa("ATGT-AACCTGA---", "ATGCAAACCCTG---", "---------------")
 
     stats = msa.mask_stop_codons(StopCodonMode.all)
 
     assert [str(record.seq) for record in msa.to_bio_msa()] == [
         "ATGT-AACC------",
         "ATGCAAACCCTG---",
+        "---------------",
     ]
     assert stats.terminal_masked == 1
     assert stats.internal_masked == 0
