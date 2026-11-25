@@ -32,6 +32,23 @@ _MAX_DENSE_CODE_SPAN = 512
 _MIN_CELLS_FOR_COLUMN_COUNTING = 1_000_000
 
 
+def _uppercase_records(records: np.ndarray) -> np.ndarray:
+    if records.size < 4_096 or records.dtype != np.dtype("U1"):
+        return np.char.upper(records)
+
+    code_points = records.view(np.uint32)
+    if code_points.max() > 127:
+        return np.char.upper(records)
+
+    # Copy the matrix once and bound the temporary masks for large alignments.
+    upper = code_points.copy().reshape(-1)
+    for start in range(0, upper.size, 1_000_000):
+        batch = upper[start : start + 1_000_000]
+        lowercase = (batch >= ord("a")) & (batch <= ord("z"))
+        np.subtract(batch, 32, out=batch, where=lowercase)
+    return upper.view("U1").reshape(records.shape)
+
+
 def _column_character_counts(seq_array: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Return sorted character states and their counts in every column."""
     n_rows, n_cols = seq_array.shape
@@ -196,7 +213,7 @@ class MSA:
             self._gap_chars = [*self._gap_chars, "-"]
 
         normalized_records = (
-            np.char.upper(self.seq_records)
+            _uppercase_records(self.seq_records)
             if self._requires_uppercase_normalization
             # Keep the independent working array used by the original path,
             # but avoid an expensive per-character Unicode operation.
@@ -330,7 +347,7 @@ class MSA:
     def _observed_sequence_states(self) -> np.ndarray:
         if self._observed_sequence_states_cache is None:
             seq_array = (
-                np.char.upper(self.seq_records)
+                _uppercase_records(self.seq_records)
                 if self._requires_uppercase_normalization
                 else self.seq_records
             )
@@ -348,7 +365,7 @@ class MSA:
             and self.seq_records.size < _MIN_CELLS_FOR_COLUMN_COUNTING
         ):
             seq_array = (
-                np.char.upper(self.seq_records)
+                _uppercase_records(self.seq_records)
                 if self._requires_uppercase_normalization
                 else self.seq_records
             )
@@ -602,7 +619,7 @@ class MSA:
         key = (cache_key, normalize_case)
         if key not in self._column_character_count_cache:
             seq_array = (
-                np.char.upper(self.seq_records) if normalize_case else self.seq_records
+                _uppercase_records(self.seq_records) if normalize_case else self.seq_records
             )
             self._column_character_count_cache[key] = _column_character_counts(
                 seq_array

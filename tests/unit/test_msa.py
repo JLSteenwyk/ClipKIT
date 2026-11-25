@@ -506,6 +506,16 @@ def test_mixed_case_combined_mode_reuses_normalized_counts(
     assert count_columns.call_count == 1
 
 
+@pytest.mark.parametrize("sequence", ("aZ-?gtn", "aß-?gtn"))
+def test_uppercase_records_matches_numpy_for_strided_alignments(sequence):
+    records = np.resize(np.array(list(sequence), dtype="U1"), (64, 256))[::2, ::2]
+    expected = np.char.upper(records)
+    original = records.copy()
+
+    np.testing.assert_array_equal(msa_module._uppercase_records(records), expected)
+    np.testing.assert_array_equal(records, original)
+
+
 def test_large_gap_fractions_match_membership_across_row_batches():
     records = np.resize(np.array(list("A-XZB?NJΔ"), dtype="U1"), (35, 32_768))
     msa = MSA([{}] * len(records), records, gap_chars=["-", "?"])
