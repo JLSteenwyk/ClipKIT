@@ -648,6 +648,11 @@ class MSA:
         states, counts = self._get_column_character_counts(
             normalize_case=True, cache_key=cache_key
         )
+        return self._filter_character_counts(states, counts, classification=classification)
+
+    def _filter_character_counts(
+        self, states, counts, *, classification=False, observed_states=None
+    ):
         non_gap_states = ~np.isin(states, tuple(self._normalized_gap_chars))
         states = states[non_gap_states]
         counts = counts[non_gap_states]
@@ -659,7 +664,9 @@ class MSA:
         if self._ambiguity_handling == AmbiguityHandling.missing or classification:
             return states[~recognized_ambiguity], counts[~recognized_ambiguity]
 
-        return self._fractionally_expand_ambiguities(states, counts)
+        return self._fractionally_expand_ambiguities(
+            states, counts, observed_states=observed_states
+        )
 
     def _fractionally_expand_ambiguities(
         self,
@@ -815,6 +822,27 @@ class MSA:
             return np.zeros(n_sites, dtype=float)
 
         site_scores = np.zeros(n_sites, dtype=float)
+        if self.seq_records.dtype == np.dtype("U1") and len(clade_indices) >= 2:
+            observed_states = (
+                self._observed_sequence_states
+                if self._ambiguity_handling == AmbiguityHandling.fractional
+                else None
+            )
+            for start in range(0, n_sites, _COLUMN_COUNT_BATCH_SIZE):
+                stop = min(start + _COLUMN_COUNT_BATCH_SIZE, n_sites)
+                normalized = _uppercase_records(self.seq_records[:, start:stop])
+                entropies = np.empty((stop - start, len(clade_indices)), dtype=float)
+                for col, indices in enumerate(clade_indices):
+                    states, counts = _column_character_counts(normalized[indices])
+                    _, counts = self._filter_character_counts(
+                        states, counts, observed_states=observed_states
+                    )
+                    entropies[:, col] = self._entropy_by_observed_state_count(counts)
+                site_scores[start:stop] = np.minimum(
+                    1.0, np.std(entropies, axis=1) * 2.0
+                )
+            return np.around(site_scores, decimals=4)
+
         for site_idx in range(n_sites):
             clade_entropies = [
                 self._normalized_entropy_for_clade_site(indices, site_idx)
@@ -828,6 +856,20 @@ class MSA:
             site_scores[site_idx] = min(1.0, float(np.std(clade_entropies) * 2.0))
 
         return np.around(site_scores, decimals=4)
+
+    @staticmethod
+    def _entropy_by_observed_state_count(counts: np.ndarray) -> np.ndarray:
+        # Compact equal-state-count columns so reductions keep scalar order.
+        observed = np.count_nonzero(counts, axis=0)
+        entropies = np.zeros(counts.shape[1], dtype=float)
+        for state_count in np.unique(observed[observed > 1]):
+            sites = np.flatnonzero(observed == state_count)
+            rows = counts[:, sites].T
+            present = rows[rows > 0].reshape(len(sites), state_count)
+            probabilities = present.astype(float) / present.sum(axis=1)[:, None]
+            raw = -np.sum(probabilities * np.log2(probabilities), axis=1)
+            entropies[sites] = raw / math.log2(int(state_count))
+        return entropies
 
     def _get_internal_clade_indices(self, guide_tree: Tree) -> list[list[int]]:
         n_seqs = self.seq_records.shape[0]
@@ -870,20 +912,14 @@ class MSA:
         states, counts = np.unique(column, return_counts=True)
         counts = counts.reshape(-1, 1)
 
-        non_gap_states = ~np.isin(states, tuple(self._normalized_gap_chars))
-        states = states[non_gap_states]
-        counts = counts[non_gap_states]
-        if self._ambiguity_handling != AmbiguityHandling.literal:
-            recognized_ambiguity = np.isin(states, tuple(self._ambiguity_chars))
-            if self._ambiguity_handling == AmbiguityHandling.missing:
-                states = states[~recognized_ambiguity]
-                counts = counts[~recognized_ambiguity]
-            else:
-                states, counts = self._fractionally_expand_ambiguities(
-                    states,
-                    counts,
-                    observed_states=self._observed_sequence_states,
-                )
+        observed_states = (
+            self._observed_sequence_states
+            if self._ambiguity_handling == AmbiguityHandling.fractional
+            else None
+        )
+        _, counts = self._filter_character_counts(
+            states, counts, observed_states=observed_states
+        )
 
         present_counts = counts[:, 0]
         present_counts = present_counts[present_counts > 0]

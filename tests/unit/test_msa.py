@@ -5,7 +5,7 @@ import random
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
-from Bio.Phylo.BaseTree import Tree
+from Bio.Phylo.BaseTree import Clade, Tree
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import clipkit.msa as msa_module
@@ -65,6 +65,47 @@ def test_large_ascii_msa_preserves_case_and_writable_unicode_matrix():
     assert msa.seq_records.dtype == np.dtype("U1")
     assert msa.seq_records.flags.writeable
     assert msa.seq_records.view(f"U{len(sequences[0])}").ravel().tolist() == sequences
+
+
+@pytest.mark.parametrize("policy", list(AmbiguityHandling))
+@pytest.mark.parametrize(
+    ("sequence_type", "alphabet", "clade_size"),
+    [("nt", "ACGUNRyb?-", 3), ("aa", "ACDEFGHIKLMNPQRSTVWYBzX?-", 10)],
+)
+def test_batched_heterotachy_matches_scalar_site_scoring(
+    policy, sequence_type, alphabet, clade_size
+):
+    rng = np.random.default_rng(1723)
+    records = rng.choice(list(alphabet), size=(3 * clade_size, 1050))
+    ids = [str(index) for index in range(len(records))]
+    tree = Tree(
+        root=Clade(
+            clades=[
+                Clade(clades=[Clade(name=name) for name in ids[start : start + clade_size]])
+                for start in range(0, len(ids), clade_size)
+            ]
+        )
+    )
+    msa = MSA(
+        [{"id": name} for name in ids],
+        records,
+        gap_chars=["-", "?"],
+        sequence_type=sequence_type,
+        ambiguity_handling=policy,
+        requires_uppercase_normalization=True,
+    )
+    clades = msa._get_internal_clade_indices(tree)
+    scalar = [
+        min(1.0, np.std([
+            msa._normalized_entropy_for_clade_site(indices, site)
+            for indices in clades
+        ]) * 2.0)
+        for site in range(records.shape[1])
+    ]
+
+    np.testing.assert_array_equal(
+        msa.determine_site_heterotachy(tree), np.around(scalar, decimals=4)
+    )
 
 
 class TestMSA(object):
