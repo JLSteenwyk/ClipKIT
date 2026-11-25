@@ -148,11 +148,12 @@ def run(
     sequence_type = sequence_type or get_seq_type(alignment)
     ambiguity_handling = AmbiguityHandling(ambiguity_handling)
     remove_stop_codons = normalize_stop_codon_mode(remove_stop_codons)
+    alignment_length = alignment.get_alignment_length()
     validate_stop_codon_configuration(
         remove_stop_codons,
         codon=codon,
         sequence_type=sequence_type,
-        alignment_length=alignment.get_alignment_length(),
+        alignment_length=alignment_length,
     )
 
     if not gap_characters:
@@ -176,8 +177,7 @@ def run(
     site_positions_to_trim = None
     guide_tree = None
     if mode == TrimmingMode.cst:
-        aln_length = alignment.get_alignment_length()
-        sites = _read_custom_sites_to_trim(auxiliary_file, aln_length)
+        sites = _read_custom_sites_to_trim(auxiliary_file, alignment_length)
         site_positions_to_trim = sites if len(sites) else []
     elif mode == TrimmingMode.heterotachy:
         guide_tree = build_parsimony_guide_tree(alignment)
@@ -186,7 +186,7 @@ def run(
         threads,
         mode,
         len(alignment),
-        alignment.get_alignment_length(),
+        alignment_length,
     )
 
     msa = create_msa(
@@ -305,11 +305,12 @@ def execute(
                 return
 
             validated_sequence_type = sequence_type or get_seq_type(alignment)
+            alignment_length = alignment.get_alignment_length()
             validate_stop_codon_configuration(
                 remove_stop_codons,
                 codon=codon,
                 sequence_type=validated_sequence_type,
-                alignment_length=alignment.get_alignment_length(),
+                alignment_length=alignment_length,
             )
             validated_gap_characters = gap_characters or get_gap_chars(
                 validated_sequence_type
@@ -321,8 +322,7 @@ def execute(
             )
 
             if mode == TrimmingMode.cst:
-                aln_length = alignment.get_alignment_length()
-                _read_custom_sites_to_trim(auxiliary_file, aln_length)
+                _read_custom_sites_to_trim(auxiliary_file, alignment_length)
 
             logger.info("Validation successful. No trimming was performed.")
 
