@@ -1165,3 +1165,21 @@ decoder without materializing a separate bytes object. The median
 for large KPIC-smart-gap fell from 386.48 to 375.14 ms against the
 previous revision. Small gappy, medium C3, and medium smart-gap
 stayed within 2%. All checked bytes matched.
+
+### Cache-sized FASTA output validation
+
+Commit `fef1ffa` validates each group of rows with adjacent minimum and
+maximum reductions before opening the destination. The focused
+validation test covers a non-ASCII residue in a later batch and checks
+that an existing destination is preserved. Six interleaved observations
+reduced large gappy from 286.19 to 279.04 ms and large KPIC-smart-gap
+from 388.43 to 377.50 ms. Peak RSS and both small controls stayed
+within 1%. Checked outputs matched exactly.
+
+The earlier [119-case comparison at `fc041aa`](benchmark-results/clipkit-175x-comprehensive-fc041aa.json)
+matched `6044b1e` exactly. Its geometric means were 1.66× end to end,
+2.12× for the whole CLI subset, 1.76× for Python API cases, and 13.77×
+for algorithm-only cases. Tiny first-call heterotachy was the only
+runtime regression above 5%. The raw small gappy API case showed a
+6.9% RSS increase in the comprehensive run and equal median RSS in
+the interleaved audit.

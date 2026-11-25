@@ -30770,6 +30770,591 @@
           }
         }
       }
+    },
+    {
+      "workload": "cache-sized direct FASTA validation",
+      "reference_revision": "261b4b3",
+      "candidate_revision": "fef1ffa",
+      "measurements": {
+        "reference": {
+          "cases": {
+            "gappy_large": {
+              "name": "gappy_large",
+              "kind": "execute",
+              "dataset": "large_aa",
+              "operation": "trim",
+              "mode": "gappy",
+              "gaps": 0.9,
+              "sequence_type": null,
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.2911337143741548,
+                  "cpu_seconds": 0.29114234499999997,
+                  "peak_rss_bytes": 275333120
+                },
+                {
+                  "runtime_seconds": 0.28098325803875923,
+                  "cpu_seconds": 0.280989749,
+                  "peak_rss_bytes": 274542592
+                },
+                {
+                  "runtime_seconds": 0.28819864289835095,
+                  "cpu_seconds": 0.28820723299999995,
+                  "peak_rss_bytes": 275337216
+                },
+                {
+                  "runtime_seconds": 0.28585010999813676,
+                  "cpu_seconds": 0.285855352,
+                  "peak_rss_bytes": 274223104
+                },
+                {
+                  "runtime_seconds": 0.28219551825895905,
+                  "cpu_seconds": 0.28191642699999997,
+                  "peak_rss_bytes": 275337216
+                },
+                {
+                  "runtime_seconds": 0.28653519693762064,
+                  "cpu_seconds": 0.28654220599999997,
+                  "peak_rss_bytes": 275333120
+                }
+              ],
+              "runtime_seconds_median": 0.2861926534678787,
+              "runtime_seconds_min": 0.28098325803875923,
+              "runtime_seconds_max": 0.2911337143741548,
+              "runtime_seconds_range": 0.010150456335395575,
+              "cpu_seconds_median": 0.286198779,
+              "cpu_seconds_min": 0.280989749,
+              "cpu_seconds_max": 0.29114234499999997,
+              "cpu_seconds_range": 0.010152595999999958,
+              "peak_rss_bytes_median": 275333120.0,
+              "peak_rss_bytes_min": 274223104,
+              "peak_rss_bytes_max": 275337216,
+              "output_sha256": "3935711bd046e39149ba8bef0518dfcea4fed8bddcba86ab17b9a71574093798",
+              "output_bytes": 2826527,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            },
+            "core_large_aa_kpic_smart_gap_execute": {
+              "name": "core_large_aa_kpic_smart_gap_execute",
+              "kind": "execute",
+              "dataset": "large_aa",
+              "operation": "trim",
+              "mode": "kpic_smart_gap",
+              "gaps": 0.9,
+              "sequence_type": null,
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.38218386797234416,
+                  "cpu_seconds": 0.38217335199999997,
+                  "peak_rss_bytes": 283320320
+                },
+                {
+                  "runtime_seconds": 0.38961297227069736,
+                  "cpu_seconds": 0.389594003,
+                  "peak_rss_bytes": 278245376
+                },
+                {
+                  "runtime_seconds": 0.38776430394500494,
+                  "cpu_seconds": 0.387771585,
+                  "peak_rss_bytes": 283340800
+                },
+                {
+                  "runtime_seconds": 0.3890513670630753,
+                  "cpu_seconds": 0.38889694799999996,
+                  "peak_rss_bytes": 283471872
+                },
+                {
+                  "runtime_seconds": 0.3881881800480187,
+                  "cpu_seconds": 0.38793904400000007,
+                  "peak_rss_bytes": 283410432
+                },
+                {
+                  "runtime_seconds": 0.38866192288696766,
+                  "cpu_seconds": 0.38825545699999997,
+                  "peak_rss_bytes": 281923584
+                }
+              ],
+              "runtime_seconds_median": 0.3884250514674932,
+              "runtime_seconds_min": 0.38218386797234416,
+              "runtime_seconds_max": 0.38961297227069736,
+              "runtime_seconds_range": 0.007429104298353195,
+              "cpu_seconds_median": 0.3880972505,
+              "cpu_seconds_min": 0.38217335199999997,
+              "cpu_seconds_max": 0.389594003,
+              "cpu_seconds_range": 0.007420651000000056,
+              "peak_rss_bytes_median": 283330560.0,
+              "peak_rss_bytes_min": 278245376,
+              "peak_rss_bytes_max": 283471872,
+              "output_sha256": "9f7b62a5363918a5ca1e56fb49d207bfdf6a95e0c0208059f6c086fa3b475296",
+              "output_bytes": 18049927,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            },
+            "c3_medium_nt": {
+              "name": "c3_medium_nt",
+              "kind": "execute",
+              "dataset": "medium_nt",
+              "operation": "trim",
+              "mode": "c3",
+              "gaps": 0.9,
+              "sequence_type": "nt",
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.005383339710533619,
+                  "cpu_seconds": 0.005387843000000003,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.005268169101327658,
+                  "cpu_seconds": 0.005272307000000004,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.0052218628115952015,
+                  "cpu_seconds": 0.005226292999999993,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.005272918846458197,
+                  "cpu_seconds": 0.005277985000000013,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.00533703388646245,
+                  "cpu_seconds": 0.005342160999999984,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.005312100984156132,
+                  "cpu_seconds": 0.005316924000000001,
+                  "peak_rss_bytes": 48758784
+                }
+              ],
+              "runtime_seconds_median": 0.005292509915307164,
+              "runtime_seconds_min": 0.0052218628115952015,
+              "runtime_seconds_max": 0.005383339710533619,
+              "runtime_seconds_range": 0.00016147689893841743,
+              "cpu_seconds_median": 0.005297454500000007,
+              "cpu_seconds_min": 0.005226292999999993,
+              "cpu_seconds_max": 0.005387843000000003,
+              "cpu_seconds_range": 0.0001615500000000103,
+              "peak_rss_bytes_median": 50331648.0,
+              "peak_rss_bytes_min": 48758784,
+              "peak_rss_bytes_max": 50331648,
+              "output_sha256": "b01fff22ac9b66aecf0df8b882eae0500de1d37ee2d42e9ca905dad59f5ada20",
+              "output_bytes": 249221,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            },
+            "gappy_small": {
+              "name": "gappy_small",
+              "kind": "execute",
+              "dataset": "small_aa",
+              "operation": "trim",
+              "mode": "gappy",
+              "gaps": 0.9,
+              "sequence_type": null,
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.003711584024131298,
+                  "cpu_seconds": 0.0037140630000000174,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.003616597969084978,
+                  "cpu_seconds": 0.0036206850000000124,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.003640343900769949,
+                  "cpu_seconds": 0.0036452319999999983,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.003611847758293152,
+                  "cpu_seconds": 0.0036166569999999953,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.003636782057583332,
+                  "cpu_seconds": 0.003642282999999996,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.0036142230965197086,
+                  "cpu_seconds": 0.003619381000000005,
+                  "peak_rss_bytes": 48758784
+                }
+              ],
+              "runtime_seconds_median": 0.003626690013334155,
+              "runtime_seconds_min": 0.003611847758293152,
+              "runtime_seconds_max": 0.003711584024131298,
+              "runtime_seconds_range": 9.973626583814621e-05,
+              "cpu_seconds_median": 0.0036314840000000043,
+              "cpu_seconds_min": 0.0036166569999999953,
+              "cpu_seconds_max": 0.0037140630000000174,
+              "cpu_seconds_range": 9.740600000002209e-05,
+              "peak_rss_bytes_median": 48758784.0,
+              "peak_rss_bytes_min": 48758784,
+              "peak_rss_bytes_max": 48758784,
+              "output_sha256": "0fc6cbe14b32578f5b7e2ed70814ad5791d1675dede0b55d8f4c2675717528cc",
+              "output_bytes": 104141,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            }
+          }
+        },
+        "candidate": {
+          "cases": {
+            "gappy_large": {
+              "name": "gappy_large",
+              "kind": "execute",
+              "dataset": "large_aa",
+              "operation": "trim",
+              "mode": "gappy",
+              "gaps": 0.9,
+              "sequence_type": null,
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.2763253739103675,
+                  "cpu_seconds": 0.276333362,
+                  "peak_rss_bytes": 275881984
+                },
+                {
+                  "runtime_seconds": 0.2817467087879777,
+                  "cpu_seconds": 0.281734031,
+                  "peak_rss_bytes": 275873792
+                },
+                {
+                  "runtime_seconds": 0.2679274119436741,
+                  "cpu_seconds": 0.26792021099999996,
+                  "peak_rss_bytes": 275886080
+                },
+                {
+                  "runtime_seconds": 0.2852944410406053,
+                  "cpu_seconds": 0.28530260199999996,
+                  "peak_rss_bytes": 275877888
+                },
+                {
+                  "runtime_seconds": 0.2823391850106418,
+                  "cpu_seconds": 0.282336648,
+                  "peak_rss_bytes": 273760256
+                },
+                {
+                  "runtime_seconds": 0.2722932128235698,
+                  "cpu_seconds": 0.27230252499999996,
+                  "peak_rss_bytes": 274026496
+                }
+              ],
+              "runtime_seconds_median": 0.2790360413491726,
+              "runtime_seconds_min": 0.2679274119436741,
+              "runtime_seconds_max": 0.2852944410406053,
+              "runtime_seconds_range": 0.01736702909693122,
+              "cpu_seconds_median": 0.2790336965,
+              "cpu_seconds_min": 0.26792021099999996,
+              "cpu_seconds_max": 0.28530260199999996,
+              "cpu_seconds_range": 0.017382390999999997,
+              "peak_rss_bytes_median": 275875840.0,
+              "peak_rss_bytes_min": 273760256,
+              "peak_rss_bytes_max": 275886080,
+              "output_sha256": "3935711bd046e39149ba8bef0518dfcea4fed8bddcba86ab17b9a71574093798",
+              "output_bytes": 2826527,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            },
+            "core_large_aa_kpic_smart_gap_execute": {
+              "name": "core_large_aa_kpic_smart_gap_execute",
+              "kind": "execute",
+              "dataset": "large_aa",
+              "operation": "trim",
+              "mode": "kpic_smart_gap",
+              "gaps": 0.9,
+              "sequence_type": null,
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.37733957497403026,
+                  "cpu_seconds": 0.37733063600000005,
+                  "peak_rss_bytes": 280576000
+                },
+                {
+                  "runtime_seconds": 0.37935446901246905,
+                  "cpu_seconds": 0.37935997500000007,
+                  "peak_rss_bytes": 283107328
+                },
+                {
+                  "runtime_seconds": 0.37367311026901007,
+                  "cpu_seconds": 0.373682507,
+                  "peak_rss_bytes": 278142976
+                },
+                {
+                  "runtime_seconds": 0.37903626495972276,
+                  "cpu_seconds": 0.37872676899999996,
+                  "peak_rss_bytes": 280547328
+                },
+                {
+                  "runtime_seconds": 0.3695317138917744,
+                  "cpu_seconds": 0.369521661,
+                  "peak_rss_bytes": 282079232
+                },
+                {
+                  "runtime_seconds": 0.3776601543650031,
+                  "cpu_seconds": 0.377393694,
+                  "peak_rss_bytes": 281305088
+                }
+              ],
+              "runtime_seconds_median": 0.3774998646695167,
+              "runtime_seconds_min": 0.3695317138917744,
+              "runtime_seconds_max": 0.37935446901246905,
+              "runtime_seconds_range": 0.009822755120694637,
+              "cpu_seconds_median": 0.377362165,
+              "cpu_seconds_min": 0.369521661,
+              "cpu_seconds_max": 0.37935997500000007,
+              "cpu_seconds_range": 0.00983831400000007,
+              "peak_rss_bytes_median": 280940544.0,
+              "peak_rss_bytes_min": 278142976,
+              "peak_rss_bytes_max": 283107328,
+              "output_sha256": "9f7b62a5363918a5ca1e56fb49d207bfdf6a95e0c0208059f6c086fa3b475296",
+              "output_bytes": 18049927,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            },
+            "c3_medium_nt": {
+              "name": "c3_medium_nt",
+              "kind": "execute",
+              "dataset": "medium_nt",
+              "operation": "trim",
+              "mode": "c3",
+              "gaps": 0.9,
+              "sequence_type": "nt",
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.005384527146816254,
+                  "cpu_seconds": 0.005390749,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.005262232851237059,
+                  "cpu_seconds": 0.0052663699999999924,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.005256295204162598,
+                  "cpu_seconds": 0.005261686999999987,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.0053595928475260735,
+                  "cpu_seconds": 0.005364639000000004,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.0052491710521280766,
+                  "cpu_seconds": 0.005254104000000009,
+                  "peak_rss_bytes": 50331648
+                },
+                {
+                  "runtime_seconds": 0.005218301899731159,
+                  "cpu_seconds": 0.005222382999999997,
+                  "peak_rss_bytes": 50331648
+                }
+              ],
+              "runtime_seconds_median": 0.005259264027699828,
+              "runtime_seconds_min": 0.005218301899731159,
+              "runtime_seconds_max": 0.005384527146816254,
+              "runtime_seconds_range": 0.00016622524708509445,
+              "cpu_seconds_median": 0.00526402849999999,
+              "cpu_seconds_min": 0.005222382999999997,
+              "cpu_seconds_max": 0.005390749,
+              "cpu_seconds_range": 0.00016836600000000312,
+              "peak_rss_bytes_median": 50331648.0,
+              "peak_rss_bytes_min": 50331648,
+              "peak_rss_bytes_max": 50331648,
+              "output_sha256": "b01fff22ac9b66aecf0df8b882eae0500de1d37ee2d42e9ca905dad59f5ada20",
+              "output_bytes": 249221,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            },
+            "gappy_small": {
+              "name": "gappy_small",
+              "kind": "execute",
+              "dataset": "small_aa",
+              "operation": "trim",
+              "mode": "gappy",
+              "gaps": 0.9,
+              "sequence_type": null,
+              "codon": false,
+              "stop_codons": null,
+              "ends_only": false,
+              "input_format": null,
+              "output_format": "fasta",
+              "auxiliary_file": null,
+              "threads": 1,
+              "ambiguity_handling": null,
+              "plot_report": false,
+              "log_and_complement": false,
+              "startup_option": null,
+              "repetitions": 6,
+              "timing_samples": [
+                {
+                  "runtime_seconds": 0.003626096062362194,
+                  "cpu_seconds": 0.0036306410000000178,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.003646280150860548,
+                  "cpu_seconds": 0.003650283000000004,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.0037020849995315075,
+                  "cpu_seconds": 0.0037069479999999877,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.0035821651108562946,
+                  "cpu_seconds": 0.0035879910000000126,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.0036355946213006973,
+                  "cpu_seconds": 0.0036382910000000157,
+                  "peak_rss_bytes": 48758784
+                },
+                {
+                  "runtime_seconds": 0.0036094728857278824,
+                  "cpu_seconds": 0.003614879999999987,
+                  "peak_rss_bytes": 48758784
+                }
+              ],
+              "runtime_seconds_median": 0.0036308453418314457,
+              "runtime_seconds_min": 0.0035821651108562946,
+              "runtime_seconds_max": 0.0037020849995315075,
+              "runtime_seconds_range": 0.00011991988867521286,
+              "cpu_seconds_median": 0.0036344660000000167,
+              "cpu_seconds_min": 0.0035879910000000126,
+              "cpu_seconds_max": 0.0037069479999999877,
+              "cpu_seconds_range": 0.00011895699999997511,
+              "peak_rss_bytes_median": 48758784.0,
+              "peak_rss_bytes_min": 48758784,
+              "peak_rss_bytes_max": 48758784,
+              "output_sha256": "0fc6cbe14b32578f5b7e2ed70814ad5791d1675dede0b55d8f4c2675717528cc",
+              "output_bytes": 104141,
+              "comparison_type": "exact_bytes",
+              "effective_threads": 1
+            }
+          }
+        },
+        "comparison": {
+          "gappy_large": {
+            "speedup": 1.0256476263213277,
+            "runtime_change_percent": -2.500627473132999,
+            "cpu_change_percent": -2.503533566787175,
+            "peak_rss_change_percent": 0.19711395418029465
+          },
+          "core_large_aa_kpic_smart_gap_execute": {
+            "speedup": 1.0289409025551333,
+            "runtime_change_percent": -2.812688511387329,
+            "cpu_change_percent": -2.766081307241819,
+            "peak_rss_change_percent": -0.8435433156239847
+          },
+          "c3_medium_nt": {
+            "speedup": 1.0063213954333219,
+            "runtime_change_percent": -0.6281686409539078,
+            "cpu_change_percent": -0.6309822953650124,
+            "peak_rss_change_percent": 0.0
+          },
+          "gappy_small": {
+            "speedup": 0.9988555479217425,
+            "runtime_change_percent": 0.11457633495040032,
+            "cpu_change_percent": 0.08211519037431003,
+            "peak_rss_change_percent": 0.0
+          }
+        }
+      }
     }
   ]
 }
