@@ -684,3 +684,70 @@ KPIC-smart-gap went from 754.87 to 442.72 ms. Tiny heterotachy went from
 6.06 to 25.55 ms in the first execution after importing ClipKIT because
 the tree-construction import now falls inside that timer. A fresh CLI
 invocation of the same workflow went from 246.22 to 239.71 ms.
+
+### Updated 119-case checkpoint
+
+The [raw comparison](benchmark-results/clipkit-175x-comprehensive-c00fc29.json)
+records the five fresh-process measurements per case and revision at
+`c00fc29`. The representative combined modes improved to 1.59–1.68×.
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| `gappy` | 623.25 ms | 361.17 ms | 1.73× |
+| `smart_gap` | 1,013.93 ms | 466.87 ms | 2.17× |
+| `block_gappy` | 646.82 ms | 371.49 ms | 1.74× |
+| `gappyout` | 1,023.80 ms | 464.61 ms | 2.20× |
+| `kpi` | 755.24 ms | 445.83 ms | 1.69× |
+| `kpic` | 784.87 ms | 454.53 ms | 1.73× |
+| `kpi_gappy` | 646.98 ms | 397.75 ms | 1.63× |
+| `kpic_gappy` | 631.18 ms | 397.65 ms | 1.59× |
+| `kpi_smart_gap` | 738.11 ms | 442.95 ms | 1.67× |
+| `kpic_smart_gap` | 756.53 ms | 450.47 ms | 1.68× |
+| `entropy` | 1,005.06 ms | 468.71 ms | 2.14× |
+| `composition_bias` | 1,035.69 ms | 472.42 ms | 2.19× |
+| `heterotachy` | 1,084.93 ms | 246.13 ms | 4.41× |
+| `cst` | 0.69 ms | 0.70 ms | 0.99× |
+| `c3` | 6.35 ms | 5.38 ms | 1.18× |
+
+### Major workflows
+
+| Case | Reference | Candidate | Speedup |
+| --- | ---: | ---: | ---: |
+| CLI help startup | 237.00 ms | 46.92 ms | 5.05× |
+| CLI version startup | 233.53 ms | 45.77 ms | 5.10× |
+| CLI small FASTA trimming | 251.82 ms | 223.74 ms | 1.13× |
+| Python API from file | 4.38 ms | 2.60 ms | 1.69× |
+| Python API from string | 4.71 ms | 2.87 ms | 1.64× |
+| HTML report | 1,820.13 ms | 746.51 ms | 2.44× |
+| Log and complementary output | 1,190.12 ms | 911.32 ms | 1.31× |
+| Mixed-case amino-acid CLI | 1,050.96 ms | 248.10 ms | 4.24× |
+| ECOMP input | 2.19 ms | 1.58 ms | 1.38× |
+| ECOMP output | 403.95 ms | 280.31 ms | 1.44× |
+| Codon trimming | 5.22 ms | 2.13 ms | 2.46× |
+| Terminal stop-codon masking | 185.19 ms | 76.61 ms | 2.42× |
+| Internal stop-codon masking | 181.15 ms | 75.65 ms | 2.39× |
+| All stop-codon masking | 180.90 ms | 75.79 ms | 2.39× |
+| One requested thread | 463.95 ms | 225.98 ms | 2.05× |
+| Four requested threads | 445.84 ms | 225.24 ms | 1.98× |
+| Missing ambiguity policy | 397.10 ms | 220.15 ms | 1.80× |
+| Fractional ambiguity policy | 320.91 ms | 218.99 ms | 1.47× |
+| Literal ambiguity policy | 320.69 ms | 220.23 ms | 1.46× |
+
+### Geometric means
+
+- all cases (119 cases), 3.66×
+- algorithm only (47 cases), 13.88×
+- all end-to-end and CLI cases (72 cases), 1.53×
+- whole CLI (13 cases), 2.05×
+- Python API (4 cases), 1.48×
+
+### Sequence-type inference with a gappy first row
+
+Commit `1ddf348` uses a literal deletion table for single-character gaps.
+Inference still checks additional records when the first row contains
+fewer than 200 non-gap residues. On the medium amino-acid fixture with
+its first row replaced by dashes, six interleaved observations per side
+measured 1,750.28 to 298.15 ms (5.87×) and median peak RSS fell from 233
+to 159 MiB. The unmodified medium fixture measured 222.01 to 221.16 ms,
+and the small gappy fixture measured 4.34 to 4.12 ms. All three cases
+matched their reference outputs and metadata exactly.
