@@ -25,6 +25,16 @@ class TrimmingMode(Enum):
     c3 = "c3"
 
 
+def default_gap_threshold(mode: TrimmingMode) -> float:
+    if mode in {
+        TrimmingMode.entropy,
+        TrimmingMode.composition_bias,
+        TrimmingMode.heterotachy,
+    }:
+        return 0.8
+    return 0.9
+
+
 class StopCodonMode(Enum):
     terminal = "terminal"
     internal = "internal"

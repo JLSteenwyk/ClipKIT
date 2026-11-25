@@ -1061,7 +1061,7 @@ class TestPackingHelpers:
         assert _popcount(bytes([0b11110000, 0b00001111])) == 8
 
     def test_read_varint_truncated(self):
-        with pytest.raises(EcompDecodeError):
+        with pytest.raises(EcompDecodeError, match="while reading varint"):
             _read_varint(bytes(), 0)
 
     def test_read_varint_too_long(self):
@@ -1087,7 +1087,7 @@ class TestPackingHelpers:
 
 class TestDecodeVarint:
     def test_decode_varint_truncated(self):
-        with pytest.raises(EcompDecodeError):
+        with pytest.raises(EcompDecodeError, match="while decoding varint"):
             _decode_varint(memoryview(b""), 0)
 
     def test_decode_varint_too_long(self):

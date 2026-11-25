@@ -34,20 +34,12 @@ def smart_gap_threshold_determination(
 
 
 def greatest_diff_in_slopes(slopes: list[float], gaps_arr: np.array) -> float:
-    diffs = []
-    # if there is only one slope, use that value to determine
-    # the threshold. Otherwise, calculate the greatest difference
-    # in slopes
-    if len(slopes) > 1:
-        # Vectorized difference calculation
-        slopes_arr = np.array(slopes)
-        diffs = np.abs(np.diff(slopes_arr))
-        max_diff_idx = np.argmax(diffs)
-        return gaps_arr[max_diff_idx][0]
-    elif len(slopes) == 0:
+    if len(slopes) == 0:
         return 1
-    else:
+    if len(slopes) == 1:
         return gaps_arr[0][0]
+    max_diff_idx = np.argmax(np.abs(np.diff(np.array(slopes))))
+    return gaps_arr[max_diff_idx][0]
 
 
 def gap_to_gap_slope_vectorized(gaps_arr: np.array, alignment_length: int) -> list[float]:

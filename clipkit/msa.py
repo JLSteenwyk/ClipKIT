@@ -1204,13 +1204,11 @@ class MSA:
 
         start_idx = zero_locs[0]
 
-        run = [arr[start_idx]]
         i = start_idx
         while i + 1 < len(arr) and arr[i + 1] == arr[i] + 1:
-            run.append(arr[i + 1])
             i += 1
 
-        return np.array(run, dtype=arr.dtype)
+        return arr[start_idx : i + 1].copy()
 
     def get_consecutive_ending_with_max(self, arr):
         if arr.size == 0:
@@ -1221,15 +1219,11 @@ class MSA:
             end_idx = max_locs[-1]
         except IndexError:
             return np.array([], dtype=arr.dtype)
-        run = [arr[end_idx]]
         i = end_idx
-        while i - 1 >= 0 and arr[i - 1] == arr[i] - 1:
-            run.append(arr[i - 1])
+        while i > 0 and arr[i - 1] == arr[i] - 1:
             i -= 1
 
-        run.reverse()
-
-        return np.array(run, dtype=arr.dtype)
+        return arr[i : end_idx + 1].copy()
 
     def get_consecutive_from_zero_and_max(self, arr):
         run_from_zero = self.get_consecutive_starting_from_zero(arr)

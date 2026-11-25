@@ -295,14 +295,18 @@ def _decompress_alignment(
 def _validate_checksum(sequences: Iterable[str], checksum: object) -> None:
     if not checksum:
         return
+    if _checksum(sequences) != checksum:
+        raise EcompDecodeError(
+            "Checksum mismatch while decoding .ecomp archive"
+        )
+
+
+def _checksum(sequences: Iterable[str]) -> str:
     digest = sha256()
     for seq in sequences:
         digest.update(seq.encode("utf-8"))
         digest.update(b"\n")
-    if digest.hexdigest() != checksum:
-        raise EcompDecodeError(
-            "Checksum mismatch while decoding .ecomp archive"
-        )
+    return digest.hexdigest()
 
 
 def _alignment_from_fasta_bytes(
@@ -528,13 +532,15 @@ def decode_blocks(
     return blocks
 
 
-def _read_varint(data: bytes, cursor: int) -> tuple[int, int]:
+def _read_varint(
+    data: bytes | memoryview, cursor: int, *, operation: str = "reading"
+) -> tuple[int, int]:
     shift = 0
     result = 0
     while True:
         if cursor >= len(data):
             raise EcompDecodeError(
-                "Unexpected end of data while reading varint"
+                f"Unexpected end of data while {operation} varint"
             )
         byte = data[cursor]
         cursor += 1
@@ -800,21 +806,7 @@ def _decode_sequence_ids(buffer: bytes) -> Tuple[list[str], bytes]:
 
 
 def _decode_varint(buffer: memoryview, cursor: int) -> Tuple[int, int]:
-    shift = 0
-    result = 0
-    while True:
-        if cursor >= len(buffer):
-            raise EcompDecodeError(
-                "Unexpected end of data while decoding varint"
-            )
-        byte = buffer[cursor]
-        cursor += 1
-        result |= (byte & 0x7F) << shift
-        if not (byte & 0x80):
-            return result, cursor
-        shift += 7
-        if shift > 56:
-            raise EcompDecodeError("Varint too long")
+    return _read_varint(buffer, cursor, operation="decoding")
 
 
 def _extract_permutation_chunk(

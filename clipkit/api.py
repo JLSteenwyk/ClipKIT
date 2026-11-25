@@ -90,37 +90,32 @@ def clipkit(
                     "'literal', or the corresponding AmbiguityHandling value."
                 ) from exc
 
-        # override options not currently available through programmatic interface
-        complement = False
-        use_log = False
-        quiet = True
-        auxiliary_file = None
-
+        mode = TrimmingMode(mode)
         trim_run, stats = run(
             input_source,
             input_file_format,
             output_file_path,
             output_file_format,
-            auxiliary_file,
-            sequence_type,
-            gaps,
-            gap_characters,
-            complement,
-            codon,
-            TrimmingMode(mode),
-            use_log,
-            quiet,
-            ends_only,
-            threads,
-            remove_stop_codons,
-            ambiguity_handling,
+            auxiliary_file=None,
+            sequence_type=sequence_type,
+            gaps=gaps,
+            gap_characters=gap_characters,
+            complement=False,
+            codon=codon,
+            mode=mode,
+            use_log=False,
+            quiet=True,
+            ends_only=ends_only,
+            threads=threads,
+            remove_stop_codons=remove_stop_codons,
+            ambiguity_handling=ambiguity_handling,
         )
 
         if plot_trim_report_path:
             write_trim_plot_report(
                 plot_trim_report_path,
                 trim_run.msa,
-                mode=TrimmingMode(mode).value,
+                mode=mode.value,
                 gaps=trim_run.gaps,
                 sequence_type=trim_run.sequence_type.value,
                 ambiguity_handling=trim_run.ambiguity_handling.value,

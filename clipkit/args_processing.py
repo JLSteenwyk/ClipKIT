@@ -4,7 +4,12 @@ import sys
 
 from .helpers import SeqType
 from .exceptions import StopCodonValidationError
-from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
+from .modes import (
+    AmbiguityHandling,
+    StopCodonMode,
+    TrimmingMode,
+    default_gap_threshold,
+)
 from .settings import DEFAULT_AA_GAP_CHARS
 
 logger = logging.getLogger(__name__)
@@ -54,18 +59,10 @@ def process_args(args) -> dict:
 
     if args.gaps is not None:
         gaps = float(args.gaps)
-    elif mode in {
-        TrimmingMode.entropy,
-        TrimmingMode.composition_bias,
-        TrimmingMode.heterotachy,
-    }:
-        # Entropy thresholds are normalized to [0, 1], where larger values
-        # indicate stronger per-site signal (diversity or compositional skew).
-        gaps = 0.8
     else:
-        gaps = 0.9
+        gaps = default_gap_threshold(mode)
     gap_characters = (
-        [c for c in args.gap_characters] if args.gap_characters is not None else None
+        list(args.gap_characters) if args.gap_characters is not None else None
     )
     auxiliary_file = args.auxiliary_file
     use_log = args.log or False

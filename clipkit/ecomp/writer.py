@@ -8,9 +8,8 @@ import struct
 import zlib
 from copy import deepcopy
 from dataclasses import dataclass
-from hashlib import sha256
 from pathlib import Path
-from typing import Iterable, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 from Bio.Align import MultipleSeqAlignment
 
@@ -20,6 +19,7 @@ from .reader import (
     INLINE_METADATA_VERSION,
     METADATA_COMPRESSED_MAGIC,
     METADATA_CODEC_VERSION,
+    _checksum,
 )
 
 
@@ -168,11 +168,3 @@ def _encode_metadata(metadata: dict[str, object], *, add_trailing_newline: bool)
     if add_trailing_newline:
         return json_bytes + b"\n"
     return json_bytes
-
-
-def _checksum(sequences: Iterable[str]) -> str:
-    digest = sha256()
-    for seq in sequences:
-        digest.update(seq.encode("utf-8"))
-        digest.update(b"\n")
-    return digest.hexdigest()

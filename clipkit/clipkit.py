@@ -26,7 +26,12 @@ from .helpers import (
 )
 from .guide_tree import build_parsimony_guide_tree
 from .logger import _SiteLogFileHandler, logger, log_file_logger
-from .modes import AmbiguityHandling, StopCodonMode, TrimmingMode
+from .modes import (
+    AmbiguityHandling,
+    StopCodonMode,
+    TrimmingMode,
+    default_gap_threshold,
+)
 from .msa import MSA
 from .plot_report import write_trim_plot_report
 from .settings import DEFAULT_AA_GAP_CHARS, DEFAULT_NT_GAP_CHARS
@@ -165,14 +170,7 @@ def run(
         output_file_format = FileFormat(output_file_format)
 
     if gaps is None:
-        if mode in {
-            TrimmingMode.entropy,
-            TrimmingMode.composition_bias,
-            TrimmingMode.heterotachy,
-        }:
-            gaps = 0.8
-        else:
-            gaps = 0.9
+        gaps = default_gap_threshold(mode)
 
     site_positions_to_trim = None
     guide_tree = None
