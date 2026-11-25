@@ -1,12 +1,5 @@
 from Bio.Align import MultipleSeqAlignment
 from Bio.Phylo.BaseTree import Tree
-from Bio.Phylo.TreeConstruction import (
-    DistanceCalculator,
-    DistanceTreeConstructor,
-    NNITreeSearcher,
-    ParsimonyScorer,
-    ParsimonyTreeConstructor,
-)
 
 
 def build_parsimony_guide_tree(alignment: MultipleSeqAlignment) -> Tree:
@@ -16,6 +9,14 @@ def build_parsimony_guide_tree(alignment: MultipleSeqAlignment) -> Tree:
     Uses an NJ tree from identity distances as a start tree, followed by
     NNI-based parsimony optimization.
     """
+    from Bio.Phylo.TreeConstruction import (
+        DistanceCalculator,
+        DistanceTreeConstructor,
+        NNITreeSearcher,
+        ParsimonyScorer,
+        ParsimonyTreeConstructor,
+    )
+
     distance_calculator = DistanceCalculator("identity")
     distance_matrix = distance_calculator.get_distance(alignment)
     nj_tree = DistanceTreeConstructor().nj(distance_matrix)
