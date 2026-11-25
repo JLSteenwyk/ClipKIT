@@ -220,3 +220,63 @@ CSV, and interleaved audit are in `benchmark-results/`.
 - Heterotachy remains dominated by Biopython parsimony guide-tree search.
   Substituting another tree algorithm could change the guide tree and trimming
   result, so it was not attempted.
+
+## 1.75× acceleration project
+
+This round compares ClipKIT 2.15.0 at `6044b1e` with the performance branch.
+The [targeted samples](benchmark-results/clipkit-175x-targeted.json) identify
+the revision pair for each optimization, and the
+[interleaved regression audit](benchmark-results/clipkit-175x-regression-audit.json)
+compares `161eb0c` directly with the starting revision. Targeted comparisons
+use the reference shown in the data. Treat each speedup as an incremental
+result against its stated reference.
+
+| Workload | Reference median | Candidate median | Speedup |
+| --- | ---: | ---: | ---: |
+| CLI version startup | 246 ms | 224 ms | 1.10× |
+| Medium gappy CLI with logging | 5.13 s | 1.48 s | 3.47× |
+| Medium mixed-case KPIC smart-gap CLI | 4.33 s | 0.58 s | 7.47× |
+| Medium heterotachy CLI | 1.07 s | 0.63 s | 1.70× |
+| Large gappy end to end, bounded FASTA reader | 538 ms | 504 ms | 1.07× |
+| Medium smart-gap end to end, batched FASTA writer | 393 ms | 347 ms | 1.13× |
+| Large HTML report CLI | 1.48 s | 1.01 s | 1.47× |
+| Large entropy CLI | 1.20 s | 1.06 s | 1.13× |
+| Medium ECOMP output | 347 ms | 339 ms | 1.02× |
+
+The regression audit found a specific import tradeoff. Tiny heterotachy's
+first in-process run moved from 6.2 ms to 27.4 ms because the timed call now
+includes the deferred tree import. The full CLI for the same input moved
+from 244 ms to 250 ms. Several tiny output-format cases incurred
+0.10–0.23 ms higher medians. In the same audit, large KPIC smart-gap output
+improved from 765 ms to 711 ms. The retained changes aim to reduce actual
+CLI and API work. A separate prototype for lazy output-statistics formatting
+gave mixed results on repeated tiny cases and was discarded.
+
+`make test` passed 520 unit and 135 integration tests on Linux for each of
+CPython 3.12.14, 3.13.15, 3.14.7, and 3.15.2 at `161eb0c`. The same suite
+also passed on 3.12.14 with the NumPy 1.26.0 and Biopython 1.82 dependency
+floors. The CI version check passed on the pushed branch. The full hosted
+macOS matrix has not run for this branch.
+
+Run the suites under a single Python 3.12 environment with the benchmark
+dependencies recorded in the JSON:
+
+```bash
+git worktree add --detach /tmp/clipkit-175x-reference 6044b1e
+git switch perf/clipkit-175x
+python3.12 -m venv /tmp/clipkit-175x-venv
+source /tmp/clipkit-175x-venv/bin/activate
+python -m pip install -r requirements.txt . numpy==2.0.2 biopython==1.83
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+python scripts/run_benchmark_smoke.py --compare-root /tmp/clipkit-175x-reference \
+  --suite core --warmups 1 --repetitions 5 --output /tmp/clipkit-core.json
+python scripts/run_benchmark_smoke.py --compare-root /tmp/clipkit-175x-reference \
+  --suite comprehensive --warmups 1 --repetitions 5 --output /tmp/clipkit-comprehensive.json
+make test
+```
+
+The runner compares deterministic bytes and alignment statistics and decodes
+ECOMP for its content and metadata check. The comprehensive suite adds CLI
+startup, HTML reporting, logs and complementary output, ambiguity-handling
+policies, large entropy and composition scoring, and medium heterotachy
+and mixed-case fixtures to the earlier coverage.
