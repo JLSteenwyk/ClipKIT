@@ -1497,3 +1497,27 @@ matched exactly. Its geometric means were 1.69× end to end, 1.32× for
 whole CLI runs, 1.53× for Python API cases, and 14.39× for algorithm-only
 cases. No core case measured more than 5% slower. The full rerun for
 the FASTA byte-gather change at `f8d239e` is in progress.
+
+### Pushed-revision compatibility verification
+
+On Linux x86-64 (kernel 6.8.0-55-generic), `make test` at pushed
+revision `94f76c3` passed **552 unit and 135 integration tests** in
+each of these environments.
+
+| CPython | NumPy | Biopython |
+| --- | --- | --- |
+| 3.12.14 | 2.0.2 | 1.83 |
+| 3.13.15 | 2.1.3 | 1.88 |
+| 3.14.7 | 2.5.5 | 1.88 |
+| 3.15.2 | 2.5.5 | 1.88 |
+| 3.12.14 | 1.26.0 | 1.82 |
+
+The final row uses the supported dependency floors. The 23-case exact
+metadata audit also matched the baseline in that environment. The
+[GitHub Version Consistency run](https://github.com/JLSteenwyk/ClipKIT/actions/runs/45687832853)
+passed on `94f76c3`. The macOS test workflow requires a default-branch
+push or pull request. No hosted macOS results are available for this
+branch.
+
+The benchmark worker uses `f8d239e`, whose production code, tests, and
+benchmark runner are identical to those at `94f76c3`.
