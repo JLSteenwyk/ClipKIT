@@ -65,15 +65,11 @@ def gap_to_gap_slope_vectorized(gaps_arr: np.array, alignment_length: int) -> li
     # Calculate cumulative sums
     cumsum = np.cumsum(normalized_counts)
 
-    # Calculate slopes between consecutive points
-    slopes = []
-    for i in range(1, len(gaps_arr)):
-        if gaps_values[i] != gaps_values[i-1]:  # Avoid division by zero
-            slope = abs((cumsum[i] - cumsum[i-1]) / (gaps_values[i] - gaps_values[i-1]))
-            slopes.append(slope)
-
-    # Only use first half of slopes
-    return slopes[: (len(slopes) // 2)]
+    distinct = gaps_values[1:] != gaps_values[:-1]
+    gap_changes = gaps_values[1:][distinct] - gaps_values[:-1][distinct]
+    count_changes = cumsum[1:][distinct] - cumsum[:-1][distinct]
+    slopes = np.abs(count_changes / gap_changes)
+    return list(slopes[: len(slopes) // 2])
 
 
 def gap_to_gap_slope(gaps_arr: np.array, alignment_length: int) -> list[float]:

@@ -26,6 +26,11 @@ here = Path(__file__)
 
 
 class TestSmartGapsHelper(object):
+    def test_vectorized_slopes_skip_duplicate_gaps_before_halving(self):
+        gaps = np.array([[1, 1], [1, 1], [0.5, 2], [0, 2], [0, 2]])
+
+        assert gap_to_gap_slope_vectorized(gaps, 8) == [0.5]
+
     def test_smart_gap_threshold_simple_case(self):
         ## set up
         alignment = AlignIO.read(f"{here.parent}/examples/simple.fa", "fasta")
