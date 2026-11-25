@@ -59,6 +59,9 @@ class BenchmarkCase:
     output_format: str | None = "fasta"
     auxiliary_file: str | None = None
     threads: int = 1
+    ambiguity_handling: str | None = None
+    plot_report: bool = False
+    startup_option: str | None = None
 
 
 CORE_MODES = (
@@ -256,6 +259,23 @@ CASES = {
         ),
         # Public CLI/API paths and stop-codon behavior.
         BenchmarkCase("cli_gappy_small", "cli", "small_aa", mode="gappy"),
+        *[
+            BenchmarkCase(
+                f"cli_startup_{option}", "cli", "tiny_nt",
+                operation="startup", startup_option=f"--{option}",
+            )
+            for option in ("help", "version")
+        ],
+        BenchmarkCase(
+            "cli_plot_report_large", "cli", "large_aa", plot_report=True,
+        ),
+        *[
+            BenchmarkCase(
+                f"cli_entropy_{policy}_medium_nt", "cli", "medium_nt",
+                mode="entropy", sequence_type="nt", ambiguity_handling=policy,
+            )
+            for policy in ("missing", "fractional", "literal")
+        ],
         BenchmarkCase("api_path_gappy_small", "api_path", "small_aa", mode="gappy"),
         BenchmarkCase("api_raw_gappy_small", "api_raw", "small_aa", mode="gappy"),
         BenchmarkCase(
@@ -647,7 +667,9 @@ def _api_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
 
 
 def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
-    dimensions = _fasta_dimensions(input_path, case.input_format)
+    dimensions = (
+        None if case.startup_option else _fasta_dimensions(input_path, case.input_format)
+    )
     effective_threads = (
         _effective_threads(case, *dimensions) if dimensions is not None else None
     )
@@ -682,6 +704,13 @@ def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
             command.extend(("--output_file_format", case.output_format))
         if case.auxiliary_file:
             command.extend(("--auxiliary_file", case.auxiliary_file))
+        if case.ambiguity_handling:
+            command.extend(("--ambiguity_handling", case.ambiguity_handling))
+        report_path = Path(temp_dir) / "report.html"
+        if case.plot_report:
+            command.extend(("--plot_trim_report", str(report_path)))
+        if case.startup_option:
+            command = [sys.executable, "-m", "clipkit", case.startup_option]
 
         start_cpu = _child_cpu_seconds()
         start = time.perf_counter()
@@ -692,8 +721,20 @@ def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
             raise RuntimeError(
                 f"ClipKIT CLI failed ({process.returncode}):\n{process.stderr}"
             )
-        output_bytes = output_path.stat().st_size
-        output_digest, comparison_type = _output_digest(output_path, case.output_format)
+        if case.startup_option:
+            stdout = process.stdout.encode()
+            stderr = process.stderr.encode()
+            output_bytes = len(stdout) + len(stderr)
+            output_digest = _hash_bytes(stdout + b"\0" + stderr)
+            comparison_type = "cli-output"
+        else:
+            output_bytes = output_path.stat().st_size
+            output_digest, comparison_type = _output_digest(output_path, case.output_format)
+            if case.plot_report:
+                report = report_path.read_bytes()
+                output_bytes += len(report)
+                output_digest = _hash_bytes(output_digest.encode("ascii") + report)
+                comparison_type = "alignment-and-plot"
 
     return {
         "runtime_seconds": elapsed,

@@ -39,6 +39,25 @@ def test_comprehensive_suite_covers_entry_points_and_stop_codon_modes():
     }
     assert {case.stop_codons for case in cases} >= {"terminal", "internal", "all"}
     assert {case.threads for case in cases} >= {1, 4}
+    assert {case.ambiguity_handling for case in cases} >= {
+        "missing", "fractional", "literal",
+    }
+    assert {case.startup_option for case in cases} >= {"--help", "--version"}
+    assert any(case.plot_report for case in cases)
+
+
+def test_cli_worker_hashes_startup_output_and_plot_artifacts():
+    path = _case_input("gappy_small")
+    startup = BENCHMARK._cli_worker(BENCHMARK.CASES["cli_startup_version"], path)
+    assert startup["comparison_type"] == "cli-output"
+    assert startup["output_bytes"] > 0
+
+    case = BENCHMARK.BenchmarkCase("plot", "cli", "small_aa", plot_report=True)
+    rendered = BENCHMARK._cli_worker(case, path)
+    plain = BENCHMARK._cli_worker(BENCHMARK.CASES["cli_gappy_small"], path)
+    assert rendered["comparison_type"] == "alignment-and-plot"
+    assert rendered["output_bytes"] > plain["output_bytes"]
+    assert rendered["output_sha256"] != plain["output_sha256"]
 
 
 def test_core_suite_covers_every_target_mode_shape_and_entry_point():
