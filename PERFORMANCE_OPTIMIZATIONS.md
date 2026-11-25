@@ -1416,3 +1416,30 @@ also matched the baseline exactly. It measured 1.69× end to end,
 for algorithm-only cases. No core case measured more than 5% slower
 in that checkpoint. The final core and comprehensive rerun at
 `20d4a20` is in progress.
+
+### Startup-bound CLI baseline audit
+
+Six interleaved fresh-process observations per source compared the following
+commands at `20d4a20` and `6044b1e`. Checked alignments matched exactly.
+The last column is the reduction still needed to reach 1.75×.
+
+| CLI workflow | Baseline median | Candidate median | Speedup | Additional reduction |
+| --- | ---: | ---: | ---: | ---: |
+| Small gappy | 246.78 ms | 220.06 ms | 1.12× | 79.05 ms |
+| Small KPIC-gappy | 253.45 ms | 220.65 ms | 1.15× | 75.82 ms |
+| Medium nucleotide smart-gap | 333.38 ms | 227.80 ms | 1.46× | 37.30 ms |
+| Medium fractional ambiguity | 329.72 ms | 228.75 ms | 1.44× | 40.34 ms |
+| Medium literal ambiguity | 329.02 ms | 227.34 ms | 1.45× | 39.32 ms |
+| Tiny heterotachy | 243.19 ms | 238.83 ms | 1.02× | 99.86 ms |
+
+The warmed small workloads spend only a few milliseconds trimming.
+The import trace and the interleaved startup prototypes above put the
+largest remaining opportunity at the Biopython import boundary. A
+startup change needs to avoid both the eager tree import penalty for
+ordinary CLI commands and the deferred sequence-I/O penalty for
+in-process format handling. Both penalties were reproduced.
+
+GitHub’s [Version Consistency run](https://github.com/JLSteenwyk/ClipKIT/actions/runs/45686316875)
+passed on `6737aff`. The local four-version test matrix covers the
+runtime code on this branch. The hosted CI workflow targets the
+default branch and pull requests.
