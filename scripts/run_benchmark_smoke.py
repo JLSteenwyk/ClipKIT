@@ -63,6 +63,7 @@ class BenchmarkCase:
     threads: int = 1
     ambiguity_handling: str | None = None
     plot_report: bool = False
+    log_and_complement: bool = False
     startup_option: str | None = None
 
 
@@ -205,6 +206,10 @@ CASES = {
             "heterotachy_medium", "cli", "generated_clades_nt",
             mode="heterotachy", gaps=0.8, sequence_type="nt",
         ),
+        BenchmarkCase(
+            "cli_heterotachy_tiny", "cli", "tiny_nt",
+            mode="heterotachy", gaps=0.8, sequence_type="nt",
+        ),
         BenchmarkCase("kpi_small", "execute", "small_aa", mode="kpi"),
         BenchmarkCase("kpi_gappy_small", "execute", "small_aa", mode="kpi_gappy"),
         BenchmarkCase(
@@ -285,6 +290,10 @@ CASES = {
         ],
         BenchmarkCase(
             "cli_plot_report_large", "cli", "large_aa", plot_report=True,
+        ),
+        BenchmarkCase(
+            "cli_log_and_complement_medium", "cli", "medium_aa",
+            gaps=0.95, log_and_complement=True,
         ),
         *[
             BenchmarkCase(
@@ -726,6 +735,8 @@ def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
         report_path = Path(temp_dir) / "report.html"
         if case.plot_report:
             command.extend(("--plot_trim_report", str(report_path)))
+        if case.log_and_complement:
+            command.extend(("--log", "--complementary"))
         if case.startup_option:
             command = [sys.executable, "-m", "clipkit", case.startup_option]
 
@@ -752,6 +763,14 @@ def _cli_worker(case: BenchmarkCase, input_path: Path) -> dict[str, Any]:
                 output_bytes += len(report)
                 output_digest = _hash_bytes(output_digest.encode("ascii") + report)
                 comparison_type = "alignment-and-plot"
+            if case.log_and_complement:
+                digests = [output_digest]
+                for suffix in (".log", ".complement"):
+                    artifact = output_path.with_suffix(suffix).read_bytes()
+                    output_bytes += len(artifact)
+                    digests.append(_hash_bytes(artifact))
+                output_digest = _hash_bytes("".join(digests).encode("ascii"))
+                comparison_type = "alignment-log-and-complement"
 
     return {
         "runtime_seconds": elapsed,

@@ -44,6 +44,7 @@ def test_comprehensive_suite_covers_entry_points_and_stop_codon_modes():
     }
     assert {case.startup_option for case in cases} >= {"--help", "--version"}
     assert any(case.plot_report for case in cases)
+    assert any(case.log_and_complement for case in cases)
 
 
 def test_cli_worker_hashes_startup_output_and_plot_artifacts():
@@ -58,6 +59,18 @@ def test_cli_worker_hashes_startup_output_and_plot_artifacts():
     assert rendered["comparison_type"] == "alignment-and-plot"
     assert rendered["output_bytes"] > plain["output_bytes"]
     assert rendered["output_sha256"] != plain["output_sha256"]
+
+
+def test_cli_worker_hashes_log_and_complement_artifacts():
+    case = BENCHMARK.BenchmarkCase(
+        "diagnostics", "cli", "small_aa", log_and_complement=True
+    )
+    path = _case_input("gappy_small")
+    diagnostics = BENCHMARK._cli_worker(case, path)
+    plain = BENCHMARK._cli_worker(BENCHMARK.CASES["cli_gappy_small"], path)
+    assert diagnostics["comparison_type"] == "alignment-log-and-complement"
+    assert diagnostics["output_bytes"] > plain["output_bytes"]
+    assert diagnostics["output_sha256"] != plain["output_sha256"]
 
 
 def test_core_suite_covers_every_target_mode_shape_and_entry_point():
