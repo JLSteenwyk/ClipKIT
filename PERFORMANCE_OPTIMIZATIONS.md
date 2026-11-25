@@ -858,3 +858,22 @@ measured 1.56× across end-to-end cases, 2.10× for the whole-CLI subset,
 1.50× for Python API cases, and 13.91× for algorithm-only cases. Tiny
 first-call heterotachy was the only runtime regression above 5% in
 that suite.
+
+### C3 and small-file profiling
+
+At `c262934`, median warmed C3 execution took 3.53 ms. Reading took
+1.23 ms and writing took 1.76 ms, together accounting for 85% of the
+profiled time. Trimming itself took 0.05 ms. Medium ECOMP spent 133 ms
+of 244 ms in writing, which includes compression. The stage JSON
+records both profiles and the small gappy control.
+
+A prototype gathered all selected columns into one array for medium
+FASTA output. It slowed fresh-process C3 by 8.7% and codon trimming by
+7.8%, so the implementation retains row-wise selection. Commit
+`9bce4f6` removes duplicate Biopython alignment-length traversals.
+The interleaved C3 median moved from 5.35 to 5.25 ms with exact output.
+Further gains on this C3 case depend on parsing and writing costs.
+
+The [54-case core result](benchmark-results/clipkit-175x-core-c9774e8.json)
+at `c9774e8` matched the baseline exactly. The end-to-end geometric mean
+was 1.42× and the algorithm-only geometric mean was 13.25×.
