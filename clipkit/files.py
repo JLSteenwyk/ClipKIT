@@ -16,6 +16,7 @@ from .ecomp.reader import HEADER_MAGIC, EcompDecodeError
 
 
 _FASTA_BLOCK_BYTES = 1 << 20
+_FASTA_BLOCK_MIN_FILE_BYTES = 64 << 10
 _NONPRINTABLE_FASTA_BYTES = bytes(range(32)) + bytes(range(127, 256))
 _FASTA_VALIDATION = bytes.maketrans(
     _NONPRINTABLE_FASTA_BYTES, bytes(len(_NONPRINTABLE_FASTA_BYTES))
@@ -56,7 +57,7 @@ def _read_alignment(path, file_format):
         return AlignIO.read(path, file_format.value)
     if file_format == FileFormat.fasta:
         info = stat(path)
-        if S_ISREG(info.st_mode) and info.st_size >= _FASTA_BLOCK_BYTES:
+        if S_ISREG(info.st_mode) and info.st_size >= _FASTA_BLOCK_MIN_FILE_BYTES:
             try:
                 with open(path, "rb") as handle:
                     return MultipleSeqAlignment(_iter_plain_fasta_records(handle))

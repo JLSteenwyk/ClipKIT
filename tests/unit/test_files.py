@@ -33,6 +33,7 @@ def test_block_fasta_preserves_biopython_records(tmp_path, monkeypatch, mocker, 
     with path.open() as handle:
         expected = AlignIO.read(handle, "fasta")
     monkeypatch.setattr(files_module, "_FASTA_BLOCK_BYTES", 20)
+    monkeypatch.setattr(files_module, "_FASTA_BLOCK_MIN_FILE_BYTES", 20)
     biopython_read = mocker.spy(AlignIO, "read")
 
     actual, format_detected = get_alignment_and_format(path, None)
