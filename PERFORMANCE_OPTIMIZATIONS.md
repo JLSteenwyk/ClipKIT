@@ -1254,3 +1254,67 @@ API, and codon controls within 2%. The current matrix cutoff remains.
 The [54-case core comparison at `fef1ffa`](benchmark-results/clipkit-175x-core-fef1ffa.json)
 matched `6044b1e` exactly and measured 1.60× end to end and 13.08× for
 algorithm-only cases.
+
+### Runtime commit and rollback index
+
+This continues the implementation history above. The [targeted samples](benchmark-results/clipkit-175x-targeted.json)
+identify the reference and candidate used for each timing comparison.
+
+| Commit | Change | Verification |
+| --- | --- | --- |
+| `d9385d5` | Reuse the existing matrix when all sites are kept | Exact CST output with and without logging |
+| `a6edb03` | Parse common raw API inputs in memory | Exact raw and file API output, CRLF and no-tempfile tests |
+| `7d08ec7` | Stream validated wide FASTA output one row at a time | Exact main and complement output and reduced peak RSS |
+| `b78e9a0` | Bound integer gap checks for stop masking | Exact terminal, internal, and all-mode output and metadata |
+| `f19e096` | Parse informational CLI flags before importing numerical code | Exact help/version output, import compatibility, and small CLI controls |
+| `eabf605` | Widen packed ASCII to a Unicode matrix | Exact large matrix construction and trimmed output |
+| `9908ef8` | Reduce histogram batch width to 256 columns | Exact sparse and dense cases with bounded RSS |
+| `ae894a4` | Serialize validated FASTA rows directly | Exact headers, line wrapping, complements, and destination error handling |
+| `93a6e74` | Combine excluded residue filters | Exact classification and gap summaries |
+| `218368e` | Reconstruct dash counts in sparse histograms | Exact KPIC counts and dense controls |
+| `c00fc29` | Use integer gap membership for medium ASCII inputs | Exact rounded fractions, ends-only results, and uppercase fallback |
+| `4f44170` | Locate terminal stop positions by row | Exact masked alignments and metadata, including all-gap rows |
+| `1ddf348` | Translate literal gaps during sequence-type inference | Exact type inference around the 200-residue boundary |
+| `4ed4dc8` | Use byte membership for ASCII gap-only warnings | Exact log and complement, Unicode uppercase fallback |
+| `c9774e8` | Share trim and log residue counts | Exact log bytes and dry-run behavior |
+| `8fbeef9` | Subtract resolved counts in dash-dominated batches | Exact sparse and dense gap fractions |
+| `7821042` | Build keep-only CST complements with a mask | Exact unordered and duplicate keep lists |
+| `c262934` | Pass CST arrays directly into trimming | Exact million-site FASTA and unchanged public list helper |
+| `9bce4f6` | Reuse the validated alignment length | Exact C3, small gappy, codon, and dense controls |
+| `3a87d78` | Decode large ECOMP FASTA incrementally | Exact decoded data and trimmed output, including CRLF and Unicode headers |
+| `38d8946` | Buffer per-site log file writes | Byte-identical log and alignments, handler cleanup tests |
+| `a9ccb80` | Fill the final Unicode matrix row by row | Exact byte widening, padding, and truncation |
+| `192f57a` | Split standard FASTA on its one-byte header marker | Exact standard and embedded-marker input |
+| `913afff` | Use the block reader for files from 64 KiB | Exact small amino-acid, API, C3, and codon controls |
+| `2ab1d58` | Use the block reader for raw ASCII FASTA | Exact LF and CRLF API results with no temporary input file |
+| `a9e75d1` | Vectorize the existing smart-gap slope formula | Exact thresholds and duplicate-gap cases |
+| `fc041aa` | Narrow histogram batches for compact small matrices | Exact small raw KPIC-smart-gap and dense controls |
+| `fa671f8` | Write smaller FASTA selections directly | Exact kept and complementary bytes |
+| `261b4b3` | Decode the wrapping array directly | Exact checked FASTA output |
+| `fef1ffa` | Validate direct FASTA in row batches | Exact bytes and destination preservation on later invalid rows |
+| `703e30d` | Reuse the FASTA wrapping buffer | Exact multiple-row output and unusual-header fallback |
+| `37c9828` | Join only FASTA records spanning blocks | Exact block-boundary, embedded-marker, and CRLF input |
+| `e2f8a67` | Check for lowercase on packed byte rows | Exact input case, high punctuation, NUL padding, and mixed-case controls |
+| `20d4a20` | Enforce explicit binary stream formats and preserve fallback position | Exact small API controls, explicit PHYLIP rejection, and CRLF rewind |
+
+For rollback, undo `20d4a20` before `2ab1d58` because it protects the
+binary stream path introduced there. The raw FASTA cutoff also uses
+`913afff`. Revert `37c9828` before `192f57a` because both change the
+block-delimiter implementation. Revert `e2f8a67` before `a9ccb80`, and
+`a9ccb80` before `eabf605`, to unwind the packed matrix path. Revert
+`703e30d`, `fef1ffa`, `261b4b3`, and `fa671f8` in reverse history
+order before removing the direct row writer in `ae894a4`. The buffered
+FASTA writer in `7d08ec7` builds on the wrapping code from `684e8bb`.
+Revert `8fbeef9` before `218368e` to remove the shared dash-density
+sample. Revert `fc041aa` before `9908ef8` to undo the batch settings.
+Revert `c262934` before `7821042` to unwind the keep-only CST path.
+
+Set-based matching of observed states was tested on the small raw API,
+small KPIC-gappy, medium nucleotide, and dense amino-acid cases. The
+repeat comparison was within 2.2% for all four cases, with exact
+outputs, so the existing NumPy membership check remains.
+
+The Linux test matrix for `20d4a20` passed 552 unit and 135 integration
+tests on each of CPython 3.12.14, 3.13.15, 3.14.7, and 3.15.2.
+GitHub's [Version Consistency run](https://github.com/JLSteenwyk/ClipKIT/actions/runs/45685074669)
+passed on branch commit `2492e7f`.
