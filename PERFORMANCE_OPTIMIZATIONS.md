@@ -804,3 +804,22 @@ The comprehensive run flagged tiny heterotachy, FASTA output, and Mauve
 output above 5% slower. The earlier interleaved audit reproduced the
 first-call heterotachy deferral, while FASTA and Mauve were faster in
 that audit. The log-path improvements follow this checkpoint.
+
+### Gap membership on highly sparse alignments
+
+Commit `8fbeef9` reuses the existing dash-density sample and counts
+resolved residues in sparse row batches. Subtracting those counts from
+the batch size gives exact gap and ambiguity counts without traversing
+the full matrix for each gap symbol. Dense batches use the existing
+membership pass. The new regression test combines sparse rows,
+non-dash ambiguity symbols, and a dense batch in one alignment.
+
+| Workload | Previous median | Candidate median | Speedup |
+| --- | ---: | ---: | ---: |
+| Medium smart-gap | 219.26 ms | 207.38 ms | 1.06× |
+| Large gappy end to end | 354.41 ms | 344.49 ms | 1.03× |
+| Large gappy algorithm | 140.45 ms | 139.33 ms | 1.01× |
+| Dense amino-acid gappy algorithm | 10.04 ms | 10.11 ms | 0.99× |
+
+The six interleaved observations per side matched exactly. Median peak
+RSS stayed within 1% across these workloads.
