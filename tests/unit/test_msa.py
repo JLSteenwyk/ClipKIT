@@ -74,6 +74,20 @@ def test_large_msa_keeps_biopython_ascii_validation():
         MSA.from_bio_msa(MultipleSeqAlignment(records), sequence_type="aa")
 
 
+def test_large_ascii_msa_pads_and_truncates_records_changed_after_reading():
+    width = 500_000
+    alignment = MultipleSeqAlignment([SeqRecord(Seq("A" * width)) for _ in range(3)])
+    alignment[1].seq = Seq("a\0C")
+    alignment[2].seq = Seq("G" * width + "T")
+
+    msa = MSA.from_bio_msa(alignment, sequence_type="nt")
+
+    assert msa.seq_records.shape == (3, width)
+    assert msa.seq_records[1, :4].tolist() == ["a", "", "C", ""]
+    assert np.all(msa.seq_records[1, 3:] == "")
+    assert np.all(msa.seq_records[2] == "G")
+
+
 def test_untrimmed_bio_alignment_is_independent_of_source_matrix():
     msa = MSA.from_bio_msa(get_biopython_msa("tests/unit/examples/simple.fa"))
     output = msa.to_bio_msa()

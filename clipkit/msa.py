@@ -214,13 +214,13 @@ class MSA:
         if alignment_length == 0:
             seq_records = np.empty((len(sequences), 0), dtype="U1")
         elif packed_ascii:
-            packed = np.asarray(sequences, dtype=f"S{alignment_length}")
-            seq_records = (
-                packed.view(np.uint8)
-                .astype(np.uint32)
-                .view("U1")
-                .reshape(len(sequences), alignment_length)
-            )
+            code_points = np.empty((len(sequences), alignment_length), dtype=np.uint32)
+            for row, sequence in zip(code_points, sequences):
+                width = min(len(sequence), alignment_length)
+                row[:width] = np.frombuffer(sequence, dtype=np.uint8, count=width)
+                if width < alignment_length:
+                    row[width:] = 0
+            seq_records = code_points.view("U1")
         else:
             seq_records = (
                 np.array(sequences, dtype=f"U{alignment_length}")
