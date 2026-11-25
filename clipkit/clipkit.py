@@ -378,28 +378,28 @@ def execute(
             )
             return
 
-        # display to user what args are being used in stdout
-        write_user_args(
-            input_file,
-            trim_run.input_file_format,
-            output_file,
-            trim_run.output_file_format,
-            trim_run.sequence_type,
-            trim_run.gaps,
-            trim_run.gap_characters,
-            mode,
-            complement,
-            codon,
-            use_log,
-            ends_only,
-            trim_run.stop_codon_masking,
-            trim_run.ambiguity_handling,
-        )
+        if logger.isEnabledFor(logging.INFO):
+            write_user_args(
+                input_file,
+                trim_run.input_file_format,
+                output_file,
+                trim_run.output_file_format,
+                trim_run.sequence_type,
+                trim_run.gaps,
+                trim_run.gap_characters,
+                mode,
+                complement,
+                codon,
+                use_log,
+                ends_only,
+                trim_run.stop_codon_masking,
+                trim_run.ambiguity_handling,
+            )
 
-        if dry_run:
-            logger.info("Dry run enabled. No output files were written.")
-        else:
-            write_output_files_message(output_file, complement, use_log)
+            if dry_run:
+                logger.info("Dry run enabled. No output files were written.")
+            else:
+                write_output_files_message(output_file, complement, use_log)
 
         if (not dry_run) and use_log:
             warn_if_all_sites_were_trimmed(trim_run.msa)
