@@ -481,6 +481,13 @@ class MSA:
 
         _, counts_by_state = self._get_non_gap_character_counts(cache_key="entropy")
         total_counts = counts_by_state.sum(axis=0).astype(float)
+        if (
+            self._ambiguity_handling == AmbiguityHandling.missing
+            and self._site_analyzable_fraction_cache is None
+        ):
+            self._site_analyzable_fraction_cache = np.around(
+                total_counts / self.seq_records.shape[0], decimals=4
+            )
         observed_states = np.count_nonzero(counts_by_state, axis=0)
         raw_entropy = np.zeros(counts_by_state.shape[1], dtype=float)
 

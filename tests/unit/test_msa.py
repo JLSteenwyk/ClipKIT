@@ -526,6 +526,18 @@ def test_large_gap_fractions_match_membership_across_row_batches():
     )
 
 
+def test_entropy_trimming_reuses_its_totals_for_empty_sites(mocker):
+    records = np.array([list("AN-"), list("CN-"), list("GA-")], dtype="U1")
+    msa = MSA([{}] * len(records), records, gap_chars=["-"], sequence_type="nt")
+    count_columns = mocker.spy(msa_module, "_column_character_counts")
+
+    msa.trim(mode=TrimmingMode.entropy, gap_threshold=0.9)
+
+    assert count_columns.call_count == 1
+    np.testing.assert_array_equal(msa._site_positions_to_trim, [0, 2])
+    np.testing.assert_array_equal(msa.site_analyzable_fraction, [1.0, 0.3333, 0.0])
+
+
 @pytest.mark.parametrize(
     "mode",
     [
