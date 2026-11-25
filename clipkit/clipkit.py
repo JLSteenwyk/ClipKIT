@@ -204,6 +204,10 @@ def run(
     )
     gap_characters = msa.gap_chars
 
+    if use_log:
+        # The log needs classifications, whose residue counts also give gappyness.
+        _ = msa.site_classification_types
+
     # determine smart_gap threshold
     if mode in {
         TrimmingMode.smart_gap,
@@ -364,7 +368,7 @@ def execute(
                 complement,
                 codon,
                 mode,
-                use_log,
+                use_log and not dry_run,
                 quiet,
                 ends_only,
                 threads,
