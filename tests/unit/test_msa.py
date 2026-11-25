@@ -67,6 +67,15 @@ def test_large_ascii_msa_preserves_case_and_writable_unicode_matrix():
     assert msa.seq_records.view(f"U{len(sequences[0])}").ravel().tolist() == sequences
 
 
+def test_untrimmed_bio_alignment_is_independent_of_source_matrix():
+    msa = MSA.from_bio_msa(get_biopython_msa("tests/unit/examples/simple.fa"))
+    output = msa.to_bio_msa()
+    expected = str(output[0].seq)
+    msa.seq_records[0, 0] = "X"
+
+    assert str(output[0].seq) == expected
+
+
 @pytest.mark.parametrize("policy", list(AmbiguityHandling))
 @pytest.mark.parametrize(
     ("sequence_type", "alphabet", "clade_size"),

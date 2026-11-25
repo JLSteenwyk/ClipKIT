@@ -201,7 +201,13 @@ class MSA:
         )
 
     def to_bio_msa(self) -> MultipleSeqAlignment:
-        return self._to_bio_msa(self.sites_kept)
+        sites = (
+            self.seq_records
+            if isinstance(self.seq_records, np.ndarray)
+            and self.length == self.seq_records.shape[1]
+            else self.sites_kept
+        )
+        return self._to_bio_msa(sites)
 
     def complement_to_bio_msa(self) -> MultipleSeqAlignment:
         return self._to_bio_msa(self.sites_trimmed)
@@ -476,8 +482,7 @@ class MSA:
 
     @property
     def is_empty(self) -> bool:
-        all_zeros = np.all(self.sites_kept[0] == "")
-        return all_zeros
+        return np.all(np.take(self.seq_records[0], self._site_positions_to_keep) == "")
 
     @property
     def site_entropy(self) -> np.ndarray:
