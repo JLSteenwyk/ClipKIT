@@ -8,6 +8,9 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+- Added support for Python 3.14 and 3.15 and raised the minimum supported
+  version to Python 3.12.
+
 **2.14.0**
 
 - Added ``--ambiguity_handling {missing,fractional,literal}`` and equivalent

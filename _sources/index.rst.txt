@@ -39,6 +39,8 @@ Below are more detailed instructions, including alternative installation methods
 
 **1) Installation**
 
+ClipKIT supports Python 3.12 through 3.15.
+
 To help ensure ClipKIT can be installed using your favorite workflow, we have made ClipKIT available from pip, source, and the anaconda cloud.
 
 **Install from pip**
