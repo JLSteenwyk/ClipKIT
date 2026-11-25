@@ -27,7 +27,8 @@ from .stop_codons import STOP_CODONS, StopCodonMaskingStats
 
 # Counting a batch at a time bounds the temporary integer matrix while still
 # letting np.bincount process many columns in one compiled operation.
-_COLUMN_COUNT_BATCH_SIZE = 1024
+_COLUMN_COUNT_BATCH_SIZE = 256
+_HETEROTACHY_SITE_BATCH_SIZE = 1024
 _MAX_DENSE_CODE_SPAN = 512
 _MIN_CELLS_FOR_COLUMN_COUNTING = 1_000_000
 
@@ -892,8 +893,8 @@ class MSA:
                 if self._ambiguity_handling == AmbiguityHandling.fractional
                 else None
             )
-            for start in range(0, n_sites, _COLUMN_COUNT_BATCH_SIZE):
-                stop = min(start + _COLUMN_COUNT_BATCH_SIZE, n_sites)
+            for start in range(0, n_sites, _HETEROTACHY_SITE_BATCH_SIZE):
+                stop = min(start + _HETEROTACHY_SITE_BATCH_SIZE, n_sites)
                 normalized = _uppercase_records(self.seq_records[:, start:stop])
                 entropies = np.empty((stop - start, len(clade_indices)), dtype=float)
                 for col, indices in enumerate(clade_indices):
