@@ -87,6 +87,76 @@ class TestAutomaticFileTypeDetermination(object):
         with pytest.raises(InvalidInputFileFormat, match="File could not be read"):
             get_alignment_and_format(input_file, None)
 
+    def test_get_alignment_and_format_reads_explicit_phylip_relaxed(self, tmp_path):
+        relaxed = tmp_path / "relaxed.phy"
+        relaxed.write_text(
+            " 2 6\n"
+            "long_taxon_name_one  ACGTAC\n"
+            "long_taxon_name_two  ACGTTA\n"
+        )
+
+        alignment, in_file_format = get_alignment_and_format(
+            str(relaxed), FileFormat.phylip_relaxed.value
+        )
+
+        assert in_file_format == FileFormat.phylip_relaxed
+        assert alignment.get_alignment_length() == 6
+        assert [rec.id for rec in alignment] == [
+            "long_taxon_name_one",
+            "long_taxon_name_two",
+        ]
+
+    def test_get_alignment_and_format_reads_explicit_phylip_sequential(self, tmp_path):
+        sequential = tmp_path / "sequential.phy"
+        sequential.write_text(
+            " 2 12\n"
+            "taxon_one ACGTAC\n"
+            "GTACGT\n"
+            "taxon_two ACGTTA\n"
+            "GTACGA\n"
+        )
+
+        alignment, in_file_format = get_alignment_and_format(
+            str(sequential), FileFormat.phylip_sequential.value
+        )
+
+        assert in_file_format == FileFormat.phylip_sequential
+        assert alignment.get_alignment_length() == 12
+        assert [str(rec.seq) for rec in alignment] == ["ACGTACGTACGT", "ACGTTAGTACGA"]
+
+    def test_get_alignment_and_format_autodetects_phylip_sequential(self, tmp_path):
+        sequential = tmp_path / "sequential.phy"
+        sequential.write_text(
+            " 2 12\n"
+            "taxon_one ACGTAC\n"
+            "GTACGT\n"
+            "taxon_two ACGTTA\n"
+            "GTACGA\n"
+        )
+
+        alignment, in_file_format = get_alignment_and_format(str(sequential), None)
+
+        assert in_file_format == FileFormat.phylip_sequential
+        assert alignment.get_alignment_length() == 12
+        assert [str(rec.seq) for rec in alignment] == ["ACGTACGTACGT", "ACGTTAGTACGA"]
+
+    def test_get_alignment_and_format_autodetects_phylip_relaxed(self, tmp_path):
+        relaxed = tmp_path / "relaxed.phy"
+        relaxed.write_text(
+            " 2 12\n"
+            "short_taxon  ACGTACGTACGT\n"
+            "much_longer_taxon_name  ACGTTAGTACGA\n"
+        )
+
+        alignment, in_file_format = get_alignment_and_format(str(relaxed), None)
+
+        assert in_file_format == FileFormat.phylip_relaxed
+        assert alignment.get_alignment_length() == 12
+        assert [rec.id for rec in alignment] == [
+            "short_taxon",
+            "much_longer_taxon_name",
+        ]
+
 
 class TestCustomSitesParsing(object):
     def test_get_custom_sites_to_trim_invalid_format(self, tmp_path):

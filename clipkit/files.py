@@ -22,6 +22,16 @@ class FileFormat(Enum):
     ecomp = "ecomp"
 
 
+_BIOPYTHON_FORMAT_MAP = {
+    FileFormat.phylip_relaxed: "phylip-relaxed",
+    FileFormat.phylip_sequential: "phylip-sequential",
+}
+
+
+def _to_biopython_format(file_format: FileFormat) -> str:
+    return _BIOPYTHON_FORMAT_MAP.get(file_format, file_format.value)
+
+
 def get_alignment_and_format(
     input_file_name: str, file_format: FileFormat
 ) -> tuple[MultipleSeqAlignment, FileFormat]:
@@ -36,7 +46,7 @@ def get_alignment_and_format(
             alignment, _ = read_ecomp(input_file_name)
             return alignment, file_format
         with open(input_file_name) as handle:
-            alignment = AlignIO.read(handle, file_format.value)
+            alignment = AlignIO.read(handle, _to_biopython_format(file_format))
         return alignment, file_format
     else:
         # attempt to auto-detect file format
@@ -51,7 +61,7 @@ def get_alignment_and_format(
                 continue
             try:
                 with open(input_file_name) as handle:
-                    alignment = AlignIO.read(handle, fileFormat.value)
+                    alignment = AlignIO.read(handle, _to_biopython_format(fileFormat))
                 return alignment, fileFormat
             # the following exceptions refer to skipping over errors
             # associated with reading the wrong input file
