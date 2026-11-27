@@ -181,6 +181,7 @@ def test_recipe_build_bump_preserves_jinja_and_unrelated_fields():
     _, parsed, _, _, version = sync.parse_recipe(result)
     assert version == "2.7.0"
     assert parsed["build"]["number"] == 1
+    assert parsed["source"]["url"] == SOURCE["url"]
     assert parsed["extra"]["recipe-maintainers"] == ["pauldg"]
     assert "{{ PYTHON }}" in result
     assert "{{ pin_subpackage('clipkit', max_pin=\"x\") }}" in result

@@ -206,6 +206,7 @@ def update_recipe(text, version, source, entries, python, dependencies, build_de
         commands.append(f"python {TEST_NAME}")
     changed = any((
         previous != version,
+        recipe["source"].get("url") != source["url"],
         recipe["source"].get("sha256") != source["digests"]["sha256"],
         old_entries != desired_entries,
         sorted(recipe["requirements"]["run"]) != run,
@@ -216,13 +217,8 @@ def update_recipe(text, version, source, entries, python, dependencies, build_de
     ))
     if not changed:
         return text
-    # Retain a version-templated PyPI URL so Bioconda's autobump can still update it.
-    version_token = next((key for key, value in tokens.items() if value == "{{ version }}"),
-                         "__CLIPKIT_VERSION__")
-    tokens[version_token] = "{{ version }}"
-    recipe["source"]["url"] = (
-        f"https://pypi.org/packages/source/p/clipkit/clipkit-{version_token}.tar.gz"
-    )
+    # PyPI's version-templated shortcut can return 404 for a published sdist.
+    recipe["source"]["url"] = source["url"]
     recipe["source"]["sha256"] = source["digests"]["sha256"]
     build = recipe["build"]
     build["number"] = 0 if previous != version else int(build["number"]) + 1
