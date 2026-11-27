@@ -1,0 +1,2 @@
+packaging>=24,<27
+ruamel.yaml>=0.18,<0.19

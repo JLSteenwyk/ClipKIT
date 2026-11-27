@@ -45,3 +45,36 @@ Use a project-scoped PyPI API token. Store it as the `PYPI_API_TOKEN`
 Actions secret for automated releases, or use the local `pypi` entry in
 `~/.pypirc` or Twine environment variables for manual recovery. Never commit
 a token or print it in release logs.
+
+## Bioconda
+
+After a version tag publishes to PyPI, the release workflow calls **Sync
+Bioconda release**. It checks both PyPI artifact hashes, generates the recipe
+from wheel and source metadata, and builds and tests the package. A separate
+job uses `BIOCONDA_GITHUB_TOKEN` to open or update a PR in
+`bioconda/bioconda-recipes`. Bioconda reviews the PR and publishes the package.
+
+Add the repository Actions secret `BIOCONDA_GITHUB_TOKEN` with a dedicated
+credential that can push to the Bioconda recipes fork and open and edit
+upstream PRs. The default fork is `JLSteenwyk/bioconda-recipes`. Set the
+repository variable `BIOCONDA_FORK` to override it. Use GitHub settings or
+`gh secret set BIOCONDA_GITHUB_TOKEN --repo JLSteenwyk/ClipKIT` and enter the
+credential interactively.
+
+To validate a published release without credentials or upstream writes:
+
+```sh
+gh workflow run bioconda-release.yml --repo JLSteenwyk/ClipKIT \
+  --ref main -f version=2.16.2 -f dry_run=true
+```
+
+Manual runs default to dry run. If a maintainer or autobump PR already changes
+the ClipKIT recipe, the publish job reports its URL and stops before pushing.
+The generated recipe remains downloadable from the run, including on Conda build
+failure. A recipe that changes upstream during the build requires a rerun.
+
+The generated noarch recipe starts with Python 3.12 and evaluates the wheel's
+Python-version markers for that minor. This preserves ClipKIT's NumPy bounds in
+a recipe that has one runtime dependency set. PyPI support is independent of
+that Conda pin. Review the pin and mappings in `scripts/bioconda/sync.py` when
+changing ClipKIT's Python or dependency policy.

@@ -1,0 +1,132 @@
+name: Sync Bioconda release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      dry_run:
+        default: true
+        type: boolean
+    secrets:
+      BIOCONDA_GITHUB_TOKEN:
+        required: false
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Published stable PyPI version (X.Y.Z or vX.Y.Z)
+        required: true
+        type: string
+      dry_run:
+        description: Build and test without pushing or opening a pull request
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clipkit-bioconda-release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'JLSteenwyk/ClipKIT'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      changed: ${{ steps.generate.outputs.changed }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: bioconda/bioconda-recipes
+          ref: master
+          path: bioconda
+          sparse-checkout: recipes/clipkit
+          persist-credentials: false
+      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
+        with:
+          miniforge-version: latest
+          python-version: '3.12'
+          channels: conda-forge,bioconda
+          channel-priority: strict
+          activate-environment: recipe-sync
+      - name: Install recipe tooling
+        run: |
+          conda install --yes --override-channels -c conda-forge conda-build
+          python -m pip install -r scripts/bioconda/requirements.txt pytest
+          python -m pytest tests/unit/test_bioconda_release.py -q --confcutdir=tests/unit
+      - name: Generate recipe from the published artifacts
+        id: generate
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          mkdir -p sync-artifact
+          python scripts/bioconda/sync.py --version "$RELEASE_VERSION" \
+            --recipe bioconda/recipes/clipkit --output sync-artifact/result.json
+          python - <<'PY'
+          import hashlib, json, os, pathlib, shutil, subprocess
+          path = pathlib.Path('sync-artifact/result.json')
+          result = json.loads(path.read_text())
+          result['recipe_tree'] = subprocess.check_output(
+              ['git', '-C', 'bioconda', 'rev-parse', 'HEAD:recipes/clipkit'], text=True
+          ).strip()
+          shutil.copytree('bioconda/recipes/clipkit', 'sync-artifact/recipe')
+          result['recipe_sha256'] = {
+              name: hashlib.sha256((path.parent / 'recipe' / name).read_bytes()).hexdigest()
+              for name in ('meta.yaml', 'clipkit_release_test.py')
+          }
+          path.write_text(json.dumps(result, indent=2) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f"changed={str(result['changed']).lower()}\n")
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f"Recipe synchronization result: `{json.dumps(result)}`\n")
+          PY
+      - name: Build and test the Conda package
+        if: steps.generate.outputs.changed == 'true'
+        run: >-
+          conda-build bioconda/recipes/clipkit
+          --override-channels
+          -c https://conda.anaconda.org/conda-forge
+          -c https://conda.anaconda.org/bioconda --no-anaconda-upload
+      - name: Retain generated recipe for inspection, including on build failure
+        if: always() && steps.generate.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bioconda-recipe
+          path: sync-artifact
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: build
+    if: >-
+      needs.build.outputs.changed == 'true' &&
+      !inputs.dry_run
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: bioconda-recipe
+          path: sync-artifact
+      - name: Push recipe and open or update the upstream pull request
+        env:
+          GH_TOKEN: ${{ secrets.BIOCONDA_GITHUB_TOKEN }}
+          BIOCONDA_FORK: ${{ vars.BIOCONDA_FORK || 'JLSteenwyk/bioconda-recipes' }}
+        run: >-
+          python scripts/bioconda/publish.py --artifact sync-artifact
+          --checkout publish-checkout --fork "$BIOCONDA_FORK"

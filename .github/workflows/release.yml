@@ -107,3 +107,15 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
           skip-existing: true
           attestations: false
+
+  sync-bioconda:
+    needs: [build-and-publish, publish-pypi]
+    if: github.repository == 'JLSteenwyk/ClipKIT'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/bioconda-release.yml
+    with:
+      version: ${{ needs.build-and-publish.outputs.version }}
+      dry_run: false
+    secrets:
+      BIOCONDA_GITHUB_TOKEN: ${{ secrets.BIOCONDA_GITHUB_TOKEN }}
