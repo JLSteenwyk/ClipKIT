@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/jlsteenwyk/clipkit">
-    <img src="https://raw.githubusercontent.com/JLSteenwyk/ClipKIT/master/docs/_static/img/logo.jpg" alt="Logo" width="400">
+    <img src="https://raw.githubusercontent.com/JLSteenwyk/ClipKIT/main/docs/_static/img/logo.jpg" alt="Logo" width="400">
   </a>
   <p align="center">
     <a href="https://jlsteenwyk.com/ClipKIT/">Docs</a>

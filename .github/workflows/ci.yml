@@ -2,7 +2,6 @@ name: CI
 on:
   push:
     branches:
-      - master
       - main
   pull_request:
 jobs:
@@ -81,7 +80,7 @@ jobs:
           python -m pip install -r docs/requirements.txt
           make -C docs html
       - name: Deploy
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
