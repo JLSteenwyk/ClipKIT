@@ -8,6 +8,8 @@ Major changes to ClipKIT are summarized here.
 
 **Unreleased**
 
+**2.16.2**
+
 - Fixed explicit and auto-detected input for relaxed and sequential PHYLIP alignments.
 
 **2.16.1**
