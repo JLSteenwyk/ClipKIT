@@ -22,6 +22,9 @@
         <a href="https://bsky.app/profile/jlsteenwyk.bsky.social" target="_blank" rel="noopener noreferrer">
           <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff">
         </a>
+        <a href="https://x.com/jlsteenwyk" target="_blank" rel="noopener noreferrer">
+          <img src="https://img.shields.io/badge/X-%40jlsteenwyk-000?logo=x&amp;logoColor=fff" alt="@jlsteenwyk on X">
+        </a>
         <br />
         <a href="https://pepy.tech/badge/clipkit">
           <img src="https://static.pepy.tech/personalized-badge/clipkit?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPi%20Downloads">
