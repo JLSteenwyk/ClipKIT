@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fixed explicit and auto-detected input for relaxed and sequential PHYLIP alignments.
+
 ## 2.16.1
 
 - Consolidated trimming defaults across the CLI and Python API, shared ECOMP checksum and decoding logic, and simplified ends-only trimming.

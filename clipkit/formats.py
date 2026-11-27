@@ -15,6 +15,10 @@ class FileFormat(Enum):
     stockholm = "stockholm"
     ecomp = "ecomp"
 
+    @property
+    def biopython_name(self) -> str:
+        return self.value.replace("_", "-")
+
 
 class SeqType(Enum):
     __module__ = "clipkit.helpers"

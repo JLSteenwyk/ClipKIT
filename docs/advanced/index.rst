@@ -617,6 +617,6 @@ All options
 `maf <http://www.bx.psu.edu/~dcking/man/maf.xhtml>`_,
 `mauve <http://darlinglab.org/mauve/user-guide/files.html>`_,
 `phylip <http://scikit-bio.org/docs/0.2.3/generated/skbio.io.phylip.html>`_,
-`phylip-sequential <http://rosalind.info/glossary/phylip-format/>`_,
-`phylip-relaxed <https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html>`_,
+`phylip_sequential <http://rosalind.info/glossary/phylip-format/>`_,
+`phylip_relaxed <https://www.hiv.lanl.gov/content/sequence/FORMAT_CONVERSION/FormatExplain.html>`_,
 `stockholm <https://en.wikipedia.org/wiki/Stockholm_format>`_

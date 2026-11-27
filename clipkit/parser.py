@@ -172,8 +172,8 @@ Ambiguity handling
 
 Input and output file formats
     Supported input files include:
-    fasta, clustal, maf, mauve, phylip, phylip-sequential,
-    phylip-relaxed, stockholm, and ecomp.
+    fasta, clustal, maf, mauve, phylip, phylip_sequential,
+    phylip_relaxed, stockholm, and ecomp.
     Output defaults to the input format; `.ecomp` output is written
     as a gzip fallback archive by default.
 

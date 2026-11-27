@@ -62,11 +62,11 @@ def _read_alignment(path, file_format):
                 path.seek(start)
         handle = TextIOWrapper(path, encoding="ascii")
         try:
-            return AlignIO.read(handle, file_format.value)
+            return AlignIO.read(handle, file_format.biopython_name)
         finally:
             handle.detach()
     if isinstance(path, StringIO):
-        return AlignIO.read(path, file_format.value)
+        return AlignIO.read(path, file_format.biopython_name)
     if file_format == FileFormat.fasta:
         info = stat(path)
         if S_ISREG(info.st_mode) and info.st_size >= _FASTA_BLOCK_MIN_FILE_BYTES:
@@ -76,7 +76,7 @@ def _read_alignment(path, file_format):
             except ValueError:
                 pass
     with open(path) as handle:
-        return AlignIO.read(handle, file_format.value)
+        return AlignIO.read(handle, file_format.biopython_name)
 
 
 def get_alignment_and_format(

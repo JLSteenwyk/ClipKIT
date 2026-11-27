@@ -125,7 +125,7 @@ def _write_alignment(alignment, path, file_format, base_metadata):
     elif file_format == FileFormat.fasta and alignment.get_alignment_length() >= 4096:
         _write_wrapped_fasta(alignment, path)
     else:
-        SeqIO.write(alignment, path, file_format.value.replace("_", "-"))
+        SeqIO.write(alignment, path, file_format.biopython_name)
 
 
 def _write_wrapped_fasta(alignment, path):
